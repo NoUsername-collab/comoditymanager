@@ -23,7 +23,7 @@ export function pickLocalized(
   return fallbacks.find((item) => item.trim().length > 0)?.trim() ?? "";
 }
 
-/** Read only this locale's stored value — no fallback chain (studio editor). */
+/** Read only this locale's stored value. Other locales are not substitutes. */
 export function pickOwnLocalized(
   value: LocalizedText | string | null | undefined,
   locale: string,
@@ -31,6 +31,15 @@ export function pickOwnLocalized(
   if (typeof value === "string") return value.trim();
   if (!value || typeof value !== "object") return "";
   return value[asPublicLocale(locale)]?.trim() ?? "";
+}
+
+/** Hero and document titles may use the property name when this locale has none. */
+export function storedTitle(
+  value: LocalizedText | string | null | undefined,
+  locale: string,
+  propertyName: string,
+): string {
+  return pickOwnLocalized(value, locale) || propertyName.trim();
 }
 
 export function localizedFromString(text: string): LocalizedText {

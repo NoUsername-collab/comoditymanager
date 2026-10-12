@@ -72,7 +72,7 @@
         "services": "Services",
         "travel_tips": "Tips",
         "green_stay": "Green stay",
-        "online_payment": "Online payment"
+        "online_payment": "Balance"
       }
     },
     "nav": {
@@ -97,7 +97,15 @@
       "ctaCheckinToday": "Check in today",
       "ctaConnectWifi": "Connect to Wi-Fi",
       "ctaSeeTips": "See local tips",
-      "ctaCheckoutInfo": "Check-out information",
+      "ctaCheckoutInfo": "Departure details",
+      "checkInFrom": "Check-in from {time}",
+      "checkOutBy": "Check-out by {time}",
+      "departureTitle": "Leaving today",
+      "departureUntil": "Leave the room by {time}.",
+      "departureAskReception": "Reception confirms the check-out time.",
+      "departurePaid": "The stay is paid.",
+      "departureBalance": "Balance due: {amount}. Pay it at reception.",
+      "seePayment": "See the balance",
       "shareStay": "Save stay link",
       "shareSuccess": "Link shared",
       "linkCopied": "Link copied",
@@ -116,16 +124,16 @@
       "prepareCheckinDesc": "Попълнете данните преди пристигане",
       "discoverPlace": "Открийте мястото",
       "discoverPlaceDesc": "Полезна информация за обекта",
-      "payNow": "Платете сега",
-      "payNowDesc": "Финализирайте плащането за престоя",
-      "checkoutTomorrow": "Напускане утре",
-      "checkoutTomorrowDesc": "Подгответе заминаването — час, паркинг, плащане",
-      "checkoutInfo": "Информация за напускане",
-      "checkoutInfoDesc": "Детайли за заминаването ви",
+      "payNow": "Вижте сметката",
+      "payNowDesc": "Обща сума, платено и остатък на рецепция",
+      "checkoutTomorrow": "Заминаване утре",
+      "checkoutTomorrowDesc": "Час на напускане",
+      "checkoutInfo": "Заминаване днес",
+      "checkoutInfoDesc": "Час на напускане и остатък за плащане",
       "exploreTips": "Разгледайте района",
       "exploreTipsDesc": "Местни съвети и препоръки",
-      "requestService": "Поискайте услуга",
-      "requestServiceDesc": "Поискайте нещо от рецепцията",
+      "requestService": "Пишете на рецепцията",
+      "requestServiceDesc": "Кратко съобщение, без обаждане",
       "goGreen": "Зелен престой",
       "goGreenDesc": "Откажете ежедневното почистване",
       "leaveFeedback": "Оставете отзив",
@@ -144,10 +152,10 @@
       "online_checkin": "Complete your details before arrival",
       "wifi": "Network and password — quick copy",
       "facilities": "Shared spaces and amenities",
-      "services": "Services available during your stay",
+      "services": "A short note to reception, plus the service list",
       "travel_tips": "Local recommendations",
       "green_stay": "Sustainable stay options",
-      "online_payment": "Fast and secure payments"
+      "online_payment": "Total, amount paid, and the balance"
     },
     "contact": {
       "call": "Call",
@@ -214,7 +222,7 @@
       "services": "Services",
       "travel_tips": "Tips & recommendations",
       "green_stay": "Green stay",
-      "online_payment": "Online payment"
+      "online_payment": "Balance"
     },
     "badges": {
       "demo": "Скоро"
@@ -260,6 +268,7 @@
       "phone": "Phone",
       "email": "Email",
       "website": "Website",
+      "servicesNote": "The list below is informational. The message above lands on your stay file.",
       "wifiNetwork": "Wi-Fi network",
       "wifiPassword": "Wi-Fi password",
       "checkinBody": "Online check-in for {name} — demo form. Official details will be completed at reception.",
@@ -296,7 +305,7 @@
       },
       "services": {
         "title": "Услугите не са конфигурирани",
-        "description": "Наличните услуги ще се появят тук след настройка."
+        "description": "Можете да изпратите съобщение и без списък с услуги."
       },
       "features": {
         "title": "Няма активни функции",
@@ -309,8 +318,11 @@
       "lastName": "Фамилия",
       "firstName": "Име",
       "phone": "Телефон",
-      "email": "Имейл",
+      "email": "Имейл (по избор)",
       "nationalId": "ЕГН / личен код",
+      "nationalIdHint": "По избор. Рецепцията го използва за регистрацията и не го публикува.",
+      "nationalIdSent": "Изпратено към рецепцията",
+      "summaryName": "Име",
       "birthDate": "Дата на раждане",
       "nationality": "Гражданство",
       "documentType": "Тип документ",
@@ -334,7 +346,7 @@
         "generic": "Неуспешно изпращане. Опитайте отново."
       },
       "mrz": {
-        "scanButton": "Сканирай MRZ",
+        "scanButton": "Сканирай документа",
         "leadShort": "Сканирайте пасport или е-лична карта — или попълнете полетата по-долу.",
         "appliedToast": "MRZ данните са приложени — проверете и коригирайте при нужда.",
         "title": "MRZ (пасport / лична карта)",
@@ -388,15 +400,35 @@
       "paid": "Платено",
       "balance": "Остатък",
       "statusPaid": "Резервацията е напълно платена.",
-      "statusPartial": "Има внесен аванс — остатъкът се плаща на рецепция.",
-      "statusUnpaid": "Плащането е на рецепция или чрез линк от обекта.",
-      "receptionNote": "Директно онлайн плащане от приложението ще бъде налично в бъдеща версия."
+      "statusPartial": "Има внесен аванс. Остатъкът се плаща на рецепция.",
+      "statusUnpaid": "Няма записано плащане. Остатъкът се плаща на рецепция.",
+      "callToPay": "Обадете се на рецепцията за плащане",
+      "receptionNote": "Остатъкът се плаща на рецепция."
+    },
+    "receptionRequest": {
+      "title": "Пишете на рецепцията",
+      "lead": "Кратко съобщение. Рецепцията го вижда във фиша на престоя.",
+      "message": "Съобщение",
+      "placeholder": "Кърпи, паркинг, по-късно напускане…",
+      "submit": "Изпрати съобщението",
+      "submitting": "Изпращане…",
+      "sentToast": "Съобщението е изпратено",
+      "pending": "Изпратено",
+      "seen": "Видяно от рецепцията",
+      "errors": {
+        "validation": "Напишете поне два знака.",
+        "tooMany": "Вече има достатъчно съобщения. Обадете се, ако е спешно.",
+        "migration": "Съобщенията не са налични в тази среда.",
+        "rateLimited": "Твърде много опити. Изчакайте и опитайте отново.",
+        "generic": "Неуспешно изпращане. Опитайте отново."
+      }
     },
     "greenStay": {
       "success": "Заявката е записана. Рецепцията ще я потвърди.",
       "skipDate": "Ден без почистване",
       "note": "Бележки (по избор)",
       "pendingTitle": "Чакащи заявки",
+      "outsideStay": "Няма оставаща нощ в престоя, за която да откажете почистване.",
       "submit": "Изпрати заявка",
       "submitting": "Изпращане…",
       "errors": {
@@ -2296,7 +2328,10 @@
         "phone": "Телефон",
         "night": "нощ",
         "nights": "нощи",
-        "guestFeedback": "Отзив на гост"
+        "guestFeedback": "Отзив на гост",
+        "guestRequests": "Съобщения от госта",
+        "guestRequestSeen": "Видях",
+        "guestRequestAlreadySeen": "Видяно"
       },
       "roomsNew": {
         "title": "New room — Zalmox",
@@ -4779,19 +4814,19 @@
     "emailStaleOwnerRow": "Съществува обект за този email без акаунт за вход. Влез или се свържи с поддръжката."
   },
   "landing": {
-    "metaTitle": "Zalmox — календарът на рецепцията",
-    "metaDescription": "Тетрадката и Excel остават в чекмеджето. Стаи, престои и директни заявки, без комисионна. 5 стаи безплатно.",
-    "heroBadge": "PMS за пансион · RO · MD · BG",
-    "heroTitle": "Тетрадката остава в чекмеджето. Днес е на <accent>календара</accent>",
-    "heroSubtitle": "Стаи в редове, дни по хоризонтала. Преместване с влачене. Заявката от сайта стига до рецепцията — вие потвърждавате.",
+    "metaTitle": "Zalmox — софтуер за рецепция на пансиони",
+    "metaDescription": "Календар на рецепцията, директни заявки и линк за престоя. Пет стаи безплатно, без карта и без комисиона за резервациите от сайта.",
+    "heroBadge": "Софтуер за рецепция · Румъния · Молдова · България",
+    "heroTitle": "Рецепцията, на един <accent>календар</accent>",
+    "heroSubtitle": "Стаи, престои и заявки от сайта на пансиона, на един екран. Вие потвърждавате всяка резервация. Без комисиона за престоите, дошли директно.",
     "heroCta": "Започнете безплатно",
-    "heroCtaDemo": "Заявете демо",
+    "heroCtaDemo": "Заявете демонстрация",
     "heroCtaLogin": "Вход",
     "heroCtaSecondary": "Вижте инструментите",
-    "heroNote": "Без карта · 5 стаи безплатно, завинаги · 0% за директни резервации",
-    "demoEmailSubject": "Демо Zalmox — пансион",
-    "shiftTitle": "Смяната на рецепцията",
-    "shiftDesc": "Кой е в къщата, кой пристига, кой заминава. Преместете престой в друга стая. Без двойна резервация на същата стая.",
+    "heroNote": "Без карта. Пет стаи в плана Free, без срок. Комисиона 0% за директните заявки.",
+    "demoEmailSubject": "Демонстрация Zalmox — пансион",
+    "shiftTitle": "Смяната се вижда от един поглед",
+    "shiftDesc": "Кой е настанен, кой пристига и кой заминава. Престоят се мести в друга стая от мрежата. Една стая не може да поеме два престоя по едно и също време.",
     "stationsAria": "Заявка от сайта и линк за престоя",
     "stationSiteTitle": "Заявка от сайта",
     "stationSiteDesc": "Гостът избира датите. Вие потвърждавате от календара — не онлайн плащане.",
@@ -4803,28 +4838,30 @@
     "stat2Value": "5",
     "stat2Label": "Стаи в Free",
     "stat3Value": "0%",
-    "stat3Label": "Комисион директни",
+    "stat3Label": "Комисиона за директни",
+    "stat4Value": "RO · EN · BG",
+    "stat4Label": "Интерфейс и поддръжка",
     "featGanttEyebrow": "Календар",
     "featGanttTitle": "Всички престои на един екран",
-    "featGanttDesc": "Gantt за рецепция: стаи в редове, дни по хоризонтала, влачене за преместване. Без двойна резервация на същата стая.",
-    "featGanttL1": "Изглед седмица и месец",
-    "featGanttL2": "Преместване на резервации между стаи",
-    "featGanttL3": "Heatmap на заетост",
-    "featGanttL4": "Hold и блокажи върху мрежата",
+    "featGanttDesc": "Стаите са в редове, дните — по хоризонтала. Преместете престой в друга стая от мрежата. Една стая не може да поеме два престоя в едни и същи дати.",
+    "featGanttL1": "Седмица и месец, на същия календар",
+    "featGanttL2": "Преместване между стаи, от мрежата",
+    "featGanttL3": "Карта на заетостта, от плана Essential",
+    "featGanttL4": "Задържания и блокирания, видими върху стаята",
     "featSiteEyebrow": "Публичен сайт",
     "featSiteTitle": "Страницата за резервации на пансиона",
-    "featSiteDesc": "Всеки имот получава сайт и формуляр за заявка. Заявката влиза в admin; вие потвърждавате.",
+    "featSiteDesc": "Всеки обект има страница за представяне и формуляр за заявка. Заявката влиза в панела на рецепцията. Вие я потвърждавате.",
     "featSiteL1": "Включено във всички планове",
-    "featSiteL2": "Заявка за резервация — не онлайн плащане",
-    "featSiteL3": "Управление от панела на рецепцията",
-    "featSiteL4": "Поддомейн на zalmox.app",
-    "featGuestEyebrow": "Guest app",
+    "featSiteL2": "Заявка за резервация. Онлайн плащането не е включено",
+    "featSiteL3": "Потвърждение от панела на рецепцията",
+    "featSiteL4": "Адрес в zalmox.app. Собствен домейн от плана Professional",
+    "featGuestEyebrow": "Гост",
     "featGuestTitle": "Линк за престоя в телефона на госта",
-    "featGuestDesc": "Без магазин за приложения. Wi-Fi, информация и онлайн check-in — за времето на престоя.",
-    "featGuestL1": "Онлайн check-in преди пристигане",
-    "featGuestL2": "Парола за Wi-Fi от линка",
-    "featGuestL3": "Удобства и информация за имота",
-    "featGuestL4": "Имейл за потвърждение, когато Resend е настроен",
+    "featGuestDesc": "Без приложение за инсталиране. Wi-Fi, информация за обекта и онлайн настаняване, за времето на престоя.",
+    "featGuestL1": "Онлайн настаняване преди пристигане",
+    "featGuestL2": "Паролата за Wi-Fi, от линка",
+    "featGuestL3": "Удобства и информация за пансиона",
+    "featGuestL4": "Съобщение за потвърждение, когато имейлът е настроен",
     "heroSocialQuote": "„Заменя тетрадката и Excel с календар, който наистина работи.“",
     "heroSocialCaption": "Малки пансион в Румъния, Молдова и България",
     "problemTitle": "Звучи познато?",
@@ -4838,74 +4875,74 @@
     "solution2": "Невъзможно е двойно резервиране — защита в базата данни",
     "solution3": "Гостите изпращат заявка на сайта — вие потвърждавате",
     "solution4": "Директни резервации = 0% комисионна",
-    "toolsTitle": "Вашите инструменти за ежедневна работа",
-    "toolsLead": "Всичко, което рецепцията използва всеки ден — календар, настанявания, check-in и документи — в ясен, мобилно оптимизиран интерфейс.",
+    "toolsTitle": "Инструментите на рецепцията",
+    "toolsLead": "Календар, престои, настаняване и документи, в един панел. На телефон и на компютър.",
     "toolsAria": "Инструменти Zalmox",
     "tools": {
       "gantt": {
-        "title": "Gantt kalendar",
-        "desc": "Vizhte vsichki stai i nastani na edna stranica. Drag & drop, cvetove po sgrada, heatmap na zaetost."
+        "title": "Календар",
+        "desc": "Всички стаи и престои на една страница. Преместване от мрежата, цвят по сграда и карта на заетостта от Essential."
       },
       "stays": {
-        "title": "Nastani i zaqvki",
-        "desc": "Upravlyavajte rezervacii, novi zaqvki i status na nastani — ot potvyrzhdenie do check-out."
+        "title": "Престои и заявки",
+        "desc": "Нови заявки, потвърждение и статус на престоя, от пристигане до заминаване."
       },
       "checkin": {
-        "title": "Check-in na recepciya",
-        "desc": "Registrirajte pristiganiya bъrzo, s MRZ skanirane na dokumenti i pъlni danni za gosti."
+        "title": "Настаняване на рецепция",
+        "desc": "Записване на пристигането, с четене на зоната MRZ от документа и картон на госта."
       },
       "guestApp": {
-        "title": "Guest app",
-        "desc": "Gostite dostъpvat Wi-Fi, informaciya za pansiona i onlajn check-in ot telefona — bez instalirane."
+        "title": "Линк за престоя",
+        "desc": "Wi-Fi, информация за пансиона и онлайн настаняване, от телефона, без приложение за инсталиране."
       },
       "availability": {
-        "title": "Nalichnost",
-        "desc": "Tarifi, sezoni i blokirani — sinhronizirani s kalendara i publichniya sajt."
+        "title": "Наличност",
+        "desc": "Тарифи, сезони и блокирания, подравнени с календара и с публичната страница."
       },
       "fiscal": {
-        "title": "Fiskalni dokumenti",
-        "desc": "Izdavate vatreshni PDF fakturi za gosti. ANAF e-Factura oshte ne e svarzana."
+        "title": "Фактури",
+        "desc": "PDF фактури за гости, от плана Professional. Връзката с e-Factura ANAF не е налична."
       },
       "buildings": {
-        "title": "Multi-sgrada",
-        "desc": "Nyakolko sgradi, etazhi i stai — vseki sъs sobstven cvyat i konfiguraciya v Gantt."
+        "title": "Няколко сгради",
+        "desc": "Сгради, етажи и стаи, със собствен цвят в календара."
       },
       "publicSite": {
-        "title": "Publichen sajt",
-        "desc": "Vseki pansion poluchava stranica za predstaviane s nalichnost i forma za rezervaciya."
+        "title": "Публичен сайт",
+        "desc": "Страница за представяне, наличност и формуляр за заявка. Онлайн плащането не е включено."
       }
     },
-    "howTitle": "Как работи",
-    "howLead": "Три стъпки от акаунт до ежедневна работа — без консултанти, без сложен setup.",
-    "step1Title": "Създайте акаунт",
-    "step1Desc": "Име на пансиона, имейл, парола. 30 секунди, без кредитна карта.",
-    "step2Title": "Конфигурирайте пансиона",
-    "step2Desc": "Сгради, стаи, тарифи и публичен сайт — водени стъпка по стъпка, за няколко минути.",
-    "step3Title": "Работете всеки ден",
-    "step3Desc": "Gantt календар, настанявания, check-in и наличност — от телефон или десктоп.",
+    "howTitle": "От акаунт до рецепция",
+    "howLead": "Три стъпки. Безплатният план не включва съпроводено въвеждане.",
+    "step1Title": "Отворете акаунта",
+    "step1Desc": "Име на пансиона, имейл и парола. Без карта.",
+    "step2Title": "Настройте обекта",
+    "step2Desc": "Сгради, стаи, тарифи и публичната страница, в реда от панела.",
+    "step3Title": "Работете от календара",
+    "step3Desc": "Заявки, престои, настаняване и линкът на госта, от телефон или от компютър.",
     "statSetup": "Регистрация",
     "trustStripAria": "Ключови предимства на Zalmox",
     "trustLead": "Малки пансион в Румъния, Молдова и България — пълен контрол, без комисионна за директни резервации.",
     "trust1": "0% комисионна за директни резервации",
     "trust2": "Данни в ЕС · GDPR",
     "trust3": "Поддръжка на румънски, английски, български",
-    "trustSectionTitle": "Сигурност и доверие",
-    "trustSectionLead": "Multi-tenant инфраструктура, изолирани данни по пансион, GDPR съответствие.",
+    "trustSectionTitle": "Данните остават на пансиона",
+    "trustSectionLead": "Всеки акаунт е отделен. Данните се съхраняват в Европейския съюз.",
     "trustCards": {
       "security": {
         "glyph": "🔒",
-        "title": "Защитени данни",
-        "desc": "Криптиране при пренос, сигурна автентикация и автоматични бекъпи на данните."
+        "title": "Контролиран достъп",
+        "desc": "Шифрована връзка и вход за персонала. Резервните копия се правят автоматично."
       },
       "multiTenant": {
         "glyph": "🏠",
-        "title": "Изолиран multi-tenant",
-        "desc": "Всеки пансион има отделно пространство — без смесване на данни между клиенти."
+        "title": "Отделни акаунти",
+        "desc": "Един пансион не вижда стаите, гостите или резервациите на друг."
       },
       "gdpr": {
         "glyph": "🇪🇺",
-        "title": "GDPR-ready",
-        "desc": "Данни, съхранени в ЕС, политики за поверителност и експорт по заявка."
+        "title": "Обработка в ЕС",
+        "desc": "Политиката за поверителност описва обработката. Експортът е по заявка."
       }
     },
     "trustLegalPrefix": "Пълни детайли в",
@@ -4913,10 +4950,18 @@
     "trustLegalSuffix": ".",
     "pricingCompareCta": "Сравнете всички планове",
     "finalCtaTitle": "Отворете <accent>календара</accent>",
-    "finalCtaText": "Пет стаи, без карта, без срок. Тетрадката може да остане в чекмеджето.",
+    "finalCtaText": "Пет стаи, без карта и без срок. Директните заявки се потвърждават от същия екран.",
     "finalCtaButton": "Създайте безплатен акаунт",
     "mockup": {
       "calendarTitle": "Календар",
+      "confirmed": "Потвърден",
+      "request": "Заявка",
+      "hold": "Задържане",
+      "stayIonescu": "Йонеску",
+      "stayPopa": "Попа",
+      "stayMarin": "Марин",
+      "stayGeorgiev": "Георгиев",
+      "stayDumitru": "Думитру",
       "checkIn": "Check-in",
       "nights": "5 нощи",
       "roomsAvailable": "Свободни стаи",
@@ -4926,17 +4971,17 @@
       "roomSuite": "Suite",
       "free": "Свободна",
       "occupied": "Заета",
-      "sendRequest": "Изпрати заявка",
+      "sendRequest": "Изпратете заявката",
       "room": "Стая",
       "welcome": "Добре дошли,",
-      "guestName": "Andrei",
+      "guestName": "Андрей",
       "stay": "Стая 201 · 5 нощи",
       "wifi": "Wi-Fi",
       "facilities": "Удобства",
       "breakfast": "Закуска",
       "localGuide": "Местен гид",
-      "onlineCheckin": "Онлайн check-in",
-      "onlineCheckinHint": "Попълнете предварително",
+      "onlineCheckin": "Онлайн настаняване",
+      "onlineCheckinHint": "Попълнете преди пристигане",
       "wifiNetwork": "Wi-Fi мрежа",
       "wifiName": "Zalmox_Guests",
       "wifiPassword": "Парола: welcome2025"
@@ -4962,13 +5007,13 @@
     "comparisonLead": "Всички планове включват Gantt, резервации, Guest App и публична страница.",
     "faqTitle": "Често задавани въпроси",
     "faq1Q": "Наистина ли е 0 EUR?",
-    "faq1A": "Да. Free включва 5 стаи, Gantt, Guest App и публичната страница — без карта, без срок. Имейлите се изпращат само ако е конфигуриран Resend.",
-    "faq2Q": "Кога да мина на Essential (15 EUR)?",
-    "faq2A": "Когато ви трябват до 20 стаи, heatmap за заетост, експорт на статистики, 5 члена на екипа или без брандинг Zalmox на сайта.",
-    "faq3Q": "Какво дава Professional (35 EUR)?",
-    "faq3A": "Неограничени стаи и екип, custom домейн, вътрешни PDF фактури и до 3 имота. ANAF e-Factura още не е свързана.",
+    "faq1A": "Да. Free включва 5 стаи, календар, линк за престоя и публичната страница, без карта и без срок. Имейлите се изпращат само ако изпращането е настроено.",
+    "faq2Q": "Кога преминавате към Essential (15 EUR)?",
+    "faq2A": "Когато имате до 20 стаи и искате карта на заетостта, експорт на статистики, 5 члена на екипа или сайт без марката Zalmox.",
+    "faq3Q": "Какво включва Professional (35 EUR)?",
+    "faq3A": "Стаи без ограничение на броя, екип без ограничение, собствен домейн, PDF фактури и до 3 обекта. e-Factura ANAF не е свързана.",
     "faq4Q": "За кого е Business (69 EUR)?",
-    "faq4A": "По-големи имоти: до 10 имота, отделен onboarding и приоритетна поддръжка. Засега без REST API и без SLA 99.9%.",
+    "faq4A": "За няколко обекта: до 10 единици, въвеждане и приоритетна поддръжка. API и SLA от 99,9% не са включени.",
     "finalTitle": "Започнете безплатно",
     "finalText": "5 стаи, 0 EUR, настройка за минути.",
     "finalCta": "Създайте безплатен акаунт",
@@ -5086,7 +5131,7 @@
       "signup": "Безплатно"
     },
     "footer": {
-      "tagline": "Модерен софтуер за пансиони и малки хотели в Румъния, Молдова и България.",
+      "tagline": "Софтуер за рецепция на пансиони в Румъния, Молдова и България.",
       "product": "Продукт",
       "pricing": "Цени",
       "signup": "Създайте акаунт",

@@ -9,7 +9,9 @@ import { GuestGreenStayForm } from "@/features/guest-app/GuestGreenStayForm";
 import { GuestListItemsPanel } from "@/features/guest-app/GuestListItemsPanel";
 import { GuestOnlineCheckinSection } from "@/features/guest-app/GuestOnlineCheckinSection";
 import { GuestPaymentSummary } from "@/features/guest-app/GuestPaymentSummary";
+import { GuestReceptionRequestForm } from "@/features/guest-app/GuestReceptionRequestForm";
 import { GuestWifiCopyAllButton } from "@/features/guest-app/GuestWifiCopyAllButton";
+import { GuestStayHours } from "@/features/guest-app/GuestStayHours";
 import { GuestWifiQrCode } from "@/features/guest-app/GuestWifiQrCode";
 import { isGuestFeatureReady } from "@/features/guest-app/feature-labels";
 import { safeExternalHref } from "@/lib/security/html-escape";
@@ -51,13 +53,18 @@ export async function GuestAppFeatureScreen({
         ctx.hotel.shortDescription ||
         ctx.hotel.phone ||
         ctx.hotel.email ||
-        ctx.hotel.address ? (
+        ctx.hotel.address ||
+        ctx.stayHours ? (
           <div className="guest-app__subtle space-y-4 text-sm">
             {(ctx.hotel.longDescription || ctx.hotel.shortDescription) && (
               <p className="leading-relaxed">
                 {ctx.hotel.longDescription ?? ctx.hotel.shortDescription}
               </p>
             )}
+            <GuestStayHours
+              checkIn={ctx.stayHours?.checkIn}
+              checkOut={ctx.stayHours?.checkOut}
+            />
             <div className="guest-app__contact-grid">
               {ctx.hotel.phone ? (
                 <a href={`tel:${ctx.hotel.phone}`} className="guest-app__contact-card">
@@ -170,6 +177,8 @@ export async function GuestAppFeatureScreen({
           accessCode={accessCode}
           description={ctx.greenStay?.description}
           today={today}
+          checkIn={ctx.booking.checkIn}
+          checkOut={ctx.booking.checkOut}
           pendingDates={ctx.greenStayPendingDates}
         />
       ) : null}
@@ -210,21 +219,34 @@ export async function GuestAppFeatureScreen({
       ) : null}
 
       {featureId === "services" ? (
-        ctx.services.length > 0 ? (
-          <GuestListItemsPanel items={ctx.services} />
-        ) : (
-          <GuestAppEmptyState
-            title={t("empty.services.title")}
-            description={t("empty.services.description")}
-            icon="🛎"
-            action={<GuestEmptyReceptionAction phone={receptionPhone} />}
+        <div className="space-y-4">
+          <GuestReceptionRequestForm
+            accessCode={accessCode}
+            requests={ctx.receptionRequests}
           />
-        )
+          {ctx.services.length > 0 ? (
+            <div className="space-y-3">
+              <p className="guest-app__subtle text-sm">{t("feature.servicesNote")}</p>
+              <GuestListItemsPanel items={ctx.services} />
+            </div>
+          ) : (
+            <GuestAppEmptyState
+              title={t("empty.services.title")}
+              description={t("empty.services.description")}
+              icon="🛎"
+              action={<GuestEmptyReceptionAction phone={receptionPhone} />}
+            />
+          )}
+        </div>
       ) : null}
 
       {featureId === "online_payment" ? (
         ctx.booking.totalPrice != null && ctx.booking.totalPrice > 0 ? (
-          <GuestPaymentSummary booking={ctx.booking} locale={ctx.locale} />
+          <GuestPaymentSummary
+            booking={ctx.booking}
+            locale={ctx.locale}
+            phone={receptionPhone}
+          />
         ) : (
           <GuestAppEmptyState
             title={t("empty.payment.title")}

@@ -1,6 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
+
+function FeedbackFormFallback() {
+  const t = useTranslations("guestApp.shell");
+  return (
+    <div className="guest-app__skeleton-row" aria-busy="true" aria-label={t("loading")} />
+  );
+}
 
 const GuestFeedbackForm = dynamic(
   () =>
@@ -8,13 +16,7 @@ const GuestFeedbackForm = dynamic(
       default: m.GuestFeedbackForm,
     })),
   {
-    loading: () => (
-      <div
-        className="guest-app__skeleton-row"
-        aria-busy="true"
-        aria-label="…"
-      />
-    ),
+    loading: () => <FeedbackFormFallback />,
   },
 );
 

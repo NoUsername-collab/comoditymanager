@@ -63,6 +63,16 @@
   font-weight: 650;
 }
 
+.guest-loyalty-landing {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid var(--guest-border);
+  background: color-mix(in srgb, var(--guest-card) 75%, transparent);
+  text-align: center;
+}
+
 .guest-loyalty-landing__form {
   display: grid;
   gap: 0.75rem;

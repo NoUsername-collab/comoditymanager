@@ -7,7 +7,7 @@ import {
   PublicContactBar,
 } from "@/features/public-site/contact/PublicContactBar";
 import { publicChromeFontStack } from "@/features/public-site/domain/chrome";
-import { pickLocalized } from "@/features/public-site/domain/localized";
+import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import { resolvePublicNavItems } from "@/features/public-site/domain/nav-items";
 import { PublicSiteConfigProvider } from "@/features/public-site/PublicSiteConfigProvider";
 import { PublicSiteBody } from "@/features/public-site/templates/PublicSiteTemplates";
@@ -28,8 +28,6 @@ export function PublicSitePreview({
   config: PublicSiteConfig;
   locale: string;
 }) {
-  const tHeader = useTranslations("public.header");
-  const tNav = useTranslations("public.nav");
   const tFooter = useTranslations("public.footer");
   const tHome = useTranslations("public.home");
   const tContact = useTranslations("public.contact");
@@ -41,12 +39,7 @@ export function PublicSitePreview({
     checkOut: config.checkOutTime,
   });
 
-  const navItems = resolvePublicNavItems(config, previewLocale, {
-    home: tNav("home"),
-    privacy: tNav("gdpr"),
-    terms: tNav("terms"),
-    book: tNav("book"),
-  });
+  const navItems = resolvePublicNavItems(config, previewLocale);
   const showBookingFooter =
     config.published !== false &&
     config.bookingEnabled &&
@@ -58,8 +51,10 @@ export function PublicSitePreview({
     facebook: tContact("facebook"),
     instagram: tContact("instagram"),
   });
-  const subtitle = pickLocalized(config.chrome.headerSubtitle, previewLocale, [tHeader("subtitle")]);
-  const tagline = pickLocalized(config.chrome.footerTagline, previewLocale, [tFooter("tagline")]);
+  const subtitle = pickOwnLocalized(config.chrome.headerSubtitle, previewLocale);
+  const tagline = pickOwnLocalized(config.chrome.footerTagline, previewLocale);
+  const termsLabel = pickOwnLocalized(config.chrome.navTerms, previewLocale);
+  const privacyLabel = pickOwnLocalized(config.chrome.navPrivacy, previewLocale);
   const themeStyle = resolvePublicThemeStyle(config.themeId);
   const fontStack = publicChromeFontStack(config.chrome.fontId);
   const style = (
@@ -132,16 +127,18 @@ export function PublicSitePreview({
             <div className="public-footer__grid">
               <div>
                 <p className="public-footer__brand-name">{config.displayName}</p>
-                <p className="public-footer__brand-desc">{tagline}</p>
+                {tagline ? <p className="public-footer__brand-desc">{tagline}</p> : null}
               </div>
-              <div>
-                <p className="public-footer__label">{tFooter("links")}</p>
-                <nav className="public-footer__links">
-                  {showBookingFooter ? <span>{tFooter("bookingRequest")}</span> : null}
-                  <span>{tFooter("terms")}</span>
-                  <span>{tFooter("privacy")}</span>
-                </nav>
-              </div>
+              {showBookingFooter || termsLabel || privacyLabel ? (
+                <div>
+                  <p className="public-footer__label">{tFooter("links")}</p>
+                  <nav className="public-footer__links">
+                    {showBookingFooter ? <span>{tFooter("bookingRequest")}</span> : null}
+                    {termsLabel ? <span>{termsLabel}</span> : null}
+                    {privacyLabel ? <span>{privacyLabel}</span> : null}
+                  </nav>
+                </div>
+              ) : null}
               <div>
                 <p className="public-footer__label">{tFooter("contact")}</p>
                 {contactLinks.length > 0 ? (

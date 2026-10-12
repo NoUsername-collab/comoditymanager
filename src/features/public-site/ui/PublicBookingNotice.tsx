@@ -9,16 +9,12 @@ export function PublicBookingNotice({
   locale,
   checkInTime,
   checkOutTime,
-  fallbackTitle,
-  fallbackFooter,
   presets,
 }: {
   notice: PublicBookingNoticeConfig | null | undefined;
   locale: string;
   checkInTime: string;
   checkOutTime: string;
-  fallbackTitle: string;
-  fallbackFooter: string;
   presets: BookingNoticePresetCopy;
 }) {
   const view = buildBookingNoticeView({
@@ -26,8 +22,6 @@ export function PublicBookingNotice({
     locale,
     checkInTime,
     checkOutTime,
-    fallbackTitle,
-    fallbackFooter,
     presets,
   });
 

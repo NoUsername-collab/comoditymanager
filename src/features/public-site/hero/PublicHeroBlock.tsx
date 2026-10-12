@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { pickLocalized } from "@/features/public-site/domain/localized";
+import { pickOwnLocalized, storedTitle } from "@/features/public-site/domain/localized";
 import { safeCssUrl, safeNavHref } from "@/lib/security/html-escape";
 import type { PublicSiteConfig, PublicTemplateId } from "@/features/public-site/domain/types";
 import type { ReactNode } from "react";
@@ -41,12 +41,12 @@ export function PublicHeroBlock({
   preview = false,
 }: HeroProps) {
   const hero = config.hero;
-  const title = pickLocalized(hero.title, locale, [config.displayName]);
-  const subtitle = pickLocalized(hero.subtitle, locale);
-  const tagline = pickLocalized(hero.tagline, locale);
-  const badge = pickLocalized(hero.badge, locale);
-  const ctaPrimary = pickLocalized(hero.ctaPrimary, locale);
-  const ctaSecondary = pickLocalized(hero.ctaSecondary, locale);
+  const title = storedTitle(hero.title, locale, config.displayName);
+  const subtitle = pickOwnLocalized(hero.subtitle, locale);
+  const tagline = pickOwnLocalized(hero.tagline, locale);
+  const badge = pickOwnLocalized(hero.badge, locale);
+  const ctaPrimary = pickOwnLocalized(hero.ctaPrimary, locale);
+  const ctaSecondary = pickOwnLocalized(hero.ctaSecondary, locale);
   const showMeta = Boolean(checkTimesLabel) && hero.showCheckTimes !== false;
 
   const primaryBtn =

@@ -34,10 +34,10 @@ export function GuestLoyaltyLanding({ pensionName }: { pensionName: string }) {
   }
 
   return (
-    <div className="guest-app__alert-warn" role="status">
-      <p className="guest-app__alert-warn__eyebrow">{t("eyebrow")}</p>
-      <h1 className="guest-app__alert-warn__title">{t("landingTitle", { name: pensionName })}</h1>
-      <p className="guest-app__alert-warn__body">{t("landingBody")}</p>
+    <div className="guest-loyalty-landing">
+      <p className="guest-loyalty-card__eyebrow">{t("eyebrow")}</p>
+      <h1 className="guest-loyalty-card__title">{t("landingTitle", { name: pensionName })}</h1>
+      <p className="guest-loyalty-card__lead">{t("landingBody")}</p>
       <form className="guest-loyalty-landing__form" onSubmit={onSubmit}>
         <label className="guest-loyalty-landing__label">
           <span>{t("referenceLabel")}</span>

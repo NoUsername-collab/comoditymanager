@@ -16,10 +16,13 @@ export type GuestNavTab = {
 
 const NAV_PRIORITY: GuestAppFeatureId[] = [
   "wifi",
-  "hotel_info",
   "online_checkin",
+  "hotel_info",
   "travel_tips",
 ];
+
+/** Home + două scurtături. „Mai mult” rămâne mereu, ca restul secțiunilor să aibă o intrare. */
+const NAV_FEATURE_SLOTS = 2;
 
 export function buildGuestBottomNav(
   accessCode: string,
@@ -37,10 +40,10 @@ export function buildGuestBottomNav(
       featureId: id,
       href: guestAppFeatureHref(accessCode, id),
     });
-    if (tabs.length >= 4) break;
+    if (tabs.length >= 1 + NAV_FEATURE_SLOTS) break;
   }
 
-  if (tabs.length < 4) {
+  if (visibleIds.size > 0) {
     tabs.push({
       id: "menu",
       href: `${guestAppHomeHref(accessCode)}#features`,

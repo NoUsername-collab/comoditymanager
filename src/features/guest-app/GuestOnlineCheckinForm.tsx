@@ -46,10 +46,43 @@ export function GuestOnlineCheckinForm({
   const [notes, setNotes] = useState(prefill.notes);
 
   if (submitted) {
+    const sentName = [lastName, firstName].filter(Boolean).join(" ").trim();
     return (
       <div className="guest-app__success-box">
         <p className="font-semibold">{t("successTitle")}</p>
         <p className="mt-2 text-sm opacity-90">{t("successBody")}</p>
+        <dl className="guest-app__checkin-summary">
+          {sentName ? (
+            <div>
+              <dt>{t("summaryName")}</dt>
+              <dd>{sentName}</dd>
+            </div>
+          ) : null}
+          {phone ? (
+            <div>
+              <dt>{t("phone")}</dt>
+              <dd>{phone}</dd>
+            </div>
+          ) : null}
+          {email ? (
+            <div>
+              <dt>{t("email")}</dt>
+              <dd>{email}</dd>
+            </div>
+          ) : null}
+          {documentNumber ? (
+            <div>
+              <dt>{t("documentNumber")}</dt>
+              <dd>{documentNumber}</dd>
+            </div>
+          ) : null}
+          {nationalId ? (
+            <div>
+              <dt>{t("nationalId")}</dt>
+              <dd>{t("nationalIdSent")}</dd>
+            </div>
+          ) : null}
+        </dl>
       </div>
     );
   }
@@ -175,6 +208,7 @@ export function GuestOnlineCheckinForm({
 
         <label className="guest-app__field">
           <span className="guest-app__field__label">{t("nationalId")}</span>
+          <span className="guest-app__field__hint">{t("nationalIdHint")}</span>
           <input
             className="guest-app__field__input"
             inputMode="numeric"

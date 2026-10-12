@@ -13,6 +13,11 @@ function isStandalone(): boolean {
   );
 }
 
+function isHandheld(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /iPad|iPhone|iPod|Android/i.test(navigator.userAgent);
+}
+
 function isIos(): boolean {
   if (typeof navigator === "undefined") return false;
   return /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -27,7 +32,7 @@ export function GuestInstallHint({
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (isStandalone()) return;
+    if (!isHandheld() || isStandalone()) return;
     if (window.localStorage.getItem(DISMISS_KEY) === "1") return;
     setVisible(true);
   }, []);

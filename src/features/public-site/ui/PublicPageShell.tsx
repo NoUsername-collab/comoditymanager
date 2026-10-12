@@ -6,7 +6,7 @@ type Props = {
   backHref?: string;
   backLabel?: string;
   eyebrow?: string;
-  title: string;
+  title?: string;
   lead?: string;
   wide?: boolean;
   narrow?: boolean;
@@ -42,11 +42,13 @@ export async function PublicPageShell({
             ← {resolvedBackLabel}
           </Link>
         )}
-        <header className="public-page__head">
-          {eyebrow && <p className="public-page__eyebrow">{eyebrow}</p>}
-          <h1 className="public-page__title">{title}</h1>
-          {lead && <p className="public-page__lead">{lead}</p>}
-        </header>
+        {eyebrow || title || lead ? (
+          <header className="public-page__head">
+            {eyebrow ? <p className="public-page__eyebrow">{eyebrow}</p> : null}
+            {title ? <h1 className="public-page__title">{title}</h1> : null}
+            {lead ? <p className="public-page__lead">{lead}</p> : null}
+          </header>
+        ) : null}
         {children}
       </div>
     </main>

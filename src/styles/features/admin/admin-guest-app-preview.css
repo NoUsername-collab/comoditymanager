@@ -62,6 +62,10 @@
   gap: 1.15rem;
 }
 
+.guest-app-preview .guest-app--with-fab .guest-app-preview__body {
+  padding-bottom: 9.25rem;
+}
+
 .guest-app-preview .guest-app__bottom-nav {
   position: absolute;
   left: 0;

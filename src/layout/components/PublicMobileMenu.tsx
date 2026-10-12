@@ -19,12 +19,7 @@ export function PublicMobileMenu() {
   const locale = useLocale();
   const t = useTranslations("public.nav");
   const config = useOptionalPublicSiteConfig();
-  const items = resolvePublicNavItems(config, locale, {
-    home: t("home"),
-    privacy: t("gdpr"),
-    terms: t("terms"),
-    book: t("book"),
-  });
+  const items = resolvePublicNavItems(config, locale);
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);

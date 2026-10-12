@@ -55,6 +55,7 @@ export function GuestAppShell({
         className={[
           className,
           withNav ? "guest-app--with-nav min-h-[100dvh]" : "min-h-[100dvh]",
+          receptionPhone?.trim() ? "guest-app--with-fab" : "",
         ]
           .filter(Boolean)
           .join(" ")}

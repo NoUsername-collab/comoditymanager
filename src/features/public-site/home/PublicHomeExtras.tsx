@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { pickLocalized } from "@/features/public-site/domain/localized";
+import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import { safeNavHref } from "@/lib/security/html-escape";
 import type {
   PublicBenefitItem,
@@ -30,14 +30,13 @@ export function PublicHomeExtras({
   const amenityLabels =
     layout === "classic"
       ? benefitItems
-          .map((item) => pickLocalized(item.title, locale))
+          .map((item) => pickOwnLocalized(item.title, locale))
           .filter(Boolean)
           .slice(0, 4)
       : [];
 
-  // Check-in/out lives in the hero on every layout; this strip only lists highlights.
-  const showBookingBar = config.bookingEnabled;
-  const ctaPrimary = pickLocalized(config.hero.ctaPrimary, locale, [t("ctaBook")]);
+  const ctaPrimary = pickOwnLocalized(config.hero.ctaPrimary, locale);
+  const showBookingBar = config.bookingEnabled && Boolean(ctaPrimary);
 
   if (amenityLabels.length === 0 && !showBookingBar) {
     return null;

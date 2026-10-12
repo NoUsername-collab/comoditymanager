@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PublicStaffPreviewLazy } from "@/features/public-site/ui/PublicStaffPreviewLazy";
 import { PublicUnpublishedPage } from "@/features/public-site/ui/PublicUnpublishedPage";
-import { pickLocalized } from "@/features/public-site/domain/localized";
+import { pickOwnLocalized, storedTitle } from "@/features/public-site/domain/localized";
 import { PublicSitePage } from "@/features/public-site/templates/PublicSitePage";
 import {
   loadPublicHomePage,
@@ -15,8 +15,8 @@ function ogImage(url: string | null | undefined) {
 
 export async function generateMetadata(): Promise<Metadata> {
   const [config, locale] = await Promise.all([loadPublicSiteConfig(), getLocale()]);
-  const title = pickLocalized(config.seo.metaTitle, locale, [config.displayName]);
-  const description = pickLocalized(config.seo.metaDescription, locale);
+  const title = storedTitle(config.seo.metaTitle, locale, config.displayName);
+  const description = pickOwnLocalized(config.seo.metaDescription, locale);
   const image = config.pages.ogImageUrl || config.hero.imageUrl || null;
 
   return {

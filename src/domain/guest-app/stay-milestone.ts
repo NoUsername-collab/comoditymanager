@@ -16,6 +16,15 @@ const LABELS: Record<GuestStayMilestoneId, string> = {
 
 const ORDER: GuestStayMilestoneId[] = ["confirmed", "checked_in", "checked_out"];
 
+/** Ziua plecării, cât timp oaspetele e încă cazat. Linkul se închide abia a doua zi. */
+export function isGuestDepartureDay(input: {
+  today: string;
+  checkOut: string;
+  checkedInAt: string | null;
+}): boolean {
+  return Boolean(input.checkedInAt) && input.today === input.checkOut;
+}
+
 /** Faza curentă a sejurului (cât timp guest app e accesibilă). */
 export function resolveGuestStayPhase(input: {
   today: string;
@@ -24,7 +33,6 @@ export function resolveGuestStayPhase(input: {
   checkedInAt: string | null;
 }): GuestStayMilestoneId {
   if (input.today > input.checkOut) return "checked_out";
-  if (input.today === input.checkOut && input.checkedInAt) return "checked_out";
   if (input.checkedInAt) return "checked_in";
   return "confirmed";
 }
@@ -35,7 +43,10 @@ export function buildGuestStayMilestones(input: {
   checkOut: string;
   checkedInAt: string | null;
 }): GuestStayMilestoneStep[] {
-  const current = resolveGuestStayPhase(input);
+  const phase = resolveGuestStayPhase(input);
+  const current: GuestStayMilestoneId = isGuestDepartureDay(input)
+    ? "checked_out"
+    : phase;
   const currentIdx = ORDER.indexOf(current);
 
   return ORDER.map((id, idx) => ({

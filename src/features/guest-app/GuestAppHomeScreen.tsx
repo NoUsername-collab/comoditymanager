@@ -1,6 +1,11 @@
 import type { GuestAppResolvedContext } from "@/services/guest-app/resolve-context";
 import type { GuestLoyaltySnapshot } from "@/services/guest-app/loyalty";
-import { buildGuestStayMilestones } from "@/domain/guest-app/stay-milestone";
+import {
+  buildGuestStayMilestones,
+  countStayNights,
+  isGuestDepartureDay,
+  resolveGuestStayPhase,
+} from "@/domain/guest-app/stay-milestone";
 import { visibleGuestAppFeaturesForBooking } from "@/features/guest-app/feature-labels";
 import { GuestAppQuickActions } from "@/features/guest-app/GuestAppQuickActions";
 import { GuestFeatureLink } from "@/features/guest-app/GuestFeatureLink";
@@ -9,7 +14,8 @@ import { GuestInstallHint } from "@/features/guest-app/GuestInstallHint";
 import { GuestShareStayButton } from "@/features/guest-app/GuestShareStayButton";
 import { GuestStayMilestoneStrip } from "@/features/guest-app/GuestStayMilestoneStrip";
 import { GuestStayPhaseBanner } from "@/features/guest-app/GuestStayPhaseBanner";
-import { GuestFeedbackSection } from "@/features/guest-app/GuestFeedbackSection";
+import { GuestDeparturePanel } from "@/features/guest-app/GuestDeparturePanel";
+import { GuestStayHours } from "@/features/guest-app/GuestStayHours";
 import { GuestTodayCards } from "@/features/guest-app/GuestTodayCards";
 import { GuestWeatherSection } from "@/features/guest-app/GuestWeatherSection";
 import { GuestAppEmptyState } from "@/features/guest-app/GuestAppEmptyState";
@@ -17,10 +23,6 @@ import { GuestEmptyReceptionAction } from "@/features/guest-app/GuestEmptyRecept
 import { GuestWifiQuickCard } from "@/features/guest-app/GuestWifiQuickCard";
 import { GuestLoyaltyCard } from "@/features/guest-app/GuestLoyaltyCard";
 import { GuestLoyaltyRemember } from "@/features/guest-app/GuestLoyaltyRemember";
-import {
-  countStayNights,
-  resolveGuestStayPhase,
-} from "@/domain/guest-app/stay-milestone";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { getTranslations } from "next-intl/server";
 
@@ -57,6 +59,22 @@ export async function GuestAppHomeScreen({
   const wifiFeature = features.find((feature) => feature.id === "wifi");
   const hasWifiCredentials = Boolean(wifi?.networkName || wifi?.password);
   const nights = countStayNights(booking.checkIn, booking.checkOut);
+  const phase = resolveGuestStayPhase({
+    today,
+    checkIn: booking.checkIn,
+    checkOut: booking.checkOut,
+    checkedInAt: booking.checkedInAt,
+  });
+  const departure = isGuestDepartureDay({
+    today,
+    checkOut: booking.checkOut,
+    checkedInAt: booking.checkedInAt,
+  });
+  const leadWifi = !departure && phase === "checked_in" && Boolean(wifiFeature && hasWifiCredentials);
+  const showWifiCard =
+    Boolean(wifiFeature && wifi && hasWifiCredentials) &&
+    !departure &&
+    (phase === "checked_in" || today === booking.checkIn);
 
   return (
     <div className="space-y-6">
@@ -83,75 +101,61 @@ export async function GuestAppHomeScreen({
             <span className="guest-app__hero__rooms">{booking.roomLabels.join(" · ")}</span>
           ) : null}
         </div>
+        <GuestStayHours
+          checkIn={ctx.stayHours?.checkIn}
+          checkOut={ctx.stayHours?.checkOut}
+          className="guest-app__hero__hours"
+        />
         {hotel.shortDescription ? (
           <p className="guest-app__hero__desc">{hotel.shortDescription}</p>
         ) : null}
-        <GuestAppQuickActions phone={hotel.phone} address={hotel.address} />
+        <GuestAppQuickActions address={hotel.address} />
         <div className="guest-app__hero__actions">
-          <GuestHomePrimaryCta
-            accessCode={accessCode}
-            today={today}
-            checkIn={booking.checkIn}
-            checkOut={booking.checkOut}
-            checkedInAt={booking.checkedInAt}
-            features={features}
-            hasWifiCredentials={hasWifiCredentials}
-          />
+          {departure || leadWifi ? null : (
+            <GuestHomePrimaryCta
+              accessCode={accessCode}
+              today={today}
+              checkIn={booking.checkIn}
+              checkOut={booking.checkOut}
+              checkedInAt={booking.checkedInAt}
+              features={features}
+              hasWifiCredentials={hasWifiCredentials}
+            />
+          )}
           <GuestShareStayButton />
         </div>
       </section>
 
-      {loyalty ? (
-        <>
-          <GuestLoyaltyRemember reference={loyalty.reference} />
-          <GuestLoyaltyCard
-            snapshot={loyalty}
-            pensionName={pensionName}
-            showBookAgain={false}
-          />
-        </>
+      {departure ? (
+        <GuestDeparturePanel
+          accessCode={accessCode}
+          booking={booking}
+          features={features}
+          locale={locale}
+          checkOutTime={ctx.stayHours?.checkOut}
+          feedbackSubmitted={ctx.feedbackSubmitted}
+        />
       ) : null}
 
-      <GuestTodayCards
-        accessCode={accessCode}
-        today={today}
-        checkIn={booking.checkIn}
-        checkOut={booking.checkOut}
-        checkedInAt={booking.checkedInAt}
-        features={features}
-        hasWifiCredentials={hasWifiCredentials}
-      />
-
-      <GuestInstallHint />
-
-      {(() => {
-        const phase = resolveGuestStayPhase({
-          today,
-          checkIn: booking.checkIn,
-          checkOut: booking.checkOut,
-          checkedInAt: booking.checkedInAt,
-        });
-        const showFeedback =
-          phase === "checked_out" ||
-          (phase === "checked_in" && today === booking.checkOut);
-        return showFeedback ? (
-          <section id="feedback">
-            <h2 className="guest-app__section-title mb-3">
-              {t("feedback.sectionTitle")}
-            </h2>
-            <GuestFeedbackSection
-              accessCode={accessCode}
-              alreadySubmitted={ctx.feedbackSubmitted}
-            />
-          </section>
-        ) : null;
-      })()}
-
-      {wifiFeature && wifi && hasWifiCredentials ? (
+      {showWifiCard && wifi ? (
         <GuestWifiQuickCard accessCode={accessCode} wifi={wifi} />
       ) : null}
 
-      <GuestWeatherSection />
+      {departure ? null : (
+        <GuestTodayCards
+          accessCode={accessCode}
+          today={today}
+          checkIn={booking.checkIn}
+          checkOut={booking.checkOut}
+          checkedInAt={booking.checkedInAt}
+          features={features}
+          hasWifiCredentials={hasWifiCredentials}
+          omitFeatureIds={[
+            showWifiCard ? "wifi" : null,
+            phase === "confirmed" ? "online_checkin" : null,
+          ].filter((id): id is string => Boolean(id))}
+        />
+      )}
 
       <section id="features">
         <h2 className="guest-app__section-title mb-3">{t("home.sectionFeatures")}</h2>
@@ -172,6 +176,21 @@ export async function GuestAppHomeScreen({
           </ul>
         )}
       </section>
+
+      <GuestWeatherSection />
+
+      {loyalty ? (
+        <>
+          <GuestLoyaltyRemember reference={loyalty.reference} />
+          <GuestLoyaltyCard
+            snapshot={loyalty}
+            pensionName={pensionName}
+            showBookAgain={false}
+          />
+        </>
+      ) : null}
+
+      <GuestInstallHint />
     </div>
   );
 }

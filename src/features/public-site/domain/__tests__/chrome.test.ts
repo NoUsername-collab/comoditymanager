@@ -33,31 +33,47 @@ describe("publicChromeFontStack", () => {
 });
 
 describe("resolvePublicNavItems", () => {
-  const fallback = { home: "Home", privacy: "Privacy", terms: "Terms", book: "Book" };
+  const chrome = {
+    ...defaultPublicChrome(),
+    navHome: { en: "Home" },
+    navPrivacy: { en: "Privacy" },
+    navTerms: { en: "Terms" },
+    navBook: { en: "Book" },
+  };
 
   it("hides terms until enabled", () => {
     const items = resolvePublicNavItems(
       {
-        chrome: defaultPublicChrome(),
+        chrome,
         bookingEnabled: true,
         bookingNavPosition: "nav",
       } as PublicSiteConfig,
       "en",
-      fallback,
     );
     expect(items.map((item) => item.key)).toEqual(["home", "privacy", "book"]);
+  });
+
+  it("omits an item whose label is empty in this locale", () => {
+    const items = resolvePublicNavItems(
+      {
+        chrome: { ...chrome, navHome: { ro: "Stored" } },
+        bookingEnabled: true,
+        bookingNavPosition: "nav",
+      } as PublicSiteConfig,
+      "en",
+    );
+    expect(items.map((item) => item.key)).toEqual(["privacy", "book"]);
   });
 
   it("hides booking when the site is unpublished", () => {
     const items = resolvePublicNavItems(
       {
-        chrome: defaultPublicChrome(),
+        chrome,
         published: false,
         bookingEnabled: true,
         bookingNavPosition: "nav",
       } as PublicSiteConfig,
       "en",
-      fallback,
     );
     expect(items.map((item) => item.key)).not.toContain("book");
   });

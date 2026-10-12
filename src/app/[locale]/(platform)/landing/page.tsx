@@ -10,6 +10,19 @@ import {
 import { PLATFORM_CONTACT_EMAIL } from "@/lib/platform/branding";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
+const TOOLS = [
+  "gantt",
+  "stays",
+  "checkin",
+  "guestApp",
+  "availability",
+  "fiscal",
+  "buildings",
+  "publicSite",
+] as const;
+
+const TRUST = ["security", "multiTenant", "gdpr"] as const;
+
 export async function generateMetadata({
   params,
 }: {
@@ -37,12 +50,26 @@ export default async function LandingPage({
   ]);
 
   const demoHref = `mailto:${PLATFORM_CONTACT_EMAIL}?subject=${encodeURIComponent(t("demoEmailSubject"))}`;
+  const bookingLabels = {
+    checkIn: t("mockup.checkIn"),
+    nights: t("mockup.nights"),
+    roomsAvailable: t("mockup.roomsAvailable"),
+    month: t("mockup.monthShort"),
+    roomDouble: t("mockup.roomDouble"),
+    roomTwin: t("mockup.roomTwin"),
+    roomSuite: t("mockup.roomSuite"),
+    free: t("mockup.free"),
+    occupied: t("mockup.occupied"),
+    sendRequest: t("mockup.sendRequest"),
+    room: t("mockup.room"),
+  };
 
   return (
     <main className="lp">
       <section className="lp-hero lp-hero--desk" aria-labelledby="lp-hero-title">
         <div className="lp-hero__grid">
           <div className="lp-hero__copy">
+            <p className="lp-badge lp-badge--violet">{t("heroBadge")}</p>
             <h1 className="lp-hero__title" id="lp-hero-title">
               {t.rich("heroTitle", {
                 accent: (chunks) => (
@@ -65,57 +92,130 @@ export default async function LandingPage({
           </div>
 
           <div className="lp-hero__visual">
-            <LandingHeroShowcase title={t("mockup.calendarTitle")} />
+            <LandingHeroShowcase
+              labels={{
+                title: t("mockup.calendarTitle"),
+                confirmed: t("mockup.confirmed"),
+                request: t("mockup.request"),
+                hold: t("mockup.hold"),
+                stays: {
+                  ionescu: t("mockup.stayIonescu"),
+                  popa: t("mockup.stayPopa"),
+                  marin: t("mockup.stayMarin"),
+                  georgiev: t("mockup.stayGeorgiev"),
+                  dumitru: t("mockup.stayDumitru"),
+                  request: t("mockup.request"),
+                  hold: t("mockup.hold"),
+                },
+              }}
+            />
           </div>
         </div>
       </section>
 
+      <section className="lp-stats-wrap" aria-label={t("statsAria")}>
+        <ul className="lp-stats">
+          {([1, 2, 3, 4] as const).map((index) => (
+            <li key={index} className="lp-stats__item">
+              <span className="lp-stats__value">{t(`stat${index}Value`)}</span>
+              <span className="lp-stats__label">{t(`stat${index}Label`)}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <LandingFeatureBand
         align="copy-first"
-        title={t("shiftTitle")}
-        description={t("shiftDesc")}
+        eyebrow={t("featGanttEyebrow")}
+        title={t("featGanttTitle")}
+        description={t("featGanttDesc")}
+        items={[t("featGanttL1"), t("featGanttL2"), t("featGanttL3"), t("featGanttL4")]}
       />
 
-      <section className="lp-desk-stations" aria-label={t("stationsAria")}>
-        <article className="lp-desk-station">
-          <h3 className="lp-desk-station__title">{t("stationSiteTitle")}</h3>
-          <p className="lp-desk-station__desc">{t("stationSiteDesc")}</p>
-          <BookingFormMockup
-            labels={{
-              checkIn: t("mockup.checkIn"),
-              nights: t("mockup.nights"),
-              roomsAvailable: t("mockup.roomsAvailable"),
-              month: t("mockup.monthShort"),
-              roomDouble: t("mockup.roomDouble"),
-              roomTwin: t("mockup.roomTwin"),
-              roomSuite: t("mockup.roomSuite"),
-              free: t("mockup.free"),
-              occupied: t("mockup.occupied"),
-              sendRequest: t("mockup.sendRequest"),
-              room: t("mockup.room"),
-            }}
-          />
-        </article>
-        <article className="lp-desk-station">
-          <h3 className="lp-desk-station__title">{t("stationGuestTitle")}</h3>
-          <p className="lp-desk-station__desc">{t("stationGuestDesc")}</p>
-          <GuestAppMockup
-            labels={{
-              welcome: t("mockup.welcome"),
-              guestName: t("mockup.guestName"),
-              stay: t("mockup.stay"),
-              wifi: t("mockup.wifi"),
-              facilities: t("mockup.facilities"),
-              breakfast: t("mockup.breakfast"),
-              localGuide: t("mockup.localGuide"),
-              onlineCheckin: t("mockup.onlineCheckin"),
-              onlineCheckinHint: t("mockup.onlineCheckinHint"),
-              wifiNetwork: t("mockup.wifiNetwork"),
-              wifiName: t("mockup.wifiName"),
-              wifiPassword: t("mockup.wifiPassword"),
-            }}
-          />
-        </article>
+      <LandingFeatureBand
+        align="copy-first"
+        eyebrow={t("featSiteEyebrow")}
+        title={t("featSiteTitle")}
+        description={t("featSiteDesc")}
+        items={[t("featSiteL1"), t("featSiteL2"), t("featSiteL3"), t("featSiteL4")]}
+      >
+        <BookingFormMockup labels={bookingLabels} />
+      </LandingFeatureBand>
+
+      <LandingFeatureBand
+        align="visual-first"
+        eyebrow={t("featGuestEyebrow")}
+        title={t("featGuestTitle")}
+        description={t("featGuestDesc")}
+        items={[t("featGuestL1"), t("featGuestL2"), t("featGuestL3"), t("featGuestL4")]}
+      >
+        <GuestAppMockup
+          labels={{
+            welcome: t("mockup.welcome"),
+            guestName: t("mockup.guestName"),
+            stay: t("mockup.stay"),
+            wifi: t("mockup.wifi"),
+            facilities: t("mockup.facilities"),
+            breakfast: t("mockup.breakfast"),
+            localGuide: t("mockup.localGuide"),
+            onlineCheckin: t("mockup.onlineCheckin"),
+            onlineCheckinHint: t("mockup.onlineCheckinHint"),
+            wifiNetwork: t("mockup.wifiNetwork"),
+            wifiName: t("mockup.wifiName"),
+            wifiPassword: t("mockup.wifiPassword"),
+          }}
+        />
+      </LandingFeatureBand>
+
+      <section className="lp-block" id="instrumente" aria-labelledby="lp-tools-title">
+        <h2 className="lp-section-title" id="lp-tools-title">
+          {t("toolsTitle")}
+        </h2>
+        <p className="lp-section-lead">{t("toolsLead")}</p>
+        <ul className="lp-tool-grid" aria-label={t("toolsAria")}>
+          {TOOLS.map((key) => (
+            <li key={key} className="lp-tool">
+              <h3 className="lp-tool__title">{t(`tools.${key}.title`)}</h3>
+              <p className="lp-tool__desc">{t(`tools.${key}.desc`)}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="lp-block lp-block--alt" aria-labelledby="lp-how-title">
+        <h2 className="lp-section-title" id="lp-how-title">
+          {t("howTitle")}
+        </h2>
+        <p className="lp-section-lead">{t("howLead")}</p>
+        <ol className="lp-steps">
+          {([1, 2, 3] as const).map((step) => (
+            <li key={step} className="lp-steps__item">
+              <span className="lp-steps__index">{step}</span>
+              <h3 className="lp-steps__title">{t(`step${step}Title`)}</h3>
+              <p className="lp-steps__desc">{t(`step${step}Desc`)}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="lp-block" aria-labelledby="lp-trust-title">
+        <h2 className="lp-section-title" id="lp-trust-title">
+          {t("trustSectionTitle")}
+        </h2>
+        <p className="lp-section-lead">{t("trustSectionLead")}</p>
+        <ul className="lp-trust-grid">
+          {TRUST.map((key) => (
+            <li key={key} className="lp-trust">
+              <h3 className="lp-trust__title">{t(`trustCards.${key}.title`)}</h3>
+              <p className="lp-trust__desc">{t(`trustCards.${key}.desc`)}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="lp-legal-line">
+          {t("trustLegalPrefix")}{" "}
+          <Link href="/confidentialitate">{t("trustLegalLink")}</Link>
+          {t("trustLegalSuffix")}
+        </p>
       </section>
 
       <section
@@ -135,12 +235,6 @@ export default async function LandingPage({
           </Link>
         </div>
       </section>
-
-      <p className="lp-legal-line">
-        {t("trustLegalPrefix")}{" "}
-        <Link href="/confidentialitate">{t("trustLegalLink")}</Link>
-        {t("trustLegalSuffix")}
-      </p>
 
       <section className="lp-faq-section" aria-labelledby="lp-faq-title">
         <h2 className="lp-section-title" id="lp-faq-title">

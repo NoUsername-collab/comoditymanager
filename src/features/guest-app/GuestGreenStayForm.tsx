@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { submitGuestGreenStayAction } from "@/features/guest-app/actions/stay";
 import { addDays } from "@/lib/stay-dates";
 import { useGuestAppToast } from "@/features/guest-app/GuestAppToast";
@@ -10,22 +10,41 @@ type Props = {
   accessCode: string;
   description?: string;
   today: string;
+  checkIn: string;
+  checkOut: string;
   pendingDates: string[];
 };
+
+function formatGuestDate(iso: string, locale: string): string {
+  const [year, month, day] = iso.split("-").map(Number);
+  if (!year || !month || !day) return iso;
+  return new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "long",
+  }).format(new Date(year, month - 1, day));
+}
 
 export function GuestGreenStayForm({
   accessCode,
   description,
   today,
+  checkIn,
+  checkOut,
   pendingDates,
 }: Props) {
   const t = useTranslations("guestApp.greenStay");
+  const locale = useLocale();
   const { showToast } = useGuestAppToast();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const lastNight = addDays(checkOut, -1);
+  const earliest = today > checkIn ? today : checkIn;
+  const canRequest = earliest <= lastNight;
   const defaultDate = addDays(today, 1);
-  const [skipDate, setSkipDate] = useState(defaultDate);
+  const initialDate =
+    defaultDate >= earliest && defaultDate <= lastNight ? defaultDate : earliest;
+  const [skipDate, setSkipDate] = useState(initialDate);
   const [note, setNote] = useState("");
 
   if (done) {
@@ -62,39 +81,43 @@ export function GuestGreenStayForm({
           <p className="font-semibold">{t("pendingTitle")}</p>
           <ul className="mt-2 list-disc pl-5">
             {pendingDates.map((date) => (
-              <li key={date}>{date}</li>
+              <li key={date}>{formatGuestDate(date, locale)}</li>
             ))}
           </ul>
         </div>
       ) : null}
 
-      <label className="guest-app__field">
-        <span className="guest-app__field__label">{t("skipDate")}</span>
-        <input
-          className="guest-app__field__input"
-          type="date"
-          required
-          min={today}
-          value={skipDate}
-          onChange={(e) => setSkipDate(e.target.value)}
-        />
-      </label>
-
-      <label className="guest-app__field">
-        <span className="guest-app__field__label">{t("note")}</span>
-        <textarea
-          className="guest-app__field__input"
-          rows={2}
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-        />
-      </label>
-
-      {error ? <p className="guest-app__form-error">{error}</p> : null}
-
-      <button type="submit" className="guest-app__btn-primary" disabled={pending}>
-        {pending ? t("submitting") : t("submit")}
-      </button>
+      {canRequest ? (
+        <>
+          <label className="guest-app__field">
+            <span className="guest-app__field__label">{t("skipDate")}</span>
+            <input
+              className="guest-app__field__input"
+              type="date"
+              required
+              min={earliest}
+              max={lastNight}
+              value={skipDate}
+              onChange={(e) => setSkipDate(e.target.value)}
+            />
+          </label>
+          <label className="guest-app__field">
+            <span className="guest-app__field__label">{t("note")}</span>
+            <textarea
+              className="guest-app__field__input"
+              rows={2}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+          </label>
+          {error ? <p className="guest-app__form-error">{error}</p> : null}
+          <button type="submit" className="guest-app__btn-primary" disabled={pending}>
+            {pending ? t("submitting") : t("submit")}
+          </button>
+        </>
+      ) : (
+        <p className="guest-app__subtle text-sm">{t("outsideStay")}</p>
+      )}
     </form>
   );
 }

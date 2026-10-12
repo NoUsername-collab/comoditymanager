@@ -1,14 +1,22 @@
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
-import { pickLocalized } from "@/features/public-site/domain/localized";
+import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import { safeNavHref } from "@/lib/security/html-escape";
 import type {
+  LocalizedText,
   PublicBenefitItem,
   PublicGalleryItem,
   PublicSiteSection,
   PublicStepItem,
 } from "@/features/public-site/domain/types";
 import { PublicBenefitIcon } from "@/features/public-site/ui/PublicBenefitIcon";
+
+function copy(
+  value: LocalizedText | string | null | undefined,
+  locale: string,
+): string {
+  return pickOwnLocalized(value, locale);
+}
 
 function SectionShell({
   id,
@@ -29,15 +37,17 @@ function SectionShell({
 export function renderPublicSection(
   section: PublicSiteSection,
   locale: string,
-  template: "classic" | "editorial" | "immersive"
+  template: "classic" | "editorial" | "immersive",
 ) {
   if (!section.visible) return null;
 
-  const title = pickLocalized(section.payload.title, locale);
-  const lead = pickLocalized(section.payload.lead, locale);
+  const title = copy(section.payload.title, locale);
+  const lead = copy(section.payload.lead, locale);
+  const body = copy(section.payload.body, locale);
 
   switch (section.sectionType) {
     case "intro":
+      if (!title && !lead && !body) return null;
       return (
         <SectionShell
           id="public-intro"
@@ -50,29 +60,35 @@ export function renderPublicSection(
         >
           {title ? <h2 className="pub-section__title">{title}</h2> : null}
           {lead ? <p className="pub-section__lead">{lead}</p> : null}
-          {section.payload.body ? (
-            <div className="pub-section__body">
-              {pickLocalized(section.payload.body, locale)}
-            </div>
-          ) : null}
+          {body ? <div className="pub-section__body">{body}</div> : null}
         </SectionShell>
       );
 
     case "benefits": {
-      const items = (section.payload.items ?? []) as PublicBenefitItem[];
+      const items = ((section.payload.items ?? []) as PublicBenefitItem[])
+        .map((item, index) => ({
+          key: `${item.icon ?? "benefit"}-${index}`,
+          icon: item.icon,
+          title: copy(item.title, locale),
+          text: copy(item.text, locale),
+        }))
+        .filter((item) => item.title || item.text);
+      if (!title && !lead && items.length === 0) return null;
       return (
         <SectionShell className="pub-section--benefits">
           {title ? <h2 className="pub-section__title">{title}</h2> : null}
           {lead ? <p className="pub-section__lead">{lead}</p> : null}
-          <div className={`pub-benefits pub-benefits--${template}`}>
-            {items.map((item, index) => (
-              <article key={`${pickLocalized(item.title, locale)}-${index}`} className="pub-benefit">
-                <PublicBenefitIcon icon={item.icon} />
-                <h3 className="pub-benefit__title">{pickLocalized(item.title, locale)}</h3>
-                <p className="pub-benefit__text">{pickLocalized(item.text, locale)}</p>
-              </article>
-            ))}
-          </div>
+          {items.length > 0 ? (
+            <div className={`pub-benefits pub-benefits--${template}`}>
+              {items.map((item) => (
+                <article key={item.key} className="pub-benefit">
+                  <PublicBenefitIcon icon={item.icon} />
+                  {item.title ? <h3 className="pub-benefit__title">{item.title}</h3> : null}
+                  {item.text ? <p className="pub-benefit__text">{item.text}</p> : null}
+                </article>
+              ))}
+            </div>
+          ) : null}
         </SectionShell>
       );
     }
@@ -92,76 +108,86 @@ export function renderPublicSection(
           {title ? <h2 className="pub-section__title">{title}</h2> : null}
           {lead ? <p className="pub-section__lead">{lead}</p> : null}
           <div className={`pub-gallery pub-gallery--${template}`}>
-            {items.map((item) => (
-              <figure key={item.id} className="pub-gallery__item">
-                <Image
-                  src={item.url}
-                  alt={pickLocalized(item.caption, locale, [item.category ?? ""])}
-                  width={800}
-                  height={600}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="pub-gallery__img"
-                  loading="lazy"
-                />
-                {pickLocalized(item.caption, locale) ? (
-                  <figcaption>{pickLocalized(item.caption, locale)}</figcaption>
-                ) : null}
-              </figure>
-            ))}
+            {items.map((item) => {
+              const caption = copy(item.caption, locale);
+              return (
+                <figure key={item.id} className="pub-gallery__item">
+                  <Image
+                    src={item.url}
+                    alt={caption}
+                    width={800}
+                    height={600}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="pub-gallery__img"
+                    loading="lazy"
+                  />
+                  {caption ? <figcaption>{caption}</figcaption> : null}
+                </figure>
+              );
+            })}
           </div>
         </SectionShell>
       );
     }
 
     case "steps": {
-      const items = (section.payload.items ?? []) as PublicStepItem[];
+      const items = ((section.payload.items ?? []) as PublicStepItem[])
+        .map((item, index) => ({
+          key: `step-${index}`,
+          title: copy(item.title, locale),
+          text: copy(item.text, locale),
+        }))
+        .filter((item) => item.title || item.text);
+      if (!title && !lead && items.length === 0) return null;
       return (
         <SectionShell id="cum-functioneaza" className="pub-section--steps">
           {title ? <h2 className="pub-section__title">{title}</h2> : null}
           {lead ? <p className="pub-section__lead">{lead}</p> : null}
-          <div className={`pub-steps pub-steps--${template}`}>
-            {items.map((item, index) => (
-              <article key={`${pickLocalized(item.title, locale)}-${index}`} className="pub-step">
-                <span className="pub-step__num">{index + 1}</span>
-                <h3 className="pub-step__title">{pickLocalized(item.title, locale)}</h3>
-                <p className="pub-step__text">{pickLocalized(item.text, locale)}</p>
-              </article>
-            ))}
-          </div>
+          {items.length > 0 ? (
+            <div className={`pub-steps pub-steps--${template}`}>
+              {items.map((item, index) => (
+                <article key={item.key} className="pub-step">
+                  <span className="pub-step__num">{index + 1}</span>
+                  {item.title ? <h3 className="pub-step__title">{item.title}</h3> : null}
+                  {item.text ? <p className="pub-step__text">{item.text}</p> : null}
+                </article>
+              ))}
+            </div>
+          ) : null}
         </SectionShell>
       );
     }
 
     case "text":
+      if (!title && !lead && !body) return null;
       return (
         <SectionShell className="pub-section--text">
           {title ? <h2 className="pub-section__title">{title}</h2> : null}
           {lead ? <p className="pub-section__lead">{lead}</p> : null}
-          {section.payload.body ? (
-            <div className="pub-section__body">
-              {pickLocalized(section.payload.body, locale)}
-            </div>
-          ) : null}
+          {body ? <div className="pub-section__body">{body}</div> : null}
         </SectionShell>
       );
 
-    case "cta":
+    case "cta": {
+      const label = copy(section.payload.ctaLabel, locale);
+      if (!title && !lead && !label) return null;
       return (
         <SectionShell className="pub-section--cta">
           <div className="pub-cta-band">
             {title ? <h2 className="pub-cta-band__title">{title}</h2> : null}
             {lead ? <p className="pub-cta-band__text">{lead}</p> : null}
-            {section.payload.ctaLabel ? (
+            {label ? (
               <Link
                 href={safeNavHref(section.payload.ctaHref, "/calendar")}
                 className="pub-btn pub-btn--primary"
               >
-                {pickLocalized(section.payload.ctaLabel, locale)}
+                {label}
               </Link>
             ) : null}
           </div>
         </SectionShell>
       );
+    }
 
     default:
       return null;

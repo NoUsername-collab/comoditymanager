@@ -4,23 +4,21 @@ import { GuestBookingFormLazy } from "@/features/public-site/ui/GuestBookingForm
 import { PublicBookingNotice } from "@/features/public-site/ui/PublicBookingNotice";
 import { PublicUnpublishedPage } from "@/features/public-site/ui/PublicUnpublishedPage";
 import { buildBookingNoticePresetCopy } from "@/features/public-site/ui/booking-notice-copy";
-import { pickLocalized } from "@/features/public-site/domain/localized";
+import { pickOwnLocalized, storedTitle } from "@/features/public-site/domain/localized";
 import { loadPublicCalendarPage, loadPublicSiteConfig } from "@/features/public-site/loaders";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getLocale, getTranslations } from "next-intl/server";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [config, locale, t] = await Promise.all([
-    loadPublicSiteConfig(),
-    getLocale(),
-    getTranslations("public.calendar"),
-  ]);
-  const title = pickLocalized(config.pages.seoCalendarTitle, locale, [
-    pickLocalized(config.pages.calendarTitle, locale, [config.displayName]),
-  ]);
-  const description = pickLocalized(config.pages.seoCalendarDescription, locale, [
-    pickLocalized(config.pages.calendarLead, locale, [t("lead")]),
-  ]);
+  const [config, locale] = await Promise.all([loadPublicSiteConfig(), getLocale()]);
+  const title = storedTitle(
+    config.pages.seoCalendarTitle,
+    locale,
+    storedTitle(config.pages.calendarTitle, locale, config.displayName),
+  );
+  const description =
+    pickOwnLocalized(config.pages.seoCalendarDescription, locale) ||
+    pickOwnLocalized(config.pages.calendarLead, locale);
   const image = config.pages.ogImageUrl || config.hero.imageUrl || null;
   return {
     title,
@@ -63,8 +61,8 @@ export default async function CalendarPublicPage() {
 
   const checkInTime = config.checkInTime;
   const checkOutTime = config.checkOutTime;
-  const title = pickLocalized(config.pages.calendarTitle, locale, [config.displayName]);
-  const lead = pickLocalized(config.pages.calendarLead, locale, [t("lead")]);
+  const title = storedTitle(config.pages.calendarTitle, locale, config.displayName);
+  const lead = pickOwnLocalized(config.pages.calendarLead, locale);
 
   return (
     <main className="pub-booking-page ml-content">
@@ -74,7 +72,7 @@ export default async function CalendarPublicPage() {
       <header className="pub-booking-page__head">
         <p className="pub-booking-page__eyebrow">{t("eyebrow")}</p>
         <h1 className="pub-booking-page__title">{title}</h1>
-        <p className="pub-booking-page__lead">{lead}</p>
+        {lead ? <p className="pub-booking-page__lead">{lead}</p> : null}
       </header>
 
       <div className="pub-booking-layout">
@@ -83,8 +81,6 @@ export default async function CalendarPublicPage() {
           locale={locale}
           checkInTime={checkInTime}
           checkOutTime={checkOutTime}
-          fallbackTitle={t("asideTitle")}
-          fallbackFooter={t("surplusNote")}
           presets={buildBookingNoticePresetCopy(t)}
         />
 

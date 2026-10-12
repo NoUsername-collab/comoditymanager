@@ -10,10 +10,12 @@ import {
   getClientIp,
   RATE_LIMIT_GUEST_STAY_ACTION,
 } from "@/lib/rate-limit";
+import { GUEST_RECEPTION_REQUEST_LIMIT } from "@/domain/guest-app/reception-request";
 import {
   guestFeedbackInputSchema,
   guestGreenStayInputSchema,
   guestPrecheckinInputSchema,
+  guestReceptionRequestInputSchema,
 } from "@/domain/guest-app/stay-action-schemas";
 
 export type GuestStayActionResult =
@@ -157,6 +159,61 @@ export async function submitGuestGreenStayAction(input: {
 
     revalidatePath(`/stay/${gate.session.accessCode}`);
     revalidatePath(`/stay/${gate.session.accessCode}/green-stay`);
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "generic" };
+  }
+}
+
+export async function submitGuestReceptionRequestAction(input: {
+  accessCode: string;
+  message: string;
+}): Promise<GuestStayActionResult> {
+  const rateLimited = await assertGuestStayActionRateLimit();
+  if (rateLimited) return rateLimited;
+
+  const parsed = guestReceptionRequestInputSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "validation" };
+
+  const gate = await withGuestSession(parsed.data.accessCode);
+  if (!gate.ok) return { ok: false, error: gate.error };
+
+  try {
+    const { tenantId, supabase } = await getGuestAppPublicDb();
+    const { count, error: countError } = await supabase
+      .from("guest_reception_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("tenant_id", tenantId)
+      .eq("booking_id", gate.session.booking.id);
+
+    if (countError) {
+      if (countError.message.includes("guest_reception_requests")) {
+        return { ok: false, error: "migration" };
+      }
+      return { ok: false, error: "generic" };
+    }
+    if ((count ?? 0) >= GUEST_RECEPTION_REQUEST_LIMIT) {
+      return { ok: false, error: "tooMany" };
+    }
+
+    const { error } = await supabase.from("guest_reception_requests").insert(
+      withTenantId(tenantId, {
+        booking_id: gate.session.booking.id,
+        message: parsed.data.message,
+        status: "pending",
+      }),
+    );
+
+    if (error) {
+      if (error.message.includes("guest_reception_requests")) {
+        return { ok: false, error: "migration" };
+      }
+      return { ok: false, error: "generic" };
+    }
+
+    revalidatePath(`/stay/${gate.session.accessCode}`);
+    revalidatePath(`/stay/${gate.session.accessCode}/services`);
+    revalidatePath(`/admin/bookings/${gate.session.booking.id}`);
     return { ok: true };
   } catch {
     return { ok: false, error: "generic" };

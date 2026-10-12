@@ -78,9 +78,11 @@ export function GuestAppHeader({
           <p className="guest-app__eyebrow truncate text-xs uppercase tracking-widest">
             {eyebrow ?? t("eyebrow")}
           </p>
-          <p className="truncate font-semibold">
-            {featureTitle ?? pensionName}
-          </p>
+          {featureTitle ? (
+            <h1 className="guest-app__header-title truncate font-semibold">{featureTitle}</h1>
+          ) : (
+            <p className="truncate font-semibold">{pensionName}</p>
+          )}
         </div>
 
         <div className="guest-app__locale shrink-0">

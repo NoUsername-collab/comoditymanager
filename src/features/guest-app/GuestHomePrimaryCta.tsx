@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import type { GuestAppFeatureDef } from "@/domain/guest-app/types";
 import { guestAppFeatureHref } from "@/domain/guest-app/routes";
 import {
+  isGuestDepartureDay,
   resolveGuestStayPhase,
 } from "@/domain/guest-app/stay-milestone";
 
@@ -31,6 +32,15 @@ export async function GuestHomePrimaryCta({
 }: Props) {
   const t = await getTranslations("guestApp.home");
   const phase = resolveGuestStayPhase({ today, checkIn, checkOut, checkedInAt });
+  const departure = isGuestDepartureDay({ today, checkOut, checkedInAt });
+
+  if (departure) {
+    return (
+      <a href="#departure" className="guest-app__primary-cta">
+        {t("ctaCheckoutInfo")}
+      </a>
+    );
+  }
 
   let href: string | null = null;
   let label: string | null = null;

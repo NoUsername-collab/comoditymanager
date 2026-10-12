@@ -72,7 +72,7 @@
         "services": "Servicii",
         "travel_tips": "Sfaturi",
         "green_stay": "Opțiune verde",
-        "online_payment": "Plată online"
+        "online_payment": "Situație plată"
       }
     },
     "nav": {
@@ -81,7 +81,7 @@
       "wifi": "Wi-Fi",
       "hotel_info": "Info",
       "online_checkin": "Check-in",
-      "travel_tips": "Tips"
+      "travel_tips": "Sfaturi"
     },
     "home": {
       "welcome": "Bun venit",
@@ -97,7 +97,15 @@
       "ctaCheckinToday": "Check-in astăzi",
       "ctaConnectWifi": "Conectează-te la Wi-Fi",
       "ctaSeeTips": "Vezi recomandări locale",
-      "ctaCheckoutInfo": "Informații check-out",
+      "ctaCheckoutInfo": "Detalii de plecare",
+      "checkInFrom": "Check-in de la {time}",
+      "checkOutBy": "Check-out până la {time}",
+      "departureTitle": "Plecare astăzi",
+      "departureUntil": "Eliberezi camera până la {time}.",
+      "departureAskReception": "Ora de check-out o confirmă recepția.",
+      "departurePaid": "Sejurul este achitat.",
+      "departureBalance": "Rest de plată: {amount}. Se achită la recepție.",
+      "seePayment": "Vezi situația plății",
       "shareStay": "Salvează linkul sejurului",
       "shareSuccess": "Link trimis",
       "linkCopied": "Link copiat",
@@ -119,10 +127,10 @@
       "online_checkin": "Completează datele înainte de sosire",
       "wifi": "Rețea și parolă — copiere rapidă",
       "facilities": "Spații comune și dotări",
-      "services": "Servicii disponibile în timpul sejurului",
+      "services": "Mesaj scurt către recepție, plus lista de servicii",
       "travel_tips": "Recomandări din zonă",
       "green_stay": "Opțiuni sustenabile pentru sejur",
-      "online_payment": "Plăți rapide și sigure"
+      "online_payment": "Total, achitat și restul de plată"
     },
     "contact": {
       "call": "Sună",
@@ -140,11 +148,11 @@
     },
     "install": {
       "title": "Salvează aplicația pe ecranul principal",
-      "iosSteps": "În Safari: Share → Add to Home Screen pentru acces rapid la sejur.",
-      "androidSteps": "În Chrome: Meniu ⋮ → Add to Home screen pentru acces rapid.",
+      "iosSteps": "În Safari: Partajare → Adaugă la ecranul principal, ca să deschizi sejurul dintr-o atingere.",
+      "androidSteps": "În Chrome: meniul ⋮ → Adaugă la ecranul principal, ca să deschizi sejurul dintr-o atingere.",
       "loyaltyTitle": "Salvează cardul de oaspete",
-      "loyaltyIosSteps": "În Safari: Share → Add to Home Screen. Referința rămâne pe telefon — fără cont.",
-      "loyaltyAndroidSteps": "În Chrome: Meniu ⋮ → Add to Home screen. Referința rămâne pe telefon — fără cont.",
+      "loyaltyIosSteps": "În Safari: Partajare → Adaugă la ecranul principal. Referința rămâne pe telefon — fără cont.",
+      "loyaltyAndroidSteps": "În Chrome: meniul ⋮ → Adaugă la ecranul principal. Referința rămâne pe telefon — fără cont.",
       "dismiss": "Am înțeles"
     },
     "loyalty": {
@@ -189,7 +197,7 @@
       "services": "Servicii",
       "travel_tips": "Sfaturi & recomandări",
       "green_stay": "Opțiune verde",
-      "online_payment": "Plată online"
+      "online_payment": "Situație plată"
     },
     "badges": {
       "demo": "În curând"
@@ -203,7 +211,7 @@
       "failedLive": "Nu s-a putut copia. Încearcă din nou."
     },
     "access": {
-      "eyebrow": "Guest app",
+      "eyebrow": "Sejurul tău",
       "deniedTitle": "Acces indisponibil",
       "scheduled": {
         "beforeTitle": "Linkul se activează în curând",
@@ -211,22 +219,22 @@
         "beforeBody": "Aplicația devine disponibilă din {date}.",
         "afterBody": "Accesul a fost activ până pe {date}.",
         "stayPeriod": "Sejur:",
-        "beforeHint": "Reveniți după {date} sau contactați recepția.",
-        "afterHint": "Pentru întrebări sau o nouă rezervare, contactați recepția."
+        "beforeHint": "Revino după {date} sau sună recepția.",
+        "afterHint": "Pentru întrebări sau o rezervare nouă, sună recepția."
       },
       "callReception": "Sună recepția",
       "errors": {
-        "generic": "Nu puteți accesa această pagină.",
+        "generic": "Nu poți accesa această pagină.",
         "serviceUnavailable": "Serviciul nu este disponibil momentan. Reîncercați mai târziu.",
-        "disabled": "Aplicația pentru oaspeți este dezactivată. Contactați recepția.",
+        "disabled": "Aplicația pentru oaspeți este dezactivată. Sună recepția.",
         "notFound": "Cod invalid sau inexistent.",
-        "notFoundHint": "Dacă ați primit un link nou, deschideți-l pe cel actual. Altfel cereți recepției un link actualizat.",
+        "notFoundHint": "Dacă ai primit un link nou, deschide-l pe cel actual. Altfel cere recepției un link actualizat.",
         "wrongHost": "Linkul trebuie deschis de pe adresa pensiunii. Cere recepției linkul actualizat.",
-        "wrongHostHint": "Deschideți linkul de pe site-ul pensiunii (ex. pensiunea.ro/stay/…).",
+        "wrongHostHint": "Deschide linkul de pe site-ul pensiunii (ex. pensiunea.ro/stay/…).",
         "revoked": "Accesul a fost revocat.",
-        "revokedHint": "Linkul nu mai este valid — cereți recepției un link nou pentru sejur.",
+        "revokedHint": "Linkul nu mai este valid — cere recepției un link nou pentru sejur.",
         "notConfirmed": "Rezervarea nu este confirmată.",
-        "contactReception": "Contactați recepția pentru ajutor."
+        "contactReception": "Sună recepția dacă ai nevoie de ajutor."
       }
     },
     "feature": {
@@ -235,6 +243,7 @@
       "phone": "Telefon",
       "email": "Email",
       "website": "Web",
+      "servicesNote": "Lista de mai jos e informativă. Mesajul de sus ajunge pe fișa sejurului.",
       "wifiNetwork": "Rețea Wi-Fi",
       "wifiPassword": "Parolă Wi-Fi",
       "checkinBody": "Check-in online pentru {name} — formular demo. La recepție veți completa datele oficiale.",
@@ -247,11 +256,11 @@
       "callReception": "Sună recepția",
       "hotel": {
         "title": "Informații indisponibile",
-        "description": "Detaliile despre unitate nu sunt încă publicate. Contactați recepția."
+        "description": "Detaliile despre unitate nu sunt încă publicate. Sună recepția."
       },
       "wifi": {
         "title": "Wi-Fi neconfigurat",
-        "description": "Datele de conectare nu sunt disponibile online. Întrebați la recepție."
+        "description": "Datele de conectare nu sunt disponibile online. Întreabă la recepție."
       },
       "tips": {
         "title": "Niciun sfat încă",
@@ -262,8 +271,8 @@
         "description": "Fotografiile unității vor fi disponibile în curând."
       },
       "payment": {
-        "title": "Plată online indisponibilă",
-        "description": "Plata se face momentan la recepție sau prin link separat."
+        "title": "Situație de plată indisponibilă",
+        "description": "Plata se face la recepție. Întreabă acolo restul de plată."
       },
       "facilities": {
         "title": "Facilități neconfigurate",
@@ -271,11 +280,11 @@
       },
       "services": {
         "title": "Servicii neconfigurate",
-        "description": "Serviciile disponibile vor apărea aici când sunt completate."
+        "description": "Poți trimite un mesaj și fără o listă de servicii."
       },
       "features": {
         "title": "Nicio funcție activă",
-        "description": "Recepția vă poate ajuta cu informații despre sejur. Sunați sau vizitați recepția."
+        "description": "Recepția te poate ajuta cu informații despre sejur. Sună sau treci pe la recepție."
       }
     },
     "precheckin": {
@@ -284,8 +293,11 @@
       "lastName": "Nume",
       "firstName": "Prenume",
       "phone": "Telefon",
-      "email": "Email",
+      "email": "Email (opțional)",
       "nationalId": "CNP / cod personal",
+      "nationalIdHint": "Opțional. Recepția îl folosește pentru fișa de cazare și nu îl publică.",
+      "nationalIdSent": "Trimis către recepție",
+      "summaryName": "Nume",
       "birthDate": "Data nașterii",
       "nationality": "Cetățenie",
       "documentType": "Tip act",
@@ -301,18 +313,18 @@
       "manualOrDivider": "sau completează manual",
       "manualTitle": "Date personale",
       "successTitle": "Date trimise",
-      "successBody": "Recepția a primit informațiile. La sosire veți finaliza check-in-ul.",
+      "successBody": "Recepția a primit informațiile. La sosire finalizezi check-in-ul.",
       "errors": {
         "nameRequired": "Numele și prenumele sunt obligatorii.",
         "phoneRequired": "Telefonul este obligatoriu.",
-        "migration": "Funcția nu este disponibilă pe acest mediu — contactați pensiunea.",
-        "generic": "Nu s-a putut trimite. Încercați din nou."
+        "migration": "Funcția nu este disponibilă pe acest mediu — sună pensiunea.",
+        "generic": "Nu s-a putut trimite. Încearcă din nou."
       },
       "mrz": {
-        "scanButton": "Scanează MRZ",
+        "scanButton": "Scanează documentul",
         "leadShort": "Scanează pașaportul sau CI-ul electronic — sau completează câmpurile de mai jos.",
-        "appliedToast": "Date MRZ aplicate — verifică și corectează dacă e nevoie.",
-        "title": "Citire MRZ (pașaport / CI)",
+        "appliedToast": "Datele din document au fost aplicate — verifică și corectează dacă e nevoie.",
+        "title": "Citește pașaportul sau CI-ul",
         "close": "Închide",
         "loading": "Se pornește scanerul…",
         "intro": "Poziționează zona MRZ (cele 2–3 rânduri de jos de pe spatele documentului) sau lipește textul manual.",
@@ -363,27 +375,47 @@
       "paid": "Achitat",
       "balance": "Rest de plată",
       "statusPaid": "Rezervarea este achitată integral.",
-      "statusPartial": "Există un avans înregistrat — restul se plătește la recepție.",
-      "statusUnpaid": "Plata se face la recepție sau prin link trimis de pensiune.",
-      "receptionNote": "Plata online directă din app va fi disponibilă într-o versiune viitoare."
+      "statusPartial": "E înregistrat un avans. Restul se achită la recepție.",
+      "statusUnpaid": "Nu e înregistrată o plată. Restul se achită la recepție.",
+      "callToPay": "Sună recepția pentru plată",
+      "receptionNote": "Restul se achită la recepție."
+    },
+    "receptionRequest": {
+      "title": "Scrie recepției",
+      "lead": "Un mesaj scurt. Recepția îl vede pe fișa sejurului.",
+      "message": "Mesaj",
+      "placeholder": "Prosoape, parcare, ora de plecare…",
+      "submit": "Trimite mesajul",
+      "submitting": "Se trimite…",
+      "sentToast": "Mesaj trimis recepției",
+      "pending": "Trimis",
+      "seen": "Văzut de recepție",
+      "errors": {
+        "validation": "Scrie cel puțin două caractere.",
+        "tooMany": "Ai trimis deja suficiente mesaje. Sună recepția pentru ceva urgent.",
+        "migration": "Mesajele nu sunt disponibile pe acest mediu.",
+        "rateLimited": "Prea multe încercări. Așteaptă puțin și încearcă din nou.",
+        "generic": "Nu s-a putut trimite. Încearcă din nou."
+      }
     },
     "greenStay": {
       "success": "Cererea a fost înregistrată. Recepția o va confirma.",
       "skipDate": "Zi fără curățenie",
       "note": "Mențiuni (opțional)",
       "pendingTitle": "Cereri în așteptare",
+      "outsideStay": "Nu mai e o noapte în sejur pentru care să renunți la curățenie.",
       "submit": "Trimite cererea",
       "submitting": "Se trimite…",
       "errors": {
         "disabled": "Opțiunea verde nu este activă.",
-        "dateRequired": "Selectați data.",
+        "dateRequired": "Alege data.",
         "migration": "Funcția nu este disponibilă pe acest mediu.",
-        "generic": "Nu s-a putut trimite. Încercați din nou."
+        "generic": "Nu s-a putut trimite. Încearcă din nou."
       }
     },
     "error": {
       "title": "Ceva nu a mers bine",
-      "body": "Pagina guest app nu s-a putut încărca. Verificați linkul primit de la pensiune sau contactați recepția.",
+      "body": "Pagina nu s-a putut încărca. Verifică linkul primit de la pensiune sau sună recepția.",
       "retry": "Reîncearcă",
       "code": "Cod: {digest}"
     },
@@ -415,16 +447,16 @@
       "prepareCheckinDesc": "Completează datele înainte de sosire",
       "discoverPlace": "Descoperă locația",
       "discoverPlaceDesc": "Informații utile despre unitate",
-      "payNow": "Plătește acum",
-      "payNowDesc": "Finalizează plata sejurului",
-      "checkoutTomorrow": "Check-out mâine",
-      "checkoutTomorrowDesc": "Pregătește plecarea — ore, parcare, plată",
-      "checkoutInfo": "Info check-out",
-      "checkoutInfoDesc": "Detalii pentru plecare",
+      "payNow": "Vezi situația plății",
+      "payNowDesc": "Total, achitat și restul de plată la recepție",
+      "checkoutTomorrow": "Plecare mâine",
+      "checkoutTomorrowDesc": "Ora de check-out",
+      "checkoutInfo": "Plecare astăzi",
+      "checkoutInfoDesc": "Ora de check-out și restul de plată",
       "exploreTips": "Explorează zona",
       "exploreTipsDesc": "Sfaturi și recomandări locale",
-      "requestService": "Solicită un serviciu",
-      "requestServiceDesc": "Cere ceva de la recepție",
+      "requestService": "Scrie recepției",
+      "requestServiceDesc": "Un mesaj scurt, fără apel",
       "goGreen": "Sejur verde",
       "goGreenDesc": "Renunță la curățenia zilnică",
       "leaveFeedback": "Lasă un review",
@@ -435,10 +467,10 @@
       "conditions": {
         "clear": "Senin",
         "cloudy": "Innorat",
-        "fog": "Ceata",
-        "drizzle": "Burnita",
+        "fog": "Ceață",
+        "drizzle": "Burniță",
         "rain": "Ploaie",
-        "freezingRain": "Ploaie inghetata",
+        "freezingRain": "Ploaie înghețată",
         "snow": "Ninsoare",
         "showers": "Averse",
         "snowShowers": "Averse de ninsoare",
@@ -2318,7 +2350,10 @@
         "phone": "Telefon",
         "night": "noapte",
         "nights": "nopți",
-        "guestFeedback": "Feedback oaspete"
+        "guestFeedback": "Feedback oaspete",
+        "guestRequests": "Mesaje de la oaspete",
+        "guestRequestSeen": "Am văzut",
+        "guestRequestAlreadySeen": "Văzut"
       },
       "roomsNew": {
         "title": "Cameră nouă — Zalmox",
@@ -4734,19 +4769,19 @@
     "emailStaleOwnerRow": "Există o pensiune pe acest email fără cont de autentificare. Autentifică-te sau contactează suportul."
   },
   "landing": {
-    "metaTitle": "Zalmox — calendarul de la recepție",
-    "metaDescription": "Caietul și Excel-ul rămân în sertar. Camere, sejururi și cereri directe, fără comision. 5 camere gratuit.",
-    "heroBadge": "PMS pentru pensiuni · RO · MD · BG",
-    "heroTitle": "Caietul rămâne în sertar. Azi e pe <accent>calendar</accent>",
-    "heroSubtitle": "Camere pe rânduri, zile pe orizontală. Mutări cu drag. Cererea de pe site ajunge la tine — tu confirmi.",
-    "heroCta": "Începe gratuit",
-    "heroCtaDemo": "Solicită demo",
+    "metaTitle": "Zalmox — software de recepție pentru pensiuni",
+    "metaDescription": "Calendar de recepție, cereri directe și link de sejur. Cinci camere gratuit, fără card și fără comision pe rezervările de pe site.",
+    "heroBadge": "Software de recepție · România · Moldova · Bulgaria",
+    "heroTitle": "Recepția, pe un singur <accent>calendar</accent>",
+    "heroSubtitle": "Camere, sejururi și cereri de pe site-ul pensiunii, în același ecran. Confirmați fiecare rezervare. Fără comision pentru sejururile venite direct.",
+    "heroCta": "Începeți gratuit",
+    "heroCtaDemo": "Solicitați o demonstrație",
     "heroCtaLogin": "Autentificare",
     "heroCtaSecondary": "Vezi instrumentele",
-    "heroNote": "Fără card · 5 camere gratuit, permanent · 0% comision pe directe",
-    "demoEmailSubject": "Demo Zalmox — pensiune",
-    "shiftTitle": "Tura de la recepție",
-    "shiftDesc": "Vezi cine e în casă, cine sosește, cine pleacă. Mută un sejur pe altă cameră. Fără dublă rezervare pe aceeași cameră.",
+    "heroNote": "Fără card. Cinci camere în planul Free, fără termen. Comision 0% pe cererile directe.",
+    "demoEmailSubject": "Demonstrație Zalmox — pensiune",
+    "shiftTitle": "Tura se vede dintr-o privire",
+    "shiftDesc": "Cine este cazat, cine sosește și cine pleacă. Un sejur se mută pe altă cameră din grilă. Aceeași cameră nu poate fi ocupată de două sejururi în același interval.",
     "stationsAria": "Cerere pe site și link de sejur",
     "stationSiteTitle": "Cerere pe site",
     "stationSiteDesc": "Oaspetele alege datele. Tu confirmi de la calendar — nu plată online.",
@@ -4758,28 +4793,30 @@
     "stat2Value": "5",
     "stat2Label": "Camere în Free",
     "stat3Value": "0%",
-    "stat3Label": "Comision directe",
+    "stat3Label": "Comision pe directe",
+    "stat4Value": "RO · EN · BG",
+    "stat4Label": "Interfață și suport",
     "featGanttEyebrow": "Calendar",
-    "featGanttTitle": "Toate sejururile pe un singur ecran",
-    "featGanttDesc": "Gantt de recepție: camere pe rânduri, zile pe orizontală, mutări cu drag. Fără dublă rezervare pe aceeași cameră.",
-    "featGanttL1": "Vizualizare săptămână și lună",
-    "featGanttL2": "Mutare rezervări între camere",
-    "featGanttL3": "Heatmap de ocupare",
-    "featGanttL4": "Hold și blocări, vizibile pe grilă",
+    "featGanttTitle": "Toate sejururile, pe un singur ecran",
+    "featGanttDesc": "Camerele stau pe rânduri, zilele pe orizontală. Mutați un sejur pe altă cameră din grilă. Aceeași cameră nu poate fi ocupată de două sejururi în același interval.",
+    "featGanttL1": "Săptămână și lună, pe același calendar",
+    "featGanttL2": "Mutare între camere, din grilă",
+    "featGanttL3": "Hartă de ocupare, din planul Essential",
+    "featGanttL4": "Rețineri și blocări, vizibile pe cameră",
     "featSiteEyebrow": "Site public",
     "featSiteTitle": "Pagina de rezervări a pensiunii",
-    "featSiteDesc": "Fiecare unitate primește site de prezentare și formular de cerere. Cererea ajunge în admin; tu confirmi.",
+    "featSiteDesc": "Fiecare unitate are o pagină de prezentare și un formular de cerere. Cererea intră în panoul de recepție. Confirmați dumneavoastră.",
     "featSiteL1": "Inclus în toate planurile",
-    "featSiteL2": "Cerere de rezervare, nu plată online",
-    "featSiteL3": "Gestionare din panoul de recepție",
-    "featSiteL4": "Subdomeniu pe zalmox.app",
-    "featGuestEyebrow": "Guest app",
+    "featSiteL2": "Cerere de rezervare. Plata online nu este inclusă",
+    "featSiteL3": "Confirmare din panoul de recepție",
+    "featSiteL4": "Adresă pe zalmox.app. Domeniu propriu din planul Professional",
+    "featGuestEyebrow": "Oaspete",
     "featGuestTitle": "Link de sejur, pe telefonul oaspetelui",
-    "featGuestDesc": "Fără magazin de aplicații. Wi-Fi, info unitate și check-in online — pe durata sejurului.",
+    "featGuestDesc": "Fără aplicație de instalat. Wi-Fi, informații despre unitate și check-in online, pe durata sejurului.",
     "featGuestL1": "Check-in online înainte de sosire",
-    "featGuestL2": "Parolă Wi-Fi din link",
-    "featGuestL3": "Facilități și info pensiune",
-    "featGuestL4": "Emailuri de confirmare, când Resend e configurat",
+    "featGuestL2": "Parola Wi-Fi, din link",
+    "featGuestL3": "Facilități și informații despre pensiune",
+    "featGuestL4": "Mesaj de confirmare, când emailul este configurat",
     "heroSocialQuote": "„Înlocuiește caietul și Excel-ul cu un calendar care chiar funcționează.”",
     "heroSocialCaption": "Pensiuni mici din România, Moldova și Bulgaria",
     "problemTitle": "Sună cunoscut?",
@@ -4793,85 +4830,93 @@
     "solution2": "Imposibil de rezervat dublu — protecție la nivel de bază de date",
     "solution3": "Oaspeții trimit cerere pe site-ul pensiunii — tu confirmi",
     "solution4": "Rezervările directe = 0% comision",
-    "toolsTitle": "Instrumentele tale de operare",
-    "toolsLead": "Tot ce folosești zilnic la recepție — calendar, cazări, check-in și documente — într-o interfață clară, optimizată pentru mobil.",
+    "toolsTitle": "Instrumentele recepției",
+    "toolsLead": "Calendar, sejururi, check-in și documente, în același panou. Pe telefon și pe calculator.",
     "toolsAria": "Instrumente Zalmox",
     "tools": {
       "gantt": {
-        "title": "Calendar Gantt",
-        "desc": "Vezi toate camerele și sejururile pe o singură pagină. Drag & drop, culori pe clădire, heatmap ocupare."
+        "title": "Calendar",
+        "desc": "Toate camerele și sejururile pe o pagină. Mutare din grilă, culoare pe clădire și hartă de ocupare din Essential."
       },
       "stays": {
-        "title": "Cazări și cereri",
-        "desc": "Gestionezi rezervările, cererile noi și statusul sejurului — de la confirmare la check-out."
+        "title": "Sejururi și cereri",
+        "desc": "Cereri noi, confirmare și statusul sejurului, de la sosire până la plecare."
       },
       "checkin": {
-        "title": "Check-in recepție",
-        "desc": "Înregistrezi sosirile rapid, cu scan MRZ pentru acte și fișe oaspeți complete."
+        "title": "Check-in la recepție",
+        "desc": "Înregistrarea sosirii, cu citirea zonei MRZ de pe act și fișa oaspetelui."
       },
       "guestApp": {
-        "title": "Guest app",
-        "desc": "Oaspeții accesează Wi-Fi, info pensiune și check-in online din telefon — fără aplicație de instalat."
+        "title": "Link de sejur",
+        "desc": "Wi-Fi, informații despre pensiune și check-in online, din telefon, fără aplicație de instalat."
       },
       "availability": {
         "title": "Disponibilitate",
-        "desc": "Tarife, sezoane și blocări — sincronizate cu calendarul și site-ul public."
+        "desc": "Tarife, sezoane și blocări, aliniate cu calendarul și cu pagina publică."
       },
       "fiscal": {
-        "title": "Documente fiscale",
-        "desc": "Emiți facturi PDF interne pentru oaspeți. e-Factura ANAF nu e conectată încă."
+        "title": "Facturi",
+        "desc": "Facturi PDF pentru oaspeți, din planul Professional. Conectarea la e-Factura ANAF nu este disponibilă."
       },
       "buildings": {
-        "title": "Multi-clădire",
-        "desc": "Mai multe clădiri, etaje și camere — fiecare cu culoare și configurare proprie în Gantt."
+        "title": "Mai multe clădiri",
+        "desc": "Clădiri, etaje și camere, cu culoare proprie pe calendar."
       },
       "publicSite": {
         "title": "Site public",
-        "desc": "Fiecare pensiune primește pagină de prezentare cu disponibilitate și formular de rezervare."
+        "desc": "Pagină de prezentare, disponibilitate și formular de cerere. Plata online nu este inclusă."
       }
     },
-    "howTitle": "Cum funcționează",
-    "howLead": "Trei pași de la cont la operare zilnică — fără consultanți, fără setup complicat.",
-    "step1Title": "Creează cont",
-    "step1Desc": "Numele pensiunii, email, parolă. 30 de secunde, fără card de credit.",
-    "step2Title": "Configurează pensiunea",
-    "step2Desc": "Clădiri, camere, prețuri și site public — ghidat pas cu pas, în câteva minute.",
-    "step3Title": "Operează zilnic",
-    "step3Desc": "Calendar Gantt, cazări, check-in și disponibilitate — din telefon sau desktop.",
+    "howTitle": "De la cont la recepție",
+    "howLead": "Trei pași. Planul gratuit nu include onboarding asistat.",
+    "step1Title": "Deschideți contul",
+    "step1Desc": "Numele pensiunii, email și parolă. Fără card.",
+    "step2Title": "Configurați unitatea",
+    "step2Desc": "Clădiri, camere, tarife și pagina publică, în ordinea din panou.",
+    "step3Title": "Lucrați din calendar",
+    "step3Desc": "Cereri, sejururi, check-in și linkul oaspetelui, de pe telefon sau de pe calculator.",
     "statSetup": "Setup cont",
     "trustStripAria": "Beneficii cheie Zalmox",
     "trustLead": "Pensiuni mici din România, Moldova și Bulgaria — control total, fără comision pe rezervările directe.",
     "trust1": "0% comision pe rezervările directe",
     "trust2": "Date în UE · GDPR-ready",
     "trust3": "Suport în română, engleză, bulgară",
-    "trustSectionTitle": "Siguranță și încredere",
-    "trustSectionLead": "Infrastructură multi-tenant, date izolate per pensiune, conformitate GDPR.",
+    "trustSectionTitle": "Datele rămân ale pensiunii",
+    "trustSectionLead": "Fiecare cont este separat. Datele sunt stocate în Uniunea Europeană.",
     "trustCards": {
       "security": {
         "glyph": "🔒",
-        "title": "Date protejate",
-        "desc": "Criptare în tranzit, autentificare securizată și backup automat al datelor."
+        "title": "Acces controlat",
+        "desc": "Conexiune criptată și autentificare pentru personal. Copiile de siguranță rulează automat."
       },
       "multiTenant": {
         "glyph": "🏠",
-        "title": "Multi-tenant izolat",
-        "desc": "Fiecare pensiune are spațiul său separat — fără amestec de date între clienți."
+        "title": "Conturi separate",
+        "desc": "O pensiune nu vede camerele, oaspeții sau rezervările alteia."
       },
       "gdpr": {
         "glyph": "🇪🇺",
-        "title": "GDPR-ready",
-        "desc": "Date stocate în UE, politici de confidențialitate și export la cerere."
+        "title": "Prelucrare în UE",
+        "desc": "Politica de confidențialitate descrie prelucrarea. Exportul se face la cerere."
       }
     },
     "trustLegalPrefix": "Detalii complete în",
     "trustLegalLink": "politica de confidențialitate",
     "trustLegalSuffix": ".",
     "pricingCompareCta": "Compară toate planurile",
-    "finalCtaTitle": "Deschide <accent>calendarul</accent>",
-    "finalCtaText": "Cinci camere, fără card, fără termen. Caietul poate rămâne în sertar.",
-    "finalCtaButton": "Creează cont gratuit",
+    "finalCtaTitle": "Deschideți <accent>calendarul</accent>",
+    "finalCtaText": "Cinci camere, fără card și fără termen. Cererile directe se confirmă din același ecran.",
+    "finalCtaButton": "Creați contul gratuit",
     "mockup": {
       "calendarTitle": "Calendar",
+      "confirmed": "Confirmat",
+      "request": "Cerere",
+      "hold": "Reținere",
+      "stayIonescu": "Ionescu",
+      "stayPopa": "Popa",
+      "stayMarin": "Marin",
+      "stayGeorgiev": "Georgiev",
+      "stayDumitru": "Dumitru",
       "checkIn": "Check-in",
       "nights": "5 nopți",
       "roomsAvailable": "Camere disponibile",
@@ -4881,7 +4926,7 @@
       "roomSuite": "Suite",
       "free": "Liber",
       "occupied": "Ocupat",
-      "sendRequest": "Trimite cerere",
+      "sendRequest": "Trimiteți cererea",
       "room": "Camera",
       "welcome": "Bun venit,",
       "guestName": "Andrei",
@@ -4891,7 +4936,7 @@
       "breakfast": "Mic dejun",
       "localGuide": "Ghid local",
       "onlineCheckin": "Check-in online",
-      "onlineCheckinHint": "Completează în avans",
+      "onlineCheckinHint": "Completați înainte de sosire",
       "wifiNetwork": "Rețea Wi-Fi",
       "wifiName": "Zalmox_Guests",
       "wifiPassword": "Parolă: welcome2025"
@@ -4905,10 +4950,10 @@
     "statFree": "Pentru start",
     "statRooms": "Camere incluse în Free",
     "statCommission": "Comision rezervări directe",
-    "gridTitle": "Alege planul potrivit",
-    "gridLead": "Prețuri în EUR, facturate lunar. Anulezi oricând.",
+    "gridTitle": "Alegeți planul potrivit",
+    "gridLead": "Prețuri în EUR, facturate lunar. Anulați oricând.",
     "priceFree": "Gratuit, permanent",
-    "billedMonthly": "Facturat lunar · anulezi oricând",
+    "billedMonthly": "Facturat lunar. Anulați oricând.",
     "perMonth": "/ lună",
     "roomsUnlimited": "Nelimitat",
     "recommended": "Cel mai popular",
@@ -4916,21 +4961,21 @@
     "comparisonTitle": "Comparație rapidă",
     "comparisonLead": "Toate planurile includ Gantt, rezervări, Guest App și pagină publică.",
     "faqTitle": "Întrebări frecvente",
-    "faq1Q": "Chiar pot începe cu 0 EUR?",
-    "faq1A": "Da. Planul Free include 5 camere, Gantt, Guest App și pagina publică — fără card, fără limită de timp. Emailurile pleacă doar dacă e configurat Resend.",
-    "faq2Q": "Când trec la Essential (15 EUR)?",
-    "faq2A": "Când ai până la 20 de camere, vrei heatmap, export de statistici, 5 membri în echipă sau fără branding Zalmox pe site.",
-    "faq3Q": "Ce aduce Professional (35 EUR)?",
-    "faq3A": "Camere nelimitate, echipă nelimitată, domeniu custom, facturi PDF interne și până la 3 proprietăți. e-Factura ANAF nu e conectată încă.",
-    "faq4Q": "Pentru cine e Business (69 EUR)?",
-    "faq4A": "Pensiuni mai mari: până la 10 proprietăți, onboarding dedicat și prioritate la suport. Fără API REST și fără SLA 99.9% deocamdată.",
+    "faq1Q": "Se poate începe cu 0 EUR?",
+    "faq1A": "Da. Planul Free include 5 camere, calendar, link de sejur și pagina publică, fără card și fără termen. Emailurile pleacă doar dacă trimiterea este configurată.",
+    "faq2Q": "Când treceți la Essential (15 EUR)?",
+    "faq2A": "Când aveți până la 20 de camere și vreți hartă de ocupare, export de statistici, 5 membri în echipă sau site fără marca Zalmox.",
+    "faq3Q": "Ce include Professional (35 EUR)?",
+    "faq3A": "Camere fără limită de număr, echipă fără limită, domeniu propriu, facturi PDF și până la 3 proprietăți. e-Factura ANAF nu este conectată.",
+    "faq4Q": "Pentru cine este Business (69 EUR)?",
+    "faq4A": "Pentru mai multe proprietăți: până la 10 unități, onboarding și prioritate la suport. API-ul și un SLA de 99,9% nu sunt incluse.",
     "finalTitle": "Începe gratuit azi",
     "finalText": "5 camere, 0 EUR, setup în câteva minute.",
     "finalCta": "Creează cont gratuit",
     "plans": {
       "free": {
         "name": "Free",
-        "tagline": "Începe fără card",
+        "tagline": "Fără card",
         "roomLine": "Până la {count} camere",
         "f1": "Calendar + Gantt vizual",
         "f2": "Rezervări și fișe oaspeți",
@@ -4938,43 +4983,43 @@
         "f4": "Guest App pentru oaspeți",
         "f5": "Pagină publică de prezentare",
         "f6": "2 membri în echipă",
-        "cta": "Începe gratuit"
+        "cta": "Începeți gratuit"
       },
       "essential": {
         "name": "Essential",
-        "tagline": "Pensiunea ta, brandul tău",
+        "tagline": "Marca pensiunii pe site",
         "roomLine": "Până la {count} camere",
         "f1": "Tot ce include Free",
-        "f2": "Heatmap disponibilitate",
+        "f2": "Hartă de ocupare",
         "f3": "Export statistici",
-        "f4": "Fără branding Zalmox pe site",
+        "f4": "Fără marca Zalmox pe site",
         "f5": "5 membri în echipă",
         "f6": "",
-        "cta": "Încearcă Essential"
+        "cta": "Alegeți Essential"
       },
       "professional": {
         "name": "Professional",
-        "tagline": "Camere nelimitate, fără surprize",
-        "roomLine": "{count} camere",
+        "tagline": "Fără limită de camere",
+        "roomLine": "Camere fără limită de număr",
         "f1": "Tot ce include Essential",
         "f2": "Facturi PDF interne",
-        "f3": "Domeniu custom + fără branding",
+        "f3": "Domeniu propriu, fără marca Zalmox",
         "f4": "Echipă nelimitată",
         "f5": "Până la 3 proprietăți",
         "f6": "",
-        "cta": "Alege Professional"
+        "cta": "Alegeți Professional"
       },
       "business": {
         "name": "Business",
         "tagline": "Mai multe proprietăți",
-        "roomLine": "{count} camere",
+        "roomLine": "Camere fără limită de număr",
         "f1": "Tot ce include Professional",
         "f2": "Până la 10 proprietăți",
         "f3": "Onboarding dedicat",
         "f4": "Prioritate la suport",
-        "f5": "White label (fără Zalmox pe site)",
+        "f5": "Fără marca Zalmox pe site",
         "f6": "Contact pentru activare",
-        "cta": "Contacteaza-ne"
+        "cta": "Contactați-ne"
       }
     },
     "comparison": {
@@ -5041,10 +5086,10 @@
       "signup": "Începe gratuit"
     },
     "footer": {
-      "tagline": "Software modern pentru pensiuni și hoteluri mici din România, Moldova și Bulgaria.",
+      "tagline": "Software de recepție pentru pensiuni din România, Moldova și Bulgaria.",
       "product": "Produs",
-      "pricing": "Preturi",
-      "signup": "Creează cont",
+      "pricing": "Prețuri",
+      "signup": "Creați cont",
       "login": "Autentificare",
       "legal": "Legal",
       "terms": "Termeni",

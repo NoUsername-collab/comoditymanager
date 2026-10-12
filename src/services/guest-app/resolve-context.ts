@@ -5,6 +5,7 @@ import type {
   PublicSiteConfig,
 } from "@/features/public-site/domain/types";
 import type { GuestPrecheckinPrefill } from "@/domain/guest-app/precheckin-prefill";
+import type { GuestReceptionRequestSnapshot } from "@/domain/guest-app/reception-request";
 import type {
   GuestAccessBookingSnapshot,
   GuestAppContent,
@@ -38,6 +39,8 @@ export type GuestAppResolvedContext = {
   precheckinPrefill: GuestPrecheckinPrefill;
   greenStayPendingDates: string[];
   feedbackSubmitted: boolean;
+  receptionRequests: GuestReceptionRequestSnapshot[];
+  stayHours: { checkIn: string; checkOut: string } | null;
 };
 
 function mapBenefits(
@@ -103,12 +106,13 @@ async function loadGuestLiveState(bookingId: string): Promise<{
   precheckinSubmitted: boolean;
   greenStayPendingDates: string[];
   feedbackSubmitted: boolean;
+  receptionRequests: GuestReceptionRequestSnapshot[];
 }> {
   try {
     const { getGuestAppPublicDb } = await import("./public-db");
     const { tenantId, supabase } = await getGuestAppPublicDb();
 
-    const [precheckin, greenRows, feedback] = await Promise.all([
+    const [precheckin, greenRows, feedback, receptionRows] = await Promise.all([
       supabase
         .from("guest_precheckin_submissions")
         .select("id")
@@ -128,16 +132,36 @@ async function loadGuestLiveState(bookingId: string): Promise<{
         .eq("tenant_id", tenantId)
         .eq("booking_id", bookingId)
         .maybeSingle(),
+      supabase
+        .from("guest_reception_requests")
+        .select("id, message, status, created_at")
+        .eq("tenant_id", tenantId)
+        .eq("booking_id", bookingId)
+        .order("created_at", { ascending: false })
+        .limit(8),
     ]);
 
     const precheckinSubmitted = Boolean(precheckin.data);
     const greenStayPendingDates =
       greenRows.data?.map((row) => String(row.skip_date)) ?? [];
     const feedbackSubmitted = Boolean(feedback.data);
+    const receptionRequests: GuestReceptionRequestSnapshot[] = (receptionRows.data ?? []).map(
+      (row) => ({
+        id: String(row.id),
+        message: String(row.message),
+        status: row.status === "seen" ? "seen" : "pending",
+        createdAt: String(row.created_at),
+      }),
+    );
 
-    return { precheckinSubmitted, greenStayPendingDates, feedbackSubmitted };
+    return { precheckinSubmitted, greenStayPendingDates, feedbackSubmitted, receptionRequests };
   } catch {
-    return { precheckinSubmitted: false, greenStayPendingDates: [], feedbackSubmitted: false };
+    return {
+      precheckinSubmitted: false,
+      greenStayPendingDates: [],
+      feedbackSubmitted: false,
+      receptionRequests: [],
+    };
   }
 }
 
@@ -206,6 +230,17 @@ export async function resolveGuestAppContext(
     galleryItems,
     greenStay: settings.content.greenStay,
     precheckinPrefill,
+    stayHours: stayHoursFrom(publicConfig?.checkInTime, publicConfig?.checkOutTime),
     ...liveState,
   };
+}
+
+function stayHoursFrom(
+  checkIn: string | undefined,
+  checkOut: string | undefined,
+): { checkIn: string; checkOut: string } | null {
+  const checkInTime = checkIn?.trim().slice(0, 5);
+  const checkOutTime = checkOut?.trim().slice(0, 5);
+  if (!checkInTime || !checkOutTime) return null;
+  return { checkIn: checkInTime, checkOut: checkOutTime };
 }

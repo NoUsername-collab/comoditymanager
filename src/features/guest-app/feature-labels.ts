@@ -20,7 +20,7 @@ const FEATURE_LABELS: Record<GuestAppFeatureId, string> = {
   services: "Servicii",
   travel_tips: "Sfaturi",
   green_stay: "Opțiune verde",
-  online_payment: "Plată online",
+  online_payment: "Situație plată",
 };
 
 export function guestAppFeatureLabel(id: GuestAppFeatureId): string {
@@ -74,7 +74,8 @@ export function isGuestFeatureReady(
           ctx.hotel.longDescription ||
           ctx.hotel.phone ||
           ctx.hotel.email ||
-          ctx.hotel.address,
+          ctx.hotel.address ||
+          ctx.stayHours,
       );
     case "wifi":
       return Boolean(ctx.wifi?.networkName || ctx.wifi?.password);

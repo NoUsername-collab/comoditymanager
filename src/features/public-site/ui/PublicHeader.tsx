@@ -3,16 +3,13 @@ import { PublicTenantLogo } from "./PublicTenantLogo";
 import { StaffLogoEntry } from "./StaffLogoEntry";
 import { PublicMobileMenu } from "@/layout/components/PublicMobileMenu";
 import { HeaderLocaleSwitch } from "@/layout/components/HeaderLocaleSwitch";
-import { pickLocalized } from "@/features/public-site/domain/localized";
+import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 
 export async function PublicHeader({ config }: { config: PublicSiteConfig }) {
-  const [t, locale] = await Promise.all([
-    getTranslations("public.header"),
-    getLocale(),
-  ]);
-  const subtitle = pickLocalized(config.chrome.headerSubtitle, locale, [t("subtitle")]);
+  const locale = await getLocale();
+  const subtitle = pickOwnLocalized(config.chrome.headerSubtitle, locale);
 
   return (
     <header className="public-header">

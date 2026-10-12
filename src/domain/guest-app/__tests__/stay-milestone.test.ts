@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildGuestStayMilestones,
   countStayNights,
   resolveGuestPhaseHintKey,
   resolveGuestStayPhase,
@@ -45,5 +46,30 @@ describe("resolveGuestStayPhase", () => {
         checkedInAt: null,
       }),
     ).toBe("confirmed");
+  });
+
+  it("keeps the stay open on checkout morning", () => {
+    const input = {
+      today: "2026-06-12",
+      checkIn: "2026-06-10",
+      checkOut: "2026-06-12",
+      checkedInAt: "2026-06-10T14:00:00Z",
+    };
+    expect(resolveGuestStayPhase(input)).toBe("checked_in");
+    expect(resolveGuestPhaseHintKey(input)).toBe("phase.checkoutToday");
+    expect(buildGuestStayMilestones(input).find((step) => step.state === "current")?.id).toBe(
+      "checked_out",
+    );
+  });
+
+  it("closes the stay the day after checkout", () => {
+    expect(
+      resolveGuestStayPhase({
+        today: "2026-06-13",
+        checkIn: "2026-06-10",
+        checkOut: "2026-06-12",
+        checkedInAt: "2026-06-10T14:00:00Z",
+      }),
+    ).toBe("checked_out");
   });
 });

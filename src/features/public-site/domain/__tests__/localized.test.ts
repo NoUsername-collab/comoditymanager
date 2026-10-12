@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   pickLocalized,
   pickOwnLocalized,
+  storedTitle,
   writeLocalized,
   writeLocalizedMap,
 } from "@/features/public-site/domain/localized";
@@ -27,6 +28,13 @@ describe("writeLocalized", () => {
 describe("pickOwnLocalized", () => {
   it("does not copy fallback text into an empty locale field", () => {
     expect(pickOwnLocalized({ ro: "Salut", en: "Hello" }, "bg")).toBe("");
+  });
+});
+
+describe("storedTitle", () => {
+  it("uses the property name only when this locale has no title", () => {
+    expect(storedTitle({ ro: "Casa" }, "en", "Pension")).toBe("Pension");
+    expect(storedTitle({ en: "House" }, "en", "Pension")).toBe("House");
   });
 });
 

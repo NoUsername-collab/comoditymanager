@@ -45,16 +45,14 @@ describe("buildBookingNoticeView", () => {
       locale: "en",
       checkInTime: "14:00",
       checkOutTime: "11:00",
-      fallbackTitle: "Good to know",
-      fallbackFooter: "Final confirm at the desk.",
       presets,
     });
 
     expect(view.enabled).toBe(true);
-    expect(view.title).toBe("Good to know");
+    expect(view.title).toBe("");
     expect(view.items).toHaveLength(3);
     expect(view.items[2]?.text).toBe("Check-in 14:00 · Check-out 11:00");
-    expect(view.footer).toBe("Final confirm at the desk.");
+    expect(view.footer).toBe("");
   });
 
   it("uses custom item text when provided", () => {
@@ -76,8 +74,6 @@ describe("buildBookingNoticeView", () => {
       locale: "en",
       checkInTime: "15:00",
       checkOutTime: "10:00",
-      fallbackTitle: "Good to know",
-      fallbackFooter: "Footer",
       presets,
     });
 
@@ -106,8 +102,6 @@ describe("buildBookingNoticeView", () => {
       locale: "en",
       checkInTime: "14:00",
       checkOutTime: "11:00",
-      fallbackTitle: "Good to know",
-      fallbackFooter: "Footer",
       presets: {
         pets: { title: "Pets", text: "Mention them in the request." },
       },
@@ -132,8 +126,6 @@ describe("buildBookingNoticeView", () => {
       locale: "en",
       checkInTime: "14:00",
       checkOutTime: "11:00",
-      fallbackTitle: "Good to know",
-      fallbackFooter: "Final confirm at the desk.",
       presets,
     });
     expect(view.items).toEqual([

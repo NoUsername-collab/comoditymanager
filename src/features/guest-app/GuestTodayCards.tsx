@@ -14,6 +14,7 @@ type Props = {
   checkedInAt: string | null;
   features: GuestAppFeatureDef[];
   hasWifiCredentials: boolean;
+  omitFeatureIds?: string[];
 };
 
 type TodayCard = {
@@ -143,7 +144,7 @@ function buildTodayCards(props: Props): TodayCard[] {
         featureId: "services",
         labelKey: "today.requestService",
         descKey: "today.requestServiceDesc",
-        href: guestAppFeatureHref(accessCode, "services"),
+        href: `${guestAppFeatureHref(accessCode, "services")}#reception-request`,
         accent: "amber",
       });
     }
@@ -158,7 +159,8 @@ function buildTodayCards(props: Props): TodayCard[] {
     }
   }
 
-  return cards.slice(0, 3);
+  const omit = new Set(props.omitFeatureIds ?? []);
+  return cards.filter((card) => !omit.has(card.featureId)).slice(0, 3);
 }
 
 export async function GuestTodayCards(props: Props) {

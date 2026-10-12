@@ -18,6 +18,7 @@ import {
 import { attachCheckinRecordState } from "@/services/checkin/attach-booking-state";
 import { getFiscalStatusMapForInvoices } from "@/services/fiscal-submission";
 import { getGuestFeedbackByBookingId } from "@/services/guest-feedback";
+import { listGuestReceptionRequests } from "@/services/guest-reception-requests";
 import { dedupInputFromBooking, findDedupCandidates } from "@/services/guest-dedup";
 import {
   listBookingInvoices,
@@ -63,6 +64,7 @@ export async function loadBookingDetailPage(bookingId: string) {
         guestFeedback: null as Awaited<
           ReturnType<typeof getGuestFeedbackByBookingId>
         >,
+        receptionRequests: [] as Awaited<ReturnType<typeof listGuestReceptionRequests>>,
         financialSnapshot: null as Awaited<
           ReturnType<typeof loadFinancialSnapshot>
         >,
@@ -81,14 +83,16 @@ export async function loadBookingDetailPage(bookingId: string) {
       ).catch(() => []),
       getCheckinByBookingId(booking.id).catch(() => null),
       getGuestFeedbackByBookingId(booking.id).catch(() => null),
+      listGuestReceptionRequests(booking.id).catch(() => []),
       booking.status === "confirmata"
         ? loadFinancialSnapshot(booking.id).catch(() => null)
         : Promise.resolve(null),
     ]).then(
-      ([dedupCandidates, existingCheckin, guestFeedback, financialSnapshot]) => ({
+      ([dedupCandidates, existingCheckin, guestFeedback, receptionRequests, financialSnapshot]) => ({
         dedupCandidates,
         existingCheckin,
         guestFeedback,
+        receptionRequests,
         financialSnapshot,
       }),
     );
@@ -106,7 +110,7 @@ export async function loadBookingDetailPage(bookingId: string) {
   if (!ctx) return null;
 
   const { booking } = ctx;
-  const { dedupCandidates, existingCheckin, guestFeedback, financialSnapshot } =
+  const { dedupCandidates, existingCheckin, guestFeedback, receptionRequests, financialSnapshot } =
     bookingExtras;
   const effectiveCheckinSettings = checkinSettings ?? DEFAULT_CHECKIN_SETTINGS;
 
@@ -125,6 +129,7 @@ export async function loadBookingDetailPage(bookingId: string) {
     dedupCandidates,
     existingCheckin,
     guestFeedback,
+    receptionRequests,
     financialSnapshot,
     checkinSettings: effectiveCheckinSettings,
     postCheckoutPolicy,

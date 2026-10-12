@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { GUEST_RECEPTION_REQUEST_MAX } from "@/domain/guest-app/reception-request";
 
 const isoDateSchema = z
   .string()
@@ -22,6 +23,11 @@ export const guestGreenStayInputSchema = z.object({
   accessCode: z.string().min(8).max(32),
   skipDate: isoDateSchema,
   note: z.string().trim().max(500).optional(),
+});
+
+export const guestReceptionRequestInputSchema = z.object({
+  accessCode: z.string().min(8).max(32),
+  message: z.string().trim().min(2).max(GUEST_RECEPTION_REQUEST_MAX),
 });
 
 export const guestFeedbackInputSchema = z.object({

@@ -17,6 +17,7 @@ import { ConfirmRoomsForm } from "@/features/bookings/ui/ConfirmRoomsForm";
 import { GuestDedupWarning } from "@/features/guests/ui/GuestDedupWarning";
 import { GuestAccessSharePanel } from "@/features/bookings/ui/GuestAccessSharePanel";
 import { GuestFeedbackBadge } from "@/features/bookings/ui/GuestFeedbackBadge";
+import { GuestReceptionRequests } from "@/features/bookings/ui/GuestReceptionRequests";
 import { StayFinancialPanel } from "@/features/bookings/ui/StayFinancialPanel";
 import { GuestProfileBadges } from "@/features/guests/ui/GuestProfileBadges";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
@@ -57,6 +58,7 @@ export default async function BookingDetailPage({
     dedupCandidates,
     existingCheckin,
     guestFeedback,
+    receptionRequests,
     financialSnapshot,
     checkinSettings: effectiveCheckinSettings,
     postCheckoutPolicy,
@@ -279,6 +281,8 @@ export default async function BookingDetailPage({
               <div className="bd-notes">{booking.notes}</div>
             </div>
           )}
+
+          <GuestReceptionRequests bookingId={booking.id} requests={receptionRequests} />
 
           {/* Guest feedback */}
           {guestFeedback && (

@@ -1,4 +1,4 @@
-import { pickLocalized, pickOwnLocalized, writeLocalizedMap } from "@/features/public-site/domain/localized";
+import { pickOwnLocalized, writeLocalizedMap } from "@/features/public-site/domain/localized";
 import type {
   BookingNoticeIconId,
   BookingNoticePresetId,
@@ -304,21 +304,18 @@ export function buildBookingNoticeView(args: {
   locale: string;
   checkInTime: string;
   checkOutTime: string;
-  fallbackTitle: string;
-  fallbackFooter: string;
   presets: Partial<BookingNoticePresetCopy>;
 }): BookingNoticeView {
   const notice = normalizeBookingNotice(args.notice);
   const items = notice.items.map((item) => {
+    // A checked preset with no override is the configured text.
     const presetCopy =
       item.preset !== "custom" ? args.presets[item.preset] : undefined;
-    const title = pickLocalized(item.title, args.locale, [
-      presetCopy?.title ?? "",
-    ]);
+    const title = pickOwnLocalized(item.title, args.locale) || presetCopy?.title || "";
     const text = interpolateNoticePlaceholders(
-      pickLocalized(item.text, args.locale, [presetCopy?.text ?? ""]),
+      pickOwnLocalized(item.text, args.locale) || presetCopy?.text || "",
       args.checkInTime,
-      args.checkOutTime
+      args.checkOutTime,
     );
     return {
       id: item.id,
@@ -330,12 +327,12 @@ export function buildBookingNoticeView(args: {
 
   return {
     enabled: notice.enabled,
-    title: pickLocalized(notice.title, args.locale, [args.fallbackTitle]),
+    title: pickOwnLocalized(notice.title, args.locale),
     items,
     footer: interpolateNoticePlaceholders(
-      pickLocalized(notice.footer, args.locale, [args.fallbackFooter]),
+      pickOwnLocalized(notice.footer, args.locale),
       args.checkInTime,
-      args.checkOutTime
+      args.checkOutTime,
     ),
   };
 }

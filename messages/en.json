@@ -72,7 +72,7 @@
         "services": "Services",
         "travel_tips": "Tips",
         "green_stay": "Green stay",
-        "online_payment": "Online payment"
+        "online_payment": "Balance"
       }
     },
     "nav": {
@@ -97,7 +97,15 @@
       "ctaCheckinToday": "Check in today",
       "ctaConnectWifi": "Connect to Wi-Fi",
       "ctaSeeTips": "See local tips",
-      "ctaCheckoutInfo": "Check-out information",
+      "ctaCheckoutInfo": "Departure details",
+      "checkInFrom": "Check-in from {time}",
+      "checkOutBy": "Check-out by {time}",
+      "departureTitle": "Leaving today",
+      "departureUntil": "Leave the room by {time}.",
+      "departureAskReception": "Reception confirms the check-out time.",
+      "departurePaid": "The stay is paid.",
+      "departureBalance": "Balance due: {amount}. Pay it at reception.",
+      "seePayment": "See the balance",
       "shareStay": "Save stay link",
       "shareSuccess": "Link shared",
       "linkCopied": "Link copied",
@@ -116,16 +124,16 @@
       "prepareCheckinDesc": "Fill in your details before arrival",
       "discoverPlace": "Discover the place",
       "discoverPlaceDesc": "Useful information about the accommodation",
-      "payNow": "Pay now",
-      "payNowDesc": "Finalize your stay payment",
-      "checkoutTomorrow": "Check-out tomorrow",
-      "checkoutTomorrowDesc": "Prepare for departure — times, parking, payment",
-      "checkoutInfo": "Check-out info",
-      "checkoutInfoDesc": "Details for your departure",
+      "payNow": "See the balance",
+      "payNowDesc": "Total, paid, and what is due at reception",
+      "checkoutTomorrow": "Leaving tomorrow",
+      "checkoutTomorrowDesc": "Check-out time",
+      "checkoutInfo": "Leaving today",
+      "checkoutInfoDesc": "Check-out time and the balance due",
       "exploreTips": "Explore the area",
       "exploreTipsDesc": "Local tips and recommendations",
-      "requestService": "Request a service",
-      "requestServiceDesc": "Ask reception for something",
+      "requestService": "Message reception",
+      "requestServiceDesc": "A short note, without a phone call",
       "goGreen": "Green stay",
       "goGreenDesc": "Skip daily cleaning",
       "leaveFeedback": "Leave a review",
@@ -144,10 +152,10 @@
       "online_checkin": "Complete your details before arrival",
       "wifi": "Network and password — quick copy",
       "facilities": "Shared spaces and amenities",
-      "services": "Services available during your stay",
+      "services": "A short note to reception, plus the service list",
       "travel_tips": "Local recommendations",
       "green_stay": "Sustainable stay options",
-      "online_payment": "Fast and secure payments"
+      "online_payment": "Total, amount paid, and the balance"
     },
     "contact": {
       "call": "Call",
@@ -214,7 +222,7 @@
       "services": "Services",
       "travel_tips": "Tips & recommendations",
       "green_stay": "Green stay",
-      "online_payment": "Online payment"
+      "online_payment": "Balance"
     },
     "badges": {
       "demo": "Coming soon"
@@ -260,6 +268,7 @@
       "phone": "Phone",
       "email": "Email",
       "website": "Website",
+      "servicesNote": "The list below is informational. The message above lands on your stay file.",
       "wifiNetwork": "Wi-Fi network",
       "wifiPassword": "Wi-Fi password",
       "checkinBody": "Online check-in for {name} — demo form. Official details will be completed at reception.",
@@ -287,7 +296,7 @@
         "description": "Property photos will be available soon."
       },
       "payment": {
-        "title": "Online payment unavailable",
+        "title": "Balance unavailable",
         "description": "Payment is currently at reception or via a separate link."
       },
       "facilities": {
@@ -309,8 +318,11 @@
       "lastName": "Last name",
       "firstName": "First name",
       "phone": "Phone",
-      "email": "Email",
+      "email": "Email (optional)",
       "nationalId": "Personal ID (CNP, etc.)",
+      "nationalIdHint": "Optional. Reception uses it for the registration form and does not publish it.",
+      "nationalIdSent": "Sent to reception",
+      "summaryName": "Name",
       "birthDate": "Date of birth",
       "nationality": "Nationality",
       "documentType": "ID type",
@@ -334,10 +346,10 @@
         "generic": "Could not submit. Please try again."
       },
       "mrz": {
-        "scanButton": "Scan MRZ",
+        "scanButton": "Scan document",
         "leadShort": "Scan your passport or e-ID — or fill in the fields below.",
-        "appliedToast": "MRZ data applied — review and correct if needed.",
-        "title": "MRZ scan (passport / ID)",
+        "appliedToast": "Document data applied — review and correct if needed.",
+        "title": "Read your passport or ID",
         "close": "Close",
         "intro": "Align the MRZ zone (bottom 2–3 lines on the back of the document) or paste the text manually.",
         "tabPaste": "Paste text",
@@ -388,15 +400,35 @@
       "paid": "Paid",
       "balance": "Balance due",
       "statusPaid": "This booking is fully paid.",
-      "statusPartial": "A deposit is recorded — pay the balance at reception.",
-      "statusUnpaid": "Payment is at reception or via a link from the property.",
-      "receptionNote": "Direct online payment from the app will be available in a future update."
+      "statusPartial": "A deposit is recorded. Pay the balance at reception.",
+      "statusUnpaid": "No payment is recorded yet. Pay the balance at reception.",
+      "callToPay": "Call reception to pay",
+      "receptionNote": "Pay the balance at reception."
+    },
+    "receptionRequest": {
+      "title": "Message reception",
+      "lead": "A short note. Reception sees it on your stay file.",
+      "message": "Message",
+      "placeholder": "Towels, parking, a later departure…",
+      "submit": "Send message",
+      "submitting": "Sending…",
+      "sentToast": "Message sent to reception",
+      "pending": "Sent",
+      "seen": "Seen by reception",
+      "errors": {
+        "validation": "Write at least two characters.",
+        "tooMany": "You have sent enough messages. Call reception if it is urgent.",
+        "migration": "Messages are not available in this environment.",
+        "rateLimited": "Too many attempts. Wait a moment and try again.",
+        "generic": "Could not send. Please try again."
+      }
     },
     "greenStay": {
       "success": "Your request has been recorded. Reception will confirm it.",
       "skipDate": "Day without housekeeping",
       "note": "Notes (optional)",
       "pendingTitle": "Pending requests",
+      "outsideStay": "There is no remaining night in this stay to skip housekeeping.",
       "submit": "Submit request",
       "submitting": "Submitting…",
       "errors": {
@@ -2334,7 +2366,10 @@
         "phone": "Phone",
         "night": "night",
         "nights": "nights",
-        "guestFeedback": "Guest feedback"
+        "guestFeedback": "Guest feedback",
+        "guestRequests": "Messages from the guest",
+        "guestRequestSeen": "Mark seen",
+        "guestRequestAlreadySeen": "Seen"
       },
       "roomsNew": {
         "title": "New room — Zalmox",
@@ -4751,19 +4786,19 @@
     "emailStaleOwnerRow": "A property exists for this email without a login account. Sign in or contact support."
   },
   "landing": {
-    "metaTitle": "Zalmox — the calendar at the desk",
-    "metaDescription": "The notebook and Excel stay in the drawer. Rooms, stays and direct requests, no commission. 5 rooms free.",
-    "heroBadge": "PMS for guesthouses · RO · MD · BG",
-    "heroTitle": "The notebook stays in the drawer. Today is on the <accent>calendar</accent>",
-    "heroSubtitle": "Rooms as rows, days across. Drag a stay to another room. A request from the site lands at the desk — you confirm.",
+    "metaTitle": "Zalmox — reception software for guesthouses",
+    "metaDescription": "A reception calendar, direct requests and a stay link. Five rooms free, no card, and no commission on bookings from your site.",
+    "heroBadge": "Reception software · Romania · Moldova · Bulgaria",
+    "heroTitle": "Reception runs on one <accent>calendar</accent>",
+    "heroSubtitle": "Rooms, stays and requests from your property site, on the same screen. You confirm every booking. No commission on stays that come to you directly.",
     "heroCta": "Start free",
-    "heroCtaDemo": "Book a demo",
+    "heroCtaDemo": "Request a demonstration",
     "heroCtaLogin": "Log in",
     "heroCtaSecondary": "See the tools",
-    "heroNote": "No credit card · 5 rooms free, forever · 0% on direct bookings",
-    "demoEmailSubject": "Zalmox demo — guesthouse",
-    "shiftTitle": "The reception shift",
-    "shiftDesc": "Who is in, who arrives, who leaves. Move a stay to another room. No double-booking the same room.",
+    "heroNote": "No card. Five rooms on the Free plan, with no time limit. 0% commission on direct requests.",
+    "demoEmailSubject": "Zalmox demonstration — guesthouse",
+    "shiftTitle": "The shift, in one view",
+    "shiftDesc": "Who is in house, who arrives and who leaves. Move a stay to another room from the grid. The same room cannot hold two stays at once.",
     "stationsAria": "Site request and stay link",
     "stationSiteTitle": "A request from the site",
     "stationSiteDesc": "The guest picks dates. You confirm from the calendar — not an online payment.",
@@ -4775,28 +4810,30 @@
     "stat2Value": "5",
     "stat2Label": "Rooms on Free",
     "stat3Value": "0%",
-    "stat3Label": "Direct commission",
+    "stat3Label": "Commission on direct stays",
+    "stat4Value": "RO · EN · BG",
+    "stat4Label": "Product and support",
     "featGanttEyebrow": "Calendar",
     "featGanttTitle": "Every stay on one screen",
-    "featGanttDesc": "A reception Gantt: rooms as rows, days across, drag to move. No double-booking the same room.",
-    "featGanttL1": "Week and month views",
-    "featGanttL2": "Move stays between rooms",
-    "featGanttL3": "Occupancy heatmap",
-    "featGanttL4": "Holds and blocks on the grid",
+    "featGanttDesc": "Rooms run down the grid and days run across. Move a stay to another room from the grid. The same room cannot hold two stays in the same dates.",
+    "featGanttL1": "Week and month, on the same calendar",
+    "featGanttL2": "Move a stay between rooms from the grid",
+    "featGanttL3": "Occupancy map, from the Essential plan",
+    "featGanttL4": "Holds and blocks, visible on the room",
     "featSiteEyebrow": "Public site",
-    "featSiteTitle": "Your property booking page",
-    "featSiteDesc": "Each property gets a presentation site and a request form. Requests land in admin; you confirm.",
+    "featSiteTitle": "The property booking page",
+    "featSiteDesc": "Each property has a presentation page and a request form. The request arrives in the reception panel. You confirm it.",
     "featSiteL1": "Included on every plan",
-    "featSiteL2": "Booking request — not online payment",
-    "featSiteL3": "Handled from the reception panel",
-    "featSiteL4": "Subdomain on zalmox.app",
-    "featGuestEyebrow": "Guest app",
+    "featSiteL2": "A booking request. Online payment is not included",
+    "featSiteL3": "Confirmation from the reception panel",
+    "featSiteL4": "An address on zalmox.app. Your own domain from Professional",
+    "featGuestEyebrow": "Guest",
     "featGuestTitle": "A stay link on the guest’s phone",
-    "featGuestDesc": "No app store. Wi-Fi, property info and online check-in — for the length of the stay.",
+    "featGuestDesc": "Nothing to install. Wi-Fi, property information and online check-in, for the length of the stay.",
     "featGuestL1": "Online check-in before arrival",
-    "featGuestL2": "Wi-Fi password from the link",
-    "featGuestL3": "Facilities and property info",
-    "featGuestL4": "Confirmation email when Resend is configured",
+    "featGuestL2": "The Wi-Fi password, from the link",
+    "featGuestL3": "Facilities and property information",
+    "featGuestL4": "A confirmation message, when email is configured",
     "heroSocialQuote": "\"Replaces the notebook and Excel with a calendar that actually works.\"",
     "heroSocialCaption": "Small guesthouses in Romania, Moldova and Bulgaria",
     "problemTitle": "Sound familiar?",
@@ -4810,74 +4847,74 @@
     "solution2": "Impossible to double-book — database-level protection",
     "solution3": "Guests send a booking request on your site — you confirm",
     "solution4": "Direct bookings = 0% commission",
-    "toolsTitle": "Your daily operating tools",
-    "toolsLead": "Everything reception uses every day — calendar, stays, check-in and documents — in a clear, mobile-first interface.",
+    "toolsTitle": "The reception desk",
+    "toolsLead": "Calendar, stays, check-in and documents, in one panel. On a phone and on a computer.",
     "toolsAria": "Zalmox tools",
     "tools": {
       "gantt": {
-        "title": "Gantt calendar",
-        "desc": "See all rooms and stays on one page. Drag & drop, building colors, occupancy heatmap."
+        "title": "Calendar",
+        "desc": "Every room and stay on one page. Move from the grid, a colour per building, and an occupancy map from Essential."
       },
       "stays": {
-        "title": "Stays & requests",
-        "desc": "Manage bookings, new requests and stay status — from confirmation to check-out."
+        "title": "Stays and requests",
+        "desc": "New requests, confirmation and stay status, from arrival through departure."
       },
       "checkin": {
         "title": "Reception check-in",
-        "desc": "Record arrivals quickly, with MRZ document scan and complete guest profiles."
+        "desc": "Record the arrival, read the MRZ on the identity document, and keep the guest file."
       },
       "guestApp": {
-        "title": "Guest app",
-        "desc": "Guests access Wi-Fi, property info and online check-in from their phone — no app install."
+        "title": "Stay link",
+        "desc": "Wi-Fi, property information and online check-in, from the phone, with nothing to install."
       },
       "availability": {
         "title": "Availability",
-        "desc": "Rates, seasons and blocks — synced with the calendar and public site."
+        "desc": "Rates, seasons and blocks, aligned with the calendar and the public page."
       },
       "fiscal": {
-        "title": "Fiscal documents",
-        "desc": "Issue internal PDF invoices for guests. ANAF e-Factura is not connected yet."
+        "title": "Invoices",
+        "desc": "PDF invoices for guests, from the Professional plan. ANAF e-Factura is not connected."
       },
       "buildings": {
-        "title": "Multi-building",
-        "desc": "Multiple buildings, floors and rooms — each with its own color and Gantt config."
+        "title": "Several buildings",
+        "desc": "Buildings, floors and rooms, each with its own colour on the calendar."
       },
       "publicSite": {
         "title": "Public site",
-        "desc": "Each property gets a presentation page with availability and booking form."
+        "desc": "A presentation page, availability and a request form. Online payment is not included."
       }
     },
-    "howTitle": "How it works",
-    "howLead": "Three steps from account to daily operations — no consultants, no complex setup.",
-    "step1Title": "Create account",
-    "step1Desc": "Property name, email, password. 30 seconds, no credit card.",
-    "step2Title": "Set up your property",
-    "step2Desc": "Buildings, rooms, rates and public site — guided step by step, in minutes.",
-    "step3Title": "Operate daily",
-    "step3Desc": "Gantt calendar, stays, check-in and availability — from phone or desktop.",
+    "howTitle": "From account to the desk",
+    "howLead": "Three steps. The free plan does not include assisted onboarding.",
+    "step1Title": "Open the account",
+    "step1Desc": "Property name, email and password. No card.",
+    "step2Title": "Set up the property",
+    "step2Desc": "Buildings, rooms, rates and the public page, in the order the panel gives you.",
+    "step3Title": "Work from the calendar",
+    "step3Desc": "Requests, stays, check-in and the guest link, from a phone or a computer.",
     "statSetup": "Account setup",
     "trustStripAria": "Key Zalmox benefits",
     "trustLead": "Small guesthouses in Romania, Moldova and Bulgaria — full control, zero commission on direct bookings.",
     "trust1": "0% commission on direct bookings",
     "trust2": "EU data · GDPR-ready",
     "trust3": "Support in Romanian, English, Bulgarian",
-    "trustSectionTitle": "Security and trust",
-    "trustSectionLead": "Multi-tenant infrastructure, isolated data per property, GDPR compliance.",
+    "trustSectionTitle": "The property keeps its data",
+    "trustSectionLead": "Each account is separate. Data is stored in the European Union.",
     "trustCards": {
       "security": {
         "glyph": "🔒",
-        "title": "Protected data",
-        "desc": "Encryption in transit, secure authentication and automatic data backups."
+        "title": "Controlled access",
+        "desc": "Encrypted connections and staff sign-in. Backups run automatically."
       },
       "multiTenant": {
         "glyph": "🏠",
-        "title": "Isolated multi-tenant",
-        "desc": "Each property has its own separate space — no data mixing between clients."
+        "title": "Separate accounts",
+        "desc": "One property cannot see another property’s rooms, guests or bookings."
       },
       "gdpr": {
         "glyph": "🇪🇺",
-        "title": "GDPR-ready",
-        "desc": "Data stored in the EU, privacy policies and export on request."
+        "title": "Processing in the EU",
+        "desc": "The privacy policy describes the processing. Export is available on request."
       }
     },
     "trustLegalPrefix": "Full details in our",
@@ -4885,10 +4922,18 @@
     "trustLegalSuffix": ".",
     "pricingCompareCta": "Compare all plans",
     "finalCtaTitle": "Open the <accent>calendar</accent>",
-    "finalCtaText": "Five rooms, no card, no deadline. The notebook can stay in the drawer.",
-    "finalCtaButton": "Create free account",
+    "finalCtaText": "Five rooms, no card and no time limit. Direct requests are confirmed from the same screen.",
+    "finalCtaButton": "Create a free account",
     "mockup": {
       "calendarTitle": "Calendar",
+      "confirmed": "Confirmed",
+      "request": "Request",
+      "hold": "Hold",
+      "stayIonescu": "Ionescu",
+      "stayPopa": "Popa",
+      "stayMarin": "Marin",
+      "stayGeorgiev": "Georgiev",
+      "stayDumitru": "Dumitru",
       "checkIn": "Check-in",
       "nights": "5 nights",
       "roomsAvailable": "Available rooms",
@@ -4934,13 +4979,13 @@
     "comparisonLead": "All plans include Gantt, bookings, Guest App and a public page.",
     "faqTitle": "Frequently asked questions",
     "faq1Q": "Can I really start at 0 EUR?",
-    "faq1A": "Yes. Free includes 5 rooms, Gantt, Guest App and the public page — no card, no time limit. Emails go out only when Resend is configured.",
-    "faq2Q": "When should I move to Essential (15 EUR)?",
-    "faq2A": "When you need up to 20 rooms, occupancy heatmap, statistics export, 5 team members, or no Zalmox branding on the public site.",
-    "faq3Q": "What does Professional (35 EUR) add?",
-    "faq3A": "Unlimited rooms and team, custom domain, internal PDF invoices, and up to 3 properties. ANAF e-Factura is not connected yet.",
+    "faq1A": "Yes. Free includes 5 rooms, the calendar, the stay link and the public page, with no card and no time limit. Email is sent only when delivery is configured.",
+    "faq2Q": "When do you move to Essential (15 EUR)?",
+    "faq2A": "When you have up to 20 rooms and want the occupancy map, a statistics export, 5 team members, or a site without the Zalmox mark.",
+    "faq3Q": "What does Professional (35 EUR) include?",
+    "faq3A": "No room limit, no team limit, your own domain, PDF invoices and up to 3 properties. ANAF e-Factura is not connected.",
     "faq4Q": "Who is Business (69 EUR) for?",
-    "faq4A": "Larger properties: up to 10 properties, dedicated onboarding and support priority. No REST API and no 99.9% SLA for now.",
+    "faq4A": "For several properties: up to 10 units, onboarding and priority support. The API and a 99.9% SLA are not included.",
     "finalTitle": "Start free today",
     "finalText": "5 rooms, 0 EUR, setup in minutes.",
     "finalCta": "Create free account",
@@ -5058,7 +5103,7 @@
       "signup": "Start free"
     },
     "footer": {
-      "tagline": "Modern software for guesthouses and small hotels in Romania, Moldova and Bulgaria.",
+      "tagline": "Reception software for guesthouses in Romania, Moldova and Bulgaria.",
       "product": "Product",
       "pricing": "Pricing",
       "signup": "Create account",

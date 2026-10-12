@@ -1,4 +1,4 @@
-import { pickLocalized } from "@/features/public-site/domain/localized";
+import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 
 type PublicNavItem = {
@@ -8,34 +8,42 @@ type PublicNavItem = {
   cta?: boolean;
 };
 
+function labeled(
+  item: PublicNavItem,
+  label: string,
+): PublicNavItem | null {
+  const text = label.trim();
+  if (!text) return null;
+  return { ...item, label: text };
+}
+
 export function resolvePublicNavItems(
   config: PublicSiteConfig | null | undefined,
   locale: string,
-  fallback: { home: string; privacy: string; terms: string; book: string },
 ): PublicNavItem[] {
   const chrome = config?.chrome;
   const items: PublicNavItem[] = [];
 
   if (chrome?.showNavHome !== false) {
-    items.push({
-      key: "home",
-      href: "/",
-      label: pickLocalized(chrome?.navHome, locale, [fallback.home]),
-    });
+    const item = labeled(
+      { key: "home", href: "/", label: "" },
+      pickOwnLocalized(chrome?.navHome, locale),
+    );
+    if (item) items.push(item);
   }
   if (chrome?.showNavPrivacy !== false) {
-    items.push({
-      key: "privacy",
-      href: "/confidentialitate",
-      label: pickLocalized(chrome?.navPrivacy, locale, [fallback.privacy]),
-    });
+    const item = labeled(
+      { key: "privacy", href: "/confidentialitate", label: "" },
+      pickOwnLocalized(chrome?.navPrivacy, locale),
+    );
+    if (item) items.push(item);
   }
   if (chrome?.showNavTerms) {
-    items.push({
-      key: "terms",
-      href: "/termeni",
-      label: pickLocalized(chrome?.navTerms, locale, [fallback.terms]),
-    });
+    const item = labeled(
+      { key: "terms", href: "/termeni", label: "" },
+      pickOwnLocalized(chrome?.navTerms, locale),
+    );
+    if (item) items.push(item);
   }
 
   const showBook =
@@ -44,12 +52,11 @@ export function resolvePublicNavItems(
     config.bookingEnabled &&
     (config.bookingNavPosition === "nav" || config.bookingNavPosition === "both");
   if (showBook) {
-    items.push({
-      key: "book",
-      href: "/calendar",
-      label: pickLocalized(chrome?.navBook, locale, [fallback.book]),
-      cta: true,
-    });
+    const item = labeled(
+      { key: "book", href: "/calendar", label: "", cta: true },
+      pickOwnLocalized(chrome?.navBook, locale),
+    );
+    if (item) items.push(item);
   }
 
   return items;

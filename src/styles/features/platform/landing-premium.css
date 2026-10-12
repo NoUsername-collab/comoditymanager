@@ -403,7 +403,199 @@
   top: 2px;
   height: calc(100% - 4px);
   border-radius: 2px;
-  opacity: 0.9;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 0 0.3rem;
+  color: #fff;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.hero-browser__track {
+  height: 1.4rem;
+}
+
+.hero-browser__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin: 0;
+  padding: 0.65rem 0.9rem 0.75rem;
+  list-style: none;
+  background: #161b22;
+  border-radius: 0 0 0.875rem 0.875rem;
+}
+
+.hero-browser__legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.hero-browser__swatch {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 2px;
+}
+
+.hero-browser__swatch--ok { background: #22c55e; }
+.hero-browser__swatch--pending { background: #f59e0b; }
+.hero-browser__swatch--hold { background: #38bdf8; }
+
+.lp-stats-wrap {
+  padding: 2.5rem 1.5rem 0;
+  background: var(--lp-bg);
+}
+
+.lp-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--lp-border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.lp-stats__item {
+  padding: 1.15rem 0.75rem;
+  text-align: center;
+  border-right: 1px solid var(--lp-border);
+  border-bottom: 1px solid var(--lp-border);
+}
+
+.lp-stats__item:nth-child(2n) {
+  border-right: none;
+}
+
+.lp-stats__item:nth-child(n + 3) {
+  border-bottom: none;
+}
+
+.lp-stats__value {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--lp-text);
+}
+
+.lp-stats__label {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--lp-text-muted);
+}
+
+@media (min-width: 800px) {
+  .lp-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .lp-stats__item,
+  .lp-stats__item:nth-child(2n),
+  .lp-stats__item:nth-child(n + 3) {
+    border-right: 1px solid var(--lp-border);
+    border-bottom: none;
+  }
+
+  .lp-stats__item:last-child {
+    border-right: none;
+  }
+}
+
+.lp-block {
+  padding: 4.5rem 1.5rem;
+  background: var(--lp-bg);
+}
+
+.lp-block--alt {
+  background: var(--lp-bg-alt);
+}
+
+.lp-tool-grid,
+.lp-steps,
+.lp-trust-grid {
+  max-width: 72rem;
+  margin: 2rem auto 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lp-tool-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lp-tool,
+.lp-steps__item,
+.lp-trust {
+  background: var(--lp-bg);
+  border: 1px solid var(--lp-border);
+  border-radius: 0.75rem;
+  padding: 1.15rem 1.2rem;
+}
+
+.lp-block--alt .lp-steps__item {
+  background: var(--lp-bg);
+}
+
+.lp-tool__title,
+.lp-steps__title,
+.lp-trust__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--lp-text);
+}
+
+.lp-tool__desc,
+.lp-steps__desc,
+.lp-trust__desc {
+  margin: 0.35rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--lp-text-soft);
+}
+
+.lp-steps {
+  display: grid;
+  gap: 0.75rem;
+  counter-reset: none;
+}
+
+.lp-steps__index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-bottom: 0.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lp-accent-1) 12%, transparent);
+  color: var(--lp-accent-1);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+@media (min-width: 800px) {
+  .lp-tool-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .lp-steps,
+  .lp-trust-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 /* ── Floating cards on hero browser ─────────────────────────────────── */

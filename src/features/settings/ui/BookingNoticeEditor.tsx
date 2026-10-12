@@ -63,11 +63,9 @@ export function BookingNoticeEditor({
         locale,
         checkInTime,
         checkOutTime,
-        fallbackTitle: tCal("asideTitle"),
-        fallbackFooter: tCal("surplusNote"),
         presets,
       }),
-    [value, locale, checkInTime, checkOutTime, tCal, presets],
+    [value, locale, checkInTime, checkOutTime, presets],
   );
 
   const full = value.items.length >= MAX_NOTICE_ITEMS;

@@ -95,14 +95,26 @@ export function GuestAppSettingsPreview({
   const title =
     screen === "home" ? name : t(`shell.featureTitles.${screen}` as "shell.featureTitles.wifi");
   const wifiFeature = features.find((feature) => feature.id === "wifi");
-  const primaryCta = hasWifi && wifiFeature ? "wifi" : features[0]?.id ?? null;
+  const primaryCta =
+    hasWifi && wifiFeature
+      ? null
+      : (features.find((feature) => feature.id === "online_checkin")?.id ??
+        features[0]?.id ??
+        null);
 
   return (
     <GuestAppToastProvider>
       <div className="guest-app-preview">
         <div className="guest-app-preview__phone">
           <div
-            className={[className, "guest-app--with-nav", "guest-app-preview__app"].join(" ")}
+            className={[
+              className,
+              "guest-app--with-nav",
+              hotel.phone?.trim() ? "guest-app--with-fab" : "",
+              "guest-app-preview__app",
+            ]
+              .filter(Boolean)
+              .join(" ")}
             style={style}
           >
             <header className="guest-app__header guest-app-preview__header">
@@ -158,25 +170,17 @@ export function GuestAppSettingsPreview({
                     {hotel.shortDescription ? (
                       <p className="guest-app__hero__desc">{hotel.shortDescription}</p>
                     ) : null}
-                    {hotel.phone || hotel.address ? (
+                    {hotel.address ? (
                       <div className="guest-app__quick-actions">
-                        {hotel.phone ? (
-                          <a href={`tel:${hotel.phone.trim()}`} className="guest-app__quick-action">
-                            <span aria-hidden>📞</span>
-                            <span>{t("home.callReception")}</span>
-                          </a>
-                        ) : null}
-                        {hotel.address ? (
-                          <a
-                            href={mapsUrl(hotel.address.trim())}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="guest-app__quick-action"
-                          >
-                            <span aria-hidden>📍</span>
-                            <span>{t("home.getDirections")}</span>
-                          </a>
-                        ) : null}
+                        <a
+                          href={mapsUrl(hotel.address.trim())}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="guest-app__quick-action"
+                        >
+                          <span aria-hidden>📍</span>
+                          <span>{t("home.getDirections")}</span>
+                        </a>
                       </div>
                     ) : null}
                     {primaryCta ? (
@@ -193,21 +197,6 @@ export function GuestAppSettingsPreview({
                       </div>
                     ) : null}
                   </section>
-
-                  {settings.loyalty?.enabled ? (
-                    <section className="guest-loyalty-card">
-                      <p className="guest-loyalty-card__eyebrow">{t("loyalty.eyebrow")}</p>
-                      <h2 className="guest-loyalty-card__title">
-                        {t("loyalty.title", { name })}
-                      </h2>
-                      <p className="guest-loyalty-card__lead">{t("loyalty.lead")}</p>
-                      <GuestAppCopyField
-                        label={t("loyalty.referenceLabel")}
-                        value="K7M2-Q9XW"
-                        compact
-                      />
-                    </section>
-                  ) : null}
 
                   {hasWifi && wifiFeature ? (
                     <section className="guest-app__wifi-quick">
@@ -283,6 +272,21 @@ export function GuestAppSettingsPreview({
                       </ul>
                     )}
                   </section>
+
+                  {settings.loyalty?.enabled ? (
+                    <section className="guest-loyalty-card">
+                      <p className="guest-loyalty-card__eyebrow">{t("loyalty.eyebrow")}</p>
+                      <h2 className="guest-loyalty-card__title">
+                        {t("loyalty.title", { name })}
+                      </h2>
+                      <p className="guest-loyalty-card__lead">{t("loyalty.lead")}</p>
+                      <GuestAppCopyField
+                        label={t("loyalty.referenceLabel")}
+                        value="K7M2-Q9XW"
+                        compact
+                      />
+                    </section>
+                  ) : null}
                 </>
               ) : (
                 <GuestAppPreviewFeatureBody

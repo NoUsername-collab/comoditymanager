@@ -13,18 +13,22 @@ type Props = {
 function StarInput({
   value,
   onChange,
+  label,
 }: {
   value: number;
   onChange: (v: number) => void;
+  label: string;
 }) {
   const [hover, setHover] = useState(0);
 
   return (
-    <div className="guest-feedback__stars" role="radiogroup">
+    <div className="guest-feedback__stars" role="radiogroup" aria-label={label}>
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
           type="button"
+          role="radio"
+          aria-checked={value === star}
           className={`guest-feedback__star ${
             star <= (hover || value) ? "guest-feedback__star--active" : ""
           }`}
@@ -98,7 +102,7 @@ export function GuestFeedbackForm({
 
       <div className="guest-app__field">
         <span className="guest-app__field__label">{t("rating")}</span>
-        <StarInput value={stars} onChange={setStars} />
+        <StarInput value={stars} onChange={setStars} label={t("rating")} />
       </div>
 
       <label className="guest-app__field">

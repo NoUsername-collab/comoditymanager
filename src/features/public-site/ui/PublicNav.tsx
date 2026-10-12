@@ -15,12 +15,7 @@ export function PublicNav() {
   const locale = useLocale();
   const t = useTranslations("public.nav");
   const config = useOptionalPublicSiteConfig();
-  const items = resolvePublicNavItems(config, locale, {
-    home: t("home"),
-    privacy: t("gdpr"),
-    terms: t("terms"),
-    book: t("book"),
-  });
+  const items = resolvePublicNavItems(config, locale);
 
   return (
     <nav className="public-header__nav" aria-label={t("mainAria")}>

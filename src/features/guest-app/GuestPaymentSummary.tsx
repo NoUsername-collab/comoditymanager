@@ -4,17 +4,18 @@ import type { GuestAccessBookingSnapshot } from "@/domain/guest-app/types";
 type Props = {
   booking: GuestAccessBookingSnapshot;
   locale: string;
+  phone?: string | null;
 };
 
 function formatRon(value: number, locale: string): string {
-  return new Intl.NumberFormat(locale === "ro" ? "ro-RO" : "en-GB", {
+  return new Intl.NumberFormat(locale === "ro" ? "ro-RO" : locale === "bg" ? "bg-BG" : "en-GB", {
     style: "currency",
     currency: "RON",
     maximumFractionDigits: 0,
   }).format(value);
 }
 
-export async function GuestPaymentSummary({ booking, locale }: Props) {
+export async function GuestPaymentSummary({ booking, locale, phone }: Props) {
   const t = await getTranslations("guestApp.payment");
   const total = booking.totalPrice;
   if (total == null || total <= 0) {
@@ -51,7 +52,11 @@ export async function GuestPaymentSummary({ booking, locale }: Props) {
             ? t("statusPartial")
             : t("statusUnpaid")}
       </p>
-      <p className="guest-app__muted text-xs">{t("receptionNote")}</p>
+      {balance > 0 && phone?.trim() ? (
+        <a href={`tel:${phone.trim()}`} className="guest-app__btn-primary">
+          {t("callToPay")}
+        </a>
+      ) : null}
     </div>
   );
 }
