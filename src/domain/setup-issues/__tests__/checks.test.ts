@@ -11,8 +11,6 @@ import { SETUP_ISSUE_IDS } from "../types";
 
 afterEach(() => {
   delete process.env.ZALMOX_ADMIN_EMAILS;
-  delete process.env.HOSPIRA_ADMIN_EMAILS;
-  delete process.env.NESTIO_ADMIN_EMAILS;
 });
 
 describe("shouldResolveSetupIssues", () => {
@@ -63,10 +61,10 @@ describe("resolveMfaSetupIssue", () => {
   });
 
   it("flags platform admin emails without TOTP", () => {
-    process.env.HOSPIRA_ADMIN_EMAILS = "ops@hospira.ro";
+    process.env.ZALMOX_ADMIN_EMAILS = "ops@zalmox.app";
 
     const issue = resolveMfaSetupIssue({
-      email: "ops@hospira.ro",
+      email: "ops@zalmox.app",
       memberRole: "admin",
       factors: null,
     });

@@ -50,7 +50,7 @@ export const getPlatformInfraHealth = cache(async (): Promise<PlatformInfraHealt
   let platformSubdomainsCount = 0;
 
   for (const row of domainRows ?? []) {
-    const isSubdomain = row.routing_kind === "hospira_subdomain";
+    const isSubdomain = row.routing_kind === "platform_subdomain";
     if (isSubdomain) {
       platformSubdomainsCount += 1;
       continue;

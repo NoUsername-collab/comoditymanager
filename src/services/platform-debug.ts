@@ -163,7 +163,7 @@ async function loadTenantMap(tenantIds: string[]) {
   );
 }
 
-/** Activity + dev logs for Nestio admin — throws on query failure. */
+/** Activity + dev logs for Zalmox admin — throws on query failure. */
 export const getPlatformLogsBundle = cache(async (
   limit = 100,
   tenantId?: string | null

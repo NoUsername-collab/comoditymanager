@@ -25,7 +25,7 @@ describe("platform logs probe actions", () => {
   it("probePlatformLogsErrorAction writes dev_log then throws", async () => {
     getPlatformAdminWithMfaOrNull.mockResolvedValue({
       userId: "user-1",
-      email: "admin@hospira.ro",
+      email: "admin@zalmox.app",
     });
 
     const { probePlatformLogsErrorAction } = await import(
@@ -42,7 +42,7 @@ describe("platform logs probe actions", () => {
     expect(extra).toMatchObject({
       source: "platform-logs-probe",
       userId: "user-1",
-      userEmail: "admin@hospira.ro",
+      userEmail: "admin@zalmox.app",
       context: { probe: true, mode: "action" },
     });
   });
@@ -50,7 +50,7 @@ describe("platform logs probe actions", () => {
   it("probePlatformLogsPageThrow uses ssr source and mode", async () => {
     getPlatformAdminWithMfaOrNull.mockResolvedValue({
       userId: "user-2",
-      email: "ops@hospira.ro",
+      email: "ops@zalmox.app",
     });
 
     const { probePlatformLogsPageThrow } = await import(

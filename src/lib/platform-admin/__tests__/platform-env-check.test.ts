@@ -30,26 +30,6 @@ describe("getPlatformEnvChecklist", () => {
     expect(adminEmails?.configured).toBe(true);
   });
 
-  it("accepts legacy HOSPIRA_ADMIN_EMAILS for admin emails check", () => {
-    delete process.env.ZALMOX_ADMIN_EMAILS;
-    process.env.HOSPIRA_ADMIN_EMAILS = "legacy@hospira.ro";
-
-    const adminEmails = getPlatformEnvChecklist().find(
-      (item) => item.key === "ZALMOX_ADMIN_EMAILS"
-    );
-    expect(adminEmails?.configured).toBe(true);
-  });
-
-  it("accepts legacy NESTIO_ADMIN_EMAILS for admin emails check", () => {
-    delete process.env.ZALMOX_ADMIN_EMAILS;
-    delete process.env.HOSPIRA_ADMIN_EMAILS;
-    process.env.NESTIO_ADMIN_EMAILS = "legacy@nestio.ro";
-
-    const adminEmails = getPlatformEnvChecklist().find(
-      (item) => item.key === "ZALMOX_ADMIN_EMAILS"
-    );
-    expect(adminEmails?.configured).toBe(true);
-  });
 });
 
 describe("getPlatformCronStatus", () => {

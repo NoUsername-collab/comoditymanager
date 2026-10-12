@@ -8,16 +8,14 @@ import {
 
 afterEach(() => {
   delete process.env.ZALMOX_ADMIN_EMAILS;
-  delete process.env.HOSPIRA_ADMIN_EMAILS;
-  delete process.env.NESTIO_ADMIN_EMAILS;
 });
 
 describe("isMfaMandatoryForUser", () => {
   it("never blocks app access (2FA optional by default)", () => {
     expect(isMfaMandatoryForUser({ memberRole: "owner" })).toBe(false);
-    process.env.HOSPIRA_ADMIN_EMAILS = "ops@hospira.ro";
+    process.env.ZALMOX_ADMIN_EMAILS = "ops@zalmox.app";
     expect(
-      isMfaMandatoryForUser({ email: "ops@hospira.ro", memberRole: "admin" })
+      isMfaMandatoryForUser({ email: "ops@zalmox.app", memberRole: "admin" })
     ).toBe(false);
   });
 });
@@ -28,9 +26,9 @@ describe("isMfaRecommendedForUser", () => {
   });
 
   it("recommends MFA for platform admin emails", () => {
-    process.env.HOSPIRA_ADMIN_EMAILS = "ops@hospira.ro";
+    process.env.ZALMOX_ADMIN_EMAILS = "ops@zalmox.app";
     expect(
-      isMfaRecommendedForUser({ email: "ops@hospira.ro", memberRole: "admin" })
+      isMfaRecommendedForUser({ email: "ops@zalmox.app", memberRole: "admin" })
     ).toBe(true);
   });
 

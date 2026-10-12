@@ -453,7 +453,7 @@ html[data-layout-chrome="compact"] .gantt-seg__btn {
 /* Pull-to-refresh containment on admin scroll roots */
 html[data-layout-chrome="compact"] .admin-page-main,
 html[data-layout-chrome="compact"] .gantt-scroll,
-html[data-layout-chrome="compact"] .nestio-admin-main .overflow-x-auto {
+html[data-layout-chrome="compact"] .platform-admin-main .overflow-x-auto {
   overscroll-behavior: contain;
 }
 

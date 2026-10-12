@@ -27,10 +27,7 @@ function isSet(key: string): boolean {
 
 /** Env vars relevant to platform operations (no values returned). */
 export function getPlatformEnvChecklist(): EnvCheckItem[] {
-  const adminEmails =
-    isSet("ZALMOX_ADMIN_EMAILS") ||
-    isSet("HOSPIRA_ADMIN_EMAILS") ||
-    isSet("NESTIO_ADMIN_EMAILS");
+  const adminEmails = isSet("ZALMOX_ADMIN_EMAILS");
 
   return [
     {

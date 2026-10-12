@@ -2,7 +2,7 @@
  * Creeaza contul platform admin in Supabase Auth.
  *
  * In .env.local:
- *   ZALMOX_ADMIN_EMAILS=admin@zalmox.ro
+ *   ZALMOX_ADMIN_EMAILS=admin@zalmox.app
  *   ADMIN_INITIAL_PASSWORD=parola-ta    (sterge dupa!)
  *
  * Ruleaza: npm run setup-platform-admin
@@ -25,10 +25,7 @@ if (!loaded) {
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const emails =
-  process.env.ZALMOX_ADMIN_EMAILS?.trim() ||
-  process.env.HOSPIRA_ADMIN_EMAILS?.trim() ||
-  process.env.NESTIO_ADMIN_EMAILS?.trim();
+const emails = process.env.ZALMOX_ADMIN_EMAILS?.trim();
 const password = process.env.ADMIN_INITIAL_PASSWORD;
 
 if (!url || !serviceKey) {
@@ -39,7 +36,7 @@ if (!url || !serviceKey) {
 }
 if (!emails) {
   console.error(
-    `Adauga ZALMOX_ADMIN_EMAILS in ${envFile} (ex: admin@zalmox.ro)`
+    `Adauga ZALMOX_ADMIN_EMAILS in ${envFile} (ex: admin@zalmox.app)`
   );
   process.exit(1);
 }

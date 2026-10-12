@@ -218,7 +218,7 @@ export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
         )}
       </ul>
 
-      <div className="platform-log-table-desktop nestio-logs-table-wrap max-h-[500px] overflow-y-auto">
+      <div className="platform-log-table-desktop platform-logs-table-wrap max-h-[500px] overflow-y-auto">
         <table className="w-full text-xs">
           <thead className="sticky top-0 border-b border-neutral-700 bg-neutral-900 text-left uppercase text-neutral-500">
             <tr>

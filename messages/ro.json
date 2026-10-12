@@ -967,7 +967,7 @@
       "markVerified": "Marchează ca activ (după verificare)",
       "remove": "Șterge",
       "kinds": {
-        "hospira_subdomain": "Adresa Zalmox (totul)",
+        "platform_subdomain": "Adresa Zalmox (totul)",
         "custom_full": "Domeniul tău — site, panou și rezervări",
         "custom_public": "Domeniul tău — site și rezervări; panoul rămâne pe Zalmox",
         "custom_brand": "Domeniul tău — doar prima pagină; restul pe adresa Zalmox"

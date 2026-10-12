@@ -430,12 +430,12 @@ html[data-layout-chrome="compact"] .request-item {
 
 
 
-/* ── Pass 16: Nestio forms, reception checkbox, FAQ, drawer safe-area ── */
+/* ── Pass 16: Platform forms, reception checkbox, FAQ, drawer safe-area ── */
 
 html[data-layout-chrome="compact"] .tenant-billing-toggle,
 html[data-layout-chrome="compact"] .platform-dashboard__cta,
-html[data-layout-chrome="compact"] .nestio-tenant-option,
-html[data-layout-chrome="compact"] .nestio-log-filter {
+html[data-layout-chrome="compact"] .platform-tenant-option,
+html[data-layout-chrome="compact"] .platform-log-filter {
   min-height: var(--ml-touch-min, 2.75rem);
   touch-action: manipulation;
 }

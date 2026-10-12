@@ -115,7 +115,7 @@ export const getTenantEmailOperatorSnapshot = cache(
       .filter(
         (d) =>
           d.verified &&
-          d.routing_kind !== "hospira_subdomain" &&
+          d.routing_kind !== "platform_subdomain" &&
           d.domain.trim().length > 0,
       )
       .map((d) => d.domain);

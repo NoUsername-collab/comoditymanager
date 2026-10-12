@@ -31,7 +31,7 @@ async function resolveMailDomain(
   const customVerified = domains.find(
     (row) =>
       row.verified &&
-      row.routing_kind !== "hospira_subdomain" &&
+      row.routing_kind !== "platform_subdomain" &&
       row.domain.trim().length > 0,
   );
   if (customVerified) {

@@ -100,7 +100,7 @@ npm run setup-staff   # folosește ADMIN_EMAIL / OPERATOR_EMAIL din .env
 | `RESEND_API_KEY` | Pentru emailuri (Secret) |
 | `CRON_SECRET` | Cron backup + rezumat zilnic |
 
-**Legacy (opțional):** `HOSPIRA_ADMIN_EMAILS`, `NESTIO_ADMIN_EMAILS`, `ADMIN_EMAIL` / `OPERATOR_EMAIL` — vezi [vercel-env.md](./vercel-env.md).
+**Legacy (opțional):** `ADMIN_EMAIL` / `OPERATOR_EMAIL` — vezi [vercel-env.md](./vercel-env.md).
 
 **Interzis pe Production:** `ADMIN_INITIAL_PASSWORD`, `ADMIN_FACTORY_RESET_ENABLED=true`
 

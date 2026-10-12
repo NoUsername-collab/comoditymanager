@@ -18,7 +18,7 @@ Set before first paint via boot script in `boot-script.ts` (re-exported from `di
 
 ## Display settings integration
 
-Settings → **Layout ecran** (`hospira-display-layout` in localStorage):
+Settings → **Layout ecran** (`platform-display-layout` in localStorage):
 
 | Preference | Display profile | Shell chrome |
 |------------|-----------------|--------------|
@@ -41,7 +41,7 @@ Single apply path: `applyDocumentLayout()` in `apply-document-layout.ts`.
 | `../../styles/features/layout/mobile-core.css` | Guards, alignment tokens, touch targets (~350 lines) |
 | `../../styles/features/layout/mobile-admin.css` | Admin HUD barrel (`hud` + `alignment` + `touch`) |
 | `../../styles/features/layout/mobile-settings.css` | Admin settings UI (settings pages) |
-| `../../styles/features/layout/mobile-platform-admin.css` | Platform admin UI (nestio-admin / platform-admin) |
+| `../../styles/features/layout/mobile-platform-admin.css` | Platform admin UI (platform-admin) |
 | `../../styles/features/layout/mobile-gantt.css` | Gantt calendar only (`calendar/layout.tsx`) |
 | `../../styles/features/layout/mobile-stays.css` | Stays + guests (`cazari/` URL, `guests/` layouts) |
 | `../../styles/features/layout/mobile-avail.css` | Availability (`disponibilitate/` URL layout) |
@@ -83,7 +83,7 @@ html[data-layout-surface="admin"][data-layout-mode="mobile"] .my-widget {
 | Layout math (compact on phone) | `display-integration.test.ts` |
 | E2E smoke (iPhone 13) | `npm run test:e2e:mobile` (needs `E2E_ADMIN_*`) |
 
-**Card-over-table pattern** (compact): use paired classes `*-cards` + `*-table-desktop`, hide one via `html[data-layout-chrome="compact"]` in `mobile-layout-flawless.css`. Examples: `hospira-log-*`, `statistics-*`, `invoice-line-*`.
+**Card-over-table pattern** (compact): use paired classes `*-cards` + `*-table-desktop`, hide one via `html[data-layout-chrome="compact"]` in `mobile-layout-flawless.css`. Examples: `platform-log-*`, `statistics-*`, `invoice-line-*`.
 
 **Drawers:** `useMobileDrawer` — focus trap + Escape + `ml-drawer-open` on `<html>`.
 

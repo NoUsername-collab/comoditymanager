@@ -1,6 +1,6 @@
 ﻿/**
  * ╔══════════════════════════════════════════════════════════════════╗
- * ║  NESTIO — Plan & Feature Gating                               ║
+ * ║  ZALMOX — Plan & Feature Gating                               ║
  * ║                                                                ║
  * ║  4 cloud plans: Free / Essential / Professional / Business     ║
  * ║  Every feature in the app checks against this config.          ║
@@ -28,7 +28,7 @@ export type ModuleId =
   | "public_page"      // Public booking page
   | "advanced_reports" // Advanced statistics
   | "multi_property"   // Multiple buildings/locations
-  | "white_label"      // Remove Nestio branding
+  | "white_label"      // Remove Zalmox branding
   | "api_access";      // REST API
 
 // ─── Core Features (gated by plan) ──────────────────────────────

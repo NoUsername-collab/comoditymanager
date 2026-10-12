@@ -1,4 +1,4 @@
-/** Scale targets for Nestio platform admin (100+ tenants). */
+/** Scale targets for Zalmox platform admin (100+ tenants). */
 export const PLATFORM_SCALE = {
   minSupportedTenants: 100,
   /** Paginated fallback scan when RPC is unavailable. */

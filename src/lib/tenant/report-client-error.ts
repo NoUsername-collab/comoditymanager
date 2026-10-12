@@ -9,7 +9,7 @@ type ClientErrorPayload = {
 };
 
 /**
- * Raportează erori client-side în dev_logs (tenant host → Nestio admin logs).
+ * Raportează erori client-side în dev_logs (tenant host → Zalmox admin logs).
  * Fire-and-forget — nu aruncă.
  */
 export function reportTenantClientError(

@@ -14,6 +14,4 @@ Onboarding for **Zalmox** (platformă multi-tenant). Start: [README](../README.m
 - [acces-staff.md](./acces-staff.md) — login staff pe domeniul pensiunii
 
 ## Legacy names (în tranziție)
-- `HOSPIRA_ADMIN_EMAILS` → `ZALMOX_ADMIN_EMAILS`
-- `/hospira-admin` → `/platform-admin`
 - `ADMIN_EMAIL` / `setup-staff` → doar dev legacy; producție = `tenant_members` + signup/provision

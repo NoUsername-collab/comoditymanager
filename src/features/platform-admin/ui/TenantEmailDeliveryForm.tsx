@@ -149,7 +149,7 @@ export function TenantEmailDeliveryForm({
         {MODES.map((mode) => (
           <label
             key={mode}
-            className={`nestio-tenant-option flex min-h-[var(--ml-touch-min,2.75rem)] cursor-pointer items-start gap-2 rounded-md border px-3 py-2 text-sm ${
+            className={`platform-tenant-option flex min-h-[var(--ml-touch-min,2.75rem)] cursor-pointer items-start gap-2 rounded-md border px-3 py-2 text-sm ${
               deliveryMode === mode
                 ? "border-sky-600 bg-sky-950/40 text-white"
                 : "border-neutral-700 text-neutral-400"

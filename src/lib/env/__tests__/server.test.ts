@@ -21,8 +21,6 @@ describe("getServerEnv platform admin emails", () => {
     vi.unstubAllEnvs();
     applyBaseEnv();
     delete process.env.ZALMOX_ADMIN_EMAILS;
-    delete process.env.HOSPIRA_ADMIN_EMAILS;
-    delete process.env.NESTIO_ADMIN_EMAILS;
   });
 
   afterEach(() => {
@@ -34,13 +32,6 @@ describe("getServerEnv platform admin emails", () => {
     vi.stubEnv("ZALMOX_ADMIN_EMAILS", "ops@zalmox.app");
     const { getServerEnv } = await import("@/lib/env/server");
     expect(getServerEnv().ZALMOX_ADMIN_EMAILS).toBe("ops@zalmox.app");
-  });
-
-  it("still accepts legacy HOSPIRA_ADMIN_EMAILS alone in production", async () => {
-    vi.stubEnv("VERCEL_ENV", "production");
-    vi.stubEnv("HOSPIRA_ADMIN_EMAILS", "ops@hospira.ro");
-    const { getServerEnv } = await import("@/lib/env/server");
-    expect(() => getServerEnv()).not.toThrow();
   });
 
   it("throws in production when no platform-admin email var is set", async () => {

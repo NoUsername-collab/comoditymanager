@@ -47,7 +47,7 @@ vi.mock("@/services/tenant-members", () => ({
 const { proxy } = await import("@/proxy");
 
 function platformRequest(pathname: string) {
-  return new NextRequest(`https://test.hospira.ro${pathname}`);
+  return new NextRequest(`https://test.zalmox.app${pathname}`);
 }
 
 beforeEach(() => {
@@ -65,7 +65,7 @@ describe("proxy platform platform-admin", () => {
     expect(response.status).toBeLessThan(400);
     const location = response.headers.get("location");
     expect(location).toBeTruthy();
-    expect(location).not.toBe("https://test.hospira.ro/platform-admin");
+    expect(location).not.toBe("https://test.zalmox.app/platform-admin");
     expect(location).toContain("/admin/login");
     expect(location).toContain("next=%2Fplatform-admin");
   });
@@ -82,47 +82,12 @@ describe("proxy platform platform-admin", () => {
     expect(location).toContain("/admin/login");
   });
 
-  it("redirects legacy /nestio-admin to /platform-admin", async () => {
-    const response = await proxy(platformRequest("/nestio-admin"));
-
-    expect(response.status).toBe(308);
-    expect(response.headers.get("location")).toBe(
-      "https://test.hospira.ro/platform-admin"
-    );
-  });
-
-  it("redirects legacy /ro/nestio-admin to /ro/platform-admin", async () => {
-    const response = await proxy(platformRequest("/ro/nestio-admin"));
-
-    expect(response.status).toBe(308);
-    expect(response.headers.get("location")).toBe(
-      "https://test.hospira.ro/ro/platform-admin"
-    );
-  });
-
-  it("redirects legacy /hospira-admin to /platform-admin", async () => {
-    const response = await proxy(platformRequest("/hospira-admin"));
-
-    expect(response.status).toBe(308);
-    expect(response.headers.get("location")).toBe(
-      "https://test.hospira.ro/platform-admin"
-    );
-  });
-
-  it("redirects legacy /ro/hospira-admin to /ro/platform-admin", async () => {
-    const response = await proxy(platformRequest("/ro/hospira-admin"));
-
-    expect(response.status).toBe(308);
-    expect(response.headers.get("location")).toBe(
-      "https://test.hospira.ro/ro/platform-admin"
-    );
-  });
 });
 
 describe("proxy tenant status enforcement", () => {
   function tenantRequest(pathname: string) {
-    return new NextRequest(`https://casaemil.hospira.ro${pathname}`, {
-      headers: { host: "casaemil.hospira.ro" },
+    return new NextRequest(`https://casaemil.zalmox.app${pathname}`, {
+      headers: { host: "casaemil.zalmox.app" },
     });
   }
 

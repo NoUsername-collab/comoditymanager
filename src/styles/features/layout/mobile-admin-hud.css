@@ -941,14 +941,14 @@ html[data-layout-chrome="compact"] .devlog-pagination__btn {
 
 /* ── Invoice ── */
 
-/* ── Nestio logs tables ── */
-html[data-layout-chrome="compact"] .nestio-logs-table-wrap {
+/* ── Zalmox logs tables ── */
+html[data-layout-chrome="compact"] .platform-logs-table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
 }
 
-html[data-layout-chrome="compact"] .nestio-logs-table-wrap table {
+html[data-layout-chrome="compact"] .platform-logs-table-wrap table {
   min-width: 36rem;
 }
 
@@ -1792,7 +1792,7 @@ html[data-layout-chrome="compact"] .platform-dashboard__cta {
   justify-content: center;
 }
 
-html[data-layout-chrome="compact"] .nestio-tenant-option input[type="checkbox"] {
+html[data-layout-chrome="compact"] .platform-tenant-option input[type="checkbox"] {
   width: 1.25rem;
   height: 1.25rem;
   min-width: 1.25rem;

@@ -1,15 +1,11 @@
 /**
- * Platform-admin allowlist — ZALMOX first, then legacy rebrand vars.
+ * Platform-admin allowlist (ZALMOX_ADMIN_EMAILS).
  * Edge-safe: no Zod, no Node crypto. Used by boot env, auth guards, and proxy.
  */
 
-/** Raw comma-separated emails, or undefined if none of the three vars are set. */
+/** Raw comma-separated emails, or undefined when ZALMOX_ADMIN_EMAILS is not set. */
 export function readPlatformAdminEmailsRaw(
   env: { [key: string]: string | undefined } = process.env
 ): string | undefined {
-  const raw =
-    env.ZALMOX_ADMIN_EMAILS?.trim() ||
-    env.HOSPIRA_ADMIN_EMAILS?.trim() ||
-    env.NESTIO_ADMIN_EMAILS?.trim();
-  return raw || undefined;
+  return env.ZALMOX_ADMIN_EMAILS?.trim() || undefined;
 }

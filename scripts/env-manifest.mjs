@@ -40,19 +40,7 @@ export const ENV_MANIFEST = [
     requirement: "runtime",
     recommendedInProduction: true,
     description:
-      "Email-uri platform admin (virgulă) — acces /platform-admin. Legacy: HOSPIRA_ADMIN_EMAILS, NESTIO_ADMIN_EMAILS",
-  },
-  {
-    key: "HOSPIRA_ADMIN_EMAILS",
-    requirement: "optional",
-    description:
-      "Legacy — înlocuit de ZALMOX_ADMIN_EMAILS; acceptat temporar la tranziție",
-  },
-  {
-    key: "NESTIO_ADMIN_EMAILS",
-    requirement: "optional",
-    description:
-      "Legacy — înlocuit de ZALMOX_ADMIN_EMAILS; acceptat temporar la tranziție",
+      "Email-uri platform admin (virgulă) — acces /platform-admin.",
   },
   {
     key: "NEXT_PUBLIC_PLATFORM_DOMAIN",
@@ -60,14 +48,14 @@ export const ENV_MANIFEST = [
     public: true,
     recommendedInProduction: true,
     description:
-      "Apex platform domain (ex. hospira.ro sau test.hospira.ro pe staging)",
+      "Apex platform domain (zalmox.app; test.zalmox.app pe staging)",
   },
   {
     key: "NEXT_PUBLIC_SITE_URL",
     requirement: "optional",
     public: true,
     recommendedInProduction: true,
-    description: "URL public al platformei (ex. https://hospira.ro)",
+    description: "URL public al platformei (ex. https://zalmox.app)",
   },
   {
     key: "RESEND_API_KEY",

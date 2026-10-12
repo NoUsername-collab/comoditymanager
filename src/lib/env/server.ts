@@ -12,9 +12,6 @@ const serverEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
   ZALMOX_ADMIN_EMAILS: z.string().optional(),
-  // Legacy rebrands — still accepted until Vercel is fully cut over
-  HOSPIRA_ADMIN_EMAILS: z.string().optional(),
-  NESTIO_ADMIN_EMAILS: z.string().optional(),
   // Resend (optional — read at runtime by lib/email/provider; noop without RESEND_API_KEY)
   // RESEND_API_KEY, RESEND_MAIL_DOMAIN — not validated here; see docs/vercel-env.md
   // Legacy staff emails — optional in multi-tenant (role comes from tenant_members DB).
@@ -55,7 +52,7 @@ export function getServerEnv(): ServerEnv {
     const adminEmails = readPlatformAdminEmailsRaw(parsed.data);
     if (!adminEmails) {
       throw new Error(
-        "ZALMOX_ADMIN_EMAILS must be set in production (comma-separated platform admin emails). Legacy HOSPIRA_ADMIN_EMAILS / NESTIO_ADMIN_EMAILS still accepted."
+        "ZALMOX_ADMIN_EMAILS must be set in production (comma-separated platform admin emails)."
       );
     }
 

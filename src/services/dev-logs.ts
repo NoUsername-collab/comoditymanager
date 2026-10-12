@@ -129,7 +129,7 @@ async function insertDevLogRow(
 
 /**
  * Scrie un log în dev_logs (public schema, service role).
- * Aruncă la eșec insert — vizibil în Nestio admin logs + error boundary.
+ * Aruncă la eșec insert — vizibil în Zalmox admin logs + error boundary.
  */
 async function writeDevLog(input: LogInput): Promise<void> {
   const tenantId = await resolveTenantIdForLog(input.requestHost);
@@ -143,7 +143,7 @@ async function writeDevLog(input: LogInput): Promise<void> {
 }
 
 /**
- * Scrie dev_log din context Nestio platform admin (fără subdomain tenant).
+ * Scrie dev_log din context Zalmox platform admin (fără subdomain tenant).
  * Aruncă la orice eșec — folosit când trebuie să știm exact ce s-a întâmplat.
  */
 async function writePlatformDevLog(
@@ -154,7 +154,7 @@ async function writePlatformDevLog(
 }
 
 /**
- * Captează o eroare tenant în dev_logs (Nestio admin).
+ * Captează o eroare tenant în dev_logs (Zalmox admin).
  * Nu înlocuiește throw-ul acțiunii — doar persistă diagnosticul.
  */
 export async function captureTenantError(
@@ -188,7 +188,7 @@ export async function captureTenantError(
 }
 
 /**
- * Captează eroare din Nestio platform admin în dev_logs.
+ * Captează eroare din Zalmox platform admin în dev_logs.
  * Aruncă dacă scrierea eșuează — nu ascunde problema.
  */
 export async function capturePlatformAdminError(
@@ -206,7 +206,7 @@ export async function capturePlatformAdminError(
 
   await writePlatformDevLog({
     level: "error",
-    source: extra?.source ?? "nestio-platform",
+    source: extra?.source ?? "zalmox-platform",
     message,
     stack,
     context: {

@@ -20,11 +20,11 @@ export default async function PlatformAdminLayout({
 
   return (
     <MobileShell
-      surface="nestio-admin"
-      className="ml-shell--nestio-admin min-h-dvh bg-neutral-950 text-neutral-100"
+      surface="platform-admin"
+      className="ml-shell--platform-admin min-h-dvh bg-neutral-950 text-neutral-100"
     >
-      <header className="nestio-admin-header border-b border-neutral-800 bg-neutral-900">
-        <div className="nestio-admin-header__inner mx-auto flex max-w-7xl items-center justify-between gap-2 py-2.5">
+      <header className="platform-admin-header border-b border-neutral-800 bg-neutral-900">
+        <div className="platform-admin-header__inner mx-auto flex max-w-7xl items-center justify-between gap-2 py-2.5">
           <div className="flex min-w-0 items-center gap-3">
             <PlatformAdminMobileNav />
             <Link
@@ -37,7 +37,7 @@ export default async function PlatformAdminLayout({
           </div>
 
           <nav
-            className="nestio-admin-header__nav--wide hidden items-center gap-4 text-sm md:flex"
+            className="platform-admin-header__nav--wide hidden items-center gap-4 text-sm md:flex"
             aria-label="Zalmox admin"
           >
             <Link
@@ -66,7 +66,7 @@ export default async function PlatformAdminLayout({
             </Link>
           </nav>
 
-          <span className="nestio-admin-header__email shrink-0 text-sm text-neutral-500">
+          <span className="platform-admin-header__email shrink-0 text-sm text-neutral-500">
             {admin.email}
           </span>
         </div>
@@ -74,7 +74,7 @@ export default async function PlatformAdminLayout({
 
       <MobileContent
         as="main"
-        className="nestio-admin-main mx-auto max-w-7xl"
+        className="platform-admin-main mx-auto max-w-7xl"
       >
         {children}
       </MobileContent>

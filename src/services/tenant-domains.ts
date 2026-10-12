@@ -86,7 +86,7 @@ export async function markTenantDomainVerified(
     })
     .eq("id", domainId)
     .eq("tenant_id", tenantId)
-    .neq("routing_kind", "hospira_subdomain");
+    .neq("routing_kind", "platform_subdomain");
 
   if (error) throw new Error(error.message);
 }
@@ -101,7 +101,7 @@ export async function removeCustomTenantDomain(
     .delete()
     .eq("id", domainId)
     .eq("tenant_id", tenantId)
-    .neq("routing_kind", "hospira_subdomain");
+    .neq("routing_kind", "platform_subdomain");
 
   if (error) throw new Error(error.message);
 }

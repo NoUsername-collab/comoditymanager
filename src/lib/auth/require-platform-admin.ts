@@ -1,9 +1,7 @@
 ﻿/**
  * Platform admin guard — gates Zalmox internal panel.
  *
- * Checks the authenticated user's email against ZALMOX_ADMIN_EMAILS env var
- * (legacy NESTIO_ADMIN_EMAILS and HOSPIRA_ADMIN_EMAILS still accepted
- * during transition — earlier rebrands read these directly).
+ * Checks the authenticated user's email against ZALMOX_ADMIN_EMAILS env var.
  * Requires both valid Supabase auth AND email match.
  */
 

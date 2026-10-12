@@ -1,5 +1,5 @@
 export type TenantDomainRoutingKind =
-  | "hospira_subdomain"
+  | "platform_subdomain"
   | "custom_full"
   | "custom_public"
   | "custom_brand";
@@ -49,7 +49,7 @@ export function pathAllowedOnCustomDomain(
   path: string,
   routingKind: TenantDomainRoutingKind | null | undefined
 ): boolean {
-  if (!routingKind || routingKind === "hospira_subdomain" || routingKind === "custom_full") {
+  if (!routingKind || routingKind === "platform_subdomain" || routingKind === "custom_full") {
     return true;
   }
   if (routingKind === "custom_brand") {

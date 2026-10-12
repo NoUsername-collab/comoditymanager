@@ -124,9 +124,9 @@ When adding a new vertical, put actions + loaders + UI under `features/<name>/` 
 ## Config & env
 
 - **Secrets / env vars**: only `lib/env/` (server, edge, client split)
-- **Platform admin emails**: `ZALMOX_ADMIN_EMAILS` (legacy `HOSPIRA_ADMIN_EMAILS` / `NESTIO_ADMIN_EMAILS` still accepted)
+- **Platform admin emails**: `ZALMOX_ADMIN_EMAILS`
 - **Branding / platform domain**: env + `lib/tenant/host.ts` — not hardcoded in components
-- **Legacy `nestio.ro`**: parsed in `lib/tenant/host.ts` for backward compatibility; product name is Zalmox
+- **Platform domains**: `zalmox.app` (production) and `test.zalmox.app` (staging), set in `lib/tenant/host.ts`; Hospira and Nestio domains are no longer recognised
 
 ## Barrels (`index.ts`)
 
@@ -219,6 +219,5 @@ When touching coupled code:
 - PMS chrome stays in `components/admin/{shell,ui,feedback,loading,overlay,settings}` plus TopBar/Nav
 - `@/core` barrel: prefer direct imports for new code
 - CSS location is correct; god files are barrels (`mobile-admin.css`, `gantt-premium.css`) — do not add rules to them
-- Legacy host names (`nestio`, `hospira`) still appear in routing/CSS class names
-- `routing_kind = hospira_subdomain` stays as the Postgres/edge enum — no schema rename in this campaign
+- `routing_kind = platform_subdomain` (renamed from `hospira_subdomain` in migration 104)
 - Location-unlock cookie remains `casaemil_admin_location_unlock` (not localStorage; not dual-read)

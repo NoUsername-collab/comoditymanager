@@ -13,7 +13,7 @@ export type LayoutSurface =
   | "admin"
   | "public"
   | "platform"
-  | "nestio-admin"
+  | "platform-admin"
   | "auth";
 
 export type MobileLayoutState = {

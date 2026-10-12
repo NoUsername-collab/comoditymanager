@@ -102,13 +102,10 @@ if (service && !isValidJwtLikeKey(service)) {
 }
 
 // Platform admin emails (recommended)
-const platformAdminEmails =
-  process.env.ZALMOX_ADMIN_EMAILS?.trim() ||
-  process.env.HOSPIRA_ADMIN_EMAILS?.trim() ||
-  process.env.NESTIO_ADMIN_EMAILS?.trim();
+const platformAdminEmails = process.env.ZALMOX_ADMIN_EMAILS?.trim();
 if (!platformAdminEmails) {
   warnings.push(
-    "ZALMOX_ADMIN_EMAILS lipseste — nu vei putea accesa /platform-admin (legacy: HOSPIRA_ADMIN_EMAILS, NESTIO_ADMIN_EMAILS)"
+    "ZALMOX_ADMIN_EMAILS lipseste — nu vei putea accesa /platform-admin"
   );
 }
 

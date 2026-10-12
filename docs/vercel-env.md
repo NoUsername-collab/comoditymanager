@@ -15,7 +15,7 @@ Ghid pentru deploy pe [Vercel](https://vercel.com).
 | `NEXT_PUBLIC_SUPABASE_URL` | ✅ | Nu | `https://xxxx.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | Nu | Settings → API → anon |
 | `SUPABASE_SERVICE_ROLE_KEY` | ✅ | **Da** | service_role — niciodată în git |
-| `ZALMOX_ADMIN_EMAILS` | Recomandat | Nu | Acces `/platform-admin` (virgulă). Legacy: `HOSPIRA_ADMIN_EMAILS`, `NESTIO_ADMIN_EMAILS` |
+| `ZALMOX_ADMIN_EMAILS` | Recomandat | Nu | Acces `/platform-admin` (virgulă). |
 | `NEXT_PUBLIC_PLATFORM_DOMAIN` | Recomandat | Nu | Apex platformă (ex. `zalmox.ro`) |
 | `NEXT_PUBLIC_SITE_URL` | Recomandat | Nu | ex. `https://zalmox.ro` |
 | `ADMIN_EMAIL` | Legacy dev | Nu | Doar `npm run setup-staff` local — nu e necesar în prod multi-tenant |
@@ -54,8 +54,8 @@ Build-ul **eșuează** dacă regulile sunt încălcate (`prebuild` → `npm run 
 ## 3. Preview / Staging
 
 ```
-NEXT_PUBLIC_PLATFORM_DOMAIN=test.hospira.ro   # sau domeniul tău de staging
-NEXT_PUBLIC_SITE_URL=https://test.hospira.ro
+NEXT_PUBLIC_PLATFORM_DOMAIN=test.zalmox.app   # sau domeniul tău de staging
+NEXT_PUBLIC_SITE_URL=https://test.zalmox.app
 ```
 
 Conturi staff pe staging: create local sau provision din platform-admin — **nu** pune parole inițiale pe Vercel.

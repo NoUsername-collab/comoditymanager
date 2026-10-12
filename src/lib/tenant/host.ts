@@ -1,11 +1,15 @@
-const PLATFORM_DOMAIN =
-  process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.trim() || "hospira.ro";
+/** Production platform apex. Staging runs on test.{this}. */
+const ZALMOX_DOMAIN = "zalmox.app";
+const ZALMOX_STAGING_DOMAIN = `test.${ZALMOX_DOMAIN}`;
 
-/** Staging project (test.hospira.ro) — used even if PLATFORM_DOMAIN env is wrong. */
+const PLATFORM_DOMAIN =
+  process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.trim().toLowerCase() || ZALMOX_DOMAIN;
+
+/** Staging project (test.zalmox.app) — used even if PLATFORM_DOMAIN env is wrong. */
 function isStagingDeployment(): boolean {
-  if (PLATFORM_DOMAIN === "test.hospira.ro") return true;
+  if (PLATFORM_DOMAIN === ZALMOX_STAGING_DOMAIN) return true;
   const site = process.env.NEXT_PUBLIC_SITE_URL?.toLowerCase() ?? "";
-  return site.includes("test.hospira.ro");
+  return site.includes(ZALMOX_STAGING_DOMAIN);
 }
 
 /** Platform apex for redirects when a custom domain is unknown. */
@@ -14,17 +18,17 @@ export function defaultPlatformApexHost(): string {
 }
 
 function defaultPlatformDomain(): string {
-  if (PLATFORM_DOMAIN && PLATFORM_DOMAIN !== "hospira.ro") {
+  if (PLATFORM_DOMAIN && PLATFORM_DOMAIN !== ZALMOX_DOMAIN) {
     return PLATFORM_DOMAIN;
   }
-  if (isStagingDeployment()) return "test.hospira.ro";
+  if (isStagingDeployment()) return ZALMOX_STAGING_DOMAIN;
   return PLATFORM_DOMAIN;
 }
 
-/** Never emit tenant URLs on bare hospira.ro when this deploy is staging. */
+/** Never emit tenant URLs on bare zalmox.app when this deploy is staging. */
 function applyStagingTenantSuffix(platformDomain: string): string {
-  if (isStagingDeployment() && platformDomain === "hospira.ro") {
-    return "test.hospira.ro";
+  if (isStagingDeployment() && platformDomain === ZALMOX_DOMAIN) {
+    return ZALMOX_STAGING_DOMAIN;
   }
   return platformDomain;
 }
@@ -36,17 +40,10 @@ const EXTRA_PLATFORM_HOSTS = (
   .map((h) => h.trim().toLowerCase())
   .filter(Boolean);
 
-/**
- * Always-recognized platform apex hosts (legacy nestio.ro kept for transition).
- */
-const CANONICAL_PLATFORM_ROOTS = [
-  "hospira.ro",
-  "test.hospira.ro",
-  "nestio.ro",
-  "test.nestio.ro",
-];
+/** Always-recognized platform apex hosts. */
+const CANONICAL_PLATFORM_ROOTS = [ZALMOX_DOMAIN, ZALMOX_STAGING_DOMAIN];
 
-/** All platform apex hosts, longest first (test.hospira.ro before hospira.ro). */
+/** All platform apex hosts, longest first (test.zalmox.app before zalmox.app). */
 function getPlatformRoots(): string[] {
   const roots = new Set<string>([
     PLATFORM_DOMAIN,
@@ -54,7 +51,7 @@ function getPlatformRoots(): string[] {
     ...CANONICAL_PLATFORM_ROOTS,
   ]);
 
-  // Staging apex: when prod root is hospira.ro, test.hospira.ro is platform — not tenant slug "test"
+  // Staging apex: when prod root is zalmox.app, test.zalmox.app is platform — not tenant slug "test"
   if (PLATFORM_DOMAIN && !PLATFORM_DOMAIN.startsWith("test.")) {
     roots.add(`test.${PLATFORM_DOMAIN}`);
   }
@@ -66,7 +63,7 @@ function normalizeHost(host: string): string {
   return host.replace(/^www\./, "").split(":")[0]?.trim().toLowerCase() ?? "";
 }
 
-/** True when the request host is the platform apex (hospira.ro, test.hospira.ro, localhost, etc.). */
+/** True when the request host is the platform apex (zalmox.app, test.zalmox.app, localhost, etc.). */
 export function isPlatformRequestHost(hostInput: string): boolean {
   const host = normalizeHost(hostInput);
   if (!host || host === "127.0.0.1" || host === "localhost") return true;
@@ -178,7 +175,7 @@ export function tenantDomainFromHost(hostInput: string): string | null {
   return parsed.type === "custom" ? parsed.domain : null;
 }
 
-/** Admin login on tenant subdomain, e.g. slug.test.hospira.ro/admin/login */
+/** Admin login on tenant subdomain, e.g. slug.test.zalmox.app/admin/login */
 export function buildTenantLoginUrl(
   slug: string,
   params?: Record<string, string | undefined>,
@@ -201,7 +198,7 @@ export function buildTenantLoginUrl(
   return `${protocol}://${host}/admin/login${query ? `?${query}` : ""}`;
 }
 
-/** Admin path on tenant subdomain, e.g. slug.test.hospira.ro/admin */
+/** Admin path on tenant subdomain, e.g. slug.test.zalmox.app/admin */
 export function buildTenantAdminUrl(
   slug: string,
   path = "/admin",
@@ -217,7 +214,7 @@ export function buildTenantAdminUrl(
   return `${protocol}://${host}${safePath}`;
 }
 
-/** Public tenant site origin, e.g. https://slug.test.hospira.ro */
+/** Public tenant site origin, e.g. https://slug.test.zalmox.app */
 export function buildTenantSiteUrl(
   slug: string,
   requestHost?: string | null,
@@ -231,7 +228,7 @@ export function buildTenantSiteUrl(
   return `${protocol}://${host}`;
 }
 
-/** Staging: redirect slug.hospira.ro → slug.test.hospira.ro (legacy .nestio.ro too). */
+/** Staging: redirect slug.zalmox.app → slug.test.zalmox.app. */
 export function stagingTenantHostCorrection(
   hostInput: string
 ): string | null {
@@ -241,14 +238,9 @@ export function stagingTenantHostCorrection(
   if (host.includes(".test.")) return null;
   if (isPlatformHost(host)) return null;
 
-  for (const suffix of [".hospira.ro", ".nestio.ro"]) {
-    if (!host.endsWith(suffix)) continue;
-    const slug = host.slice(0, -suffix.length);
-    if (!slug || slug.includes(".")) return null;
-    const stagingSuffix =
-      suffix === ".nestio.ro" ? ".test.nestio.ro" : ".test.hospira.ro";
-    return `${slug}${stagingSuffix}`;
-  }
-
-  return null;
+  const suffix = `.${ZALMOX_DOMAIN}`;
+  if (!host.endsWith(suffix)) return null;
+  const slug = host.slice(0, -suffix.length);
+  if (!slug || slug.includes(".")) return null;
+  return `${slug}.${ZALMOX_STAGING_DOMAIN}`;
 }

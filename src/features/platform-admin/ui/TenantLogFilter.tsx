@@ -28,7 +28,7 @@ export function TenantLogFilter({
     <select
       value={current}
       onChange={handleChange}
-      className="nestio-log-filter min-h-[var(--ml-touch-min,2.75rem)] rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 focus:border-sky-600 focus:outline-none"
+      className="platform-log-filter min-h-[var(--ml-touch-min,2.75rem)] rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 focus:border-sky-600 focus:outline-none"
     >
       <option value="">{t("allTenants")}</option>
       {tenants.map((row) => (

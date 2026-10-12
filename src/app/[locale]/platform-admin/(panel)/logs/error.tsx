@@ -33,8 +33,8 @@ export default function PlatformLogsError({
   }, [error]);
 
   return (
-    <div className="nestio-admin-error flex min-h-[min(50dvh,28rem)] items-center justify-center px-4 py-5">
-      <div className="nestio-admin-error__card max-w-2xl rounded-lg border border-red-900 bg-red-950/30 p-4 text-center">
+    <div className="platform-admin-error flex min-h-[min(50dvh,28rem)] items-center justify-center px-4 py-5">
+      <div className="platform-admin-error__card max-w-2xl rounded-lg border border-red-900 bg-red-950/30 p-4 text-center">
         <p className="text-lg font-semibold text-red-300">{logsT("title")}</p>
         <p className="mt-2 text-sm text-red-200/80">{logsT("hint")}</p>
         <p className="mt-2 text-sm text-red-300/90">

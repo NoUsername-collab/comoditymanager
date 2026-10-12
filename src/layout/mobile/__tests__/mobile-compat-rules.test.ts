@@ -135,8 +135,8 @@ describe("mobile compatibility CSS rules", () => {
   });
 
   it("platform admin has compact table and input rules", () => {
-    expect(flawless).toContain(".ml-shell--nestio-admin");
-    expect(flawless).toContain(".nestio-admin-error");
+    expect(flawless).toContain(".ml-shell--platform-admin");
+    expect(flawless).toContain(".platform-admin-error");
   });
 
   it("compact chrome uses card layouts for platform logs and tenants", () => {
@@ -217,7 +217,7 @@ describe("mobile compatibility CSS rules", () => {
 
   it("pass 16 platform forms, reception checkbox, FAQ, drawer safe-area", () => {
     expect(flawless).toContain(".tenant-billing-toggle");
-    expect(flawless).toContain(".nestio-tenant-option");
+    expect(flawless).toContain(".platform-tenant-option");
     expect(flawless).toContain(".platform-dashboard__cta");
     expect(flawless).toContain(".landing-faq__q");
     expect(flawless).toContain(".ml-drawer--platform");

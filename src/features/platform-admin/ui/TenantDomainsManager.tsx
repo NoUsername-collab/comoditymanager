@@ -85,7 +85,7 @@ export function TenantDomainsManager({
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <CopyTextButton text={row.domain} />
-                {row.routing_kind !== "hospira_subdomain" && (
+                {row.routing_kind !== "platform_subdomain" && (
                   <>
                     {!row.verified && (
                       <button

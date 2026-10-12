@@ -79,8 +79,8 @@ export function AdminTenantDomainsPanel({
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  const platformSubdomainRow = domains.find((d) => d.routing_kind === "hospira_subdomain");
-  const customDomains = domains.filter((d) => d.routing_kind !== "hospira_subdomain");
+  const platformSubdomainRow = domains.find((d) => d.routing_kind === "platform_subdomain");
+  const customDomains = domains.filter((d) => d.routing_kind !== "platform_subdomain");
 
   const defaultUrl = buildTenantAdminUrl(tenantSlug, "/", platformDomain);
 

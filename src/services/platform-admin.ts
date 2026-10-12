@@ -1,5 +1,5 @@
 /**
- * Platform Admin service — cross-tenant queries for Nestio internal panel.
+ * Platform Admin service — cross-tenant queries for Zalmox internal panel.
  * All queries use service_role client (bypasses RLS).
  */
 

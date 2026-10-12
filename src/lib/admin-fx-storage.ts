@@ -5,7 +5,6 @@ type AdminFxPrefs = {
 };
 
 const FX_STORAGE_PREFIX = "zalmox-admin-fx";
-const LEGACY_FX_STORAGE_PREFIX = "nestio-admin-fx";
 
 function scopedKey(prefix: string): string {
   if (typeof window === "undefined") return prefix;
@@ -16,11 +15,7 @@ function scopedKey(prefix: string): string {
 export function readAdminFxPrefs(): AdminFxPrefs {
   if (typeof window === "undefined") return { soundEnabled: false };
   try {
-    const current = localStorage.getItem(scopedKey(FX_STORAGE_PREFIX));
-    const raw =
-      current != null && current !== ""
-        ? current
-        : localStorage.getItem(scopedKey(LEGACY_FX_STORAGE_PREFIX));
+    const raw = localStorage.getItem(scopedKey(FX_STORAGE_PREFIX));
     if (!raw) return { soundEnabled: false };
     const parsed = JSON.parse(raw) as Partial<AdminFxPrefs>;
     return { soundEnabled: parsed.soundEnabled === true };

@@ -83,7 +83,7 @@ async function runTenantAppProxy(
   request: NextRequest,
   slug: string | undefined,
   customDomain: string | undefined,
-  routingKind: TenantDomainRoutingKind = "hospira_subdomain"
+  routingKind: TenantDomainRoutingKind = "platform_subdomain"
 ): Promise<NextResponse> {
   const path = stripLocalePrefix(request.nextUrl.pathname, routing.locales);
   const requestHeaders = new Headers(request.headers);
@@ -369,7 +369,7 @@ export async function proxy(request: NextRequest) {
   const alphaRedirect = alphaGateRedirectIfNeeded(request, path);
   if (alphaRedirect) return alphaRedirect;
 
-  // ── PLATFORM (Zalmox.ro / test.Zalmox.ro) ──────────────────
+  // ── PLATFORM (zalmox.app / test.zalmox.app) ──────────────────
   if (domain.type === "platform") {
     const requestHost = requestHostFrom(request);
 
@@ -377,26 +377,6 @@ export async function proxy(request: NextRequest) {
       const url = request.nextUrl.clone();
       url.pathname = "/landing";
       return NextResponse.redirect(url);
-    }
-
-    // Legacy route — redirect during Nestio → Zalmox transition
-    if (path.startsWith("/nestio-admin")) {
-      const legacy = request.nextUrl.clone();
-      legacy.pathname = request.nextUrl.pathname.replace(
-        "/nestio-admin",
-        "/platform-admin"
-      );
-      return NextResponse.redirect(legacy, 308);
-    }
-
-    // Legacy route — redirect old /hospira-admin bookmarks to /platform-admin
-    if (path.startsWith("/hospira-admin")) {
-      const legacy = request.nextUrl.clone();
-      legacy.pathname = request.nextUrl.pathname.replace(
-        "/hospira-admin",
-        "/platform-admin"
-      );
-      return NextResponse.redirect(legacy, 308);
     }
 
     // Zalmox internal admin — platform domain only, email-gated
@@ -512,15 +492,8 @@ export async function proxy(request: NextRequest) {
           }
 
           // Platform admin routes stay on platform domain
-          if (
-            safe.startsWith("/nestio-admin") ||
-            safe.startsWith("/hospira-admin") ||
-            safe.startsWith("/platform-admin")
-          ) {
-            const normalized = safe
-              .replace("/nestio-admin", "/platform-admin")
-              .replace("/hospira-admin", "/platform-admin");
-            return NextResponse.redirect(new URL(normalized, request.url));
+          if (safe.startsWith("/platform-admin")) {
+            return NextResponse.redirect(new URL(safe, request.url));
           }
 
           const slug = await getPrimaryTenantSlugForUser(
@@ -542,7 +515,7 @@ export async function proxy(request: NextRequest) {
     return intlMiddleware(request);
   }
 
-  // ── TENANT (slug.Zalmox.ro or custom domain) ────────────────
+  // ── TENANT (slug.zalmox.app or custom domain) ────────────────
   const requestHost = requestHostFrom(request);
 
   if (domain.type === "custom") {
@@ -594,7 +567,7 @@ export async function proxy(request: NextRequest) {
   }
 
   const slug = domain.type === "tenant" ? domain.slug : undefined;
-  return runTenantAppProxy(request, slug, undefined, "hospira_subdomain");
+  return runTenantAppProxy(request, slug, undefined, "platform_subdomain");
 }
 
 export const config = {

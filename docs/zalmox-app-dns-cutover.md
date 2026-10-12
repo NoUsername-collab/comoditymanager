@@ -203,5 +203,4 @@ Viitor: Playwright BASE_URL=https://zalmox.app
 
 - vercel-env.md
 - PRODUCTION-READINESS.md
-- test-domeniu-hospira.md
 - platform-auth-tenant-link.md
