@@ -82,8 +82,8 @@ export async function buildSettingsAlerts(
   options?: { isOwner?: boolean },
 ): Promise<SettingsAlert[]> {
   const t = await getTranslations("admin.pages.settings");
+  // `?saved=1` is shown once as a toast by AdminFlashFromUrl, which then drops it from the URL.
   const alerts: SettingsAlert[] = [
-    params.saved === "1" ? { tone: "success", message: t("savedGeneric") } : null,
     params.location === "locked"
       ? { tone: "warning", message: t("locationLocked") }
       : null,
