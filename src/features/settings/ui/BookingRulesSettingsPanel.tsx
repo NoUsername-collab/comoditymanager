@@ -12,6 +12,7 @@ import { useSettingsDraft, type SettingsSaveResult } from "@/hooks/useSettingsDr
 import { SettingsDraftSaveBar } from "@/components/admin/settings/SettingsDraftSaveBar";
 import {
   buildCancellationPolicyText,
+  buildPricingExample,
   type BookingRulesSettings,
   type CancellationPolicyType,
   type PricingSeason,
@@ -160,6 +161,7 @@ export function BookingRulesSettingsPanel({
   }
 
   const weekendPercent = Math.round((view.pricingWeekendMultiplier - 1) * 100);
+  const example = buildPricingExample(view);
 
   return (
     <div className="checkin-settings">
@@ -351,6 +353,31 @@ export function BookingRulesSettingsPanel({
           </div>
         )}
       </div>
+
+      {example.weekend !== null || example.seasons.length > 0 ? (
+        <div className="settings-policy-preview" role="note">
+          <p className="m-0 font-semibold">{t("exampleTitle", { base: example.base })}</p>
+          <ul className="m-0 mt-1 list-disc pl-5">
+            {example.weekend !== null ? (
+              <li>{t("exampleWeekend", { price: example.weekend })}</li>
+            ) : null}
+            {example.seasons.map((season, index) => (
+              <li key={`${season.name}-${index}`}>
+                {season.weekend !== null
+                  ? t("exampleSeasonWeekend", {
+                      name: season.name || t("seasonDefaultName"),
+                      price: season.weekday,
+                      weekend: season.weekend,
+                    })
+                  : t("exampleSeason", {
+                      name: season.name || t("seasonDefaultName"),
+                      price: season.weekday,
+                    })}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       <SettingsDraftSaveBar draft={draft} errorFallback={t("saveError")} />
     </div>

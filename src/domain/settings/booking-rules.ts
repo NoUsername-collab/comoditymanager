@@ -257,3 +257,34 @@ export function buildCancellationPolicyText(
       return settings.cancellationPolicyCustomText ?? "";
   }
 }
+
+export type PricingExample = {
+  base: number;
+  /** Weekend night, when the weekend surcharge is on. */
+  weekend: number | null;
+  seasons: { name: string; weekday: number; weekend: number | null }[];
+};
+
+/**
+ * A worked example for owners ("200 lei → 240 lei on Saturday"), multiplied the
+ * same way nightly rates are: weekend × season.
+ */
+export function buildPricingExample(
+  rules: Pick<
+    BookingRulesSettings,
+    "pricingWeekendEnabled" | "pricingWeekendMultiplier" | "pricingSeasons"
+  >,
+  base = 200,
+): PricingExample {
+  const round = (value: number) => Math.round(value);
+  const weekendFactor = rules.pricingWeekendEnabled ? rules.pricingWeekendMultiplier : null;
+  return {
+    base,
+    weekend: weekendFactor === null ? null : round(base * weekendFactor),
+    seasons: rules.pricingSeasons.map((season) => ({
+      name: season.name,
+      weekday: round(base * season.multiplier),
+      weekend: weekendFactor === null ? null : round(base * season.multiplier * weekendFactor),
+    })),
+  };
+}
