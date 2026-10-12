@@ -134,6 +134,8 @@ export type PublicSiteReadinessItem = {
   id: PublicSiteReadinessId;
   done: boolean;
   tab: PublicSiteEditorTab;
+  /** Nice to have; never counted as "still to do" before publishing. */
+  optional?: boolean;
 };
 
 /** Checklist shown before publishing. `config` is the resolved preview config. */
@@ -164,6 +166,7 @@ export function publicSiteReadiness(
       id: "locales",
       done: PUBLIC_LOCALES.every((locale) => progress[locale] === 100),
       tab: "content",
+      optional: true,
     },
   ];
 }

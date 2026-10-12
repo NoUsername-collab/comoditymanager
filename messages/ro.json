@@ -1497,6 +1497,7 @@
           "publishing": "Se salvează…",
           "publishAnyway": "{count, plural, one {Mai ai # lucru de completat} few {Mai ai # lucruri de completat} other {Mai ai # de lucruri de completat}} — poți publica și acum, apoi completezi.",
           "publishSavesAll": "Se salvează și celelalte modificări nesalvate.",
+          "unsavedStudio": "Ai modificări nesalvate — apasă „Salvează” sus, lângă previzualizare.",
           "shareTitle": "Site-ul tău e online la adresa:",
           "shareCopy": "Copiază adresa",
           "shareCopied": "Adresă copiată",
@@ -1724,7 +1725,7 @@
             "description": "Ai scris o descriere scurtă",
             "contact": "Oaspeții au un telefon sau e-mail",
             "gallery": "Galeria are cel puțin o poză",
-            "locales": "Textele sunt completate în toate limbile"
+            "locales": "Traducerile în engleză și bulgară (opțional — până atunci vizitatorii văd textul în română)"
           },
           "checkFix": "Completează",
           "publishedOn": "Site-ul e online",

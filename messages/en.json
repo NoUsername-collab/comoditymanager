@@ -1512,6 +1512,7 @@
           "publishing": "Saving…",
           "publishAnyway": "{count, plural, one {# thing still missing} other {# things still missing}} — you can publish now and finish later.",
           "publishSavesAll": "Your other unsaved changes are saved too.",
+          "unsavedStudio": "You have unsaved changes — press “Save” at the top, next to the preview.",
           "shareTitle": "Your site is online at:",
           "shareCopy": "Copy address",
           "shareCopied": "Address copied",
@@ -1739,7 +1740,7 @@
             "description": "You wrote a short description",
             "contact": "Guests have a phone or email",
             "gallery": "The gallery has at least one photo",
-            "locales": "Text is filled in for every language"
+            "locales": "Translations into the other languages (optional — until then visitors see your main language)"
           },
           "checkFix": "Fill in",
           "publishedOn": "The site is online",

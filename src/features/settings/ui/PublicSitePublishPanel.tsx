@@ -22,6 +22,7 @@ export function PublicSitePublishPanel({
   pending,
   dirty,
   siteUrl,
+  onQuickStart,
 }: {
   readiness: PublicSiteReadinessItem[];
   onGoTo: (tab: PublicSiteEditorTab) => void;
@@ -31,12 +32,16 @@ export function PublicSitePublishPanel({
   dirty: boolean;
   /** Address of the live site, to copy or send once it is online. */
   siteUrl: string;
+  /** Opens the 4-question quick start; offered until the site is online. */
+  onQuickStart?: () => void;
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const te = useTranslations("admin.pages.publicSite.editor");
   const { config, draft, copy, patchDraft, patchCopy, fieldError, readOnly } =
     usePublicSiteEditor();
-  const done = readiness.filter((item) => item.done).length;
+  const required = readiness.filter((item) => !item.optional);
+  const done = required.filter((item) => item.done).length;
+  const missing = required.length - done;
 
   const googleTitle = copy.seoTitle.trim() || copy.heroTitle.trim() || config.displayName;
   const googleDesc = copy.seoDescription.trim() || copy.heroSubtitle.trim();
@@ -45,13 +50,17 @@ export function PublicSitePublishPanel({
     <>
       <EditorGroup
         title={te("checklistTitle")}
-        description={te("checklistDone", { done, total: readiness.length })}
+        description={te("checklistDone", { done, total: required.length })}
       >
         <ul className="pub-editor-checklist">
           {readiness.map((item) => (
-            <li key={item.id} data-done={item.done ? "1" : undefined}>
+            <li
+              key={item.id}
+              data-done={item.done ? "1" : undefined}
+              data-optional={item.optional ? "1" : undefined}
+            >
               <span className="pub-editor-checklist__mark" aria-hidden>
-                {item.done ? "✓" : "!"}
+                {item.done ? "✓" : item.optional ? "○" : "!"}
               </span>
               <span className="pub-editor-checklist__label">{te(`checks.${item.id}`)}</span>
               {!item.done ? (
@@ -82,10 +91,16 @@ export function PublicSitePublishPanel({
                 ? te("publishing")
                 : te(draft.published ? "unpublishButton" : "publishButton")}
             </AdminButton>
-            {!draft.published && done < readiness.length ? (
+            {!draft.published && missing > 0 ? (
               <p className="pub-editor-publish__note">
-                {te("publishAnyway", { count: readiness.length - done })}
+                {te("publishAnyway", { count: missing })}
               </p>
+            ) : null}
+            {!draft.published && onQuickStart ? (
+              <button type="button" className="pub-editor-quickstart-btn" onClick={onQuickStart}>
+                <strong>{te("quickStart.open")}</strong>
+                <span>{te("quickStart.openHint")}</span>
+              </button>
             ) : null}
             {dirty ? <p className="pub-editor-publish__note">{te("publishSavesAll")}</p> : null}
           </>
@@ -96,7 +111,8 @@ export function PublicSitePublishPanel({
         <SiteShare siteUrl={siteUrl} name={config.displayName} />
       ) : null}
 
-      <EditorGroup title={te("googleTitle")} description={te("googleDesc")}>
+      <EditorAdvanced label={te("googleTitle")}>
+        <p className="pub-editor-lead">{te("googleDesc")}</p>
         <div className="pub-editor-serp" aria-label={te("googlePreviewLabel")}>
           <span className="pub-editor-serp__title">{googleTitle}</span>
           <span className="pub-editor-serp__desc">{googleDesc || te("googleDescEmpty")}</span>
@@ -129,7 +145,7 @@ export function PublicSitePublishPanel({
             />
           </div>
         </div>
-      </EditorGroup>
+      </EditorAdvanced>
 
       <EditorAdvanced label={te("otherPagesTitle")}>
         <p className="pub-editor-lead">{te("otherPagesDesc")}</p>

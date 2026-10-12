@@ -579,6 +579,18 @@
   background: var(--admin-accent, #059669);
 }
 
+/* Optional and not done yet: neutral, not a warning. */
+.pub-editor-checklist li[data-optional="1"]:not([data-done="1"]) {
+  background: color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 45%, var(--admin-panel-bg, #fff));
+  color: var(--admin-text-muted, #52525b);
+}
+
+.pub-editor-checklist li[data-optional="1"]:not([data-done="1"]) .pub-editor-checklist__mark {
+  background: transparent;
+  border: 1px solid var(--admin-panel-border, #cbd5e1);
+  color: var(--admin-text-muted, #52525b);
+}
+
 .pub-editor-checklist__label {
   flex: 1;
 }

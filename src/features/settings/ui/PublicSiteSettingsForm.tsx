@@ -64,7 +64,6 @@ export function PublicSiteSettingsForm({
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const te = useTranslations("admin.pages.publicSite.editor");
-  const tSettings = useTranslations("admin.pages.settings");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -244,7 +243,7 @@ export function PublicSiteSettingsForm({
           <SettingsAlerts alerts={alerts} />
           {!readOnly && dirty ? (
             <p className="settings-unsaved-banner pub-site-studio__unsaved" role="status">
-              {tSettings("unsavedChanges")}
+              {te("unsavedStudio")}
             </p>
           ) : null}
           {error ? (
@@ -343,6 +342,7 @@ export function PublicSiteSettingsForm({
                   pending={pending}
                   dirty={dirty}
                   siteUrl={siteUrl}
+                  onQuickStart={readOnly ? undefined : () => setQuickStartOpen(true)}
                 />
               ) : null}
             </PublicSiteEditorProvider>
