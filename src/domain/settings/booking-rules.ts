@@ -258,7 +258,7 @@ export function buildCancellationPolicyText(
   }
 }
 
-export type PricingExample = {
+type PricingExample = {
   base: number;
   /** Weekend night, when the weekend surcharge is on. */
   weekend: number | null;

@@ -11,7 +11,7 @@ export type CheckinIdentityResult = {
   transferOffer?: CheckinTransferOffer;
 };
 
-export const CHECKIN_TRANSFER_REQUIRED_PREFIX = "checkin.transfer_required:";
+const CHECKIN_TRANSFER_REQUIRED_PREFIX = "checkin.transfer_required:";
 
 export function encodeCheckinTransferRequired(
   offer: CheckinTransferOffer,

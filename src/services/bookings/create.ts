@@ -42,45 +42,6 @@ import { createServerTimer } from "@/lib/dev/server-timing";
 import { getBookingById } from "./queries";
 import { assertRoomsAvailableForStay } from "./availability";
 
-export async function assignBookingRoomHold(
-  bookingId: string,
-  roomIds: string[],
-  options?: { skipAvailabilityCheck?: boolean }
-): Promise<void> {
-  const booking = await getBookingById(bookingId);
-  assertBookingRoomAssignable(booking);
-
-  const unique = [...new Set(roomIds.filter(Boolean))];
-  if (!options?.skipAvailabilityCheck) {
-    await assertRoomsAvailableForStay(
-      booking.check_in,
-      booking.check_out,
-      unique,
-      bookingId
-    );
-  }
-
-  const { tenantId, supabase } = await getTenantScope();
-  const { error: delError } = await supabase
-    .from("booking_rooms")
-    .delete()
-    .eq("tenant_id", tenantId)
-    .eq("booking_id", bookingId);
-  if (delError) throw new Error(delError.message);
-
-  const { error: insError } = await supabase.from("booking_rooms").insert(
-    unique.map((room_id) =>
-      withTenantId(tenantId, {
-        booking_id: bookingId,
-        room_id,
-        extra_beds: 0,
-      })
-    )
-  );
-  if (insError) throw new Error(insError.message);
-  await syncBookingRoomSegments(bookingId);
-}
-
 async function attachRoomsToNewBooking(
   bookingId: string,
   checkIn: string,

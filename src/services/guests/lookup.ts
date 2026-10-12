@@ -56,49 +56,6 @@ export async function getGuestBaseById(id: string): Promise<GuestRow | null> {
   return loadGuestBaseById(id);
 }
 
-/** Caută client după nume+prenume — doar dacă există un singur match clar. */
-export async function findGuestByNameParts(
-  lastName: string,
-  firstName: string,
-): Promise<GuestRow | null> {
-  const last = lastName.trim();
-  const first = firstName.trim();
-  if (last.length < 2 || first.length < 2) return null;
-
-  const { tenantId, supabase } = await getTenantScope();
-  const { data, error } = await supabase
-    .from("guests")
-    .select("id")
-    .eq("tenant_id", tenantId)
-    .ilike("last_name", last)
-    .ilike("first_name", first)
-    .order("updated_at", { ascending: false })
-    .limit(2);
-  if (error) throw new Error(error.message);
-
-  const ids = ((data ?? []) as { id: string }[]).map((row) => row.id);
-  if (ids.length === 1) {
-    return getGuestBaseById(ids[0]!);
-  }
-  if (ids.length > 1) return null;
-
-  const full = formatGuestFullName(last, first);
-  const { data: byDisplay, error: displayError } = await supabase
-    .from("guests")
-    .select("id")
-    .eq("tenant_id", tenantId)
-    .ilike("display_name", full)
-    .order("updated_at", { ascending: false })
-    .limit(2);
-  if (displayError) throw new Error(displayError.message);
-
-  const displayIds = ((byDisplay ?? []) as { id: string }[]).map(
-    (row) => row.id,
-  );
-  if (displayIds.length !== 1) return null;
-  return getGuestBaseById(displayIds[0]!);
-}
-
 async function findGuestByIdsOrdered(ids: string[]): Promise<GuestRow | null> {
   const unique = [...new Set(ids.filter(Boolean))];
   if (unique.length === 0) return null;
@@ -284,7 +241,4 @@ export async function findGuestByNationalId(
   if (!cleaned) return null;
   return loadGuestByNationalId(cleaned, excludeGuestId ?? null);
 }
-
-/** @deprecated Use findGuestByNationalId */
-export const findGuestByCnp = findGuestByNationalId;
 

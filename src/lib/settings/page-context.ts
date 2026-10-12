@@ -50,7 +50,7 @@ export const loadSettingsStaffContext = cache(async () => {
   };
 });
 
-export type SettingsStaffContext = Awaited<
+type SettingsStaffContext = Awaited<
   ReturnType<typeof loadSettingsStaffContext>
 >;
 

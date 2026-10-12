@@ -1,12 +1,12 @@
 /** Valori permise de constraint-ul legacy rooms_room_type_check (pre-050). */
-export const LEGACY_ROOM_TYPE_VALUES = [
+const LEGACY_ROOM_TYPE_VALUES = [
   "double",
   "triple",
   "deluxe",
   "other",
 ] as const;
 
-export type LegacyRoomType = (typeof LEGACY_ROOM_TYPE_VALUES)[number];
+type LegacyRoomType = (typeof LEGACY_ROOM_TYPE_VALUES)[number];
 
 const LEGACY_SET = new Set<string>(LEGACY_ROOM_TYPE_VALUES);
 

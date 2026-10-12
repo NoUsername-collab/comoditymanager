@@ -2,7 +2,7 @@
 
 export type PensionMood = "calm" | "active" | "alert";
 
-export type PensionMoodInput = {
+type PensionMoodInput = {
   /** Cereri noi awaiting confirmation */
   requestCount: number;
   /** In-house guests (checked in, not out) with unpaid/partial payment */

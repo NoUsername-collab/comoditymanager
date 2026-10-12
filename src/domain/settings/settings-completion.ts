@@ -6,7 +6,7 @@ import {
 import type { SetupIssue } from "@/domain/setup-issues/types";
 import { SETUP_ISSUE_IDS } from "@/domain/setup-issues/types";
 
-export type SettingsCompletionItem = {
+type SettingsCompletionItem = {
   id: string;
   labelKey: string;
   done: boolean;
@@ -25,7 +25,7 @@ export type SettingsCompletionSummary = {
   publicItems: SettingsCompletionItem[];
 };
 
-export type PublicSiteCompletionSnapshot = {
+type PublicSiteCompletionSnapshot = {
   published: boolean;
   bookingEnabled: boolean;
   hasContact: boolean;

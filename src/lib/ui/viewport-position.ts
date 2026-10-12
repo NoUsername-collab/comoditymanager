@@ -30,7 +30,7 @@ export function getVisualViewportBox() {
   };
 }
 
-export type FixedAnchoredPosition = {
+type FixedAnchoredPosition = {
   top: number;
   left: number;
 };

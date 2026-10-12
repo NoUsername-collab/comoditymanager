@@ -4,7 +4,7 @@ export type DisplayProfileId = "wide" | "laptop" | "compact-laptop" | "narrow";
 
 export type DisplayLayoutPreference = "auto" | DisplayProfileId;
 
-export const DISPLAY_LAYOUT_STORAGE_KEY = "platform-display-layout";
+const DISPLAY_LAYOUT_STORAGE_KEY = "platform-display-layout";
 
 export const DISPLAY_LAYOUT_CHANGED_EVENT = "zalmox:display-layout-changed";
 
@@ -15,16 +15,10 @@ const MANUAL_PROFILES: DisplayProfileId[] = [
   "narrow",
 ];
 
-export function isDisplayProfileId(
+function isDisplayProfileId(
   value: string | null | undefined
 ): value is DisplayProfileId {
   return MANUAL_PROFILES.includes(value as DisplayProfileId);
-}
-
-export function isDisplayLayoutPreference(
-  value: string | null | undefined
-): value is DisplayLayoutPreference {
-  return value === "auto" || isDisplayProfileId(value);
 }
 
 export function getDisplayLayoutPreference(): DisplayLayoutPreference {

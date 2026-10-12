@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export type CssViolation = {
+type CssViolation = {
   file: string;
   rule: string;
   detail: string;
@@ -204,7 +204,7 @@ export const CSS_GOD_FILE_LINE_CAPS: { file: string; maxLines: number }[] = [
   },
 ];
 
-export type CssGodFileSize = {
+type CssGodFileSize = {
   file: string;
   lines: number;
   maxLines: number;

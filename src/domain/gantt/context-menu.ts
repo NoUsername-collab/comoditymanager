@@ -5,7 +5,7 @@ import type {
 } from "@/domain/gantt/drafts";
 import type { OccupancyPhase, OccupancySegment } from "@/domain/occupancy/types";
 
-export type GanttContextMenuPoint = {
+type GanttContextMenuPoint = {
   clientX: number;
   clientY: number;
 };
@@ -20,10 +20,7 @@ export type GanttCreateTarget = GanttContextMenuPoint & {
   roomIds?: string[];
 };
 
-/** @deprecated alias — use GanttCreateTarget */
-export type GanttEmptyCellTarget = GanttCreateTarget & { roomId: string; roomName: string };
-
-export type GanttStayTarget = GanttContextMenuPoint & {
+type GanttStayTarget = GanttContextMenuPoint & {
   kind: "stay";
   bookingId: string;
   guestId: string | null;
@@ -41,7 +38,7 @@ export type GanttStayTarget = GanttContextMenuPoint & {
   popover: GanttStayPopoverData;
 };
 
-export type GanttOccTarget = GanttContextMenuPoint & {
+type GanttOccTarget = GanttContextMenuPoint & {
   kind: "hold" | "block";
   segment: OccupancySegment;
   roomName: string;

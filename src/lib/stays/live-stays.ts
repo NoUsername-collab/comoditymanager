@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { BookingRow } from "@/services/bookings/types";
 
-export const STAY_CANCELLED_EVENT = "stays:cancelled";
-export const STAY_PATCH_EVENT = "stays:patch";
+const STAY_CANCELLED_EVENT = "stays:cancelled";
+const STAY_PATCH_EVENT = "stays:patch";
 
 type StayCancelledDetail = { bookingId: string };
 type StayPatchDetail = { patch: Partial<BookingRow> & { id: string } };

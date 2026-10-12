@@ -15,7 +15,7 @@ function getFocusableElements(root: HTMLElement): HTMLElement[] {
   );
 }
 
-export type AdminFloatingVariant = "popover" | "modal";
+type AdminFloatingVariant = "popover" | "modal";
 
 type Props = {
   open: boolean;

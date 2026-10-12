@@ -2,7 +2,7 @@ import type { AcMode } from "@/types/database";
 
 /** Culoare marker sidebar Gantt — AC vs fără AC (nu paleta clădirii). */
 export const GANTT_AC_MARKER_BLUE = "#2563eb";
-export const GANTT_NO_AC_MARKER_ORANGE = "#ea580c";
+const GANTT_NO_AC_MARKER_ORANGE = "#ea580c";
 
 export function ganttMarkerShowsAc(
   acMode: AcMode,

@@ -105,12 +105,6 @@ const loadBuildingById = cache(async (buildingId: string): Promise<Building | nu
   };
 });
 
-/** Single-row fetch — avoids listBuildings() when only one building is needed. */
-export async function getBuildingById(buildingId: string): Promise<Building | null> {
-  if (!buildingId) return null;
-  return loadBuildingById(buildingId);
-}
-
 export async function updateBuilding(input: {
   id: string;
   name: string;
@@ -206,10 +200,4 @@ export async function deleteBuilding(id: string): Promise<void> {
     .eq("tenant_id", tenantId)
     .eq("id", id);
   if (error) throw new Error(error.message);
-}
-
-export function defaultHasAcForBuilding(acMode: AcMode): boolean {
-  if (acMode === "all_rooms") return true;
-  if (acMode === "none") return false;
-  return false;
 }

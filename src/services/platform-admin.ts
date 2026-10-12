@@ -30,7 +30,7 @@ export interface PlatformTenantSummary extends TenantRow {
   setup_incomplete: boolean;
 }
 
-export interface PlatformStats {
+interface PlatformStats {
   totalTenants: number;
   activeTenants: number;
   trialTenants: number;
@@ -54,7 +54,7 @@ export type TenantLastActivity = {
 
 // ─── Queries ────────────────────────────────────────────────────
 
-export type TenantFilterOption = {
+type TenantFilterOption = {
   id: string;
   slug: string;
   displayName: string;

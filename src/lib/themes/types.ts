@@ -15,8 +15,6 @@ export type ThemeSettings = {
   mode: ThemeMode;
 };
 
-export const COUNTRY_THEME_IDS = [] as const satisfies readonly ThemeId[];
-
 export const ALL_THEME_IDS = [
   "noir",
   "alpine",

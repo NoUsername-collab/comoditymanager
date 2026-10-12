@@ -36,7 +36,7 @@ const CheckinStepper = dynamic(
 
 export type CheckinWizardMode = "create" | "edit";
 
-export type CheckinWizardEditState = {
+type CheckinWizardEditState = {
   checkinId: string;
   guests: CheckinGuestInput[];
   paymentStatus: PaymentStatus;

@@ -1,6 +1,6 @@
 const OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast";
 
-export type WeatherData = {
+type WeatherData = {
   currentTemp: number;
   currentCode: number;
   minTemp: number;
@@ -8,7 +8,7 @@ export type WeatherData = {
   forecast: DayForecast[];
 };
 
-export type DayForecast = {
+type DayForecast = {
   date: string;
   minTemp: number;
   maxTemp: number;

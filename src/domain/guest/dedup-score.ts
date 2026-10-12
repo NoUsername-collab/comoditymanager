@@ -23,9 +23,9 @@
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type DedupMatchTier = "hard" | "strong" | "probable";
+type DedupMatchTier = "hard" | "strong" | "probable";
 
-export type DedupMatchReason =
+type DedupMatchReason =
   | "national_id"
   | "phone_lastname"
   | "email_lastname"

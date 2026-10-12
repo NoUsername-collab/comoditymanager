@@ -1,6 +1,6 @@
 import { platformPensionNameFallback } from "@/lib/platform/branding";
 
-export function sanitizeEmailDisplayName(name: string): string {
+function sanitizeEmailDisplayName(name: string): string {
   return name.replace(/[<>"]/g, "").trim();
 }
 

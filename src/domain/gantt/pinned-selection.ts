@@ -15,7 +15,7 @@ export function pinnedSelectionFromRange(
   return { roomIds: unique, checkIn, checkOut };
 }
 
-export type CreateMenuLifecycle =
+type CreateMenuLifecycle =
   | "open"
   | "dismiss-outside"
   | "dismiss-escape"

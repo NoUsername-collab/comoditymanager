@@ -37,19 +37,3 @@ import {
   listGuestStayReviewsByBookingIds,
   mergeGuestProfiles,
 } from "@/services/guest-profiles";
-
-
-export function guestInputFromNames(
-  lastName: string,
-  firstName: string,
-  email: string,
-  phone: string
-): GuestBookingInput {
-  return {
-    guest_last_name: lastName,
-    guest_first_name: firstName,
-    guest_name: formatGuestFullName(lastName, firstName),
-    guest_email: email,
-    guest_phone: phone,
-  };
-}

@@ -7,7 +7,7 @@ import {
 import { computeRevenueKpis } from "@/domain/statistics/kpi-metrics";
 import { monthBounds, nightsBetween, todayIso } from "@/lib/stay-dates";
 
-export type MonthCompareSnapshot = {
+type MonthCompareSnapshot = {
   year: number;
   month: number;
   monthLabel: string;

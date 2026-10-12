@@ -108,7 +108,7 @@ function mergeRoomLabel(
   }
 }
 
-export type CheckinBookingEnrichment = {
+type CheckinBookingEnrichment = {
   latestByBooking: Map<string, CheckinLiteRow>;
   checkedRoomsByBooking: Map<string, string[]>;
   keysHandedByBooking: Map<string, string[]>;
@@ -213,27 +213,11 @@ export async function loadCheckinEnrichmentByBookingIds(
 }
 
 /** Camere distincte deja recepționate per rezervare (toate sesiunile de check-in). */
-export async function getCheckedInRoomsByBookingIds(
+async function getCheckedInRoomsByBookingIds(
   bookingIds: string[],
 ): Promise<Map<string, string[]>> {
   const batch = await loadCheckinEnrichmentByBookingIds(bookingIds);
   return batch.checkedRoomsByBooking;
-}
-
-/** Camere cu cheie înmânată per rezervare (uniune din toate sesiunile). */
-export async function getKeysHandedRoomsByBookingIds(
-  bookingIds: string[],
-): Promise<Map<string, string[]>> {
-  const batch = await loadCheckinEnrichmentByBookingIds(bookingIds);
-  return batch.keysHandedByBooking;
-}
-
-/** Camere cu cel puțin un oaspete identificat (CNP valid sau document) per rezervare. */
-export async function getRoomIdentityStatusByBookingIds(
-  bookingIds: string[],
-): Promise<Map<string, string[]>> {
-  const batch = await loadCheckinEnrichmentByBookingIds(bookingIds);
-  return batch.roomIdVerifiedByBooking;
 }
 
 export async function getCheckedInRoomsForBooking(

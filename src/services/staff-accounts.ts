@@ -20,14 +20,6 @@ const PASSWORD_MANAGEABLE_ROLES: TenantMemberRole[] = [
   "operator",
 ];
 
-/**
- * @deprecated Folosește listStaffAccountsForCurrentTenant — lista veche din ADMIN_EMAIL/OPERATOR_EMAIL
- * aparține altei pensiuni în multi-tenant.
- */
-export function listStaffAccounts(): StaffAccount[] {
-  return [];
-}
-
 const loadStaffAccountsForCurrentTenant = cache(async (): Promise<
   StaffAccount[]
 > => {
@@ -42,7 +34,7 @@ export async function listStaffAccountsForCurrentTenant(): Promise<
   return loadStaffAccountsForCurrentTenant();
 }
 
-export async function listStaffAccountsForTenant(
+async function listStaffAccountsForTenant(
   tenantId: string
 ): Promise<StaffAccount[]> {
   const members = await listActiveTenantMembers(tenantId);

@@ -3,14 +3,14 @@
  * Never exposes secret values — only configured / missing status.
  */
 
-export type EnvCheckItem = {
+type EnvCheckItem = {
   key: string;
   configured: boolean;
   required: boolean;
   recommended: boolean;
 };
 
-export type PlatformCronStatus = {
+type PlatformCronStatus = {
   secretConfigured: boolean;
   endpoints: { path: string; schedule: string }[];
 };

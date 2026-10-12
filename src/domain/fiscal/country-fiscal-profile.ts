@@ -2,7 +2,7 @@ export type TenantCountry = "RO" | "BG" | "MD";
 
 export type FiscalCurrency = "RON" | "BGN" | "MDL";
 
-export type CountryFiscalProfile = {
+type CountryFiscalProfile = {
   country: TenantCountry;
   countryName: { ro: string; en: string; bg: string };
   currency: FiscalCurrency;
@@ -16,7 +16,7 @@ export type CountryFiscalProfile = {
   vatNote: { ro: string; en: string; bg: string };
 };
 
-export const COUNTRY_FISCAL_PROFILES: Record<TenantCountry, CountryFiscalProfile> = {
+const COUNTRY_FISCAL_PROFILES: Record<TenantCountry, CountryFiscalProfile> = {
   RO: {
     country: "RO",
     countryName: {
@@ -194,7 +194,7 @@ export function resolveInvoiceVatRate(
   return COUNTRY_FISCAL_PROFILES[country].defaultAccommodationVatRate;
 }
 
-export type VatBreakdown = {
+type VatBreakdown = {
   net: number;
   vat: number;
   gross: number;
@@ -247,7 +247,7 @@ export function computeVatBreakdown(
   };
 }
 
-export type FiscalSellerSnapshot = {
+type FiscalSellerSnapshot = {
   propertyName: string;
   taxId: string | null;
   regCom: string | null;

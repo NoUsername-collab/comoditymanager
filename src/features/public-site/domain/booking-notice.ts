@@ -23,7 +23,7 @@ export const BOOKING_NOTICE_PRESETS: Exclude<BookingNoticePresetId, "custom">[] 
   "cancel",
 ];
 
-export const BOOKING_NOTICE_ICONS: BookingNoticeIconId[] = [
+const BOOKING_NOTICE_ICONS: BookingNoticeIconId[] = [
   "check",
   "timer",
   "clock",
@@ -85,7 +85,7 @@ export function defaultBookingNotice(): PublicBookingNoticeConfig {
   };
 }
 
-export function emptyPresetItem(
+function emptyPresetItem(
   preset: Exclude<BookingNoticePresetId, "custom">
 ): PublicBookingNoticeItem {
   return {
@@ -292,7 +292,7 @@ export type BookingNoticePresetCopy = Record<
   { title: string; text: string }
 >;
 
-export type BookingNoticeView = {
+type BookingNoticeView = {
   enabled: boolean;
   title: string;
   items: { id: string; icon: string; title: string; text: string }[];

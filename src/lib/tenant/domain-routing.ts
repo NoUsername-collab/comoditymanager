@@ -14,7 +14,7 @@ const PUBLIC_PATH_PREFIXES = [
 const BRAND_ONLY_PATHS = new Set(["/", "/confidentialitate", "/termeni"]);
 
 /** Paths allowed on custom_brand (homepage + legal only). */
-export function isBrandOnlyPublicPath(path: string): boolean {
+function isBrandOnlyPublicPath(path: string): boolean {
   if (BRAND_ONLY_PATHS.has(path)) return true;
   const segments = path.split("/").filter(Boolean);
   if (segments.length === 1 && ["ro", "en", "bg"].includes(segments[0]!)) {
@@ -30,7 +30,7 @@ export function isBrandOnlyPublicPath(path: string): boolean {
   return false;
 }
 
-export function isPublicTenantPath(path: string): boolean {
+function isPublicTenantPath(path: string): boolean {
   if (path === "/") return true;
   return PUBLIC_PATH_PREFIXES.some(
     (prefix) => prefix !== "/" && path.startsWith(prefix)
@@ -43,12 +43,6 @@ export function isStaffOnlyPath(path: string): boolean {
     path === "/receptie" ||
     path.startsWith("/calendar/confirm/")
   );
-}
-
-export function customDomainRestrictsStaff(
-  routingKind: TenantDomainRoutingKind | null | undefined
-): boolean {
-  return routingKind === "custom_public" || routingKind === "custom_brand";
 }
 
 export function pathAllowedOnCustomDomain(

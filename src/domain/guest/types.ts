@@ -1,7 +1,5 @@
 export type GuestTag = "vip" | "recurrent";
 
-export const GUEST_TAGS: readonly GuestTag[] = ["vip", "recurrent"] as const;
-
 export type GuestFlagLevel = "normal" | "watchlist" | "blacklist";
 
 export type GuestProfileRow = {

@@ -1,12 +1,5 @@
 import type { GuestAccessDenyReason, GuestAccessWindow } from "./types";
 
-export const DEFAULT_GUEST_ACCESS_WINDOW: GuestAccessWindow = {
-  checkIn: "",
-  checkOut: "",
-  /** 0 = activ de la confirmare (fără așteptare înainte de check-in). */
-  earlyAccessDays: 0,
-};
-
 /** Prima zi activă — la confirmare (earlyAccessDays 0) nu restricționăm înainte de check-in. */
 export function guestAccessOpensOn(
   checkIn: string,

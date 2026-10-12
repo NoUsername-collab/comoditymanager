@@ -3,10 +3,10 @@ import type { OccupancySegment } from "@/domain/occupancy/types";
 import { dayIndexFromPointerX, intervalFromDayIndices } from "@/domain/gantt/drag-create";
 import { findGanttRoomAtPoint } from "@/domain/gantt/room-at-point";
 
-export const GANTT_CTX_STAY_SELECTOR = "[data-gantt-stay]";
-export const GANTT_CTX_OCC_SELECTOR = "[data-gantt-occ]";
+const GANTT_CTX_STAY_SELECTOR = "[data-gantt-stay]";
+const GANTT_CTX_OCC_SELECTOR = "[data-gantt-occ]";
 
-export function dayIndexAtGanttPoint(
+function dayIndexAtGanttPoint(
   clientX: number,
   dayCount: number
 ): number | null {
@@ -19,7 +19,7 @@ export function dayIndexAtGanttPoint(
   return dayIndexFromPointerX(clientX, rect.left, rect.width, dayCount);
 }
 
-export function ganttRoomNameFromId(roomId: string): string | null {
+function ganttRoomNameFromId(roomId: string): string | null {
   if (typeof document === "undefined") return null;
   const row = document.querySelector(
     `[data-gantt-room-row="${roomId}"]`

@@ -233,7 +233,7 @@ export function filterSettingsNav(
 /** Matches `src/i18n/routing.ts` — strip locale if usePathname ever keeps it. */
 const SETTINGS_LOCALE_PREFIX = /^\/(ro|en|bg)(?=\/|$)/;
 
-export function normalizeSettingsPath(pathname: string): string {
+function normalizeSettingsPath(pathname: string): string {
   let path = pathname.split(/[?#]/)[0] ?? pathname;
   path = path.replace(/\/$/, "") || "/";
   path = path.replace(SETTINGS_LOCALE_PREFIX, "") || "/";

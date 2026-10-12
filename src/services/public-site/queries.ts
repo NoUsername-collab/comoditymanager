@@ -139,7 +139,7 @@ export async function getPublicSiteConfigForAdmin(): Promise<PublicSiteConfig> {
   return loadPublicSiteConfig();
 }
 
-export type PublicSiteAdminBundle = {
+type PublicSiteAdminBundle = {
   config: PublicSiteConfig;
   primaryContact: PensionContact;
 };

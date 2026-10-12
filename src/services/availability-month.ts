@@ -24,8 +24,6 @@ import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 
-export type DayAvailabilityStatus = "available" | "full";
-
 export type { DayAvailability } from "@/domain/availability/day";
 import type { DayAvailability } from "@/domain/availability/day";
 
@@ -39,7 +37,7 @@ export type MonthAvailabilityGrid = {
   days: DayAvailability[];
 };
 
-export type AvailabilityBuildingOption = {
+type AvailabilityBuildingOption = {
   id: string;
   name: string;
   color_hex: string | null;
@@ -59,7 +57,7 @@ export type MonthAvailabilityKpis = {
   vs_prev_full_delta: number;
 };
 
-export type RequestBandDay = {
+type RequestBandDay = {
   iso: string;
   day: number;
   unassigned: number;
@@ -75,7 +73,7 @@ export type AvailabilityDashboard = MonthAvailabilityGrid & {
   scan_days: DayAvailability[];
 };
 
-export type DayRoomRow = {
+type DayRoomRow = {
   id: string;
   name: string;
   building_id: string;
@@ -355,14 +353,6 @@ async function loadAvailabilityDashboardImpl(
 }
 
 export const loadAvailabilityDashboard = cache(loadAvailabilityDashboardImpl);
-
-export async function loadMonthAvailabilityGrid(
-  year: number,
-  month: number,
-  buildingId: string | null = null
-): Promise<MonthAvailabilityGrid> {
-  return loadAvailabilityDashboard(year, month, buildingId);
-}
 
 type DayRoomRowsPayload = Pick<
   DayAvailabilityDetail,

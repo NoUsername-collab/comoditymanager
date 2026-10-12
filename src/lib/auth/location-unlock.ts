@@ -1,4 +1,4 @@
-import { cache } from "react";
+
 import type { User } from "@supabase/supabase-js";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { getAdminEmail } from "@/lib/auth/constants";
@@ -61,14 +61,6 @@ export async function verifyLocationUnlockPassword(
   return verifyPasswordForEmail(email, password);
 }
 
-export async function getTenantMemberRoleForRequest(
-  userId: string
-): Promise<TenantMemberRole | null> {
-  const tenant = await resolveRequestTenant();
-  if (!tenant) return null;
-  return getTenantMemberRole(tenant.id, userId);
-}
-
 /** Owner: acces permanent. Staff cu location_structure: necesită unlock 2h. */
 export async function locationAccessibleForMemberRole(
   memberRole: TenantMemberRole | null,
@@ -83,11 +75,3 @@ export async function locationAccessibleForMemberRole(
   }
   return false;
 }
-
-/** Owner: acces permanent. Staff admin: necesită unlock 2h. */
-export const isLocationConfigurationAccessible = cache(
-  async (userId: string): Promise<boolean> => {
-    const memberRole = await getTenantMemberRoleForRequest(userId);
-    return locationAccessibleForMemberRole(memberRole);
-  }
-);

@@ -1,7 +1,7 @@
 import { mapCheckinDocTypeFromDb } from "./doc-type";
 import type { CheckinGuestInput, DocumentType } from "./types";
 
-export type PersistedCheckinGuest = {
+type PersistedCheckinGuest = {
   full_name: string;
   last_name?: string | null;
   first_name?: string | null;

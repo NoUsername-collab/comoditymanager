@@ -15,7 +15,7 @@ import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { loadOnboardingIssueContext } from "@/services/setup-issues-context";
 import type { TenantMemberRole } from "@/domain/tenant/types";
 
-export type ResolveSetupIssuesOpts = {
+type ResolveSetupIssuesOpts = {
   email?: string | null;
   memberRole?: TenantMemberRole | null;
 };
@@ -105,6 +105,3 @@ export async function resolveSetupIssues(
 ): Promise<SetupIssue[]> {
   return loadSetupIssues(opts.email ?? "", opts.memberRole ?? "");
 }
-
-/** Alias — same resolver, used in layouts and settings pages. */
-export const getSetupIssues = resolveSetupIssues;

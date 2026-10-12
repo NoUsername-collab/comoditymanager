@@ -1,6 +1,6 @@
 import { stayNightDates } from "@/lib/stay-dates";
 
-export type StayNightProgress = {
+type StayNightProgress = {
   total: number;
   current: number;
   pct: number;

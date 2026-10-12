@@ -11,7 +11,7 @@ type OperationalStaySlice = ConfirmedStayLike & {
   room_names: string[];
 };
 
-export type StayFilteredLists = {
+type StayFilteredLists = {
   filteredStays: OperationalStay[];
   filteredHistory: HistoryStay[];
   filteredConfirmedRecent: HistoryStay[];

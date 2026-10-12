@@ -11,7 +11,7 @@ import { getPlanConfig, resolvePlanId } from "@/core/config/plans";
 import { loadAllTenantEmailUsageForMonth } from "@/services/tenant-email-usage";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 
-export type TenantEmailListAlert = {
+type TenantEmailListAlert = {
   sentCount: number;
   cap: number | null;
   alert: EmailUsageAlertLevel;

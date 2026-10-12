@@ -9,9 +9,9 @@ import {
 import { readTenantResendApiKey } from "@/domain/email/delivery-policy";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 
-export type TenantResendKeySource = "tenant_vault" | "tenant_env" | "none";
+type TenantResendKeySource = "tenant_vault" | "tenant_env" | "none";
 
-export type TenantResendKeyResolution = {
+type TenantResendKeyResolution = {
   apiKey: string | null;
   source: TenantResendKeySource;
   vaultHint: string | null;
@@ -24,7 +24,7 @@ type SecretRow = {
   resend_key_hint: string | null;
 };
 
-export async function getTenantResendVaultHint(
+async function getTenantResendVaultHint(
   tenantId: string,
 ): Promise<string | null> {
   const supabase = createPublicAdminClient();
@@ -42,7 +42,7 @@ export async function getTenantResendVaultHint(
   return data?.resend_key_hint ?? null;
 }
 
-export async function getTenantResendApiKeyFromVault(
+async function getTenantResendApiKeyFromVault(
   tenantId: string,
 ): Promise<string | null> {
   const masterKey = getTenantSecretsMasterKey();
@@ -157,12 +157,4 @@ export async function clearTenantResendApiKeyFromVault(
 
   if (error) return { success: false, error: error.message };
   return { success: true };
-}
-
-export function assertTenantVaultReady(): void {
-  if (!getTenantSecretsMasterKey()) {
-    throw new TenantVaultUnavailableError(
-      "TENANT_SECRETS_ENCRYPTION_KEY is not configured (min 32 chars).",
-    );
-  }
 }

@@ -1,4 +1,4 @@
-export type TouristSheetAddressParts = {
+type TouristSheetAddressParts = {
   street: string;
   locality: string;
   county: string;

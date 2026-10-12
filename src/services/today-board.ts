@@ -19,7 +19,7 @@ import {
 } from "@/services/checkin";
 import { todayIso } from "@/lib/stay-dates";
 
-export type RoomToClean = {
+type RoomToClean = {
   room_id: string;
   room_name: string;
   building_name: string;

@@ -2,7 +2,7 @@ const PLATFORM_DOMAIN =
   process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.trim() || "hospira.ro";
 
 /** Staging project (test.hospira.ro) — used even if PLATFORM_DOMAIN env is wrong. */
-export function isStagingDeployment(): boolean {
+function isStagingDeployment(): boolean {
   if (PLATFORM_DOMAIN === "test.hospira.ro") return true;
   const site = process.env.NEXT_PUBLIC_SITE_URL?.toLowerCase() ?? "";
   return site.includes("test.hospira.ro");
@@ -47,7 +47,7 @@ const CANONICAL_PLATFORM_ROOTS = [
 ];
 
 /** All platform apex hosts, longest first (test.hospira.ro before hospira.ro). */
-export function getPlatformRoots(): string[] {
+function getPlatformRoots(): string[] {
   const roots = new Set<string>([
     PLATFORM_DOMAIN,
     ...EXTRA_PLATFORM_HOSTS,
@@ -62,7 +62,7 @@ export function getPlatformRoots(): string[] {
   return [...roots].sort((a, b) => b.length - a.length);
 }
 
-export function normalizeHost(host: string): string {
+function normalizeHost(host: string): string {
   return host.replace(/^www\./, "").split(":")[0]?.trim().toLowerCase() ?? "";
 }
 
@@ -122,7 +122,7 @@ function tenantHost(slug: string, platformDomain: string): string {
   return `${slug}.${platformDomain}`;
 }
 
-export type ParsedTenantHost =
+type ParsedTenantHost =
   | { type: "platform" }
   | { type: "tenant"; slug: string }
   | { type: "custom"; domain: string };

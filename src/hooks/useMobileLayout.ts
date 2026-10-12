@@ -14,7 +14,7 @@ import {
 import { isDocumentLayoutBootstrapped } from "@/layout/mobile/apply-document-layout";
 import { subscribeLayoutViewportChanges } from "@/layout/mobile/resize-sync";
 
-export type CompactLayoutHints = {
+type CompactLayoutHints = {
   compactChrome: boolean;
   orientation: LayoutOrientation;
   isPortrait: boolean;
@@ -186,12 +186,4 @@ export function useMobileLayout(): MobileLayoutState {
     getMobileLayoutStateSnapshot,
     () => SERVER_LAYOUT_STATE
   );
-}
-
-export function useIsMobileLayout(): boolean {
-  return useMobileLayout().isMobile;
-}
-
-export function useIsCompactChrome(): boolean {
-  return useCompactLayoutHints().compactChrome;
 }

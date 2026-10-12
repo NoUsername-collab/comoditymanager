@@ -20,7 +20,7 @@ const DEFAULT_APPEARANCE: ThemeSettings = {
   mode: "night",
 };
 
-export type AdminShellContext = {
+type AdminShellContext = {
   staff: Awaited<ReturnType<typeof requireStaff>>;
   pension: PensionSettings | null;
   requestCount: number;

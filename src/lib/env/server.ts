@@ -25,7 +25,7 @@ const serverEnvSchema = z.object({
   NEXT_PUBLIC_RELEASE_CHANNEL: z.enum(["alpha", "stable"]).optional(),
 });
 
-export type ServerEnv = z.infer<typeof serverEnvSchema>;
+type ServerEnv = z.infer<typeof serverEnvSchema>;
 
 let cached: ServerEnv | null = null;
 
@@ -83,15 +83,6 @@ export function getSupabaseServiceRoleKey(): string {
   return getServerEnv().SUPABASE_SERVICE_ROLE_KEY;
 }
 
-/** @deprecated Legacy — staff role comes from tenant_members table now. */
-export function getStaffEmails() {
-  const env = getServerEnv();
-  return {
-    adminEmail: env.ADMIN_EMAIL?.toLowerCase() ?? null,
-    operatorEmail: env.OPERATOR_EMAIL?.toLowerCase() ?? null,
-  };
-}
-
 export function getLocationUnlockSecret(): string {
   const env = getServerEnv();
   const secret = env.ADMIN_LOCATION_UNLOCK_SECRET?.trim();
@@ -114,9 +105,4 @@ export function isFactoryResetEnabled(): boolean {
 /** Validates env at Node server boot (instrumentation). */
 export function assertServerEnvAtBoot(): void {
   getServerEnv();
-}
-
-/** Test-only — clears the boot cache so env stubs take effect. */
-export function resetServerEnvCache(): void {
-  cached = null;
 }

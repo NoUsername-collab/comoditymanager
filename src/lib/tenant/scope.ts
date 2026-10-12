@@ -1,13 +1,12 @@
 import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
 import { cachedStaffContext } from "@/lib/auth/require-staff";
 import { resolveRequestTenant } from "./active";
 import { requireTenantIdForData } from "./guards";
 
 /** Resolved tenant + service-role client for admin data access. */
-export type TenantScope = {
+type TenantScope = {
   tenantId: string;
   supabase: SupabaseClient;
 };
@@ -105,21 +104,6 @@ export async function getTenantScope(
 /** Public booking / availability — tenant from host only, no staff login. */
 export async function getTenantPublicScope(): Promise<TenantScope> {
   return getTenantScope({ requireStaff: false });
-}
-
-/** @deprecated Use getTenantPublicScope */
-export async function getTenantDataScope(): Promise<TenantScope> {
-  return getTenantPublicScope();
-}
-
-export async function getTenantUserClient() {
-  return createClient();
-}
-
-export async function withTenantScope<T>(
-  fn: (ctx: TenantScope) => Promise<T>
-): Promise<T> {
-  return fn(await getTenantScope());
 }
 
 export function withTenantId<T extends Record<string, unknown>>(

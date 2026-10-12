@@ -2,8 +2,8 @@ import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 
 export type AvailabilityPanelView = "month" | "week";
 
-export const AVAILABILITY_PANEL_OPEN_KEY = "avail";
-export const AVAILABILITY_PANEL_QUERY_KEYS = {
+const AVAILABILITY_PANEL_OPEN_KEY = "avail";
+const AVAILABILITY_PANEL_QUERY_KEYS = {
   year: "avail_y",
   month: "avail_m",
   day: "avail_day",

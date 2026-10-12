@@ -11,7 +11,7 @@ import ts from "typescript";
  * Dynamic keys (`t(\`x.${id}\`)`) are out of scope.
  */
 
-export type MissingKey = { file: string; locale: string; key: string };
+type MissingKey = { file: string; locale: string; key: string };
 
 const LOCALES = ["ro", "en", "bg"] as const;
 const TRANSLATOR_FACTORIES = new Set(["useTranslations", "getTranslations"]);

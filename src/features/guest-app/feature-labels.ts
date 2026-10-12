@@ -6,7 +6,7 @@ import type {
 } from "@/domain/guest-app/types";
 import type { GuestAppResolvedContext } from "@/services/guest-app/resolve-context";
 
-export type GuestAppFeatureVisibilityOptions = {
+type GuestAppFeatureVisibilityOptions = {
   greenStayEnabled?: boolean;
   showOnlinePayment?: boolean;
 };

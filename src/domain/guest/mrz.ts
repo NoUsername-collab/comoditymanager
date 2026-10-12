@@ -257,7 +257,7 @@ export function mrzToGuestPatch(data: MrzMappedIdentity): Partial<CheckinGuestIn
   return patch;
 }
 
-export type GuestProfileMrzFields = {
+type GuestProfileMrzFields = {
   docType: "ci" | "passport" | "foreign_id" | "other" | "";
   docNumber: string;
   docExpiryDate: string;
@@ -319,7 +319,7 @@ export function mrzToGuestProfileFields(data: MrzMappedIdentity): GuestProfileMr
   };
 }
 
-export type PrecheckinMrzFields = {
+type PrecheckinMrzFields = {
   documentType: GuestPrecheckinDocType;
   documentNumber: string;
   notesAppend: string;

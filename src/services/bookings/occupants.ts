@@ -55,7 +55,7 @@ export async function saveBookingOccupants(
   if (error) throw new Error(error.message);
 }
 
-export async function listBookingOccupants(
+async function listBookingOccupants(
   bookingId: string
 ): Promise<BookingOccupantRow[]> {
   const { tenantId, supabase } = await getTenantScope();

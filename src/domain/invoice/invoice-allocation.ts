@@ -5,7 +5,7 @@ const MONEY_EPS = 0.005;
 
 export type InvoiceKind = "advance" | "partial" | "final" | "credit_note";
 
-export type IssuedInvoiceSummary = {
+type IssuedInvoiceSummary = {
   id: string;
   total: number;
   status: "issued" | "void";
@@ -13,7 +13,7 @@ export type IssuedInvoiceSummary = {
   invoice_sequence: number;
 };
 
-export type InvoiceFinancials = {
+type InvoiceFinancials = {
   totalDue: number;
   totalPaid: number;
   totalInvoiced: number;

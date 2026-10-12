@@ -213,7 +213,7 @@ const publicSiteSectionInputSchema = z
   })
   .strict();
 
-export const publicSiteSettingsInputSchema = z
+const publicSiteSettingsInputSchema = z
   .object({
     templateId: publicTemplateIdSchema,
     themeId: publicThemeIdSchema,

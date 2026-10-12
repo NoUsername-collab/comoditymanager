@@ -537,8 +537,3 @@ export async function searchGuests(input: {
   return loadSearchGuests(query, filter, page, pageSize);
 }
 
-export async function listGuests(query?: string): Promise<GuestListItem[]> {
-  const result = await searchGuests({ query, page: 1, pageSize: 50 });
-  return result.items;
-}
-

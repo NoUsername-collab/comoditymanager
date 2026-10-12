@@ -17,7 +17,7 @@ import { listAllRooms } from "@/services/rooms-admin";
 import { listBuildings } from "@/services/buildings";
 import type { AcMode } from "@/types/database";
 
-export type RoomStayInfo = {
+type RoomStayInfo = {
   booking_id: string;
   guest_name: string;
   guest_email: string;

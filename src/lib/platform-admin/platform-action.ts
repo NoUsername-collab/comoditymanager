@@ -2,11 +2,11 @@ import { getPlatformAdminWithMfaOrNull } from "@/lib/auth/require-platform-admin
 import { isPlatformAdminDbError } from "@/lib/platform-admin/format-db-error";
 import { capturePlatformAdminError } from "@/services/dev-logs";
 
-export type PlatformActionResult<T = void> =
+type PlatformActionResult<T = void> =
   | { success: true; data?: T }
   | { success: false; error: string };
 
-export function platformActionFailure(
+function platformActionFailure(
   error: unknown,
   fallback = "Operațiunea a eșuat."
 ): PlatformActionResult<never> {

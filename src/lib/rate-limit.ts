@@ -103,7 +103,7 @@ export const RATE_LIMIT_GUEST_STAY_ACTION = { limit: 10, windowMs: 10 * 60 * 100
 /** Staff login: max 10 attempts per 15 minutes per IP (Supabase Auth adds its own limit) */
 export const RATE_LIMIT_LOGIN = { limit: 10, windowMs: 15 * 60 * 1000 };
 
-export type RateLimitResult =
+type RateLimitResult =
   | { allowed: true; remaining: number }
   | { allowed: false; retryAfterMs: number };
 

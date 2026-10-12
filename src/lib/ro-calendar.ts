@@ -38,37 +38,8 @@ export function formatWeekdayNarrow(iso: string, locale: string): string {
   }).format(d);
 }
 
-/** @deprecated Use formatWeekdayShort(iso, locale) */
-export function dayInitialFromDate(date: Date, locale = "ro"): string {
-  const iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-  return formatWeekdayShort(iso, locale);
-}
-
 export function dayInitialFromIso(iso: string, locale = "ro"): string {
   return formatWeekdayShort(iso, locale);
-}
-
-export function dayInitialInMonth(
-  year: number,
-  month: number,
-  day: number,
-  locale = "ro"
-): string {
-  const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-  return formatWeekdayShort(iso, locale);
-}
-
-export function formatGanttDayLabel(
-  year: number,
-  month: number,
-  day: number,
-  locale = "ro"
-): { weekday: string; day: number } {
-  const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-  return {
-    weekday: formatWeekdayShort(iso, locale),
-    day,
-  };
 }
 
 function resolveLocaleAndShowYear(
@@ -127,9 +98,4 @@ export function monthYearLabel(
     month: "long",
     year: "numeric",
   });
-}
-
-/** @deprecated Use monthYearLabel(year, month, locale) */
-export function monthYearLabelRo(year: number, month: number): string {
-  return monthYearLabel(year, month, "ro");
 }

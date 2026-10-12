@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export type TenantQueryViolation = {
+type TenantQueryViolation = {
   file: string;
   table: string;
   line: number;

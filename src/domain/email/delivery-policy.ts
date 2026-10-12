@@ -11,16 +11,9 @@ export type TenantEmailDeliveryRecord = {
   operatorNotes: string | null;
 };
 
-export type PlatformEmailInfra = {
+type PlatformEmailInfra = {
   platformResendConfigured: boolean;
   platformMailDomain: string | null;
-};
-
-export type TenantEmailIdentityHints = {
-  fromAddress: string | null;
-  mailDomain: string | null;
-  hasVerifiedCustomDomain: boolean;
-  emailEnabled: boolean;
 };
 
 export type TenantEmailSendResolution = {
@@ -40,7 +33,7 @@ export const DEFAULT_TENANT_EMAIL_DELIVERY: TenantEmailDeliveryRecord = {
 };
 
 /** Plan-level monthly cap; null = unlimited. */
-export function planEmailMonthlyCap(plan: PlanConfig): number | null {
+function planEmailMonthlyCap(plan: PlanConfig): number | null {
   return plan.emailMonthlyCap;
 }
 

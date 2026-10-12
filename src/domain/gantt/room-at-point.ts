@@ -1,6 +1,5 @@
 const ROOM_ROW_SELECTOR = "[data-gantt-room-row]";
 const ROOM_DRAG_LAYER_SELECTOR = "[data-gantt-room-drag-layer]";
-let activeDropTargetId: string | null = null;
 let activeDragSpanIds = new Set<string>();
 let activePinnedIds = new Set<string>();
 
@@ -35,10 +34,6 @@ function getRoomRow(roomId: string): HTMLElement | null {
 function getRoomDragLayer(roomId: string): HTMLElement | null {
   if (typeof document === "undefined") return null;
   return document.querySelector(roomDragLayerSelector(roomId)) as HTMLElement | null;
-}
-
-export function getGanttRoomDragLayer(roomId: string): HTMLElement | null {
-  return getRoomDragLayer(roomId);
 }
 
 /**
@@ -93,24 +88,6 @@ export function listGanttRoomIdsInDomOrder(): string[] {
   return Array.from(document.querySelectorAll<HTMLElement>(ROOM_ROW_SELECTOR))
     .map((node) => node.dataset.ganttRoomRow ?? "")
     .filter(Boolean);
-}
-
-export function setGanttRoomDropTarget(roomId: string | null): void {
-  if (typeof document === "undefined") return;
-  if (activeDropTargetId === roomId) return;
-
-  if (activeDropTargetId) {
-    getRoomRow(activeDropTargetId)?.classList.remove("gantt-room-row--drop-target");
-  }
-  if (roomId) {
-    getRoomRow(roomId)?.classList.add("gantt-room-row--drop-target");
-  }
-
-  activeDropTargetId = roomId;
-}
-
-export function clearGanttRoomDropTargets(): void {
-  setGanttRoomDropTarget(null);
 }
 
 export function setGanttRoomDragSpan(

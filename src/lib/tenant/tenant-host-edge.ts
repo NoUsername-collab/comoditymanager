@@ -1,6 +1,6 @@
 ﻿import { normalizeTenantLifecycleStatus } from "@/domain/tenant/operational";
 
-export type TenantHostEdgeLookup = {
+type TenantHostEdgeLookup = {
   tenantId: string;
   slug: string;
   status: ReturnType<typeof normalizeTenantLifecycleStatus>;

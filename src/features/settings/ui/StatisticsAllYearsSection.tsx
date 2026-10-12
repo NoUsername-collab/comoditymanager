@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/navigation";
 
-export type StatisticsYearSummaryRow = {
+type StatisticsYearSummaryRow = {
   year: number;
   confirmedStays: number;
   occupancyPct: number;

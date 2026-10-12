@@ -1,6 +1,5 @@
 import { occupancyPhase } from "@/domain/occupancy/phase";
-import type { OccupancyKind, OccupancySegment } from "@/domain/occupancy/types";
-import type { BookingRow } from "@/domain/booking/row";
+import type { OccupancySegment } from "@/domain/occupancy/types";
 import { todayIso } from "@/lib/stay-dates";
 
 /** Visual timeline filter — see timeline-spec.md */
@@ -77,7 +76,7 @@ function segmentPhase(seg: OccupancySegment, ref = todayIso()): string {
   return seg.phase ?? occupancyPhase(seg.checkIn, seg.checkOut, ref);
 }
 
-export function segmentMatchesLayerFilter(
+function segmentMatchesLayerFilter(
   seg: OccupancySegment,
   layer: GanttLayerFilter,
   ref = todayIso()
@@ -103,32 +102,6 @@ export function segmentMatchesLayerFilter(
   }
 }
 
-export function bookingMatchesLayerFilter(
-  b: BookingRow,
-  layer: GanttLayerFilter,
-  ref = todayIso()
-): boolean {
-  if (layer === "all") return true;
-  if (layer === "hold" || layer === "block") return false;
-
-  const kind: OccupancyKind =
-    b.status === "confirmata" ? "stay" : "request";
-  const phase = occupancyPhase(b.check_in, b.check_out, ref);
-
-  switch (layer) {
-    case "requests":
-      return kind === "request";
-    case "confirmed":
-      return kind === "stay" && phase === "future";
-    case "in_house":
-      return kind === "stay" && phase === "active";
-    case "past":
-      return phase === "past";
-    default:
-      return true;
-  }
-}
-
 export function filterOccupancyForLayer(
   segments: OccupancySegment[],
   layer: GanttLayerFilter,
@@ -136,31 +109,4 @@ export function filterOccupancyForLayer(
 ): OccupancySegment[] {
   if (layer === "all") return segments;
   return segments.filter((s) => segmentMatchesLayerFilter(s, layer, ref));
-}
-
-/** Hold/block overlays only — no duplicate stay bars. */
-export function roomOverlaySegments(
-  segments: OccupancySegment[],
-  roomId: string,
-  layer: GanttLayerFilter
-): OccupancySegment[] {
-  return filterOccupancyForLayer(segments, layer).filter(
-    (s) =>
-      s.roomId === roomId &&
-      (s.kind === "hold" || s.kind === "block")
-  );
-}
-
-/** Stay/request segments for a room row (split-card Phase 5). */
-export function roomStaySegments(
-  segments: OccupancySegment[],
-  roomId: string,
-  layer: GanttLayerFilter
-): OccupancySegment[] {
-  return filterOccupancyForLayer(segments, layer).filter(
-    (s) =>
-      s.roomId === roomId &&
-      (s.kind === "request" || s.kind === "stay") &&
-      s.bookingId
-  );
 }

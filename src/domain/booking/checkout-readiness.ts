@@ -77,11 +77,6 @@ export function isEarlyDeparture(
   );
 }
 
-export type EarlyDeparturePolicy = Pick<
-  CheckinSettings,
-  "early_checkout_allowed" | "early_checkout_fee"
->;
-
 export function buildCheckoutActivityMetadata(args: {
   at: string;
   atLocal: string;

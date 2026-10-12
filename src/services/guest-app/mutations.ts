@@ -5,7 +5,7 @@ import { mapGuestAppSettingsRow } from "./map";
 import { getGuestAppPublicDb } from "./public-db";
 import type { GuestAppSettings } from "@/domain/guest-app/types";
 
-export type GuestAppSettingsInput = GuestAppSettingsInputParsed;
+type GuestAppSettingsInput = GuestAppSettingsInputParsed;
 
 export async function upsertGuestAppSettingsImpl(
   tenantId: string,

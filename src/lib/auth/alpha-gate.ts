@@ -1,10 +1,7 @@
 import { safeInternalPath } from "@/lib/security/safe-path";
 import { cookies } from "next/headers";
-import { hmacSha256Hex, timingSafeEqualHex, timingSafeEqualString } from "@/lib/auth/web-hmac";
-import {
-  ALPHA_GATE_COOKIE,
-  isAlphaGateCookieFresh,
-} from "@/lib/auth/alpha-gate-cookie";
+import { hmacSha256Hex, timingSafeEqualString } from "@/lib/auth/web-hmac";
+import { ALPHA_GATE_COOKIE } from "@/lib/auth/alpha-gate-cookie";
 import { getLocationUnlockSecret } from "@/lib/env/server";
 
 const TTL_MS = 14 * 24 * 60 * 60 * 1000; // 14 zile
@@ -16,29 +13,6 @@ async function sign(payload: string): Promise<string> {
 async function encodeToken(untilMs: number): Promise<string> {
   const payload = String(untilMs);
   return `${payload}.${await sign(payload)}`;
-}
-
-async function decodeToken(token: string): Promise<number | null> {
-  const [payload, sig] = token.split(".");
-  if (!payload || !sig) return null;
-  const expected = await sign(payload);
-  if (!timingSafeEqualHex(sig, expected)) return null;
-  const until = Number(payload);
-  if (!Number.isFinite(until)) return null;
-  return until;
-}
-
-export async function isAlphaGateTokenValid(
-  token: string | undefined | null
-): Promise<boolean> {
-  if (!isAlphaGateCookieFresh(token)) return false;
-  if (!token) return false;
-  return (await decodeToken(token)) != null;
-}
-
-export async function isAlphaGateUnlocked(): Promise<boolean> {
-  const jar = await cookies();
-  return await isAlphaGateTokenValid(jar.get(ALPHA_GATE_COOKIE)?.value);
 }
 
 export async function setAlphaGateUnlock(): Promise<void> {

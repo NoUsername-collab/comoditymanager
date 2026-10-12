@@ -1,12 +1,8 @@
 import { PLATFORM_CONTACT_EMAIL } from "@/lib/platform/branding";
 
 /** Utilizatori staff — mapare username → email Supabase (conturi separate). */
-export const OPERATOR_LOGIN_USERNAME = "Operator";
-export const ADMIN_LOGIN_USERNAME = "Admin";
-
-export type StaffLoginUsername =
-  | typeof OPERATOR_LOGIN_USERNAME
-  | typeof ADMIN_LOGIN_USERNAME;
+const OPERATOR_LOGIN_USERNAME = "Operator";
+const ADMIN_LOGIN_USERNAME = "Admin";
 
 export function getAdminEmail(): string {
   return process.env.ADMIN_EMAIL?.trim().toLowerCase() ?? "admin@zalmox.app";
@@ -53,9 +49,4 @@ export function isValidLoginIdentifier(input: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
   }
   return isKnownStaffUsername(trimmed);
-}
-
-/** @deprecated folosește resolveStaffEmail */
-export function isAdminUsername(input: string): boolean {
-  return isKnownStaffUsername(input);
 }

@@ -1,18 +1,18 @@
 export const PUBLIC_SITE_MEDIA_BUCKET = "public-site-media";
 export const PUBLIC_SITE_MEDIA_MAX_BYTES = 5 * 1024 * 1024;
 
-export const PUBLIC_SITE_MEDIA_KINDS = ["hero", "gallery", "logo", "og"] as const;
+const PUBLIC_SITE_MEDIA_KINDS = ["hero", "gallery", "logo", "og"] as const;
 export type PublicSiteMediaKind = (typeof PUBLIC_SITE_MEDIA_KINDS)[number];
 
-export const PUBLIC_SITE_MEDIA_MIME = {
+const PUBLIC_SITE_MEDIA_MIME = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
 } as const;
 
-export type PublicSiteMediaMime = keyof typeof PUBLIC_SITE_MEDIA_MIME;
+type PublicSiteMediaMime = keyof typeof PUBLIC_SITE_MEDIA_MIME;
 
-export type PublicSiteMediaReject = "kind" | "empty" | "tooLarge" | "type";
+type PublicSiteMediaReject = "kind" | "empty" | "tooLarge" | "type";
 
 const JPEG = [0xff, 0xd8, 0xff] as const;
 const PNG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] as const;
@@ -47,7 +47,7 @@ export function detectPublicSiteImage(
   return null;
 }
 
-export function isPublicSiteMediaKind(value: string): value is PublicSiteMediaKind {
+function isPublicSiteMediaKind(value: string): value is PublicSiteMediaKind {
   return (PUBLIC_SITE_MEDIA_KINDS as readonly string[]).includes(value);
 }
 

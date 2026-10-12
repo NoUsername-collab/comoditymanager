@@ -102,12 +102,7 @@ const loadAllBookingsForStatisticsCached = cache((tenantId: string) =>
   getCachedBookingsForStatistics(tenantId)()
 );
 
-export async function loadAllBookingsForStatistics(): Promise<StatBooking[]> {
-  const { tenantId } = await getTenantScope();
-  return loadAllBookingsForStatisticsCached(tenantId);
-}
-
-export type StatisticsBaseData = {
+type StatisticsBaseData = {
   bookings: StatBooking[];
   snapshot: ActiveRoomSnapshot[];
 };
@@ -126,14 +121,6 @@ async function loadStatisticsBaseDataForTenant(
     snapshot: activeRoomSnapshot(rooms, buildings),
   };
 }
-
-/** Shared bookings + room snapshot — deduped when report and month compare load together. */
-export const loadStatisticsBaseData = cache(
-  async (): Promise<StatisticsBaseData> => {
-    const { tenantId } = await getTenantScope();
-    return loadStatisticsBaseDataForTenant(tenantId);
-  }
-);
 
 export { loadStatisticsBaseDataForTenant };
 

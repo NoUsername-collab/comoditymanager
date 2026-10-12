@@ -2,7 +2,7 @@ import { navItemHasIssues } from "@/domain/setup-issues/paths";
 import type { SetupIssue } from "@/domain/setup-issues/types";
 import type { SettingsNavItem } from "@/domain/settings/settings-nav";
 
-export type SettingsSectionStatus = "complete" | "attention";
+type SettingsSectionStatus = "complete" | "attention";
 
 /** Nav sections that participate in onboarding completion badges. */
 export const SETTINGS_COMPLETION_NAV_IDS = new Set<string>([

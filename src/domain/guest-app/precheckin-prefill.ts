@@ -19,7 +19,7 @@ export type GuestPrecheckinPrefill = {
   hasGuestProfile: boolean;
 };
 
-export type GuestPrecheckinPrefillBooking = {
+type GuestPrecheckinPrefillBooking = {
   guestName: string;
   guestLastName?: string | null;
   guestFirstName?: string | null;
@@ -40,7 +40,7 @@ export type GuestPrecheckinPrefillGuest = {
   nationality?: string | null;
 };
 
-export function mapGuestDocTypeToPrecheckin(
+function mapGuestDocTypeToPrecheckin(
   docType: GuestDocType | null | undefined,
 ): GuestPrecheckinDocType {
   if (docType === "ci") return "ci";

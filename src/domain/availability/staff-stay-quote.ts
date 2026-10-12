@@ -18,7 +18,7 @@ export type StaffStayQuoteRoom = RoomCapacity & {
   building_name?: string;
 };
 
-export type StaffStaySuggestionKind = "preferred" | "cheapest_single" | "combo";
+type StaffStaySuggestionKind = "preferred" | "cheapest_single" | "combo";
 
 export type StaffStaySuggestion = {
   id: string;
@@ -28,7 +28,7 @@ export type StaffStaySuggestion = {
   estimateRon: number;
 };
 
-export type StaffStayQuoteLine = {
+type StaffStayQuoteLine = {
   roomId: string;
   roomName: string;
   lineTotal: number;

@@ -1,6 +1,6 @@
 /** Camera helpers for MRZ scan — secure context, fallbacks, video attach. */
 
-export type CameraErrorCode = "unsupported" | "denied" | "unavailable";
+type CameraErrorCode = "unsupported" | "denied" | "unavailable";
 
 export const MRZ_SCAN_INTERVAL_MS = 1400;
 
@@ -62,7 +62,7 @@ export async function requestCameraStream(): Promise<MediaStream> {
 }
 
 /** iOS/Safari-friendly inline playback attributes. */
-export function prepareVideoElement(video: HTMLVideoElement): void {
+function prepareVideoElement(video: HTMLVideoElement): void {
   video.muted = true;
   video.defaultMuted = true;
   video.playsInline = true;

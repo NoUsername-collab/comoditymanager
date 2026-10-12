@@ -33,7 +33,7 @@ export type GuestLoyaltySnapshot = {
   perkDescription: string;
 };
 
-export type GuestLoyaltyAccessResult =
+type GuestLoyaltyAccessResult =
   | { ok: true; snapshot: GuestLoyaltySnapshot }
   | {
       ok: false;

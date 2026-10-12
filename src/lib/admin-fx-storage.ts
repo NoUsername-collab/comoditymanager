@@ -1,6 +1,6 @@
 import { tenantSlugFromHost } from "@/lib/tenant/host";
 
-export type AdminFxPrefs = {
+type AdminFxPrefs = {
   soundEnabled: boolean;
 };
 

@@ -2,7 +2,7 @@ import { stayNightCount } from "@/lib/stay-dates";
 import type { StayPricingRules } from "@/domain/settings/booking-rules";
 import { computeRoomStayPricing } from "@/domain/pricing/nightly-rates";
 
-export type InvoiceLine = {
+type InvoiceLine = {
   room_id: string;
   room_name: string;
   building_name: string;

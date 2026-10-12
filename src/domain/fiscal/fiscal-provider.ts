@@ -17,7 +17,7 @@ export type FiscalSubmitResult = {
   error?: string | null;
 };
 
-export type TenantFiscalProviderSettings = {
+type TenantFiscalProviderSettings = {
   provider: FiscalProviderType;
   anafEnabled: boolean;
   anafCif: string | null;

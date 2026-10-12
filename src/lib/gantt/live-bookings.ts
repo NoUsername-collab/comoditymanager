@@ -9,10 +9,10 @@ import {
 } from "@/domain/gantt/live-occupancy";
 import type { BookingRow } from "@/services/bookings/types";
 
-export const GANTT_LIVE_BOOKING_EVENT = "gantt:live-booking";
-export const GANTT_REMOVE_BOOKING_EVENT = "gantt:remove-booking";
-export const GANTT_LIVE_SEGMENT_EVENT = "gantt:live-segment";
-export const GANTT_REMOVE_SEGMENT_EVENT = "gantt:remove-segment";
+const GANTT_LIVE_BOOKING_EVENT = "gantt:live-booking";
+const GANTT_REMOVE_BOOKING_EVENT = "gantt:remove-booking";
+const GANTT_LIVE_SEGMENT_EVENT = "gantt:live-segment";
+const GANTT_REMOVE_SEGMENT_EVENT = "gantt:remove-segment";
 
 type GanttLiveBookingDetail = { booking: BookingRow };
 type GanttRemoveBookingDetail = { bookingId: string };
@@ -74,19 +74,6 @@ export function removeGanttLiveSegment(segmentId: string) {
       detail: { segmentId },
     }),
   );
-}
-
-/**
- * Do not router.refresh() after Gantt mutations.
- * Full-page refresh races after() cache bust and wipes optimistic bars.
- */
-export function deferGanttBackgroundRefresh(
-  _router?: { refresh: () => void },
-  _delayMs = 5000,
-) {}
-
-export function useGanttLiveBookings(serverBookings: BookingRow[]): BookingRow[] {
-  return useGanttLiveCalendar(serverBookings, [], "").bookings;
 }
 
 export function useGanttLiveCalendar(

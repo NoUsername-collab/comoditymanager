@@ -1,4 +1,4 @@
-export type InvoiceSeason = "spring" | "summer" | "autumn" | "winter";
+type InvoiceSeason = "spring" | "summer" | "autumn" | "winter";
 
 /** Meteorological seasons from check-in month (northern hemisphere). */
 export function resolveInvoiceSeason(checkInIso: string): InvoiceSeason {

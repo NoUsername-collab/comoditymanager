@@ -56,7 +56,7 @@ export interface PlatformDevLogEntry {
   user_email: string | null;
 }
 
-export type PlatformLogsResult = {
+type PlatformLogsResult = {
   activity: PlatformLogEntry[];
   dev: PlatformDevLogEntry[];
 };
@@ -161,24 +161,6 @@ async function loadTenantMap(tenantIds: string[]) {
   return new Map(
     (tenants ?? []).map((t) => [t.id, { slug: t.slug, name: t.display_name }])
   );
-}
-
-// ─── Activity Logs ──────────────────────────────────────────────
-
-export async function getPlatformLogs(
-  limit = 100,
-  tenantId?: string | null
-): Promise<PlatformLogEntry[]> {
-  const result = await getPlatformLogsBundle(limit, tenantId);
-  return result.activity;
-}
-
-export async function getPlatformDevLogs(
-  limit = 100,
-  tenantId?: string | null
-): Promise<PlatformDevLogEntry[]> {
-  const result = await getPlatformLogsBundle(limit, tenantId);
-  return result.dev;
 }
 
 /** Activity + dev logs for Nestio admin — throws on query failure. */

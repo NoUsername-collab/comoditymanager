@@ -6,7 +6,7 @@ import {
 } from "@/domain/availability/heat";
 import { dayInitialFromIso } from "@/lib/ro-calendar";
 
-export type AvailRoomInput = {
+type AvailRoomInput = {
   id: string;
   building_id: string;
   is_active: boolean;
@@ -18,7 +18,7 @@ export type OccupiedRange = {
   check_out: string;
 };
 
-export type DayCounts = {
+type DayCounts = {
   checkins: number;
   checkouts: number;
   unassigned_requests: number;
@@ -49,7 +49,7 @@ export function filterRoomsByBuilding<T extends AvailRoomInput>(
   return rooms.filter((r) => r.is_active && r.building_id === buildingId);
 }
 
-export function countOccupiedOnNight(
+function countOccupiedOnNight(
   iso: string,
   roomIds: string[],
   occupied: OccupiedRange[]

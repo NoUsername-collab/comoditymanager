@@ -47,15 +47,7 @@ export type GanttStayTimeline = {
   nightsPct: number;
 };
 
-/** @deprecated Use {@link GanttStayTimeline} */
-export type GanttStayBarProgress = {
-  mode: "nights" | "rooms";
-  pct: number;
-  current: number;
-  total: number;
-};
-
-export function ganttBarVisibleDaySpan(widthPct: number, dayCount: number): number {
+function ganttBarVisibleDaySpan(widthPct: number, dayCount: number): number {
   if (dayCount <= 0) return 1;
   return Math.max(1, Math.round((widthPct / 100) * dayCount));
 }
@@ -250,38 +242,6 @@ export function resolveGanttStayTimeline(args: {
     nightsCurrent: nightProgress.current,
     nightsTotal: nightProgress.total,
     nightsPct,
-  };
-}
-
-/** @deprecated Use {@link resolveGanttStayTimeline} */
-export function resolveGanttStayBarProgress(args: {
-  segmentCheckIn: string;
-  segmentCheckOut: string;
-  bookingCheckIn: string;
-  today: string;
-  roomNames: string[];
-  checkedInRooms: string[];
-  occupancyPhase: OccupancyPhase;
-  isRequest: boolean;
-  compact: boolean;
-}): GanttStayBarProgress | null {
-  const timeline = resolveGanttStayTimeline({ ...args });
-  if (!timeline) return null;
-
-  if (timeline.variant === "nights") {
-    return {
-      mode: "nights",
-      current: timeline.nightsCurrent,
-      total: timeline.nightsTotal,
-      pct: timeline.nightsPct,
-    };
-  }
-
-  return {
-    mode: "rooms",
-    current: timeline.roomsChecked,
-    total: timeline.roomsTotal,
-    pct: timeline.roomsPct,
   };
 }
 

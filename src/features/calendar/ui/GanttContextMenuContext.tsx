@@ -17,7 +17,7 @@ import { dismissClearsPinnedSelection } from "@/domain/gantt/pinned-selection";
 import type { GanttOccDetail } from "@/features/calendar/ui/GanttOccupancyDetailPanel";
 import type { MoveRoomDraft } from "@/features/calendar/ui/MoveRoomDialog";
 
-export type GanttContextMenuActions = {
+type GanttContextMenuActions = {
   openMenu: (target: GanttContextMenuTarget) => void;
   closeMenu: () => void;
   dismissMenu: () => void;

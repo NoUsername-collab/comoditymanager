@@ -28,7 +28,7 @@ export function HudIconHome({ className }: IconProps) {
   );
 }
 
-export function HudIconBuilding({ className }: IconProps) {
+function HudIconBuilding({ className }: IconProps) {
   return (
     <Svg className={className}>
       <path d="M4 17V6l6-3 6 3v11" />
@@ -37,7 +37,7 @@ export function HudIconBuilding({ className }: IconProps) {
   );
 }
 
-export function HudIconBed({ className }: IconProps) {
+function HudIconBed({ className }: IconProps) {
   return (
     <Svg className={className}>
       <path d="M3 14v-3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3" />
@@ -46,7 +46,7 @@ export function HudIconBed({ className }: IconProps) {
   );
 }
 
-export function HudIconInbox({ className }: IconProps) {
+function HudIconInbox({ className }: IconProps) {
   return (
     <Svg className={className}>
       <path d="M3 5h14l-2 10H5L3 5z" />
@@ -72,7 +72,7 @@ export function HudIconGrid({ className }: IconProps) {
   );
 }
 
-export function HudIconChart({ className }: IconProps) {
+function HudIconChart({ className }: IconProps) {
   return (
     <Svg className={className}>
       <path d="M4 16V9M10 16V4M16 16v-6" />
@@ -80,7 +80,7 @@ export function HudIconChart({ className }: IconProps) {
   );
 }
 
-export function HudIconHistory({ className }: IconProps) {
+function HudIconHistory({ className }: IconProps) {
   return (
     <Svg className={className}>
       <circle cx="10" cy="10" r="7" />
@@ -89,7 +89,7 @@ export function HudIconHistory({ className }: IconProps) {
   );
 }
 
-export function HudIconPerson({ className }: IconProps) {
+function HudIconPerson({ className }: IconProps) {
   return (
     <Svg className={className}>
       <circle cx="10" cy="7" r="3" />
@@ -107,7 +107,7 @@ export function HudIconGear({ className }: IconProps) {
   );
 }
 
-export function HudIconPhone({ className }: IconProps) {
+function HudIconPhone({ className }: IconProps) {
   return (
     <Svg className={className}>
       <path d="M6.5 3.5h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z" />

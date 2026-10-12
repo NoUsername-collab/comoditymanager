@@ -156,18 +156,6 @@ export async function listRoomNamesInScope(
   return loadRoomNamesInScope(buildingId, floorId);
 }
 
-/** @deprecated Folosește listRoomNamesInScope — păstrat pentru compatibilitate. */
-export async function listRoomNamesInBuilding(buildingId: string): Promise<string[]> {
-  const { tenantId, supabase } = await getTenantScope();
-  const { data, error } = await supabase
-    .from("rooms")
-    .select("name")
-    .eq("tenant_id", tenantId)
-    .eq("building_id", buildingId);
-  if (error) throw new Error(error.message);
-  return (data ?? []).map((row) => String(row.name));
-}
-
 const loadRoomById = cache(async (id: string) => {
   const scopePromise = getTenantScope();
   const [{ data, error }, enabled_option_ids] = await Promise.all([

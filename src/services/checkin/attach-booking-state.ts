@@ -6,7 +6,7 @@ import type { BookingRow } from "@/services/bookings/types";
 import { loadCheckinEnrichmentByBookingIds } from "./queries";
 import { syncBookingOperativeCheckInFromRecord } from "./sync";
 
-export type AttachCheckinRecordOptions = {
+type AttachCheckinRecordOptions = {
   /** Repair bookings missing actual_check_in_at when a checkin row exists. Off on read paths. */
   repairOrphans?: boolean;
 };

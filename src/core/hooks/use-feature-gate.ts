@@ -159,7 +159,7 @@ export function buildFeatureMap(ctx?: TenantContext): FeatureMap {
   };
 }
 
-export interface FeatureMap {
+interface FeatureMap {
   planId: PlanId;
   planLabel: string;
   mode: string;

@@ -1,7 +1,7 @@
 /** Colțuri bară Gantt: stânga-jos + dreapta-sus rotunjite; stânga-sus + dreapta-jos drepte */
 
-export const GANTT_STAY_SLANT_R = 14;
-export const GANTT_STAY_SLANT_JOIN = 3;
+const GANTT_STAY_SLANT_R = 14;
+const GANTT_STAY_SLANT_JOIN = 3;
 
 /** CSS border-radius: tl tr br bl */
 export function ganttStaySlantRadius(

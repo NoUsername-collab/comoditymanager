@@ -1,4 +1,3 @@
-import { addDays, nightOccupied } from "@/lib/stay-dates";
 
 export type GanttBarPosition = {
   leftPct: number;
@@ -6,68 +5,6 @@ export type GanttBarPosition = {
   continuesBefore: boolean;
   continuesAfter: boolean;
 };
-
-/** CSS grid placement (1 column = 1 day / night). */
-export type GanttBarGridSpan = {
-  columnStart: number;
-  columnSpan: number;
-  continuesBefore: boolean;
-  continuesAfter: boolean;
-};
-
-function nightSpanIndices(
-  checkIn: string,
-  checkOut: string,
-  visibleDayIsos: string[]
-): GanttBarGridSpan | null {
-  const dayCount = visibleDayIsos.length;
-  if (dayCount === 0) return null;
-
-  const firstDay = visibleDayIsos[0];
-  const lastDay = visibleDayIsos[dayCount - 1];
-  const rangeEndExclusive = addDays(lastDay, 1);
-
-  if (checkOut <= firstDay || checkIn >= rangeEndExclusive) return null;
-
-  let firstIdx = -1;
-  let lastIdx = -1;
-  for (let i = 0; i < dayCount; i++) {
-    if (nightOccupied(visibleDayIsos[i], checkIn, checkOut)) {
-      if (firstIdx < 0) firstIdx = i;
-      lastIdx = i;
-    }
-  }
-  if (firstIdx < 0) return null;
-
-  return {
-    columnStart: firstIdx + 1,
-    columnSpan: lastIdx - firstIdx + 1,
-    continuesBefore: checkIn < firstDay,
-    continuesAfter: checkOut > rangeEndExclusive,
-  };
-}
-
-export function bookingBarGridSpan(
-  checkIn: string,
-  checkOut: string,
-  visibleDayIsos: string[]
-): GanttBarGridSpan | null {
-  return nightSpanIndices(checkIn, checkOut, visibleDayIsos);
-}
-
-export function gridSpanToPosition(
-  span: GanttBarGridSpan,
-  dayCount: number
-): GanttBarPosition {
-  const leftPct = ((span.columnStart - 1) / dayCount) * 100;
-  const widthPct = (span.columnSpan / dayCount) * 100;
-  return {
-    leftPct,
-    widthPct,
-    continuesBefore: span.continuesBefore,
-    continuesAfter: span.continuesAfter,
-  };
-}
 
 function parseStayDateTime(dateIso: string, time: string): Date {
   const [y, m, d] = dateIso.split("-").map(Number);
@@ -126,41 +63,4 @@ export function bookingBarInRange(
     continuesBefore,
     continuesAfter,
   };
-}
-
-/** @deprecated Prefer bookingBarGridSpan + grid CSS in Gantt */
-export function bookingBarInRangeByNights(
-  checkIn: string,
-  checkOut: string,
-  visibleDayIsos: string[]
-): GanttBarPosition | null {
-  const span = nightSpanIndices(checkIn, checkOut, visibleDayIsos);
-  if (!span || visibleDayIsos.length === 0) return null;
-  return gridSpanToPosition(span, visibleDayIsos.length);
-}
-
-/** @deprecated Use bookingBarInRange — kept for compatibility */
-export function bookingBarInMonth(
-  checkIn: string,
-  checkOut: string,
-  year: number,
-  month: number,
-  daysInMonth: number,
-  checkInTime: string,
-  checkOutTime: string
-): GanttBarPosition | null {
-  const rangeStart = `${year}-${String(month + 1).padStart(2, "0")}-01`;
-  const rangeEnd =
-    month === 11
-      ? `${year + 1}-01-01`
-      : `${year}-${String(month + 2).padStart(2, "0")}-01`;
-  return bookingBarInRange(
-    checkIn,
-    checkOut,
-    rangeStart,
-    rangeEnd,
-    daysInMonth,
-    checkInTime,
-    checkOutTime
-  );
 }

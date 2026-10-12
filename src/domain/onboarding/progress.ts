@@ -10,7 +10,7 @@ import {
   type OnboardingStep,
 } from "./steps";
 
-export interface StepStatus {
+interface StepStatus {
   step: OnboardingStep;
   completed: boolean;
 }

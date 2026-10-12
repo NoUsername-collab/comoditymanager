@@ -4,7 +4,7 @@ import {
 } from "@/domain/email/usage-cap";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 
-export type EmailUsageAcquireResult = {
+type EmailUsageAcquireResult = {
   allowed: boolean;
   sentCount: number;
   cap: number | null;
@@ -88,15 +88,6 @@ export async function releaseTenantEmailSendSlot(tenantId: string): Promise<void
     throw new Error(error.message);
   }
 }
-
-export function wouldExceedCap(sentCount: number, cap: number | null): boolean {
-  return monthlyCapExceeded(sentCount, cap);
-}
-
-export type TenantEmailUsageSnapshot = {
-  sentCount: number;
-  cap: number | null;
-};
 
 export async function loadAllTenantEmailUsageForMonth(
   periodMonth: string = currentUtcMonthPeriod(),

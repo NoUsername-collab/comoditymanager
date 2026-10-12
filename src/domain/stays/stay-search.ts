@@ -1,6 +1,6 @@
 import { formatBookingRef } from "@/lib/booking-admin-links";
 
-export function normalizeStaySearchValue(
+function normalizeStaySearchValue(
   value: string | null | undefined
 ): string {
   return (value ?? "")

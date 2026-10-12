@@ -31,7 +31,7 @@ export const PUBLIC_LINK_PRESETS = [
   { id: "intro", href: "#public-intro" },
   { id: "steps", href: "#cum-functioneaza" },
 ] as const;
-export type PublicLinkPresetId = (typeof PUBLIC_LINK_PRESETS)[number]["id"] | "custom";
+type PublicLinkPresetId = (typeof PUBLIC_LINK_PRESETS)[number]["id"] | "custom";
 
 export function linkPresetFor(href: string): PublicLinkPresetId {
   const value = href.trim();
@@ -122,7 +122,7 @@ export function fillStudioLocaleFrom(
   return { ...draft, copies: { ...draft.copies, [to]: next } };
 }
 
-export type PublicSiteReadinessId =
+type PublicSiteReadinessId =
   | "heroImage"
   | "heroTitle"
   | "description"
@@ -215,7 +215,7 @@ export const PUBLIC_STYLE_PRESETS = [
   templateId: PublicSiteStudioDraft["templateId"];
   themeId: PublicSiteStudioDraft["themeId"];
 }[];
-export type PublicStylePresetId = (typeof PUBLIC_STYLE_PRESETS)[number]["id"];
+type PublicStylePresetId = (typeof PUBLIC_STYLE_PRESETS)[number]["id"];
 
 export type QuickStartAnswers = {
   heroTitle: string;

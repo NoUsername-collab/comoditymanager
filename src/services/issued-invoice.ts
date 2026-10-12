@@ -62,7 +62,7 @@ const BOOKING_INVOICE_SELECT = [
   "lines",
 ].join(", ");
 
-export type IssuedInvoiceRecord = {
+type IssuedInvoiceRecord = {
   id: string;
   booking_id: string;
   invoice_kind: InvoiceKind;
@@ -158,23 +158,7 @@ export const listBookingInvoices = cache(async (
   );
 });
 
-/** Ultima factură emisă (compatibilitate P1). */
-export const loadActiveBookingInvoice = cache(async (
-  bookingId: string
-): Promise<IssuedInvoiceRecord | null> => {
-  const invoices = await listBookingInvoices(bookingId);
-  if (invoices.length === 0) return null;
-  return invoices[invoices.length - 1] ?? null;
-});
-
-export async function sumBookingInvoicedTotal(
-  bookingId: string
-): Promise<number> {
-  const invoices = await listBookingInvoices(bookingId);
-  return sumIssuedInvoiceTotals(invoices);
-}
-
-export type IssueBookingInvoiceOptions = {
+type IssueBookingInvoiceOptions = {
   amount?: number;
 };
 

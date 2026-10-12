@@ -3,13 +3,13 @@ import type {
   FiscalSubmitResult,
 } from "./fiscal-provider";
 
-export const TERMINAL_FISCAL_STATUSES: readonly FiscalSubmissionStatus[] = [
+const TERMINAL_FISCAL_STATUSES: readonly FiscalSubmissionStatus[] = [
   "accepted",
   "rejected",
   "failed",
 ] as const;
 
-export const ACTIVE_FISCAL_STATUSES: readonly FiscalSubmissionStatus[] = [
+const ACTIVE_FISCAL_STATUSES: readonly FiscalSubmissionStatus[] = [
   "pending",
   "submitted",
 ] as const;

@@ -3,7 +3,7 @@ import { guestFullName } from "./identity-rules";
 import type { BookingForCheckin, CheckinGuestInput, CheckinSettings } from "./types";
 import { DEFAULT_PENSION_DISPLAY_NAME } from "@/lib/constants";
 
-export type TouristSheetGuestRow = {
+type TouristSheetGuestRow = {
   fullName: string;
   cnp: string;
   documentId: string;

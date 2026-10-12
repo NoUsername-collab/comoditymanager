@@ -65,7 +65,7 @@ async function listSegmentsForBookings(
   return grouped;
 }
 
-export type GuestBookingHistoryItem = {
+type GuestBookingHistoryItem = {
   id: string;
   check_in: string;
   check_out: string;

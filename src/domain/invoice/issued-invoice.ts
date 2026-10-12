@@ -13,7 +13,7 @@ import {
 import { stayNightCount } from "@/lib/stay-dates";
 import type { InvoiceKind } from "./invoice-allocation";
 
-export type IssuedInvoiceLine = {
+type IssuedInvoiceLine = {
   description: string;
   quantity: number;
   unit_price: number;
@@ -395,9 +395,4 @@ export function formatInvoiceMoney(
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
-}
-
-/** @deprecated Use formatInvoiceMoney */
-export function formatInvoiceRon(amount: number, locale = "ro-RO"): string {
-  return formatInvoiceMoney(amount, "RON", locale);
 }

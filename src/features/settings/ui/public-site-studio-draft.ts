@@ -19,7 +19,7 @@ import type {
 } from "@/features/public-site/domain/types";
 import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 
-export type GalleryDraftItem = { id: string; url: string };
+type GalleryDraftItem = { id: string; url: string };
 export type CopyLineDraft = { icon: string; title: string; text: string };
 export type StepLineDraft = { title: string; text: string };
 
@@ -121,7 +121,7 @@ export function nextGalleryDraftId(): string {
 }
 
 let textDraftSeq = 0;
-export function nextTextDraftId(): string {
+function nextTextDraftId(): string {
   textDraftSeq += 1;
   return `text-draft-${textDraftSeq}`;
 }
@@ -741,15 +741,4 @@ export function moveStudioSection(
   const [moved] = order.splice(index, 1);
   order.splice(target, 0, moved!);
   return { ...draft, sectionOrder: order };
-}
-
-export function studioLocaleGaps(
-  draft: PublicSiteStudioDraft,
-): { locale: PublicLocale; missing: string[] }[] {
-  return PUBLIC_LOCALES.map((locale) => {
-    const copy = draft.copies[locale];
-    const missing: string[] = [];
-    if (!copy.heroTitle.trim()) missing.push("heroTitle");
-    return { locale, missing };
-  }).filter((row) => row.missing.length > 0);
 }

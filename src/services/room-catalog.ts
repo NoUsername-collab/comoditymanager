@@ -195,17 +195,6 @@ export async function listRoomOptions(includeInactive = false): Promise<RoomOpti
   return loadRoomOptions(tenantId, includeInactive);
 }
 
-export async function getRoomCatalogContext(
-  buildingId?: string
-): Promise<RoomCatalogContext> {
-  const [types, options, buildingPolicies] = await Promise.all([
-    listRoomTypes(),
-    listRoomOptions(),
-    buildingId ? getBuildingOptionPolicies(buildingId) : Promise.resolve([]),
-  ]);
-  return { types, options, buildingPolicies };
-}
-
 const loadBuildingOptionPolicies = cache(async (
   buildingId: string
 ): Promise<BuildingOptionPolicy[]> => {
@@ -341,21 +330,6 @@ export async function setRoomEnabledOptions(
     optionIds.map((option_id) => ({ room_id: roomId, option_id }))
   );
   if (error) throw new Error(error.message);
-}
-
-export function resolveRoomOptionsForForm(input: {
-  options: RoomOptionDefinition[];
-  policies: BuildingOptionPolicy[];
-  type: RoomTypeDefinition | null;
-  selectedOptionIds: string[];
-}): Array<RoomOptionDefinition & { enabled: boolean; editable: boolean; mode: OptionPolicyMode }> {
-  return input.options.map((option) => {
-    const mode = policyModeForOption(input.policies, option.id);
-    const typeDefault = input.type?.default_option_ids.includes(option.id) ?? false;
-    const roomSelected = input.selectedOptionIds.includes(option.id);
-    const resolved = resolveOptionEnabled(mode, roomSelected, typeDefault);
-    return { ...option, ...resolved, mode };
-  });
 }
 
 export function calculatePriceFromCatalog(input: {

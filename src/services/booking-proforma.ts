@@ -60,7 +60,7 @@ const BOOKING_PROFORMA_SELECT = [
   "lines",
 ].join(", ");
 
-export type ProformaRecord = {
+type ProformaRecord = {
   id: string;
   booking_id: string;
   invoice_sequence: number;
@@ -147,7 +147,7 @@ export const listBookingProformas = cache(async (
   );
 });
 
-export type IssueBookingProformaOptions = {
+type IssueBookingProformaOptions = {
   amount?: number;
 };
 

@@ -35,24 +35,6 @@ export type TenantRow = {
   updated_at: string;
 };
 
-/** First tenant by creation time — dev/local fallback when host has no slug. */
-export async function getDefaultTenant(): Promise<TenantRow | null> {
-  try {
-    const supabase = createPublicAdminClient();
-    const { data, error } = await supabase
-      .from("tenants")
-      .select(TENANT_ROW_SELECT)
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .single();
-
-    if (error || !data) return null;
-    return data as TenantRow;
-  } catch {
-    return null;
-  }
-}
-
 async function getTenantByIdUncached(tenantId: string): Promise<TenantRow | null> {
   try {
     const supabase = createPublicAdminClient();
@@ -208,20 +190,6 @@ export async function getTenantByDomain(domain: string): Promise<TenantRow | nul
   const tenantId = await getCachedTenantIdByDomain(domain)();
   if (!tenantId) return null;
   return getTenantById(tenantId);
-}
-
-/**
- * Get the owner's notification email for a tenant.
- * Returns null if tenant not found or no owner_email set.
- */
-export async function getTenantOwnerEmail(tenantId: string): Promise<string | null> {
-  if (!tenantId) return null;
-  try {
-    const tenant = await getTenantById(tenantId);
-    return tenant?.owner_email ?? null;
-  } catch {
-    return null;
-  }
 }
 
 const loadTenantDisplayName = cache(async (tenantId: string): Promise<string> => {

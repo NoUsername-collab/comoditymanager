@@ -15,7 +15,7 @@ import type {
   CheckinSettings,
 } from "@/domain/checkin/types";
 
-export const IDENTITY_SCOPES: CheckinIdentityScope[] = [
+const IDENTITY_SCOPES: CheckinIdentityScope[] = [
   "rep",
   "individual",
   "per_room",

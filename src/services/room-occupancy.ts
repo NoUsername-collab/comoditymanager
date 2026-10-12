@@ -305,7 +305,7 @@ export async function getRoomOccupancy(
 }
 
 /** Interval larg pentru verificări conflict — exclude opțional un booking. */
-export async function listOccupancyForConflictCheck(
+async function listOccupancyForConflictCheck(
   excludeBookingId?: string,
   options?: Pick<OccupancyQueryOptions, "forPublicCalendar" | "roomIds" | "kinds"> & {
     rangeStart?: string;
@@ -377,33 +377,4 @@ export async function listOccupiedRoomRanges(
     check_in: s.checkIn,
     check_out: s.checkOut,
   }));
-}
-
-/** Verifică conflict pentru un singur interval + cameră (drag-create preview viitor). */
-export async function checkRoomIntervalFree(
-  roomId: string,
-  checkIn: string,
-  checkOut: string,
-  exclude?: { bookingId?: string; holdId?: string; blockId?: string }
-): Promise<{ free: boolean; conflicts: OccupancySegment[] }> {
-  if (!isAtLeastOneNight(checkIn, checkOut)) {
-    return { free: false, conflicts: [] };
-  }
-  const [segments, settings] = await Promise.all([
-    getRoomOccupancy(checkIn, checkOut, { roomIds: [roomId] }),
-    getPensionSettings().catch(() => null),
-  ]);
-  const times = {
-    checkIn: settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME,
-    checkOut: settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME,
-  };
-  const conflicts = findOccupancyConflicts(
-    [roomId],
-    checkIn,
-    checkOut,
-    segments,
-    exclude,
-    times
-  );
-  return { free: conflicts.length === 0, conflicts: conflicts.map((c) => c.segment) };
 }

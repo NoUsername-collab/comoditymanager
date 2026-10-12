@@ -1,14 +1,14 @@
 import type { AdminMoreLink } from "@/layout/mobile/admin-more-links";
 
-export type AdminMoreSectionId = "operations" | "config" | "other";
+type AdminMoreSectionId = "operations" | "config" | "other";
 
-export type AdminMoreSection = {
+type AdminMoreSection = {
   id: AdminMoreSectionId;
   labelKey: "drawerGroupOperations" | "drawerGroupConfig" | "drawerGroupOther";
   linkLabelKeys: AdminMoreLink["labelKey"][];
 };
 
-export const ADMIN_MORE_SECTIONS: AdminMoreSection[] = [
+const ADMIN_MORE_SECTIONS: AdminMoreSection[] = [
   {
     id: "operations",
     labelKey: "drawerGroupOperations",
@@ -26,7 +26,7 @@ export const ADMIN_MORE_SECTIONS: AdminMoreSection[] = [
   },
 ];
 
-export type AdminMoreSectionGroup = AdminMoreSection & { links: AdminMoreLink[] };
+type AdminMoreSectionGroup = AdminMoreSection & { links: AdminMoreLink[] };
 
 export function groupAdminMoreLinks(links: AdminMoreLink[]): AdminMoreSectionGroup[] {
   const byKey = new Map(links.map((link) => [link.labelKey, link]));

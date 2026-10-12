@@ -63,7 +63,7 @@ function createGuestSlot(
 }
 
 /** Cameră primită fără identitate — ocupantul o preia la sosire. */
-export function createKeysOnlyRoomSlot(
+function createKeysOnlyRoomSlot(
   booking: BookingForCheckin,
   roomLabel: string,
 ): CheckinGuestInput {
@@ -288,7 +288,7 @@ export function resolveReceptionRoomLabels(
   return bookingRooms(booking);
 }
 
-export type RoomGuestGroup = {
+type RoomGuestGroup = {
   room: string;
   guests: { guest: CheckinGuestInput; index: number }[];
 };
@@ -314,25 +314,4 @@ export function groupGuestsByRoom(guests: CheckinGuestInput[]): RoomGuestGroup[]
 
 export function defaultOperatorScope(mode: GroupCheckinMode): CheckinIdentityScope {
   return effectiveIdentityScope(mode, null);
-}
-
-/** Slot gol pentru adăugare manuală (mod individual). */
-export function createEmptyGuestSlot(roomLabel: string): CheckinGuestInput {
-  return {
-    full_name: "",
-    last_name: "",
-    first_name: "",
-    phone: "",
-    national_id: "",
-    national_id_type: "cnp",
-    document_type: "ci",
-    document_series: "",
-    document_number: "",
-    nationality: "România",
-    birth_date: null,
-    room_label: roomLabel,
-    is_representative: false,
-    guest_id: null,
-    present_at_checkin: true,
-  };
 }

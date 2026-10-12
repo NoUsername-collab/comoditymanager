@@ -30,7 +30,7 @@ import { datetimeLocalNow } from "@/lib/operational-check";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { todayIso } from "@/lib/stay-dates";
 
-export type GanttCheckTimeDialogProps = {
+type GanttCheckTimeDialogProps = {
   open: boolean;
   mode: "checkin" | "checkout";
   intent?: "set" | "edit";

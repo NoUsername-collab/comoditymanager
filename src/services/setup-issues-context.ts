@@ -4,7 +4,7 @@ import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 
-export type OnboardingIssueContext = {
+type OnboardingIssueContext = {
   displayName: string | null;
   pensionEmail: string | null;
   publicSiteEmail: string | null;

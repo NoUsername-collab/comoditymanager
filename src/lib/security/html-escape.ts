@@ -9,7 +9,7 @@ export function escapeHtml(value: string): string {
 }
 
 /** Escape values used in HTML attributes (e.g. href). */
-export function escapeHtmlAttr(value: string): string {
+function escapeHtmlAttr(value: string): string {
   return escapeHtml(value);
 }
 

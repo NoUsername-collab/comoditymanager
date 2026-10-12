@@ -62,7 +62,7 @@ export const getTenantFiscalSettings = cache(
   }
 );
 
-export type UpdateTenantFiscalSettingsInput = {
+type UpdateTenantFiscalSettingsInput = {
   provider?: FiscalProviderType;
   anafEnabled?: boolean;
   anafCif?: string | null;

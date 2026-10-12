@@ -4,7 +4,7 @@ import { routing } from "@/i18n/routing";
 /** Canonical MFA enrollment route (inside settings shell). */
 export const MFA_SETUP_PATH = "/admin/settings/security";
 
-export function stripLocalePrefixFromAdminPath(pathname: string): string {
+function stripLocalePrefixFromAdminPath(pathname: string): string {
   const segments = pathname.split("/").filter(Boolean);
   const first = segments[0];
   if (

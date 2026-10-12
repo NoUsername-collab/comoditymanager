@@ -29,7 +29,7 @@ export function deriveActiveBookings(bookings: BookingRow[]): BookingRow[] {
   return bookings.filter((booking) => booking.status !== "anulata");
 }
 
-export function deriveBookingsByRoom(
+function deriveBookingsByRoom(
   activeBookings: BookingRow[]
 ): Map<string, BookingRow[]> {
   const map = new Map<string, BookingRow[]>();
@@ -43,7 +43,7 @@ export function deriveBookingsByRoom(
   return map;
 }
 
-export function deriveOccupancyByRoom(
+function deriveOccupancyByRoom(
   occupancy: OccupancySegment[]
 ): Map<string, OccupancySegment[]> {
   const map = new Map<string, OccupancySegment[]>();
@@ -55,7 +55,7 @@ export function deriveOccupancyByRoom(
   return map;
 }
 
-export function deriveDisplaySegmentsByRoom(
+function deriveDisplaySegmentsByRoom(
   occupancy: OccupancySegment[],
   layerFilter: GanttLayerFilter,
   effectiveToday: string
@@ -79,7 +79,7 @@ export function deriveDisplaySegmentsByRoom(
   return { stay, overlay };
 }
 
-export function deriveOccupiedRoomIdsOnFocus(
+function deriveOccupiedRoomIdsOnFocus(
   focusIso: string,
   bookingsByRoom: Map<string, BookingRow[]>,
   occupancyByRoom: Map<string, OccupancySegment[]>
@@ -119,7 +119,7 @@ export function deriveFilteredRooms(
   );
 }
 
-export function deriveTodayFlagsByRoom(
+function deriveTodayFlagsByRoom(
   rooms: GanttRoom[],
   bookingsByRoom: Map<string, BookingRow[]>,
   todayIso: string
@@ -138,7 +138,7 @@ export function deriveTodayFlagsByRoom(
   return map;
 }
 
-export function deriveBuildingGroups(
+function deriveBuildingGroups(
   filteredRooms: GanttRoom[],
   groupByBuilding: boolean,
   buildingFallbackLabel: string,

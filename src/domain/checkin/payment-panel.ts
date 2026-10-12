@@ -7,12 +7,12 @@ import type {
   StoredPaymentStatus,
 } from "@/domain/checkin/types";
 
-export type CheckinPaymentSnapshot = {
+type CheckinPaymentSnapshot = {
   paymentStatus: StoredPaymentStatus;
   paymentAmountPaid: number;
 };
 
-export type ResolvedCheckinPayment = CheckinPaymentSnapshot & {
+type ResolvedCheckinPayment = CheckinPaymentSnapshot & {
   fromLedger: boolean;
 };
 

@@ -6,7 +6,7 @@ import {
 } from "@/lib/ro-calendar";
 import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
 
-export type GanttRollingZoom = "today" | "days7" | "days15" | "days30";
+type GanttRollingZoom = "today" | "days7" | "days15" | "days30";
 export type GanttZoom =
   | GanttRollingZoom
   | "quarter"
@@ -36,7 +36,7 @@ export type GanttViewRange = {
   columnGranularity?: GanttColumnGranularity;
 };
 
-export type GanttRangeLabels = {
+type GanttRangeLabels = {
   today: string;
   days7: string;
   days15: string;
@@ -249,7 +249,7 @@ export function buildMonthRange(
   };
 }
 
-export function buildAnchoredMonthRange(
+function buildAnchoredMonthRange(
   startIso: string,
   zoom: "days30" | "month",
   locale: string,
@@ -273,24 +273,6 @@ export function buildAnchoredMonthRange(
     locale,
     today
   );
-}
-
-export function buildWeekRange(weekStartIso: string, locale: string, today?: string): GanttViewRange {
-  const days: string[] = [];
-  let cur = weekStartIso;
-  for (let i = 0; i < 7; i++) {
-    days.push(cur);
-    cur = addDays(cur, 1);
-  }
-  const cols = buildDayColumns(days, locale, today);
-  return {
-    zoom: "week",
-    periodKey: `w-${weekStartIso}`,
-    title: `${formatDateWithDay(days[0], locale)} – ${formatDateWithDay(days[6], locale)}`,
-    days: cols,
-    rangeStart: days[0],
-    rangeEnd: addDays(days[6], 1),
-  };
 }
 
 export function buildQuarterRange(
@@ -324,7 +306,7 @@ export function buildQuarterRange(
   };
 }
 
-export function buildAnchoredQuarterRange(
+function buildAnchoredQuarterRange(
   startIso: string,
   locale: string,
   labels: GanttRangeLabels = DEFAULT_LABELS,

@@ -7,7 +7,7 @@ const isoDateSchema = z
   .nullable()
   .optional();
 
-export const checkinGuestInputSchema = z
+const checkinGuestInputSchema = z
   .object({
     full_name: z.string().max(200),
     last_name: z.string().max(100).nullable().optional(),
@@ -33,7 +33,7 @@ export const checkinGuestInputSchema = z
   })
   .strict();
 
-export const checkinGuestsArraySchema = z
+const checkinGuestsArraySchema = z
   .array(checkinGuestInputSchema)
   .min(1)
   .max(50);

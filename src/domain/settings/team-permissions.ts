@@ -11,7 +11,7 @@ export const PERMISSION_GROUP_IDS = [
 
 export type PermissionGroupId = (typeof PERMISSION_GROUP_IDS)[number];
 
-export type RolePermissionMap = Record<PermissionGroupId, boolean>;
+type RolePermissionMap = Record<PermissionGroupId, boolean>;
 
 export type TeamPermissions = {
   admin: RolePermissionMap;

@@ -64,7 +64,7 @@ function TemplateSections({
   );
 }
 
-export function ClassicPublicTemplate({
+function ClassicPublicTemplate({
   config,
   locale,
   checkTimesLabel,
@@ -87,7 +87,7 @@ export function ClassicPublicTemplate({
   );
 }
 
-export function EditorialPublicTemplate({
+function EditorialPublicTemplate({
   config,
   locale,
   checkTimesLabel,
@@ -108,7 +108,7 @@ export function EditorialPublicTemplate({
   );
 }
 
-export function ImmersivePublicTemplate({
+function ImmersivePublicTemplate({
   config,
   locale,
   checkTimesLabel,

@@ -6,7 +6,7 @@ import type {
   ReactNode,
 } from "react";
 
-export type AdminFieldSize = "sm" | "md" | "lg";
+type AdminFieldSize = "sm" | "md" | "lg";
 
 /* ── AdminInput ── */
 

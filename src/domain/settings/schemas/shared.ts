@@ -24,7 +24,7 @@ export const optionalUrlSchema = z
   ])
   .transform((v) => (v === "" || v === null ? null : v));
 
-export const safeNavHrefSchema = z
+const safeNavHrefSchema = z
   .string()
   .max(2048)
   .refine((v) => isSafeNavHref(v), { message: "invalid_href" });

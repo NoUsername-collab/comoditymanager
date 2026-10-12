@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export type ImportViolation = {
+type ImportViolation = {
   file: string;
   line: number;
   importPath: string;
@@ -129,7 +129,7 @@ export function auditImportBoundaries(root = SRC): ImportViolation[] {
   return violations;
 }
 
-export type DualModuleViolation = {
+type DualModuleViolation = {
   file: string;
   directory: string;
   rule: "services-no-dual-module";

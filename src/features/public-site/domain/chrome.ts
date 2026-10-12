@@ -6,7 +6,7 @@ import type {
 
 export const PUBLIC_FONT_OPTIONS: PublicFontId[] = ["theme", "serif", "sans"];
 
-export const PUBLIC_FONT_STACK: Record<Exclude<PublicFontId, "theme">, string> = {
+const PUBLIC_FONT_STACK: Record<Exclude<PublicFontId, "theme">, string> = {
   serif: "Georgia, 'Times New Roman', serif",
   sans: "ui-sans-serif, system-ui, sans-serif",
 };

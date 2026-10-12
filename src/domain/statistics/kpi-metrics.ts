@@ -16,7 +16,7 @@ export function computeRevparRon(
   return Math.round((revenueRon / roomNightsCapacity) * 100) / 100;
 }
 
-export type RevenueKpiMetrics = {
+type RevenueKpiMetrics = {
   adrRon: number | null;
   revparRon: number | null;
 };

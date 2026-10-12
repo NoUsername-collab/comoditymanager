@@ -8,6 +8,3 @@ import { requireTenantIdForData } from "@/lib/tenant/guards";
 export const resolveTenantIdForData = cache(async (): Promise<string> =>
   requireTenantIdForData()
 );
-
-/** Alias — same per-request dedupe as resolveTenantIdForData. */
-export const resolveTenantId = resolveTenantIdForData;

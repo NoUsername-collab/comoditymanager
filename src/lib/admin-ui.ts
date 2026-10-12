@@ -6,7 +6,7 @@ export const AC_LABELS: Record<string, string> = {
   per_room: "Optional AC per room",
 };
 
-export type RoomTonightStatus = "free" | "occupied" | "pending" | "inactive";
+type RoomTonightStatus = "free" | "occupied" | "pending" | "inactive";
 
 export const ROOM_STATUS = {
   free: {
@@ -56,6 +56,3 @@ export function occupancyCaptionFromWindow(
 
 export const btnPrimary =
   "rounded-lg bg-zinc-900 px-3.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-zinc-800";
-
-export const btnSecondary =
-  "rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-sm font-medium text-zinc-800 shadow-sm hover:border-zinc-300";

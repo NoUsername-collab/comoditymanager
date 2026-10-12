@@ -5,7 +5,7 @@ import type {
   FiscalSubmitResult,
 } from "../fiscal-provider";
 
-export type AnafProviderRuntimeConfig = {
+type AnafProviderRuntimeConfig = {
   stubMode: boolean;
   clientId?: string | null;
   clientSecret?: string | null;

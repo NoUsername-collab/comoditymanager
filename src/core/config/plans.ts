@@ -12,8 +12,8 @@ export type DeploymentMode = "cloud" | "local" | "hybrid";
 
 // ─── Plan Tiers ─────────────────────────────────────────────────
 export type CloudPlan = "free" | "essential" | "professional" | "business";
-export type LocalPlan = "local_essential" | "local_professional" | "local_business";
-export type HybridPlan = "hybrid_essential" | "hybrid_professional" | "hybrid_business";
+type LocalPlan = "local_essential" | "local_professional" | "local_business";
+type HybridPlan = "hybrid_essential" | "hybrid_professional" | "hybrid_business";
 export type PlanId = CloudPlan | LocalPlan | HybridPlan;
 
 /** @deprecated Use "free" instead */
@@ -263,7 +263,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
 };
 
 // ─── Module Catalog ─────────────────────────────────────────────
-export interface ModuleInfo {
+interface ModuleInfo {
   id: ModuleId;
   label: string;
   icon: string;

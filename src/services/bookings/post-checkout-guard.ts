@@ -7,7 +7,7 @@ import { requireStaff } from "@/lib/auth/require-staff";
 import { getCheckinSettings } from "@/services/checkin/settings";
 import { getBookingById } from "./queries";
 
-export type PostCheckoutBooking = { actual_check_out_at: string | null };
+type PostCheckoutBooking = { actual_check_out_at: string | null };
 
 async function resolvePostCheckoutEditPolicyImpl() {
   const [{ memberRole }, settings] = await Promise.all([

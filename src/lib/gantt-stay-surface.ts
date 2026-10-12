@@ -15,7 +15,7 @@ function mixChannel(a: number, b: number, t: number): number {
 }
 
 /** Amestec hex + hex (t = pondere a doua culoare) */
-export function mixHex(base: string, withColor: string, withWeight: number): string {
+function mixHex(base: string, withColor: string, withWeight: number): string {
   const a = parseHex(base);
   const b = parseHex(withColor);
   if (!a || !b) return base;
@@ -42,7 +42,7 @@ function contrastRatio(l1: number, l2: number): number {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-export function textOnBackground(hex: string): "#0f172a" | "#ffffff" {
+function textOnBackground(hex: string): "#0f172a" | "#ffffff" {
   const bg = relativeLuminance(hex);
   const onWhite = relativeLuminance("#ffffff");
   const onDark = relativeLuminance("#0f172a");
@@ -53,49 +53,6 @@ export function textOnBackground(hex: string): "#0f172a" | "#ffffff" {
   if (whiteOk && !darkOk) return "#ffffff";
   if (darkOk && !whiteOk) return "#0f172a";
   return ratioWhite >= ratioDark ? "#ffffff" : "#0f172a";
-}
-
-/** Clasă CSS pentru text pe bară — nu depinde de variabile suprascrise de temă. */
-export function ganttBarTextClass(text: "#0f172a" | "#ffffff"): string {
-  return text === "#ffffff" ? "gantt-bar-text--light" : "gantt-bar-text--dark";
-}
-
-/** Atribut pentru reguli CSS cu prioritate peste teme (paletă). */
-export function ganttStayToneAttr(
-  text: "#0f172a" | "#ffffff"
-): "light" | "dark" {
-  return text === "#ffffff" ? "light" : "dark";
-}
-
-/** Dacă `preferred` nu contrastează cu `bg`, alege automat alb/negru. */
-export function readableOnBackground(bg: string, preferred?: string): string {
-  const auto = textOnBackground(bg);
-  if (!preferred) return auto;
-  const pref = parseHex(preferred);
-  if (!pref) return auto;
-  const prefHex = `#${[pref.r, pref.g, pref.b]
-    .map((c) => c.toString(16).padStart(2, "0"))
-    .join("")}`;
-  const prefLum = relativeLuminance(prefHex);
-  const bgLum = relativeLuminance(bg);
-  const prefIsLight = prefLum > 0.5;
-  const bgIsLight = bgLum > 0.5;
-  if (prefIsLight === bgIsLight) return auto;
-  return preferred;
-}
-
-export function ganttStayCssVars(
-  surface: GanttStaySurface
-): Record<string, string> {
-  return {
-    "--stay-fill": surface.fill,
-    "--stay-tab-end": surface.tabEnd,
-    "--stay-border": surface.border,
-    "--stay-text": surface.text,
-    "--stay-badge-bg": surface.badgeBg,
-    "--stay-badge-text": surface.badgeText,
-    "--stay-glow": surface.glow,
-  };
 }
 
 export type GanttStaySurface = {

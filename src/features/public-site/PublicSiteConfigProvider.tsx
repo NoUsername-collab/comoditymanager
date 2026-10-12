@@ -19,14 +19,6 @@ export function PublicSiteConfigProvider({
   );
 }
 
-export function usePublicSiteConfig(): PublicSiteConfig {
-  const config = useContext(PublicSiteConfigContext);
-  if (!config) {
-    throw new Error("usePublicSiteConfig must be used within PublicSiteConfigProvider");
-  }
-  return config;
-}
-
 export function useOptionalPublicSiteConfig(): PublicSiteConfig | null {
   return useContext(PublicSiteConfigContext);
 }

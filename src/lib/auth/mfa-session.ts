@@ -6,7 +6,7 @@ import {
 } from "@/lib/auth/mfa-policy";
 import type { TenantMemberRole } from "@/services/tenant-members";
 
-export type MfaAccessState =
+type MfaAccessState =
   | { kind: "ok" }
   | { kind: "needs_enrollment" }
   | { kind: "needs_challenge" };

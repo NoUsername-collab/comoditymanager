@@ -2,7 +2,7 @@ import type { GuestRow } from "@/domain/guest/types";
 import { formatCnpDisplay } from "@/domain/guest/cnp";
 import { formatRoDate } from "@/lib/stay-dates";
 
-export type GuestIdentitySummaryLine = {
+type GuestIdentitySummaryLine = {
   key: string;
   label: string;
   value: string;

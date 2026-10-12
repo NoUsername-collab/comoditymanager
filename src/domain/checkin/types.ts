@@ -40,7 +40,7 @@ export function optionalDateForDb(
   return trimmed ? trimmed : null;
 }
 
-export type CheckinKeyRule = "always" | "id_verified" | "paid";
+type CheckinKeyRule = "always" | "id_verified" | "paid";
 export type CheckinIdsPerRoom = "one" | "two_non_family";
 
 export type CheckinFlag =
@@ -56,10 +56,10 @@ export type CheckinFlag =
   | "keys_blocked_no_id"
   | "keys_blocked_unpaid";
 
-export type CheckinDocRule = "required" | "recommended" | "optional";
-export type CheckinPhoneRule = "required" | "recommended" | "optional";
+type CheckinDocRule = "required" | "recommended" | "optional";
+type CheckinPhoneRule = "required" | "recommended" | "optional";
 export type CheckinCnpRule = "required" | "recommended" | "optional";
-export type CheckinPaymentRule = "full" | "partial" | "at_checkout";
+type CheckinPaymentRule = "full" | "partial" | "at_checkout";
 /** `both` = recepția alege la check-in (rep / individual / per cameră). */
 export type GroupCheckinMode = "rep" | "individual" | "per_room" | "both";
 export type DocumentType = "ci" | "pasaport" | "permis";

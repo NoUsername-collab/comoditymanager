@@ -10,12 +10,12 @@ import { stayNightCount } from "@/lib/stay-dates";
 /** 0 = unrated (no reviews yet). Never penalize new guests with a low star score. */
 export const DEFAULT_STARS_AVG = 0;
 
-export type CompletedStayBooking = {
+type CompletedStayBooking = {
   check_in: string;
   check_out: string;
 };
 
-export type CompletedStayStats = {
+type CompletedStayStats = {
   completed_stays: number;
   total_nights: number;
   last_stay_check_out: string | null;

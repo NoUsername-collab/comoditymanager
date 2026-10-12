@@ -46,14 +46,6 @@ export function useDisplayProfile(): DisplayProfile {
   );
 }
 
-export function useViewportHeightTier(): ViewportHeightTier {
-  return useSyncExternalStore(
-    subscribeDisplayLayout,
-    readHeightTierFromDom,
-    () => "standard" as ViewportHeightTier
-  );
-}
-
 export function useIsCompactViewport(): boolean {
   return useSyncExternalStore(
     subscribeDisplayLayout,

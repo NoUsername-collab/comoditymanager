@@ -35,7 +35,7 @@ import {
 } from "@/features/guests/ui/GuestStayRatingFields";
 import "@/styles/features/admin/booking-checkout-panel.css";
 
-export type BookingCheckoutPanelProps = {
+type BookingCheckoutPanelProps = {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;

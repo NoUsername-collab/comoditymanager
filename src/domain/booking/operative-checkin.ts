@@ -24,7 +24,7 @@ function isoDateLocal(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
-export type OperativeCheckInBooking = {
+type OperativeCheckInBooking = {
   status: string;
   check_in: string;
   actual_check_in_at?: string | null;

@@ -16,7 +16,7 @@ import {
   type GanttStayPopoverData,
 } from "@/features/calendar/ui/GanttStayPopover";
 
-export type GanttStayTapPopoverPayload = {
+type GanttStayTapPopoverPayload = {
   key: string;
   anchorRect: DOMRect;
   data: GanttStayPopoverData;

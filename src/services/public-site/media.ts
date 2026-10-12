@@ -8,7 +8,7 @@ import {
 } from "@/domain/public-site/media";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 
-export type PublicSiteMediaUploadError =
+type PublicSiteMediaUploadError =
   | "kind"
   | "empty"
   | "tooLarge"
@@ -16,7 +16,7 @@ export type PublicSiteMediaUploadError =
   | "tenant"
   | "storage";
 
-export type PublicSiteMediaUploadResult =
+type PublicSiteMediaUploadResult =
   | { ok: true; url: string; path: string }
   | { ok: false; reason: PublicSiteMediaUploadError };
 

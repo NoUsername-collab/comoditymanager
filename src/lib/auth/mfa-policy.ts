@@ -5,7 +5,7 @@ import type { TenantMemberRole } from "@/services/tenant-members";
 export { MFA_SETUP_PATH };
 
 /** Paths reachable before MFA enrollment or AAL2 step-up. */
-export const MFA_EXEMPT_ADMIN_PATHS = [
+const MFA_EXEMPT_ADMIN_PATHS = [
   "/admin/login",
   "/admin/security/mfa",
   MFA_SETUP_PATH,

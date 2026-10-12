@@ -7,7 +7,7 @@ import {
   slugifyTenantName,
 } from "@/lib/platform-admin/tenant-slug";
 
-export type ProvisionTenantInput = {
+type ProvisionTenantInput = {
   displayName: string;
   slug: string;
   ownerEmail: string;

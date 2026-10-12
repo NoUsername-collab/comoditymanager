@@ -10,7 +10,7 @@ export const CACHE_TAGS = {
   publicSite: "public-site",
 } as const;
 
-export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];
+type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];
 
 /**
  * Tenant-scoped cache tag for revalidation.

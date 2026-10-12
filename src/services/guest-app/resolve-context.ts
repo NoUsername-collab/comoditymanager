@@ -17,7 +17,7 @@ import { getPensionIdentity } from "@/services/pension-identity";
 import { resolveHotelContactWithPrimary } from "@/domain/settings/pension-identity";
 import { loadGuestPrecheckinPrefill } from "@/services/guest-app/precheckin-prefill";
 
-export type GuestGalleryDisplayItem = {
+type GuestGalleryDisplayItem = {
   id: string;
   url: string;
   caption?: string;

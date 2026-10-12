@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { isTenantOperational } from "@/domain/tenant/operational";
 import { lookupTenantHostOnEdge } from "@/lib/tenant/tenant-host-edge";
 
-export const TENANT_STATUS_EXEMPT_PATHS = new Set([
+const TENANT_STATUS_EXEMPT_PATHS = new Set([
   "/tenant-suspended",
   "/admin/login",
 ]);

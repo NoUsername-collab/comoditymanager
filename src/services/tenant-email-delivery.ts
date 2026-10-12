@@ -90,15 +90,6 @@ export type TenantEmailOperatorSnapshot = {
   usagePeriodMonth: string;
 };
 
-export async function getTenantEffectiveMonthlyCap(
-  tenantId: string,
-): Promise<number | null> {
-  const tenant = await getTenantById(tenantId);
-  if (!tenant) return null;
-  const delivery = await getTenantEmailDelivery(tenantId);
-  return effectiveMonthlySendCap(getPlanConfig(tenant.plan_id), delivery);
-}
-
 export const getTenantEmailOperatorSnapshot = cache(
   async (tenantId: string): Promise<TenantEmailOperatorSnapshot | null> => {
     const [tenant, delivery, emailSettings, identity, domains] = await Promise.all([

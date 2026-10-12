@@ -6,7 +6,7 @@ export type GuestContactMatchInput = {
   excludeGuestId?: string | null;
 };
 
-export type GuestMatchReason =
+type GuestMatchReason =
   | "phone_email_name"
   | "phone_email"
   | "phone_name"

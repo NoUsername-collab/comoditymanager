@@ -21,7 +21,7 @@ export function guestHasValidCnp(guest: CheckinGuestInput): boolean {
   return validateNationalId("cnp", cleanNationalId(raw)).valid;
 }
 
-export function guestHasForeignDocument(guest: CheckinGuestInput): boolean {
+function guestHasForeignDocument(guest: CheckinGuestInput): boolean {
   const series = guest.document_series?.trim();
   const number = guest.document_number?.trim();
   return Boolean(series && number);
@@ -39,7 +39,7 @@ export function guestHasLegalIdentity(guest: CheckinGuestInput): boolean {
   return guestHasForeignDocument(guest);
 }
 
-export function guestMissingIdentityLabel(guest: CheckinGuestInput): string {
+function guestMissingIdentityLabel(guest: CheckinGuestInput): string {
   if (isRomanianNationality(guest.nationality)) {
     return "CNP obligatoriu (cetățean RO)";
   }

@@ -54,7 +54,7 @@ export type GuestAppListItem = {
   icon?: string;
 };
 
-export type GuestAppGreenStayContent = {
+type GuestAppGreenStayContent = {
   enabled?: boolean;
   description?: string;
 };

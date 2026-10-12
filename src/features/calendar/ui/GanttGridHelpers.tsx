@@ -34,7 +34,7 @@ export function drillDownZoomFrom(current: InlineZoomChoice): InlineZoomChoice |
 export const ROOM_COL_W = "7.7rem";
 export const DAY_COL_MIN_W = "2.25rem";
 
-export type GanttColumnMetrics = {
+type GanttColumnMetrics = {
   roomCol: string;
   dayMin: string;
 };
@@ -73,7 +73,7 @@ export function resolveGanttDayGridOptions(
   return undefined;
 }
 
-export const GANTT_DAY_CELL = "gantt-day-cell min-w-0";
+const GANTT_DAY_CELL = "gantt-day-cell min-w-0";
 
 export type InlineZoomChoice =
   | "today"
@@ -82,8 +82,6 @@ export type InlineZoomChoice =
   | "days30"
   | "month"
   | "quarter";
-
-export const QUICK_SHIFT_STEPS = [{ days: 1 }, { days: 7 }, { days: 15 }, { days: 30 }] as const;
 
 export function ToolbarFilterIcon({ className }: { className?: string }) {
   return (
@@ -150,16 +148,6 @@ export function periodStepMeta(
   }
 }
 
-export function quickShiftMeta(
-  days: number,
-  tCommon: (key: string) => string
-): { label: string; shortLabel: string } {
-  if (days === 1) return { label: tCommon("oneDayAria"), shortLabel: "1d" };
-  if (days === 7) return { label: tCommon("oneWeekAria"), shortLabel: "1w" };
-  if (days === 15) return { label: tCommon("fifteenDaysAria"), shortLabel: "15d" };
-  return { label: tCommon("oneMonthAria"), shortLabel: "30d" };
-}
-
 export function ganttDayGridStyle(
   dayCount: number,
   options?: GanttDayGridOptions
@@ -180,11 +168,11 @@ export function ganttDayGridStyle(
 }
 
 /** Pixel width of the day timeline when columns are fixed-width. */
-export function ganttTimelineWidth(dayCount: number, dayMin: string): string {
+function ganttTimelineWidth(dayCount: number, dayMin: string): string {
   return `calc(${dayCount} * ${dayMin})`;
 }
 
-export type GanttTableLayout = {
+type GanttTableLayout = {
   roomCol: string;
   daysCol: string;
   tableWidth: string;
@@ -205,7 +193,7 @@ export function resolveGanttTableLayout(
   };
 }
 
-export function dayCellClass(
+function dayCellClass(
   col: { isWeekend: boolean; isToday: boolean; isPast: boolean; iso: string },
   compact: boolean,
   touch: boolean,

@@ -3,7 +3,7 @@ import { bookingRoomNames } from "@/domain/checkin/room-checkin-progress";
 import type { PaymentStatus, StoredPaymentStatus } from "@/domain/checkin/types";
 import type { BookingDetail, BookingRow } from "./types";
 
-export type GanttCreateSyntheticInput = {
+type GanttCreateSyntheticInput = {
   id: string;
   checkIn: string;
   checkOut: string;
@@ -60,7 +60,7 @@ export function buildSyntheticGanttBookingRow(
   };
 }
 
-export type CheckinPatchInput = {
+type CheckinPatchInput = {
   checkedInAt: string;
   checkedInRooms?: string[];
   keysHandedRooms?: string[];

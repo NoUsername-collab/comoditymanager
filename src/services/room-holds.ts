@@ -6,16 +6,6 @@ import {
 import { addDays } from "@/lib/stay-dates";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 
-export type RoomHoldRow = {
-  id: string;
-  room_id: string;
-  check_in: string;
-  check_out: string;
-  reason: string | null;
-  expires_at: string | null;
-  released_at: string | null;
-};
-
 async function requireRoomsInTenant(roomIds: string[]) {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase

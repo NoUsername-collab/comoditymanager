@@ -8,7 +8,7 @@ export const DEFAULT_PARTY_ADULTS = 2;
 /** Last-resort property name when display_name is empty — never overwrites a saved name. */
 export const DEFAULT_PENSION_DISPLAY_NAME = "Pensiune";
 
-export type PensionStayTimesInput = {
+type PensionStayTimesInput = {
   default_check_in_time?: string | null;
   default_check_out_time?: string | null;
 } | null;

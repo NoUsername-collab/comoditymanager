@@ -14,11 +14,11 @@ export type RoomCheckinProgress = {
   isComplete: boolean;
 };
 
-export function normalizeRoomLabel(label: string): string {
+function normalizeRoomLabel(label: string): string {
   return label.trim().toLowerCase();
 }
 
-export function roomLabelsMatch(a: string, b: string): boolean {
+function roomLabelsMatch(a: string, b: string): boolean {
   return normalizeRoomLabel(a) === normalizeRoomLabel(b);
 }
 

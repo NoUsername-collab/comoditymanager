@@ -1,12 +1,12 @@
 import type { ActivityAction, ActivityEntityType } from "@/domain/activity/types";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 
-export type PlatformActivityActor = {
+type PlatformActivityActor = {
   userId: string;
   email: string;
 };
 
-export type PlatformActivityInput = {
+type PlatformActivityInput = {
   tenantId: string;
   actor: PlatformActivityActor;
   action: ActivityAction;

@@ -1,4 +1,4 @@
-export type SetupIssueSeverity = "warning" | "critical";
+type SetupIssueSeverity = "warning" | "critical";
 
 export type SetupIssue = {
   id: string;

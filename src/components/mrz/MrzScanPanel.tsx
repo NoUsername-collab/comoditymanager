@@ -28,7 +28,7 @@ import {
 } from "@/lib/mrz/stable-read";
 
 type TabId = "paste" | "camera";
-export type MrzScanVariant = "admin" | "guest";
+type MrzScanVariant = "admin" | "guest";
 
 type CameraPhase = "idle" | "starting" | "ready" | "scanning" | "success";
 

@@ -15,9 +15,9 @@ import {
   playConfirmSound,
 } from "./admin-fx-effects";
 
-export type AdminToastKind = "success" | "info" | "error";
+type AdminToastKind = "success" | "info" | "error";
 
-export type AdminToast = {
+type AdminToast = {
   id: string;
   kind: AdminToastKind;
   title: string;

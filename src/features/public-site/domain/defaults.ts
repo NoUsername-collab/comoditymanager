@@ -49,7 +49,7 @@ function loc(value: LocalizedText | string | undefined): LocalizedText {
   return value;
 }
 
-export function buildDefaultPublicSections(copy: DefaultCopy): PublicSiteSection[] {
+function buildDefaultPublicSections(copy: DefaultCopy): PublicSiteSection[] {
   return [
     {
       id: "default-intro",

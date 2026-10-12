@@ -1,6 +1,6 @@
 import type { ActivityAction } from "./types";
 
-export type ActivityTone = "booking" | "auth" | "structure" | "settings";
+type ActivityTone = "booking" | "auth" | "structure" | "settings";
 
 export function activityTone(action: ActivityAction): ActivityTone {
   if (action.startsWith("booking.")) return "booking";

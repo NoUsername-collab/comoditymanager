@@ -8,13 +8,13 @@ import { getEmailDeliveryConfig } from "@/lib/email/provider";
 import { throwIfDbError } from "@/lib/platform-admin/format-db-error";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 
-export type PlatformEmailHealth = {
+type PlatformEmailHealth = {
   configured: boolean;
   provider: "resend" | "noop";
   mailDomain: string | null;
 };
 
-export type PlatformDomainHealth = {
+type PlatformDomainHealth = {
   customDomains: number;
   unverified: number;
   sslPending: number;

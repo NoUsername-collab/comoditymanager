@@ -141,7 +141,7 @@ export async function getLatestBookingForGuest(
   return loadLatestBookingForGuest(guestId);
 }
 
-export type BookingStayParams = {
+type BookingStayParams = {
   id: string;
   check_in: string;
   check_out: string;

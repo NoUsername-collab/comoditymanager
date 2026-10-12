@@ -1,6 +1,6 @@
-export type AppLocale = "ro" | "en" | "bg";
+type AppLocale = "ro" | "en" | "bg";
 
-export type LocaleFlagSpinnerColors = {
+type LocaleFlagSpinnerColors = {
   /** Conic gradient stops (flag) */
   c1: string;
   c2: string;

@@ -9,7 +9,7 @@ export type TenantFiscalSettingsRecord = {
   anafCredentials: Record<string, unknown> | null;
 };
 
-export function isAnafStubMode(): boolean {
+function isAnafStubMode(): boolean {
   if (process.env.ANAF_STUB === "true") return true;
   const clientId = process.env.ANAF_CLIENT_ID?.trim();
   const clientSecret = process.env.ANAF_CLIENT_SECRET?.trim();

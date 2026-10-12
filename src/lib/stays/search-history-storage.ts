@@ -1,14 +1,14 @@
 import { tenantDomainFromHost, tenantSlugFromHost } from "@/lib/tenant/host";
 import { readLocalStorageFirst } from "@/lib/storage/local";
 
-export const STAY_SEARCH_HISTORY_MAX = 10;
+const STAY_SEARCH_HISTORY_MAX = 10;
 const STORAGE_PREFIX = "zalmox-stays-search-history";
 const LEGACY_STORAGE_PREFIXES = [
   "zalmox-cazari-search-history",
   "casaemil-cazari-search-history",
 ];
 
-export function normalizeSearchHistoryTerm(raw: string): string {
+function normalizeSearchHistoryTerm(raw: string): string {
   return raw.trim().replace(/\s+/g, " ");
 }
 
@@ -62,7 +62,7 @@ export function readStaySearchHistory(hostInput?: string): string[] {
   }
 }
 
-export function writeStaySearchHistory(
+function writeStaySearchHistory(
   terms: string[],
   hostInput?: string,
 ): void {

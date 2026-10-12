@@ -15,7 +15,7 @@ export type PlatformLogFilterOption = {
   displayName: string;
 };
 
-export type PlatformLogsPageData = {
+type PlatformLogsPageData = {
   healthChecks: TenantHealthCheck[];
   activityLogs: PlatformLogEntry[];
   devLogs: PlatformDevLogEntry[];

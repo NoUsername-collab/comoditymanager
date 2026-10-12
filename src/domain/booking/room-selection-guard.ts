@@ -10,7 +10,7 @@ export type RoomSelectionState = {
   availableRooms: Array<{ id: string; name: string }>;
 };
 
-export type RoomSelectionResult = {
+type RoomSelectionResult = {
   allowed: boolean;
   reason?: string;
   selectedIds: string[];

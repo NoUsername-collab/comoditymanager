@@ -219,7 +219,7 @@ const loadCheckinSettings = cache((tenantId: string) =>
   getCachedCheckinSettings(tenantId)()
 );
 
-export type CheckinDeparturePolicy = {
+type CheckinDeparturePolicy = {
   earlyCheckoutAllowed: boolean;
   earlyCheckoutFee: number;
   checkoutTimeUntil: string | null;

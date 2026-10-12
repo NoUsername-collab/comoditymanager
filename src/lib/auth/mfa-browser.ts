@@ -3,17 +3,17 @@ import { clearUnverifiedTotpFactors } from "@/lib/auth/mfa-enroll";
 
 const TOTP_FRIENDLY_NAME = "Zalmox Admin";
 
-export type TotpEnrollmentStatus =
+type TotpEnrollmentStatus =
   | { ok: true; enrolled: boolean }
   | { ok: false };
 
-export type TotpEnrollStart =
+type TotpEnrollStart =
   | { ok: true; factorId: string; secret: string; uri: string }
   | { ok: false; message?: string };
 
-export type TotpVerifyFailure = "verify_failed" | "invalid_code";
+type TotpVerifyFailure = "verify_failed" | "invalid_code";
 
-export type TotpChallengeFailure = TotpVerifyFailure | "no_factor";
+type TotpChallengeFailure = TotpVerifyFailure | "no_factor";
 
 function browserAuth() {
   return createClient().auth;

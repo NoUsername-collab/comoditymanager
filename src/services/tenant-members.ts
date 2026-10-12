@@ -39,7 +39,7 @@ function bustTenantMembersCache(tenantId: string): void {
   revalidateTag(tenantMembersCacheTag(tenantId), "max");
 }
 
-export type InviteMemberInput = {
+type InviteMemberInput = {
   tenantId: string;
   email: string;
   role: TenantMemberRole;
@@ -74,7 +74,7 @@ const loadTenantMembers = cache(async (tenantId: string): Promise<TenantMember[]
   getCachedTenantMembers(tenantId)()
 );
 
-export async function listTenantMembers(
+async function listTenantMembers(
   tenantId: string
 ): Promise<TenantMember[]> {
   return loadTenantMembers(tenantId);
@@ -339,21 +339,6 @@ async function getTenantMemberById(
 
   if (error) return null;
   return data as TenantMember | null;
-}
-
-// ─── Count active members ──────────────────────────────────────────
-export async function countActiveTenantMembers(
-  tenantId: string
-): Promise<number> {
-  const supabase = createPublicAdminClient();
-  const { count, error } = await supabase
-    .from("tenant_members")
-    .select("id", { count: "exact", head: true })
-    .eq("tenant_id", tenantId)
-    .eq("is_active", true);
-
-  if (error) return 0;
-  return count ?? 0;
 }
 
 /** Platform login redirect: relink Auth ↔ tenant in DB, then return primary slug. */

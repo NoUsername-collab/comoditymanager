@@ -12,7 +12,7 @@ import { getTenantScope } from "@/lib/tenant/scope";
 
 export type DevLogLevel = "error" | "warn" | "info" | "debug";
 
-export type DevLogEntry = {
+type DevLogEntry = {
   id: string;
   level: DevLogLevel;
   source: string;
@@ -131,7 +131,7 @@ async function insertDevLogRow(
  * Scrie un log în dev_logs (public schema, service role).
  * Aruncă la eșec insert — vizibil în Nestio admin logs + error boundary.
  */
-export async function writeDevLog(input: LogInput): Promise<void> {
+async function writeDevLog(input: LogInput): Promise<void> {
   const tenantId = await resolveTenantIdForLog(input.requestHost);
   if (!tenantId) {
     throw new Error(
@@ -146,7 +146,7 @@ export async function writeDevLog(input: LogInput): Promise<void> {
  * Scrie dev_log din context Nestio platform admin (fără subdomain tenant).
  * Aruncă la orice eșec — folosit când trebuie să știm exact ce s-a întâmplat.
  */
-export async function writePlatformDevLog(
+async function writePlatformDevLog(
   input: LogInput & { tenantId?: string }
 ): Promise<void> {
   const tenantId = input.tenantId ?? (await resolvePlatformLogTenantId());
@@ -222,18 +222,10 @@ export async function capturePlatformAdminError(
   });
 }
 
-/** @deprecated Prefer captureTenantError */
-export async function captureError(
-  error: unknown,
-  extra?: Omit<LogInput, "message" | "stack" | "level">
-): Promise<void> {
-  await captureTenantError(error, extra);
-}
-
 /**
  * Log de performanță: dacă o operație a durat mai mult de threshold ms.
  */
-export async function captureSlowQuery(
+async function captureSlowQuery(
   label: string,
   durationMs: number,
   threshold = 2000,
@@ -299,22 +291,4 @@ export async function listDevLogs(options?: {
     options?.limit ?? 50,
     options?.offset ?? 0
   );
-}
-
-/**
- * Șterge loguri mai vechi de N zile.
- */
-export async function purgeOldDevLogs(daysOld = 30): Promise<number> {
-  const { tenantId, supabase } = await getTenantScope();
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - daysOld);
-
-  const { count, error } = await supabase
-    .from("dev_logs")
-    .delete({ count: "exact" })
-    .eq("tenant_id", tenantId)
-    .lt("created_at", cutoff.toISOString());
-
-  if (error) throw new Error(error.message);
-  return count ?? 0;
 }

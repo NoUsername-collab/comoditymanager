@@ -91,30 +91,3 @@ export function RoomOptionFields({
     </fieldset>
   );
 }
-
-export function HiddenOptionIdsFromPolicies({
-  options,
-  policies,
-  selectedType,
-}: {
-  options: RoomOptionDefinition[];
-  policies: { option_id: string; mode: OptionPolicyMode }[];
-  selectedType: RoomTypeDefinition | null;
-}) {
-  const ids = options
-    .filter((option) => {
-      const mode = policyModeForOption(policies, option.id);
-      const typeDefault =
-        selectedType?.default_option_ids.includes(option.id) ?? false;
-      return resolveOptionEnabled(mode, false, typeDefault).enabled;
-    })
-    .map((o) => o.id);
-
-  return (
-    <>
-      {ids.map((id) => (
-        <input key={id} type="hidden" name="option_ids" value={id} />
-      ))}
-    </>
-  );
-}

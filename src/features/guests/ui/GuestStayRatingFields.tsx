@@ -6,7 +6,7 @@ import "@/styles/features/admin/guest-stay-rating.css";
 import { AdminTextarea } from "@/components/admin/ui/AdminInput";
 import type { GuestStayReviewRow } from "@/domain/guest/types";
 
-export type ReviewPolarity = "positive" | "negative";
+type ReviewPolarity = "positive" | "negative";
 
 export type GuestStayRatingValue = {
   polarity: ReviewPolarity | null;

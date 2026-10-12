@@ -5,11 +5,11 @@ const TD2_LEN = 36;
 const TD3_LEN = 44;
 
 /** Checksum valid, fără autocorrect. */
-export const MRZ_SCORE_VALID = 1000;
+const MRZ_SCORE_VALID = 1000;
 /** Checksum valid după autocorrect ICAO. */
-export const MRZ_SCORE_VALID_AUTOCORRECT = 700;
+const MRZ_SCORE_VALID_AUTOCORRECT = 700;
 /** Scor minim pentru acceptarea unui bloc MRZ. */
-export const MRZ_MIN_ACCEPT_SCORE = 650;
+const MRZ_MIN_ACCEPT_SCORE = 650;
 
 const MRZ_CHECK_DIGIT_FIELDS = [
   "documentNumberCheckDigit",
@@ -54,7 +54,7 @@ export function scoreMrzLines(lines: string[]): number {
   return attempts.reduce((best, item) => Math.max(best, item.score), 0);
 }
 
-export type MrzParseAttempt = {
+type MrzParseAttempt = {
   parsed: ReturnType<typeof parse>;
   usedAutocorrect: boolean;
 };

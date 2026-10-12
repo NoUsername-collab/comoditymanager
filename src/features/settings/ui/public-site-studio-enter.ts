@@ -1,4 +1,4 @@
-export const PUBLIC_SITE_STUDIO_ENTER_FLAG = "pub-studio-enter";
+const PUBLIC_SITE_STUDIO_ENTER_FLAG = "pub-studio-enter";
 
 export function markPublicSiteStudioEnter(): void {
   try {

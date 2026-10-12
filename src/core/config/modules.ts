@@ -8,7 +8,6 @@
  */
 
 import type { ModuleId } from "@/core/config/plans";
-import type { TenantContext } from "@/core/tenant/context";
 
 // ─── Module Definition ───────────────────────────────────────────
 export interface ModuleDefinition {
@@ -37,7 +36,7 @@ export interface ModuleDefinition {
   serverActions?: string[];
 }
 
-export interface AdminNavItem {
+interface AdminNavItem {
   label: string;
   href: string;
   icon: string;
@@ -61,36 +60,6 @@ export function registerModule(def: ModuleDefinition): void {
  */
 export function getAllModules(): ModuleDefinition[] {
   return Array.from(_registry.values());
-}
-
-/**
- * Get module definitions that are active for the given tenant.
- */
-export function getActiveModules(ctx: TenantContext): ModuleDefinition[] {
-  return getAllModules().filter((m) => ctx.hasModule(m.id));
-}
-
-/**
- * Get admin nav items for the given tenant (from active modules only).
- */
-export function getModuleNavItems(ctx: TenantContext): AdminNavItem[] {
-  return getActiveModules(ctx)
-    .flatMap((m) => m.adminNavItems ?? [])
-    .sort((a, b) => a.order - b.order);
-}
-
-/**
- * Check if a specific server action is available for the tenant.
- * Use this to gate server actions at runtime.
- */
-export function isActionAvailable(
-  ctx: TenantContext,
-  actionName: string
-): boolean {
-  const activeModules = getActiveModules(ctx);
-  return activeModules.some((m) =>
-    m.serverActions?.includes(actionName)
-  );
 }
 
 // ─── Built-in Module Registrations ───────────────────────────────

@@ -4,17 +4,7 @@ export const GANTT_ROW_H = 48;
 /** Desktop compact density — keep in sync with --gantt-row-h in gantt-premium-shell.css */
 export const GANTT_ROW_H_COMPACT = 28;
 
-/** Stay bar height on the Gantt (+10% from 30px). */
-export const GANTT_STAY_H = 33;
-
-/** Hold/block bar height (+10% from 24px). */
-export const GANTT_OCC_BAR_H = 26;
-
-/** Unassigned row height (−15% from 44px). */
-export const GANTT_UNASSIGNED_ROW_H = 37;
-
-export const GANTT_COVERAGE_OPTIONS = [10, 20, 30] as const;
-export type GanttCoverage = (typeof GANTT_COVERAGE_OPTIONS)[number];
+export type GanttCoverage = 10 | 20 | 30;
 
 const GANTT_ROW_H_MIN = 22;
 const GANTT_ROW_H_MAX = 56;
@@ -25,12 +15,9 @@ const COVERAGE_FALLBACK_ROW_H: Record<GanttCoverage, number> = {
   30: GANTT_ROW_H_COMPACT,
 };
 
-export function ganttBarTop(rowH: number, barH: number): number {
+function ganttBarTop(rowH: number, barH: number): number {
   return Math.round((rowH - barH) / 2);
 }
-
-export const GANTT_STAY_TOP = ganttBarTop(GANTT_ROW_H, GANTT_STAY_H);
-export const GANTT_OCC_BAR_TOP = ganttBarTop(GANTT_ROW_H, GANTT_OCC_BAR_H);
 
 export function parseGanttCoverage(raw: string | null | undefined): GanttCoverage {
   if (raw === "10" || raw === "20" || raw === "30") return Number(raw) as GanttCoverage;
@@ -39,7 +26,7 @@ export function parseGanttCoverage(raw: string | null | undefined): GanttCoverag
   return 20;
 }
 
-export type GanttRowMetrics = {
+type GanttRowMetrics = {
   rowH: number;
   stayH: number;
   stayTop: number;

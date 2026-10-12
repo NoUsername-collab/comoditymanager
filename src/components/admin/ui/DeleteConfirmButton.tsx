@@ -7,7 +7,7 @@ import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 
-export type AdminDeleteFormAction = (
+type AdminDeleteFormAction = (
   formData: FormData
 ) => Promise<{ error?: string } | void>;
 

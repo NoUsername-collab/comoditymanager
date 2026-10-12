@@ -1,4 +1,4 @@
-export type StatisticsBuildingRow = {
+type StatisticsBuildingRow = {
   buildingId: string;
   buildingName: string;
   activeRooms: number;

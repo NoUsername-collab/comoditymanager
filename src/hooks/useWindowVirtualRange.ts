@@ -10,7 +10,7 @@ import {
 } from "react";
 
 /** Document Y where the virtualized tbody list starts (below thead). */
-export function readGanttScrollMargin(
+function readGanttScrollMargin(
   shell: HTMLElement | null,
   thead: HTMLElement | null
 ): number {

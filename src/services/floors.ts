@@ -52,12 +52,7 @@ export async function listAllFloors(): Promise<Floor[]> {
   return loadAllFloors(tenantId);
 }
 
-export async function listFloorsByBuilding(buildingId: string): Promise<Floor[]> {
-  const floors = await listAllFloors();
-  return floors.filter((floor) => floor.building_id === buildingId);
-}
-
-export async function findFloorByNameInBuilding(
+async function findFloorByNameInBuilding(
   buildingId: string,
   name: string,
   excludeFloorId?: string
@@ -79,7 +74,7 @@ export async function findFloorByNameInBuilding(
   return data ? { id: data.id } : null;
 }
 
-export async function countRoomsOnFloor(floorId: string): Promise<number> {
+async function countRoomsOnFloor(floorId: string): Promise<number> {
   const { tenantId, supabase } = await getTenantScope();
   const { count, error } = await supabase
     .from("rooms")

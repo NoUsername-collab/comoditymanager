@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { parseTenantFromHost } from "@/lib/tenant/host";
 
-export type DomainContext =
+type DomainContext =
   | { type: "platform" }
   | { type: "tenant"; slug: string }
   | { type: "custom"; domain: string };
@@ -36,13 +36,6 @@ export function stripLocalePrefix(
     return `/${segments.slice(1).join("/")}` || "/";
   }
   return pathname;
-}
-
-export function isLocationAdminPath(path: string): boolean {
-  return (
-    path === "/admin/settings/location" ||
-    path.startsWith("/admin/settings/location/")
-  );
 }
 
 export function requestHostFrom(request: NextRequest): string | null {

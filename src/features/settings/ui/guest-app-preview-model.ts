@@ -34,14 +34,14 @@ export type GuestAppStudioDraft = {
   perkDescription: string;
 };
 
-export function linesToList(raw: string): string[] {
+function linesToList(raw: string): string[] {
   return raw
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
 }
 
-export function listItemsToLines(items: GuestAppListItem[] | undefined): string {
+function listItemsToLines(items: GuestAppListItem[] | undefined): string {
   return (items ?? [])
     .map((item) => {
       const parts = [item.icon, item.title, item.description].filter(Boolean);
@@ -50,7 +50,7 @@ export function listItemsToLines(items: GuestAppListItem[] | undefined): string 
     .join("\n");
 }
 
-export function linesToListItems(raw: string): GuestAppListItem[] {
+function linesToListItems(raw: string): GuestAppListItem[] {
   return linesToList(raw).map((line) => {
     const parts = line.split("|").map((part) => part.trim());
     if (parts.length >= 3) {

@@ -71,7 +71,7 @@ export const listBookingPayments = cache(async (
   );
 });
 
-export async function getBookingPaymentTotals(
+async function getBookingPaymentTotals(
   bookingId: string,
   totalDue?: number | null
 ): Promise<PaymentTotals> {
@@ -86,7 +86,7 @@ export async function getBookingPaymentTotals(
   return computePaymentTotals(due, payments);
 }
 
-export type RecordBookingPaymentInput = {
+type RecordBookingPaymentInput = {
   bookingId: string;
   amount: number;
   kind?: PaymentLedgerKind;
@@ -148,7 +148,7 @@ export async function recordBookingPayment(
 }
 
 /** Ajustează ledger-ul la o sumă țintă (flux check-in existent). */
-export async function applyBookingPaymentTarget(
+async function applyBookingPaymentTarget(
   bookingId: string,
   targetPaid: number,
   meta?: {
@@ -174,7 +174,7 @@ export async function applyBookingPaymentTarget(
   }).then((r) => (r.ok ? { ok: true as const } : r));
 }
 
-export async function syncCheckinPaymentSnapshot(
+async function syncCheckinPaymentSnapshot(
   bookingId: string,
   totalDue?: number | null
 ): Promise<void> {
@@ -204,11 +204,7 @@ export async function syncCheckinPaymentSnapshot(
   }
 }
 
-export function ledgerTotalPaid(entries: PaymentEntry[]): number {
-  return sumLedgerPayments(entries);
-}
-
-export type CheckinPaymentLedgerPatch = {
+type CheckinPaymentLedgerPatch = {
   payment_status?: StoredPaymentStatus;
   payment_amount_paid?: number;
 };

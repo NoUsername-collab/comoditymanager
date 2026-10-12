@@ -23,7 +23,7 @@ export interface IEmailProvider {
   send(message: EmailMessage): Promise<EmailResult>;
 }
 
-export type EmailProviderKind = "resend" | "noop";
+type EmailProviderKind = "resend" | "noop";
 
 export type EmailDeliveryConfig = {
   configured: boolean;
@@ -101,7 +101,7 @@ export function getEmailProvider(apiKey?: string): IEmailProvider {
   return new NoopProvider();
 }
 
-export type SendEmailOptions = {
+type SendEmailOptions = {
   apiKey?: string;
 };
 

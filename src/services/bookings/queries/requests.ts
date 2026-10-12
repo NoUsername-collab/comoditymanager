@@ -100,12 +100,6 @@ const loadUnassignedRequests = cache((tenantId: string) =>
   getCachedUnassignedRequests(tenantId)()
 );
 
-/** New requests with no rooms assigned — visible regardless of the Gantt range. */
-export async function listUnassignedRequests(): Promise<BookingRow[]> {
-  const tenantId = await resolveTenantIdForData();
-  return loadUnassignedRequests(tenantId);
-}
-
 async function listNewRequestsWithSelect(
   tenantId: string,
   select: string,
@@ -162,11 +156,6 @@ export async function listNewRequestsPage(
     limit: capped,
     offset,
   });
-}
-
-/** @deprecated Prefer {@link listNewRequestsPage} — capped for safety. */
-export async function listNewRequests(): Promise<BookingRow[]> {
-  return listNewRequestsPage(REQUEST_LIST_MAX_SHOWN);
 }
 
 /** Recent new requests for dashboard preview — does not load the full queue. */

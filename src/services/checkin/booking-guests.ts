@@ -8,7 +8,7 @@ import { getGuestBaseById } from "@/services/guests/lookup";
 import { occupantSlotsForCheckin } from "@/services/bookings/occupants";
 
 /** ID-uri client distincte deja legați de check-in-uri pe această rezervare. */
-export async function getGuestIdsFromBookingCheckins(
+async function getGuestIdsFromBookingCheckins(
   bookingId: string,
 ): Promise<string[]> {
   const { tenantId, supabase } = await getTenantScope();

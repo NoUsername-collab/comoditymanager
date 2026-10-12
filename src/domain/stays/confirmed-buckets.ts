@@ -11,9 +11,9 @@ export type ConfirmedStayLike = {
   check_out: string;
 };
 
-export type ConfirmedBucketKey = "today" | "week" | "month" | "upcoming";
+type ConfirmedBucketKey = "today" | "week" | "month" | "upcoming";
 
-export type ConfirmedBucketGroup<T extends ConfirmedStayLike> = {
+type ConfirmedBucketGroup<T extends ConfirmedStayLike> = {
   key: ConfirmedBucketKey;
   stays: T[];
 };

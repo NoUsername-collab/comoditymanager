@@ -1,13 +1,6 @@
 import { z } from "zod";
 import { DEFAULT_GUEST_LOYALTY_PROGRAM } from "@/domain/guest-app/loyalty";
-import {
-  formatZodError,
-  hexColorSchema,
-  localizedTextSchema,
-  optionalEmailSchema,
-  optionalUrlSchema,
-  type ParseResult,
-} from "./shared";
+import { formatZodError, hexColorSchema, optionalEmailSchema, optionalUrlSchema, type ParseResult } from "./shared";
 
 const guestAppFeatureIdSchema = z.enum([
   "hotel_info",
@@ -105,7 +98,7 @@ const guestLoyaltyProgramSchema = z
   })
   .strict();
 
-export const guestAppSettingsInputSchema = z
+const guestAppSettingsInputSchema = z
   .object({
     enabled: z.boolean(),
     usePrimaryContact: z.boolean(),

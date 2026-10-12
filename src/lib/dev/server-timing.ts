@@ -1,9 +1,9 @@
 /** Dev-only server-side timing — logs to console, zero prod overhead. */
-export function isServerTimingEnabled(): boolean {
+function isServerTimingEnabled(): boolean {
   return process.env.NODE_ENV === "development";
 }
 
-export type ServerTimer = {
+type ServerTimer = {
   mark: (step: string) => void;
   finish: (extra?: Record<string, unknown>) => void;
 };

@@ -8,7 +8,7 @@ import {
 } from "@/features/bookings/ui/identity/helpers";
 import { useGuestIdentityAutofill } from "@/features/bookings/ui/identity/useGuestIdentityAutofill";
 
-export type BookingIdentityOptions = {
+type BookingIdentityOptions = {
   /** Staff surfaces look up existing guests. Public booking must not. */
   lookup?: boolean;
   emailRequired?: boolean;

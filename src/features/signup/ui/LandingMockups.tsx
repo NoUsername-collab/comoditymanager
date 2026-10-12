@@ -1,6 +1,6 @@
 /** CSS-only app mockups for feature showcase sections */
 
-export type BookingFormMockupLabels = {
+type BookingFormMockupLabels = {
   checkIn: string;
   nights: string;
   roomsAvailable: string;
@@ -79,7 +79,7 @@ export function BookingFormMockup({ labels }: { labels: BookingFormMockupLabels 
   );
 }
 
-export type GuestAppMockupLabels = {
+type GuestAppMockupLabels = {
   welcome: string;
   guestName: string;
   stay: string;
@@ -137,61 +137,6 @@ export function GuestAppMockup({ labels }: { labels: GuestAppMockupLabels }) {
               <p className="phone-app__wifi-pass">{labels.wifiPassword}</p>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function DashboardMockup() {
-  return (
-    <div className="feat-mockup feat-mockup--dashboard" aria-hidden>
-      <div className="feat-mockup__dash">
-        {/* Stats row */}
-        <div className="dash-stats">
-          {[
-            { label: "Ocupare azi", value: "82%", trend: "↑", color: "#4ade80" },
-            { label: "Rezervări luna", value: "47", trend: "↑", color: "#60a5fa" },
-            { label: "Venit net", value: "8.4k", trend: "↑", color: "#a78bfa" },
-          ].map((s) => (
-            <div key={s.label} className="dash-stat">
-              <p className="dash-stat__label">{s.label}</p>
-              <p className="dash-stat__value" style={{ color: s.color }}>{s.value}</p>
-              <p className="dash-stat__trend">{s.trend} față de luna trecută</p>
-            </div>
-          ))}
-        </div>
-        {/* Mini chart bars */}
-        <div className="dash-chart">
-          <p className="dash-chart__label">Rezervări — ultimele 7 zile</p>
-          <div className="dash-chart__bars">
-            {[45, 72, 58, 89, 94, 67, 82].map((h, i) => (
-              <div key={i} className="dash-chart__bar-wrap">
-                <div className="dash-chart__bar" style={{ height: `${h}%`, background: `hsl(${250 + i * 18}, 80%, 65%)` }} />
-                <span className="dash-chart__bar-label">{["L","M","M","J","V","S","D"][i]}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* Recent bookings */}
-        <div className="dash-recent">
-          <p className="dash-recent__title">Rezervări recente</p>
-          {[
-            { name: "Popescu A.", room: "101", nights: "3n", status: "confirmed" },
-            { name: "Ionescu M.", room: "201", nights: "5n", status: "checkin" },
-            { name: "Dumitrescu C.", room: "301", nights: "2n", status: "pending" },
-          ].map((b) => (
-            <div key={b.name} className="dash-booking">
-              <div className="dash-booking__avatar">{b.name[0]}</div>
-              <div className="dash-booking__info">
-                <p className="dash-booking__name">{b.name}</p>
-                <p className="dash-booking__meta">Camera {b.room} · {b.nights}</p>
-              </div>
-              <span className={`dash-booking__status dash-booking__status--${b.status}`}>
-                {b.status === "confirmed" ? "Confirmat" : b.status === "checkin" ? "Check-in" : "În așteptare"}
-              </span>
-            </div>
-          ))}
         </div>
       </div>
     </div>

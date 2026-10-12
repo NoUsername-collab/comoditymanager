@@ -78,7 +78,7 @@ function resolveRoomMovePlan(
   };
 }
 
-export async function listSegmentsForBooking(
+async function listSegmentsForBooking(
   bookingId: string
 ): Promise<BookingRoomSegmentRow[]> {
   const { tenantId, supabase } = await getTenantScope();
@@ -267,23 +267,6 @@ async function mapPool<T>(
   await Promise.all(Array.from({ length: workers }, () => worker()));
 }
 
-export async function resyncAllBookingSegments(): Promise<number> {
-  const { tenantId, supabase } = await getTenantScope();
-  const { data, error } = await supabase
-    .from("bookings")
-    .select("id")
-    .eq("tenant_id", tenantId)
-    .neq("status", "anulata");
-
-  if (error) throw new Error(error.message);
-
-  const rows = data ?? [];
-  await mapPool(rows, RESYNC_CONCURRENCY, (row) =>
-    syncBookingRoomSegments(row.id)
-  );
-  return rows.length;
-}
-
 export async function shiftAllSegmentsByDays(
   bookingId: string,
   dayDelta: number
@@ -308,7 +291,7 @@ export async function shiftAllSegmentsByDays(
   await recalcBookingEnvelopeAndTotal(bookingId);
 }
 
-export type RoomMovePreview = {
+type RoomMovePreview = {
   mode: "full" | "split";
   pivot: string | null;
   sourceRoomId: string;

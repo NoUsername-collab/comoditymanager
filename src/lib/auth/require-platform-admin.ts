@@ -46,7 +46,7 @@ export function isPlatformAdminEmailEdge(email: string | undefined): boolean {
   return getPlatformAdminEmails().includes(email.toLowerCase());
 }
 
-export interface PlatformAdminSession {
+interface PlatformAdminSession {
   userId: string;
   email: string;
 }
@@ -62,7 +62,7 @@ async function readAuthUser() {
 /**
  * Non-throwing guard for server actions — returns null when unauthorized.
  */
-export async function getPlatformAdminOrNull(): Promise<PlatformAdminSession | null> {
+async function getPlatformAdminOrNull(): Promise<PlatformAdminSession | null> {
   const user = await readAuthUser();
   if (!user?.email || !isPlatformAdminEmail(user.email)) {
     return null;

@@ -1,4 +1,4 @@
-export type RoomDisplayOrderInput = {
+type RoomDisplayOrderInput = {
   id: string;
   building_id: string;
   floor_id: string | null;
@@ -6,12 +6,12 @@ export type RoomDisplayOrderInput = {
   sort_order: number;
 };
 
-export type BuildingDisplayOrderInput = {
+type BuildingDisplayOrderInput = {
   id: string;
   sort_order: number;
 };
 
-export type FloorDisplayOrderInput = {
+type FloorDisplayOrderInput = {
   id: string;
   building_id: string;
   sort_order: number;

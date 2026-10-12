@@ -3,7 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import type { ComponentPropsWithoutRef } from "react";
 
-export type AdminTextActionVariant =
+type AdminTextActionVariant =
   | "neutral"
   | "warning"
   | "danger"

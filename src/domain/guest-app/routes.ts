@@ -16,7 +16,7 @@ const SLUG_TO_FEATURE = Object.fromEntries(
   Object.entries(FEATURE_SLUG).map(([id, slug]) => [slug, id]),
 ) as Record<string, GuestAppFeatureId>;
 
-export function guestAppFeatureSlug(id: GuestAppFeatureId): string {
+function guestAppFeatureSlug(id: GuestAppFeatureId): string {
   return FEATURE_SLUG[id];
 }
 

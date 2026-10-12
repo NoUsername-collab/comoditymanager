@@ -33,15 +33,6 @@ export const NATIONAL_ID_COUNTRY: Record<NationalIdType, string> = {
   szemelyi_szam: "HU",
 };
 
-/** Human-readable label keys (for translations) */
-export const NATIONAL_ID_LABEL_KEY: Record<NationalIdType, string> = {
-  cnp: "nationalId.cnp",
-  idnp: "nationalId.idnp",
-  egn: "nationalId.egn",
-  amka: "nationalId.amka",
-  szemelyi_szam: "nationalId.szemelyi",
-};
-
 /** Expected digit counts for quick format checks */
 export const NATIONAL_ID_LENGTH: Record<NationalIdType, number> = {
   cnp: 13,
@@ -56,7 +47,7 @@ export type NationalIdData = {
   birthDate: string | null; // YYYY-MM-DD
 };
 
-export type NationalIdValidation = {
+type NationalIdValidation = {
   valid: boolean;
   data: NationalIdData | null;
   error?: string;

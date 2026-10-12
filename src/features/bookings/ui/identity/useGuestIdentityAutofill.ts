@@ -13,7 +13,7 @@ import {
 
 type GuestField = keyof GuestIdentityValues;
 
-export type GuestIdentityHintLabels = {
+type GuestIdentityHintLabels = {
   onFound: (displayName: string) => string;
   onWatchlist: (displayName: string) => string;
   onBlacklist: (displayName: string) => string;

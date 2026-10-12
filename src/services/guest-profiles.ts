@@ -35,7 +35,7 @@ type BookingReviewCheckRow = {
   check_out: string;
 };
 
-export type GuestAlertSnapshot = {
+type GuestAlertSnapshot = {
   level: GuestFlagLevel;
   note: string | null;
 };
@@ -122,16 +122,6 @@ export async function listGuestProfileSummaries(
   return loadGuestProfileSummaries(key);
 }
 
-export async function listFreshGuestProfileSummaries(
-  guestIds: string[]
-): Promise<Map<string, GuestBookingFlagSummary>> {
-  const uniqueIds = [...new Set(guestIds.filter(Boolean))];
-  if (uniqueIds.length === 0) return new Map();
-
-  await Promise.all(uniqueIds.map((guestId) => recomputeGuestProfile(guestId)));
-  return listGuestProfileSummaries(uniqueIds);
-}
-
 export async function listGuestStayReviewsByBookingIds(
   bookingIds: string[]
 ): Promise<Map<string, GuestStayReviewRow>> {
@@ -155,7 +145,7 @@ export async function listGuestStayReviewsByBookingIds(
   );
 }
 
-export async function listGuestStayReviewsForGuest(
+async function listGuestStayReviewsForGuest(
   guestId: string
 ): Promise<GuestStayReviewRow[]> {
   if (!guestId) return [];
@@ -195,7 +185,7 @@ async function listCompletedStayBookings(
   return (data ?? []) as { check_in: string; check_out: string }[];
 }
 
-export async function recomputeGuestProfile(
+async function recomputeGuestProfile(
   guestId: string
 ): Promise<GuestProfileRow> {
   await ensureGuestProfiles([guestId]);

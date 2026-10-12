@@ -1,4 +1,4 @@
-export type TenantOnboardingItemId =
+type TenantOnboardingItemId =
   | "status_ok"
   | "owner_email"
   | "has_rooms"

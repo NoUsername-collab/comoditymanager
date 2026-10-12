@@ -2,13 +2,13 @@ import type { ParseResult } from "@/domain/settings/schemas/shared";
 
 const CLOCK_HM = /^([01]\d|2[0-3]):[0-5]\d$/;
 
-export type OperationalHours = {
+type OperationalHours = {
   checkInTime: string;
   checkOutTime: string;
   extraBedsMax: number;
 };
 
-export function normalizeClockHm(raw: string): string | null {
+function normalizeClockHm(raw: string): string | null {
   const trimmed = raw.trim();
   if (!trimmed) return null;
   const hm = trimmed.length >= 5 ? trimmed.slice(0, 5) : trimmed;

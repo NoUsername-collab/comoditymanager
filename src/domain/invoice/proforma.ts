@@ -1,15 +1,6 @@
 import { roundMoney } from "@/domain/payments/ledger";
-import type { InvoiceKind } from "./invoice-allocation";
 
 const MONEY_EPS = 0.005;
-
-export type BookingDocumentKind = InvoiceKind | "proforma";
-
-export function isFiscalInvoiceKind(
-  kind: BookingDocumentKind
-): kind is InvoiceKind {
-  return kind !== "proforma";
-}
 
 export function formatProformaDisplayNumber(
   series: string,

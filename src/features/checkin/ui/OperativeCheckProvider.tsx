@@ -43,7 +43,7 @@ export type OperativeCheckRequest = {
 
 type CheckoutDialogState = OperativeCheckRequest;
 
-export type OperativeCheckOps = {
+type OperativeCheckOps = {
   today: string;
   /** Owner or Setări → Check-in allows edits after check-out. */
   canEditAfterCheckout: boolean;

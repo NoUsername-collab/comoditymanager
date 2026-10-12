@@ -20,7 +20,7 @@ type BookingSurfaceOptions = {
  * Marks booking data caches stale. Cheap — does not rebuild RSC trees.
  * Call on the mutation hot path so the next occupancy/list read is fresh.
  */
-export function bustBookingDataCache(
+function bustBookingDataCache(
   tenantId?: string,
   extra?: { checkins?: boolean },
 ) {
@@ -73,16 +73,11 @@ function revalidateBookingPaths(options?: BookingSurfaceOptions) {
  * Production default after a booking mutation:
  * tags now (next read/mutation is consistent), path rebuild after the response.
  */
-export function invalidateBookingSurfaces(options?: BookingSurfaceOptions) {
+function invalidateBookingSurfaces(options?: BookingSurfaceOptions) {
   bustBookingDataCache(options?.tenantId, { checkins: options?.includeCheckins });
   after(() => {
     revalidateBookingPaths(options);
   });
-}
-
-/** Gantt holds/blocks — occupancy only, no booking list churn. */
-export function revalidateAdminCalendar() {
-  revalidatePath("/admin/calendar");
 }
 
 /** Undo on activity log may touch bookings, calendar, history, settings. */

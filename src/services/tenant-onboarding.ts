@@ -67,10 +67,3 @@ export const getTenantOnboardingChecklist = cache(
     ]);
   },
 );
-
-export async function isTenantOnboardingIncomplete(
-  tenantId: string,
-): Promise<boolean> {
-  const checklist = await getTenantOnboardingChecklist(tenantId);
-  return checklist ? !checklist.isGoLiveReady : true;
-}

@@ -233,7 +233,7 @@ export async function revokeGuestAccessForBooking(
 }
 
 /** Cod activ pentru o rezervare (null dacă lipsește sau e revocat). */
-export async function getGuestAccessCodeForBooking(
+async function getGuestAccessCodeForBooking(
   bookingId: string,
 ): Promise<string | null> {
   const { tenantId, supabase } = await getGuestAppPublicDb();
@@ -249,7 +249,7 @@ export async function getGuestAccessCodeForBooking(
   return String(data.access_code);
 }
 
-export type GuestAccessLinkInfo = {
+type GuestAccessLinkInfo = {
   accessCode: string;
   url: string;
 };

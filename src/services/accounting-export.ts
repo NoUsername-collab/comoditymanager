@@ -277,7 +277,7 @@ function resolveExportSlice(
   return "fiscal";
 }
 
-export async function loadAccountingExportRows(input: {
+async function loadAccountingExportRows(input: {
   year: number;
   month?: number;
   slice?: AccountingExportSlice;

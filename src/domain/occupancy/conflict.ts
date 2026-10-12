@@ -4,7 +4,7 @@ import type {
   OccupancySegment,
 } from "@/domain/occupancy/types";
 
-export type OccupancyExclude = {
+type OccupancyExclude = {
   bookingId?: string;
   holdId?: string;
   blockId?: string;

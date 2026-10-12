@@ -19,7 +19,7 @@ export function addDays(iso: string, days: number): string {
 }
 
 /** Earliest selectable check-in date (today, local). */
-export function earliestCheckInDate(today: string = todayIso()): string {
+function earliestCheckInDate(today: string = todayIso()): string {
   return today;
 }
 

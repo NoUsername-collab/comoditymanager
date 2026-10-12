@@ -2,9 +2,8 @@
  * Romanian CNP — backward-compatible re-export from national-id.ts
  */
 import { validateNationalId, cleanNationalId } from "./national-id";
-import type { NationalIdData } from "./national-id";
 
-export type CnpData = {
+type CnpData = {
   sex: "M" | "F";
   birthDate: string;
   countyCode: string;

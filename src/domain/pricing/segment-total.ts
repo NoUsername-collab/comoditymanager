@@ -1,6 +1,6 @@
 import { stayNightCount } from "@/lib/stay-dates";
 
-export type PricedSegment = {
+type PricedSegment = {
   segment_start: string;
   segment_end: string;
   nightly_rate: number | null;

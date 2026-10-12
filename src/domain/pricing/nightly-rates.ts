@@ -9,7 +9,7 @@ export type RoomNightPrice = {
   price_per_night: number;
 };
 
-export type NightlyRateLine = {
+type NightlyRateLine = {
   date: string;
   base_rate: number;
   applied_rate: number;
@@ -51,7 +51,7 @@ function dateInSeasonRange(
   return cur >= start || cur <= end;
 }
 
-export function matchingSeasonForNight(
+function matchingSeasonForNight(
   dateIso: string,
   seasons: PricingSeason[]
 ): PricingSeason | null {

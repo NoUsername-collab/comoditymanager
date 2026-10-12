@@ -12,7 +12,7 @@ import { publishStayCancelled } from "@/lib/stays/live-stays";
 import { publishGanttLiveBooking } from "@/lib/gantt/live-bookings";
 import type { OperationalStay } from "@/features/stays/ui/types";
 
-export type StayRequestActionLabels = {
+type StayRequestActionLabels = {
   quickAccept: string;
   quickAcceptSuccess: string;
   openBooking: string;

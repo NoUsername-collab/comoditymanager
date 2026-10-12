@@ -21,7 +21,7 @@ export function sumLedgerPayments(entries: PaymentEntry[]): number {
   return roundMoney(Math.max(0, total));
 }
 
-export function derivePaymentStatus(
+function derivePaymentStatus(
   totalDue: number,
   totalPaid: number
 ): DerivedPaymentStatus {

@@ -26,7 +26,7 @@ import {
 import { logTenantActivity } from "@/services/activity-log";
 import { getTenantFiscalSettingsForTenant } from "@/services/tenant-fiscal-settings";
 
-export type FiscalSubmissionJobRecord = {
+type FiscalSubmissionJobRecord = {
   id: string;
   tenantId: string;
   bookingInvoiceId: string;
@@ -224,42 +224,6 @@ export async function enqueueFiscalSubmission(
   return { ok: true, jobId: String(inserted.id) };
 }
 
-export async function getFiscalStatusForInvoice(
-  invoiceId: string
-): Promise<FiscalSubmissionStatus | null> {
-  const tenantId = await resolveTenantIdForData();
-  const supabase = createPublicAdminClient();
-
-  const { data: invoice, error: invoiceError } = await supabase
-    .from("booking_invoices")
-    .select("fiscal_status")
-    .eq("tenant_id", tenantId)
-    .eq("id", invoiceId)
-    .maybeSingle();
-
-  if (invoiceError) {
-    if (invoiceError.message.includes("fiscal_status")) return null;
-    throw new Error(invoiceError.message);
-  }
-
-  if (invoice?.fiscal_status) {
-    return String(invoice.fiscal_status) as FiscalSubmissionStatus;
-  }
-
-  const { data: job, error: jobError } = await supabase
-    .from("fiscal_submission_jobs")
-    .select("status")
-    .eq("tenant_id", tenantId)
-    .eq("booking_invoice_id", invoiceId)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (jobError) throw new Error(jobError.message);
-
-  return job?.status ? (String(job.status) as FiscalSubmissionStatus) : null;
-}
-
 export async function getFiscalStatusMapForInvoices(
   invoiceIds: string[]
 ): Promise<Record<string, FiscalSubmissionStatus>> {
@@ -446,7 +410,7 @@ async function processSingleJob(bundle: ProcessJobBundle): Promise<void> {
   }
 }
 
-export type ProcessPendingFiscalJobsResult = {
+type ProcessPendingFiscalJobsResult = {
   processed: number;
   failed: number;
   skipped: number;

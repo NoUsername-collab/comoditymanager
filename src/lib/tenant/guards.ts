@@ -5,7 +5,7 @@ import {
 } from "@/core/tenant/context";
 import { resolveRequestTenant, TenantNotFoundError } from "@/lib/tenant/active";
 
-export class TenantHostRequiredError extends Error {
+class TenantHostRequiredError extends Error {
   constructor() {
     super("auth.tenant_host_required");
     this.name = "TenantHostRequiredError";

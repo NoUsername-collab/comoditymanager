@@ -6,7 +6,7 @@ import { readLocalStorageFirst } from "@/lib/storage/local";
 
 export type { GanttCoverage };
 
-export const GANTT_COVERAGE_STORAGE_KEY = "zalmox-gantt-coverage";
+const GANTT_COVERAGE_STORAGE_KEY = "zalmox-gantt-coverage";
 const LEGACY_KEYS = ["zalmox-gantt-density", "casaemil-gantt-density"];
 
 function readStoredCoverage(): GanttCoverage {

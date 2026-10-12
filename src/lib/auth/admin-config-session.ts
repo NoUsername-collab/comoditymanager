@@ -1,7 +1,5 @@
 import { cookies } from "next/headers";
 import { hmacSha256Hex, timingSafeEqualHex } from "@/lib/auth/web-hmac";
-import { getAdminEmail } from "@/lib/auth/constants";
-import { verifyPasswordForEmail } from "@/lib/auth/location-unlock";
 import {
   ADMIN_LOCATION_UNLOCK_COOKIE,
   isAdminLocationUnlockCookieFresh,
@@ -29,7 +27,7 @@ async function decodeToken(token: string): Promise<number | null> {
   return until;
 }
 
-export async function isAdminLocationUnlockTokenValid(
+async function isAdminLocationUnlockTokenValid(
   token: string | undefined | null
 ): Promise<boolean> {
   if (!isAdminLocationUnlockCookieFresh(token)) return false;
@@ -68,9 +66,4 @@ export async function setAdminLocationUnlock(): Promise<void> {
 export async function clearAdminLocationUnlock(): Promise<void> {
   const jar = await cookies();
   jar.delete(ADMIN_LOCATION_UNLOCK_COOKIE);
-}
-
-/** Verifică parola contului admin în Supabase fără a schimba sesiunea operatorului. */
-export async function verifyAdminPassword(password: string): Promise<boolean> {
-  return verifyPasswordForEmail(getAdminEmail(), password);
 }

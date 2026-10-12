@@ -1,14 +1,6 @@
-import {
-  MODULE_CATALOG,
-  PLAN_CONFIGS,
-  type CloudPlan,
-  type CoreFeature,
-  type ModuleId,
-  type PlanConfig,
-  type PlanId,
-} from "@/core/config/plans";
+import { MODULE_CATALOG, PLAN_CONFIGS, type CoreFeature, type ModuleId, type PlanId } from "@/core/config/plans";
 
-export type PlanLimitsSummary = {
+type PlanLimitsSummary = {
   maxRooms: number;
   maxTeamMembers: number;
   maxProperties: number;
@@ -16,22 +8,11 @@ export type PlanLimitsSummary = {
   emailMonthlyCap: number | null;
 };
 
-export type PlanModuleBreakdown = {
+type PlanModuleBreakdown = {
   includedInPlan: ModuleId[];
   activeAddons: ModuleId[];
   effective: ModuleId[];
 };
-
-const CLOUD_PLAN_ORDER: CloudPlan[] = [
-  "free",
-  "essential",
-  "professional",
-  "business",
-];
-
-export function listCloudPlans(): PlanConfig[] {
-  return CLOUD_PLAN_ORDER.map((id) => PLAN_CONFIGS[id]);
-}
 
 export function getPlanLimitsSummary(planId: PlanId): PlanLimitsSummary {
   const plan = PLAN_CONFIGS[planId];

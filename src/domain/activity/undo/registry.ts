@@ -1,7 +1,7 @@
 import type { ActivityAction, ActivityLogEntry } from "@/domain/activity/types";
 
 /** Actions with a registered undo handler in activity-undo service. */
-export const UNDOABLE_ACTIONS = new Set<ActivityAction>([
+const UNDOABLE_ACTIONS = new Set<ActivityAction>([
   "booking.shifted",
   "booking.checkin.set",
   "booking.checkout.set",
@@ -16,7 +16,7 @@ export const UNDOABLE_ACTIONS = new Set<ActivityAction>([
 ]);
 
 /** Max age for undo (72h). */
-export const UNDO_MAX_AGE_MS = 72 * 60 * 60 * 1000;
+const UNDO_MAX_AGE_MS = 72 * 60 * 60 * 1000;
 
 export function isUndoableAction(action: ActivityAction): boolean {
   return UNDOABLE_ACTIONS.has(action);

@@ -15,7 +15,7 @@ export function tenantMemberRoleToStaffRole(
 }
 
 /** Active tenant member role for a user (server). */
-export async function getStaffRoleForTenant(
+async function getStaffRoleForTenant(
   userId: string,
   tenantId: string
 ): Promise<StaffRole | null> {
@@ -52,15 +52,4 @@ export async function resolveStaffRole(
   }
 
   return null;
-}
-
-/** Throws if user is not an active member on the current tenant host. */
-export async function requireTenantMembership(
-  user: User
-): Promise<StaffRole> {
-  const role = await resolveStaffRole(user);
-  if (!role) {
-    throw new Error("auth.tenant_member_required");
-  }
-  return role;
 }

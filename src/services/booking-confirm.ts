@@ -105,7 +105,7 @@ export async function resolveTotalPriceForConfirm(
   return Math.round((standard + adjustment) * 100) / 100;
 }
 
-export type BookingConfirmContext = {
+type BookingConfirmContext = {
   booking: NonNullable<Awaited<ReturnType<typeof getBookingById>>>;
   checkInTime: string;
   checkOutTime: string;
@@ -245,28 +245,4 @@ export async function loadBookingConfirmContext(
   bookingId: string
 ): Promise<BookingConfirmContext | null> {
   return loadBookingConfirmContextCached(bookingId);
-}
-
-/** Verifică înainte de confirmare: camere libere + capacitate pentru oaspeți. */
-export async function assertRoomsAssignableForBooking(
-  bookingId: string,
-  roomIds: string[]
-): Promise<void> {
-  const ctx = await loadBookingConfirmContext(bookingId);
-  if (!ctx) throw new Error("booking.request_not_found");
-
-  if (roomIds.length === 0) {
-    throw new Error("booking.select_at_least_one_room");
-  }
-
-  const idSet = new Set(roomIds);
-  const selected = ctx.availableRooms.filter((r) => idSet.has(r.id));
-
-  if (selected.length !== roomIds.length) {
-    throw new Error("booking.one_or_more_rooms_unavailable_reload");
-  }
-
-  if (!canRoomsHostGuests(ctx.guestCount, selected)) {
-    throw new Error("booking.selected_rooms_cannot_host_all_guests");
-  }
 }

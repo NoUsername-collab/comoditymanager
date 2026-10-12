@@ -5,7 +5,7 @@ import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
 import type { StayPricingRules } from "@/domain/settings/booking-rules";
 import { stayNightCount } from "@/lib/stay-dates";
 
-export type GuestOptionRoom = {
+type GuestOptionRoom = {
   id: string;
   name: string;
   building_name: string;

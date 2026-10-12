@@ -5,12 +5,12 @@
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantById } from "@/services/tenants";
 
-export type DailySummaryGuestRow = {
+type DailySummaryGuestRow = {
   guestName: string;
   rooms: string[];
 };
 
-export type DailySummaryPayload = {
+type DailySummaryPayload = {
   pensionName: string;
   date: string;
   checkInsToday: DailySummaryGuestRow[];

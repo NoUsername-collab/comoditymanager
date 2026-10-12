@@ -53,7 +53,7 @@ export function resolveEffectiveDisplayProfile(
   return resolveAutoDisplayProfile(width, height);
 }
 
-export type ResolvedDocumentLayout = {
+type ResolvedDocumentLayout = {
   width: number;
   height: number;
   mode: LayoutMode;

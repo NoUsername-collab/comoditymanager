@@ -1,6 +1,6 @@
-export type GuestStayMilestoneId = "confirmed" | "checked_in" | "checked_out";
+type GuestStayMilestoneId = "confirmed" | "checked_in" | "checked_out";
 
-export type GuestStayMilestoneStepState = "done" | "current" | "upcoming";
+type GuestStayMilestoneStepState = "done" | "current" | "upcoming";
 
 export type GuestStayMilestoneStep = {
   id: GuestStayMilestoneId;
@@ -46,7 +46,7 @@ export function buildGuestStayMilestones(input: {
   }));
 }
 
-export type GuestPhaseHintKey =
+type GuestPhaseHintKey =
   | "phase.confirmed"
   | "phase.checkinToday"
   | "phase.checkedIn"

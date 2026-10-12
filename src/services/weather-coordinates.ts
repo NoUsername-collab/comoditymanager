@@ -1,7 +1,7 @@
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 
-export type WeatherCoordinates = {
+type WeatherCoordinates = {
   lat: number;
   lng: number;
 } | null;

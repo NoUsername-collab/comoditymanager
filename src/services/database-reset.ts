@@ -6,7 +6,7 @@ export function isFactoryResetEnabled(): boolean {
   return envFactoryResetEnabled();
 }
 
-export function assertFactoryResetAllowed(): void {
+function assertFactoryResetAllowed(): void {
   if (!isFactoryResetEnabled()) {
     throw new Error(
       "factory_reset.disabled_set_admin_factory_reset_enabled_true"

@@ -5,7 +5,7 @@ import {
   type ParseResult,
 } from "./shared";
 
-export const emailSettingsPartialSchema = z
+const emailSettingsPartialSchema = z
   .object({
     email_enabled: z.boolean().optional(),
     email_notify_new_request: z.boolean().optional(),
@@ -25,7 +25,7 @@ export const emailSettingsPartialSchema = z
   })
   .strict();
 
-export type EmailSettingsPartialParsed = z.infer<
+type EmailSettingsPartialParsed = z.infer<
   typeof emailSettingsPartialSchema
 >;
 

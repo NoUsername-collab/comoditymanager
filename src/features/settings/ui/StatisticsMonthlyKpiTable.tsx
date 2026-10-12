@@ -1,4 +1,4 @@
-export type MonthlyKpiRow = {
+type MonthlyKpiRow = {
   label: string;
   occupancyPct: number;
   revenueRon: number;

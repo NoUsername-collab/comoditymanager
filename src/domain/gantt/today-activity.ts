@@ -7,7 +7,7 @@ export type RoomTodayFlags = {
   occupiedTonight: boolean;
 };
 
-export type GanttTodaySummary = {
+type GanttTodaySummary = {
   todayIso: string;
   inView: boolean;
   arrivals: BookingRow[];
@@ -33,32 +33,6 @@ export function summarizeGanttToday(
       nightOccupied(today, b.check_in, b.check_out)
     ).length,
   };
-}
-
-export function roomTodayFlags(
-  roomId: string,
-  bookings: BookingRow[],
-  today: string = todayIso()
-): RoomTodayFlags {
-  const relevant = bookings.filter(
-    (b) => b.status !== "anulata" && b.room_ids.includes(roomId)
-  );
-  return {
-    arrival: relevant.some((b) => b.check_in === today),
-    departure: relevant.some((b) => b.check_out === today),
-    occupiedTonight: relevant.some((b) =>
-      nightOccupied(today, b.check_in, b.check_out)
-    ),
-  };
-}
-
-/** Days with both departure and arrival in the same room (turnover). */
-export function roomTurnoverDays(
-  roomId: string,
-  bookings: BookingRow[],
-  dayIsos: string[]
-): Set<string> {
-  return roomsTurnoverDays(bookings, dayIsos).get(roomId) ?? new Set();
 }
 
 /** Precompute turnover days per room — O(bookings × days), once per Gantt render. */

@@ -6,7 +6,7 @@ export function mrzLinesKey(lines: string[]): string {
   return lines.join("\n");
 }
 
-export type StableReadState = {
+type StableReadState = {
   count: number;
   required: number;
   stable: boolean;
