@@ -3666,6 +3666,9 @@
       "publicSiteMediaEmpty": "Choose a photo to upload.",
       "publicSiteMediaFailed": "Could not upload the photo. Try again.",
       "publicSiteMigrationRequired": "The public site is missing a database update. Apply migration 100, then save again.",
+      "identityLogoInvalid": "The logo address is not valid. Upload it again or remove it, then save.",
+      "identityMigrationRequired": "Property identity is missing a database update. Apply migrations 079 and 101, then save again.",
+      "identitySettingsMissing": "Property settings were not found. Reload the page and try again.",
       "genericError": "An error occurred. Please try again."
     },
     "availabilityLightSummary": {

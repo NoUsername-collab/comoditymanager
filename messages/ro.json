@@ -3649,6 +3649,9 @@
       "publicSiteMediaEmpty": "Alege o poză de încărcat.",
       "publicSiteMediaFailed": "Nu am putut încărca poza. Încearcă din nou.",
       "publicSiteMigrationRequired": "Pagina publică are nevoie de o actualizare în baza de date. Rulează migrarea 100, apoi salvează din nou.",
+      "identityLogoInvalid": "Logo-ul nu are o adresă validă. Încarcă-l din nou sau scoate-l, apoi salvează.",
+      "identityMigrationRequired": "Datele de identitate au nevoie de o actualizare în baza de date. Rulează migrările 079 și 101, apoi salvează din nou.",
+      "identitySettingsMissing": "Nu am găsit setările proprietății. Reîncarcă pagina și încearcă din nou.",
       "genericError": "A aparut o eroare. Incearca din nou."
     },
     "availabilityLightSummary": {

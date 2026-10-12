@@ -142,7 +142,7 @@ export async function updatePensionIdentityAction(
   try {
     const logoParsed = optionalUrlSchema.safeParse(input.logoUrl ?? null);
     if (!logoParsed.success) {
-      return { ok: false, error: t("genericError") };
+      return { ok: false, error: t("identityLogoInvalid") };
     }
     const logoUrl =
       typeof logoParsed.data === "string" && logoParsed.data.trim()
@@ -170,8 +170,12 @@ export async function updatePensionIdentityAction(
     return { ok: true };
   } catch (e) {
     if (e instanceof Error && e.message === "settings.identity_migration_required") {
-      return { ok: false, error: t("genericError") };
+      return { ok: false, error: t("identityMigrationRequired") };
     }
+    if (e instanceof Error && e.message === "settings.pension_settings_missing") {
+      return { ok: false, error: t("identitySettingsMissing") };
+    }
+    console.error("[updatePensionIdentityAction]", e);
     return {
       ok: false,
       error: e instanceof Error ? e.message : t("genericError"),
