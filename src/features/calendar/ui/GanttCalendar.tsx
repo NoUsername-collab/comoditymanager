@@ -14,6 +14,8 @@ import { ganttDayTimeStyle } from "@/lib/gantt-time";
 import { formatDateWithDay } from "@/lib/ro-calendar";
 import { deriveGanttCalendarData } from "@/domain/gantt/calendar-derivations";
 import {
+  GANTT_BUILDING_HEADER_H,
+  buildingHeadersInFirstRooms,
   ganttRowMetricsStyle,
   resolveGanttRowMetrics,
 } from "@/domain/gantt/layout";
@@ -254,10 +256,33 @@ export function GanttCalendar({
   const shellRef = useRef<HTMLDivElement>(null);
   const theadRef = useRef<HTMLTableSectionElement>(null);
   const bodyHeight = useGanttBodyHeight(theadRef);
-  const rowMetrics = useMemo(
-    () => resolveGanttRowMetrics(coverage, compactChrome ? null : bodyHeight),
-    [coverage, compactChrome, bodyHeight],
+  const [collapsedBuildings, setCollapsedBuildings] = useState<Set<string>>(
+    () => new Set()
   );
+  const rowMetrics = useMemo(() => {
+    const reserved = groupByBuilding
+      ? buildingHeadersInFirstRooms(
+          buildingGroups.map((group) => ({
+            id: group.buildingId,
+            roomCount: group.rooms.length,
+          })),
+          collapsedBuildings,
+          coverage,
+        ) * GANTT_BUILDING_HEADER_H
+      : 0;
+    return resolveGanttRowMetrics(
+      coverage,
+      compactChrome ? null : bodyHeight,
+      reserved,
+    );
+  }, [
+    coverage,
+    compactChrome,
+    bodyHeight,
+    groupByBuilding,
+    buildingGroups,
+    collapsedBuildings,
+  ]);
   const ganttRowHeight = rowMetrics.rowH;
   const scrolledPeriodRef = useRef<string | null>(null);
   const suppressHeaderClickUntilRef = useRef(0);
@@ -288,9 +313,6 @@ export function GanttCalendar({
     null
   );
   const [pinnedSelection, setPinnedSelection] = useState<PinnedSelection | null>(null);
-  const [collapsedBuildings, setCollapsedBuildings] = useState<Set<string>>(
-    () => new Set()
-  );
   const [opsPickerMode, setOpsPickerMode] = useState<GanttOpsPickerMode | null>(
     null
   );

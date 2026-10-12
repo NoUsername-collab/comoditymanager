@@ -2286,6 +2286,12 @@ html[data-layout-chrome="compact"] .checkin-identity-scope__options {
   font-weight: 600;
 }
 
+.settings-season-card__md {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.25rem;
+  gap: 0.35rem;
+}
+
 .settings-season-card__remove {
   justify-self: start;
   font-size: 0.75rem;

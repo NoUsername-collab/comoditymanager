@@ -29,12 +29,76 @@ function newSeasonId(): string {
   return `season-${Date.now().toString(36)}`;
 }
 
+function daysInMonth(month: number): number {
+  return new Date(2024, month, 0).getDate();
+}
+
+function monthLabels(locale: string): string[] {
+  const format = new Intl.DateTimeFormat(locale, { month: "long" });
+  return Array.from({ length: 12 }, (_, index) => format.format(new Date(2024, index, 1)));
+}
+
+function SeasonMonthDay({
+  label,
+  month,
+  day,
+  months,
+  dayAria,
+  monthAria,
+  onChange,
+}: {
+  label: string;
+  month: number;
+  day: number;
+  months: string[];
+  dayAria: string;
+  monthAria: string;
+  onChange: (month: number, day: number) => void;
+}) {
+  const maxDay = daysInMonth(month);
+  return (
+    <label>
+      {label}
+      <span className="settings-season-card__md">
+        <select
+          className="checkin-field__input"
+          aria-label={monthAria}
+          value={month}
+          onChange={(event) => {
+            const nextMonth = Number(event.target.value);
+            onChange(nextMonth, Math.min(day, daysInMonth(nextMonth)));
+          }}
+        >
+          {months.map((name, index) => (
+            <option key={name} value={index + 1}>
+              {name}
+            </option>
+          ))}
+        </select>
+        <select
+          className="checkin-field__input"
+          aria-label={dayAria}
+          value={Math.min(day, maxDay)}
+          onChange={(event) => onChange(month, Number(event.target.value))}
+        >
+          {Array.from({ length: maxDay }, (_, index) => index + 1).map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
+      </span>
+    </label>
+  );
+}
+
 export function BookingRulesSettingsPanel({
   settings: initial,
   locale,
 }: Props) {
   const t = useTranslations("admin.pages.settings.booking");
   const tSettings = useTranslations("admin.pages.settings");
+  const months = useMemo(() => monthLabels(locale), [locale]);
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [settings, setSettings] = useState(initial);
 
@@ -272,36 +336,28 @@ export function BookingRulesSettingsPanel({
                   placeholder={t("seasonName")}
                 />
                 <div className="settings-season-card__dates">
-                  <label>
-                    {t("seasonFrom")}
-                    <input
-                      type="date"
-                      className="checkin-field__input"
-                      value={`2024-${String(season.startMonth).padStart(2, "0")}-${String(season.startDay).padStart(2, "0")}`}
-                      onChange={(e) => {
-                        const [, m, d] = e.target.value.split("-");
-                        updateSeason(index, {
-                          startMonth: Number(m),
-                          startDay: Number(d),
-                        });
-                      }}
-                    />
-                  </label>
-                  <label>
-                    {t("seasonTo")}
-                    <input
-                      type="date"
-                      className="checkin-field__input"
-                      value={`2024-${String(season.endMonth).padStart(2, "0")}-${String(season.endDay).padStart(2, "0")}`}
-                      onChange={(e) => {
-                        const [, m, d] = e.target.value.split("-");
-                        updateSeason(index, {
-                          endMonth: Number(m),
-                          endDay: Number(d),
-                        });
-                      }}
-                    />
-                  </label>
+                  <SeasonMonthDay
+                    label={t("seasonFrom")}
+                    month={season.startMonth}
+                    day={season.startDay}
+                    months={months}
+                    monthAria={t("seasonMonth")}
+                    dayAria={t("seasonDay")}
+                    onChange={(startMonth, startDay) =>
+                      updateSeason(index, { startMonth, startDay })
+                    }
+                  />
+                  <SeasonMonthDay
+                    label={t("seasonTo")}
+                    month={season.endMonth}
+                    day={season.endDay}
+                    months={months}
+                    monthAria={t("seasonMonth")}
+                    dayAria={t("seasonDay")}
+                    onChange={(endMonth, endDay) =>
+                      updateSeason(index, { endMonth, endDay })
+                    }
+                  />
                   <label>
                     +%
                     <input

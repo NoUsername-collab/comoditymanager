@@ -7,7 +7,9 @@ export const GANTT_ROW_H_COMPACT = 28;
 export type GanttCoverage = 10 | 20 | 30;
 
 const GANTT_ROW_H_MIN = 22;
-const GANTT_ROW_H_MAX = 56;
+
+/** Building label row. Matches the desktop header, so it is not counted as a room. */
+export const GANTT_BUILDING_HEADER_H = 22;
 
 const COVERAGE_FALLBACK_ROW_H: Record<GanttCoverage, number> = {
   10: GANTT_ROW_H,
@@ -35,16 +37,36 @@ type GanttRowMetrics = {
   unassignedH: number;
 };
 
+/** How many building labels sit above the first `roomSlots` rooms. */
+export function buildingHeadersInFirstRooms(
+  groups: { id: string; roomCount: number }[],
+  collapsed: ReadonlySet<string>,
+  roomSlots: number,
+): number {
+  if (roomSlots < 1) return 0;
+  let rooms = 0;
+  let headers = 0;
+  for (const group of groups) {
+    if (rooms >= roomSlots) break;
+    headers += 1;
+    if (!collapsed.has(group.id)) rooms += group.roomCount;
+  }
+  return headers;
+}
+
 export function resolveGanttRowMetrics(
   coverage: GanttCoverage,
   availableHeightPx?: number | null,
+  reservedHeightPx = 0,
 ): GanttRowMetrics {
   const fallback = COVERAGE_FALLBACK_ROW_H[coverage];
-  const raw =
+  const roomBand =
     availableHeightPx != null && availableHeightPx > 0
-      ? Math.floor(availableHeightPx / coverage)
-      : fallback;
-  const rowH = Math.min(GANTT_ROW_H_MAX, Math.max(GANTT_ROW_H_MIN, raw));
+      ? Math.max(0, availableHeightPx - reservedHeightPx)
+      : null;
+  const raw =
+    roomBand != null ? Math.floor(roomBand / coverage) : fallback;
+  const rowH = Math.max(GANTT_ROW_H_MIN, raw);
   const stayH = Math.max(16, Math.round(rowH * 0.68));
   const occH = Math.max(14, Math.round(rowH * 0.54));
   const unassignedH = Math.max(20, Math.round(rowH * 0.78));
