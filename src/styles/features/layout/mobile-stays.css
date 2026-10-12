@@ -154,7 +154,6 @@ html[data-layout-chrome="compact"] .phone-booking-form button[type="submit"] {
 
 /* Below-fold public sections — skip paint until near viewport */
 html[data-layout-chrome="compact"] .public-section,
-html[data-layout-chrome="compact"] .public-cta-band,
 html[data-layout-chrome="compact"] .public-staff-preview-skeleton {
   content-visibility: auto;
   contain: layout style;
@@ -257,54 +256,6 @@ html[data-layout-chrome="compact"] .stays-view-filters {
 html[data-layout-chrome="compact"] .stays-view-filter {
   min-height: var(--ml-touch-min, 2.75rem);
   font-size: 0.72rem;
-}
-
-
-
-html[data-layout-chrome="compact"] .stays-tabs {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  gap: 0.35rem;
-  padding-bottom: 0.35rem;
-}
-
-
-
-html[data-layout-chrome="compact"] .stays-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-
-
-html[data-layout-chrome="compact"] .stays-filters {
-  flex-wrap: wrap;
-  gap: 0.35rem;
-}
-
-
-
-html[data-layout-chrome="compact"] .stays-tabs a,
-html[data-layout-chrome="compact"] .stays-tabs button {
-  flex-shrink: 0;
-  min-height: var(--ml-touch-min, 2.75rem);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding-inline: 0.85rem !important;
-  font-size: 0.8125rem !important;
-}
-
-
-
-html[data-layout-chrome="compact"] .stays-filters a,
-html[data-layout-chrome="compact"] .stays-filters button {
-  min-height: var(--ml-touch-min, 2.75rem);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 
@@ -482,7 +433,6 @@ html[data-layout-chrome="compact"] .request-item {
 /* ── Pass 16: Nestio forms, reception checkbox, FAQ, drawer safe-area ── */
 
 html[data-layout-chrome="compact"] .tenant-billing-toggle,
-html[data-layout-chrome="compact"] .platform-impersonate-link,
 html[data-layout-chrome="compact"] .platform-dashboard__cta,
 html[data-layout-chrome="compact"] .nestio-tenant-option,
 html[data-layout-chrome="compact"] .nestio-log-filter {
@@ -551,12 +501,6 @@ html[data-layout-chrome="compact"] .guest-notes-form__save {
   width: 100%;
   min-height: var(--ml-touch-min, 2.75rem);
   justify-content: center;
-}
-
-
-
-html[data-layout-chrome="compact"] .guest-profile-controls-form__grid {
-  grid-template-columns: minmax(0, 1fr) !important;
 }
 
 
@@ -864,11 +808,6 @@ html[data-layout-chrome="compact"] .mrz-scan-modal .admin-floating-panel__body {
   html[data-layout-chrome="compact"] .guest-search {
     backdrop-filter: none;
     background: var(--admin-surface-bg, #fff);
-  }
-
-  html[data-layout-chrome="compact"] .admin-page-main > .admin-page-toolbar--dark {
-    backdrop-filter: none;
-    background: color-mix(in srgb, #0a0a0a 98%, transparent);
   }
 
   /* Admin gear trigger — backdrop-filter: blur(10px) inutilă pe mobile */

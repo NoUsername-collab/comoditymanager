@@ -29,16 +29,6 @@
   box-shadow: var(--admin-surface-shadow, none);
 }
 
-.admin-summary-chip--sky {
-  border-color: var(--admin-tint-sky-border, #bae6fd);
-  background: var(--admin-tint-sky-bg, #f0f9ff);
-}
-
-.admin-summary-chip--amber {
-  border-color: var(--admin-tint-warning-border, #fde68a);
-  background: var(--admin-tint-warning-bg, #fffbeb);
-}
-
 .admin-summary-chip--violet {
   border-color: var(--admin-tint-violet-border, #ddd6fe);
   background: var(--admin-tint-violet-bg, #f5f3ff);

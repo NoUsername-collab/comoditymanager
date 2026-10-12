@@ -194,7 +194,6 @@ html[data-layout-chrome="compact"] .checkin-modal .checkin-stepper__content {
 
 
 html[data-layout-chrome="compact"] .checkin-modal .checkin-field__input:focus,
-html[data-layout-chrome="compact"] .checkin-modal .checkin-field__select:focus,
 html[data-layout-chrome="compact"] .checkin-modal textarea:focus {
   scroll-margin-bottom: calc(var(--ml-safe-bottom, 0px) + 3.5rem);
 }

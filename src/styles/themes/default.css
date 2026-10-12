@@ -1,38 +1,5 @@
 /* Default — shared selectors only. Variabilele sunt în default-day.css / default-night.css */
 
-html[data-theme="default"][data-mode="day"] .gantt-radial {
-  --gantt-home-ring-outer: var(--admin-accent);
-  --gantt-home-ring-mid: var(--pending-border);
-  --gantt-home-ring-inner: var(--admin-accent);
-  --gantt-home-surface-top: color-mix(in srgb, var(--admin-panel-bg) 94%, white);
-  --gantt-home-surface-bottom: color-mix(
-    in srgb,
-    var(--admin-panel-bg) 84%,
-    var(--pending-border) 16%
-  );
-  --gantt-home-door-top: color-mix(in srgb, var(--pending-border) 72%, white);
-  --gantt-home-door-bottom: color-mix(in srgb, var(--admin-accent) 82%, black);
-}
-
-html[data-theme="default"][data-mode="night"] .gantt-radial {
-  --gantt-home-ring-outer: var(--admin-accent);
-  --gantt-home-ring-mid: var(--pending-border);
-  --gantt-home-ring-inner: var(--admin-accent);
-  --gantt-home-surface-top: color-mix(in srgb, var(--admin-panel-bg) 94%, var(--surface-3));
-  --gantt-home-surface-bottom: color-mix(
-    in srgb,
-    var(--admin-panel-bg) 86%,
-    var(--pending-border) 14%
-  );
-  --gantt-home-door-top: color-mix(in srgb, var(--pending-border) 58%, var(--surface-2));
-  --gantt-home-door-bottom: color-mix(in srgb, var(--admin-accent) 72%, #0b0d12);
-}
-
-html[data-theme="default"] .admin-liquid-shell,
-html[data-theme="default"] .admin-dn-liquid {
-  display: none !important;
-}
-
 html[data-theme="default"] .admin-hud {
   border-bottom: 1px solid var(--admin-panel-border) !important;
 }
@@ -117,27 +84,10 @@ html[data-theme="default"] .admin-requests-glow {
   color: var(--pending-text) !important;
 }
 
-html[data-theme="default"] .admin-daynight-hero__title {
-  font-family: var(--admin-font) !important;
-  font-weight: 600 !important;
-}
-
 html[data-theme="default"] .gantt-shell,
 html[data-theme="default"] .gantt-shell--premium {
   border-radius: var(--admin-radius) !important;
   box-shadow: none !important;
-}
-
-html[data-theme="default"] .gantt-today-panel {
-  border-radius: var(--admin-radius) !important;
-  background: var(--admin-panel-bg) !important;
-  background-image: none !important;
-  box-shadow: none !important;
-}
-
-html[data-theme="default"] .gantt-today-panel__pulse,
-html[data-theme="default"] .gantt-today-panel__dot {
-  animation: none !important;
 }
 
 html[data-theme="default"] .gantt-stay--today-arrival {

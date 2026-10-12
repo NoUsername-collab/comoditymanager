@@ -18,7 +18,6 @@ html:not([data-theme]) .gantt-shell a.gantt-requests-card.gantt-stay-chrome {
 }
 
 html:not([data-theme]) .gantt-stay-chrome__label,
-html:not([data-theme]) .gantt-stay-chrome .gantt-stay__avatar,
 html:not([data-theme]) .gantt-stay-chrome .gantt-stay__body > span:not(.gantt-stay__badge),
 html:not([data-theme]) .gantt-stay-chrome .gantt-stay__end-tab-arrow,
 html:not([data-theme]) .gantt-stay-chrome .gantt-requests-card__guest,
@@ -64,18 +63,8 @@ html[data-admin-palette] .gantt-shell div.gantt-stay-chrome {
   filter: grayscale(0.2);
 }
 
-.gantt-room-row--dimmed .gantt-stays-layer {
-  opacity: 1;
-  filter: none;
-}
-
 /* Etichete camere / clădiri */
 html[data-admin-palette] .gantt-building-header__title,
 html[data-admin-palette] .gantt-room-cell__name {
   color: var(--admin-text) !important;
-}
-
-html[data-admin-palette] .gantt-room-cell__building,
-html[data-admin-palette] .gantt-building-header__count {
-  color: var(--admin-text-muted) !important;
 }

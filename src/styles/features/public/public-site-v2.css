@@ -299,15 +299,6 @@
   }
 }
 
-.pub-home__stack-row--alt .pub-section__inner {
-  padding-block: 0.5rem;
-}
-
-.pub-home__stack-row--alt {
-  background: color-mix(in srgb, var(--pub-card-elevated) 72%, transparent);
-  border-block: 1px solid var(--pub-border);
-}
-
 .pub-home__immersive-body {
   margin-top: -2.5rem;
   position: relative;
@@ -720,21 +711,6 @@
   align-items: center;
   gap: 0.85rem 1.25rem;
   padding: 0.85rem 1.5rem;
-}
-
-.pub-home-extras__check-label {
-  margin: 0;
-  font-size: 0.625rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--pub-muted);
-}
-
-.pub-home-extras__check-value {
-  margin: 0.15rem 0 0;
-  font-size: 0.875rem;
-  font-weight: 700;
 }
 
 .pub-home-extras__amenities {

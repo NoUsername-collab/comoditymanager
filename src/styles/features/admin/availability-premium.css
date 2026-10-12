@@ -674,27 +674,6 @@ button.avail-kpi-card {
   }
 }
 
-.avail-live-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--admin-text-muted, #71717a);
-}
-
-.avail-live-pill__dot {
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 9999px;
-  background: #a1a1aa;
-}
-
-.avail-live-pill__dot--on {
-  background: #22c55e;
-  box-shadow: 0 0 6px #22c55e;
-}
-
 .avail-display-mode {
   display: flex;
   flex-wrap: wrap;

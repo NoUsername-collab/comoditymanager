@@ -54,10 +54,6 @@ html[data-admin-palette] .admin-hud__brand-text {
   color: var(--admin-hud-text) !important;
 }
 
-html[data-admin-palette] .admin-hud__eyebrow {
-  color: var(--admin-hud-eyebrow) !important;
-}
-
 html[data-admin-palette] .admin-gear__dropdown {
   background: var(--admin-panel-bg) !important;
   border-color: var(--admin-panel-border) !important;
@@ -91,33 +87,10 @@ html[data-admin-palette] .admin-hud__title {
   text-shadow: none !important;
 }
 
-html[data-admin-palette] .admin-hud__logo {
-  background: var(--admin-accent) !important;
-  border-color: color-mix(in srgb, var(--admin-accent) 72%, #000) !important;
-  box-shadow: none !important;
-}
-
-html[data-admin-palette] .admin-hud__logo-inner {
-  color: var(--admin-text) !important;
-}
-
-html[data-admin-palette] .admin-hud__badge--stable,
-html[data-admin-palette] .admin-hud__sync {
+html[data-admin-palette] .admin-hud__badge--stable {
   background: var(--admin-chip-bg) !important;
   color: var(--admin-chip-text) !important;
   border: 1px solid var(--admin-chip-border) !important;
-}
-
-html[data-admin-palette] .admin-hud__chip--ghost {
-  background: var(--admin-chip-bg) !important;
-  color: var(--admin-chip-text) !important;
-  border: 1px solid var(--admin-chip-border) !important;
-}
-
-html[data-admin-palette] .admin-hud__chip--ghost:hover {
-  background: var(--admin-nav-tab-hover-bg) !important;
-  color: var(--admin-hud-text) !important;
-  border-color: color-mix(in srgb, var(--admin-accent) 35%, transparent) !important;
 }
 
 html[data-admin-palette] .admin-nav-tab {
@@ -172,29 +145,6 @@ html[data-admin-palette] .admin-hud-alert__link {
 }
 
 /* Liquid blob opacities — zi vs noapte */
-html[data-admin-palette][data-admin-theme="day"] .admin-dn-liquid__blob--night-deep,
-html[data-admin-palette][data-admin-theme="day"] .admin-dn-liquid__blob--night-violet,
-html[data-admin-palette][data-admin-theme="day"] .admin-dn-liquid__blob--night-moon {
-  opacity: 0.14 !important;
-}
-
-html[data-admin-palette][data-admin-theme="day"] .admin-dn-liquid__blob--day-sun,
-html[data-admin-palette][data-admin-theme="day"] .admin-dn-liquid__blob--day-sky,
-html[data-admin-palette][data-admin-theme="day"] .admin-dn-liquid__blob--day-mist {
-  opacity: 0.92 !important;
-}
-
-html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--day-sun,
-html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--day-sky,
-html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--day-mist {
-  opacity: 0.16 !important;
-}
-
-html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--night-deep,
-html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--night-violet,
-html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--night-moon {
-  opacity: 0.88 !important;
-}
 
 /* Panouri, formulare, linkuri */
 html[data-admin-palette] .admin-panel-section,
@@ -246,8 +196,7 @@ html[data-admin-palette] .gantt-zone-ribbon__segment--checkin .gantt-zone-ribbon
 
 /* Public-site previews keep their own theme colours. */
 html[data-admin-palette] main h1:not(.pub-site *),
-html[data-admin-palette] main h2:not(.pub-site *),
-html[data-admin-palette] .admin-page-header h1 {
+html[data-admin-palette] main h2:not(.pub-site *) {
   color: var(--admin-text) !important;
 }
 
@@ -326,12 +275,6 @@ html[data-admin-palette] .status-occupied-swatch {
   color: var(--admin-danger-text) !important;
 }
 
-html[data-admin-palette] .status-day-full {
-  background: var(--admin-full-bg) !important;
-  border-color: var(--admin-danger-border) !important;
-  color: var(--admin-full-text) !important;
-}
-
 html[data-admin-palette] .admin-requests-fill {
   background: var(--admin-requests-fill-bg, var(--admin-btn-primary-bg)) !important;
   color: var(--admin-requests-fill-text, var(--admin-btn-primary-text)) !important;
@@ -346,61 +289,17 @@ html[data-admin-palette] .admin-requests-fill:hover:not(:disabled) {
 }
 
 /* Hero Acasă */
-html[data-admin-palette] .admin-daynight-hero {
-  background: var(--admin-hero-bg) !important;
-  color: var(--admin-hud-text) !important;
-  border-color: var(--admin-panel-border) !important;
-}
-
-html[data-admin-palette] .admin-daynight-hero__content {
-  background: var(--admin-hero-content-bg) !important;
-  border-color: var(--admin-hero-border) !important;
-}
-
-html[data-admin-palette] .admin-daynight-hero__eyebrow {
-  color: var(--admin-hud-eyebrow) !important;
-}
-
-html[data-admin-palette] .admin-daynight-hero__title {
-  color: var(--admin-hud-text) !important;
-}
-
-html[data-admin-palette] .admin-daynight-hero__meta {
-  color: var(--admin-text-muted) !important;
-}
 
 /* Gantt premium */
-html[data-admin-palette] .gantt-today-line {
-  background: var(--admin-gantt-today-line, #0ea5e9) !important;
-}
 
 html[data-admin-palette] .gantt-thead-sticky tr {
   background: var(--admin-panel-bg) !important;
   box-shadow: var(--admin-gantt-header-shadow) !important;
 }
 
-html[data-admin-palette] .gantt-unassigned-row .gantt-unassigned-cell {
-  background: var(--admin-gantt-unassigned) !important;
-  border-color: var(--admin-gantt-request) !important;
-}
-
-html[data-admin-palette] .gantt-unassigned-label {
-  color: var(--admin-accent) !important;
-}
-
 html[data-admin-palette] .gantt-popover-premium__btn--primary {
   background: var(--admin-btn-primary-bg) !important;
   color: var(--admin-btn-primary-text) !important;
-}
-
-html[data-admin-palette] .gantt-kbd-hint {
-  color: var(--admin-text-muted) !important;
-}
-
-html[data-admin-palette] .gantt-kbd-hint kbd {
-  background: var(--admin-panel-bg) !important;
-  border-color: var(--admin-panel-border) !important;
-  color: var(--admin-text-muted) !important;
 }
 
 /* Disponibilitate heat — integrare */

@@ -39,7 +39,6 @@ html[data-theme] .gantt-shell .gantt-booking-card.gantt-stay--phase-past {
 }
 
 html[data-theme] .gantt-stay-chrome__label,
-html[data-theme] .gantt-stay-chrome .gantt-stay__avatar,
 html[data-theme] .gantt-stay-chrome .gantt-stay__body > span:not(.gantt-stay__badge),
 html[data-theme] .gantt-stay-chrome .gantt-stay__end-tab-arrow,
 html[data-theme] .gantt-requests-card__guest,
@@ -111,10 +110,6 @@ html[data-theme="default"] .gantt-shell .gantt-requests-card .gantt-requests-car
 html[data-theme="default"]
   .gantt-shell
   .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--request):not(.gantt-stay--phase-past)
-  .gantt-stay__avatar,
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--request):not(.gantt-stay--phase-past)
   .gantt-stay__badge,
 html[data-theme="default"]
   .gantt-shell
@@ -124,19 +119,11 @@ html[data-theme="default"]
   color: var(--booking-active-text) !important;
 }
 
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-booking-card.gantt-booking-card--pending.gantt-stay--request
-  .gantt-stay__avatar,
 html[data-theme="default"] .gantt-shell .gantt-requests-card .gantt-requests-card__party {
   background: color-mix(in srgb, var(--booking-pending-text) 18%, transparent) !important;
   color: var(--booking-pending-text) !important;
 }
 
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-booking-card.gantt-booking-card--past
-  .gantt-stay__avatar,
 html[data-theme="default"]
   .gantt-shell
   .gantt-booking-card.gantt-booking-card--past

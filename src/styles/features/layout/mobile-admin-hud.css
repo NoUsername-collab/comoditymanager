@@ -106,14 +106,6 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-h
 
 
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-hud__tools .admin-version-badge,
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-hud__tools .admin-plan-badge {
-  display: none;
-}
-
-
-
-
 html[data-layout-chrome="compact"] .admin-hud-alert {
   padding-inline: 0.85rem;
   font-size: 0.68rem;
@@ -390,14 +382,6 @@ html[data-layout-chrome="compact"] .guest-page__search-area {
 
 /* ── Admin home (admin-home.css) ── */
 html[data-layout-chrome="compact"] .admin-home-buildings-grid {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-html[data-layout-chrome="compact"] .admin-home-actions {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-html[data-layout-chrome="compact"] .admin-today-board--compact .admin-today-board__grid {
   grid-template-columns: minmax(0, 1fr);
 }
 
@@ -702,65 +686,6 @@ html[data-layout-chrome="compact"] .ml-drawer--admin .language-switcher__option-
   opacity: 0.55;
 }
 
-.ml-drawer--admin .ml-drawer__link--alert {
-  position: relative;
-}
-
-.ml-drawer--admin .ml-drawer__link-badge {
-  margin-left: auto;
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: 999px;
-  background: var(--admin-danger, #dc2626);
-  flex-shrink: 0;
-}
-
-.ml-drawer__issues {
-  margin: 0 0.5rem 0.65rem;
-  padding: 0.55rem 0.65rem;
-  border-radius: 0.65rem;
-  border: 1px solid color-mix(in srgb, var(--admin-danger, #dc2626) 35%, transparent);
-  background: color-mix(in srgb, var(--admin-danger, #dc2626) 8%, transparent);
-}
-
-.ml-drawer__issues-heading {
-  margin: 0 0 0.35rem;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.ml-drawer__issues-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 0.25rem;
-}
-
-.ml-drawer__issue-link {
-  display: flex;
-  align-items: center;
-  min-height: var(--ml-touch-min, 2.75rem);
-  padding: 0.35rem 0.45rem;
-  border-radius: 0.45rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: inherit;
-  text-decoration: none;
-}
-
-.ml-drawer__issue-link:active {
-  background: color-mix(in srgb, var(--admin-danger, #dc2626) 12%, transparent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ml-drawer--admin .ml-drawer__link-badge {
-    animation: none;
-  }
-}
-
 .ml-bottom-nav__link--more {
   border: none;
   background: transparent;
@@ -895,10 +820,6 @@ html[data-layout-chrome="compact"] .admin-invoice-page .issued-invoice-sheet__ta
 }
 
 /* ── Location structure ── */
-html[data-layout-chrome="compact"] .location-structure-grid,
-html[data-layout-chrome="compact"] .location-structure-page .grid {
-  grid-template-columns: minmax(0, 1fr) !important;
-}
 
 
 /* ═══ mobile-layout-flawless.css ═══ */
@@ -907,12 +828,6 @@ html[data-layout-chrome="compact"] .location-structure-page .grid {
  */
 
 /* ── Sim strip above safe area (top nav no longer at bottom) ── */
-html[data-layout-chrome="compact"] .sim-bottom-strip {
-  bottom: var(--ml-safe-bottom, 0px);
-  z-index: 55;
-  padding-block: 0.45rem;
-  font-size: 0.62rem;
-}
 
 html[data-layout-chrome="compact"] .admin-shell:has(.sim-bottom-strip) {
   padding-bottom: calc(var(--ml-safe-bottom, 0px) + 1.75rem);
@@ -935,16 +850,6 @@ html[data-layout-chrome="compact"] .admin-page [class*="lg:grid-cols"] {
 html[data-layout-chrome="compact"] .admin-panel {
   max-width: 100%;
   overflow-x: clip;
-}
-
-html[data-layout-chrome="compact"] .admin-panel__body {
-  max-height: min(
-    62dvh,
-    calc(
-      var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - 7rem
-    )
-  );
-  overflow-y: auto;
 }
 
 html[data-layout-chrome="compact"] .admin-panel-body {
@@ -1011,7 +916,6 @@ html[data-layout-chrome="compact"] .checkin-guest-form__grid {
 }
 
 html[data-layout-chrome="compact"] .checkin-modal .checkin-field__input,
-html[data-layout-chrome="compact"] .checkin-modal .checkin-field__select,
 html[data-layout-chrome="compact"] .checkin-modal button {
   min-height: var(--ml-touch-min, 2.75rem);
   font-size: 16px;
@@ -1036,20 +940,6 @@ html[data-layout-chrome="compact"] .devlog-pagination__btn {
 }
 
 /* ── Invoice ── */
-html[data-layout-chrome="compact"] .informal-invoice-root table {
-  display: block;
-  max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-html[data-layout-chrome="compact"] .informal-invoice-sheet header {
-  padding: var(--ml-space-lg, 1rem) 0.85rem !important;
-}
-
-html[data-layout-chrome="compact"] .informal-invoice-sheet > div {
-  padding-inline: 1rem !important;
-}
 
 /* ── Nestio logs tables ── */
 html[data-layout-chrome="compact"] .nestio-logs-table-wrap {
@@ -1159,27 +1049,6 @@ html[data-layout-chrome="compact"] .bd-confirm__submit {
   align-items: center;
   justify-content: center;
   padding-inline: 1rem;
-}
-
-html[data-layout-chrome="compact"] .admin-today-bar__toggle {
-  width: var(--ml-touch-min, 2.75rem);
-  height: var(--ml-touch-min, 2.75rem);
-}
-
-html[data-layout-chrome="compact"] .admin-today-action,
-html[data-layout-chrome="compact"] .admin-today-badge {
-  min-height: var(--ml-touch-min, 2.75rem);
-  display: inline-flex;
-  align-items: center;
-  padding: 0.35rem 0.75rem;
-}
-
-html[data-layout-chrome="compact"] .admin-today-bar__badges {
-  overflow-x: auto;
-  flex-wrap: nowrap;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  max-width: 100%;
 }
 
 html[data-layout-chrome="compact"] .activity-undo-btn {
@@ -1641,22 +1510,6 @@ html[data-layout-chrome="compact"] .devlog-filters__pill {
 }
 
 /* Location structure: stack cards, touch actions */
-html[data-layout-chrome="compact"] .location-structure-page {
-  padding-inline: 0.85rem !important;
-}
-
-html[data-layout-chrome="compact"] .location-structure-page article button,
-html[data-layout-chrome="compact"] .location-structure-page article a,
-html[data-layout-chrome="compact"] .location-structure-page article input,
-html[data-layout-chrome="compact"] .location-structure-page article select {
-  min-height: var(--ml-touch-min, 2.75rem);
-  font-size: 16px;
-}
-
-html[data-layout-chrome="compact"] .location-structure-page article header {
-  flex-direction: column;
-  align-items: stretch;
-}
 
 /* Booking detail: ops actions wrap on narrow */
 html[data-layout-chrome="compact"] .bd-ops__actions {
@@ -1668,12 +1521,6 @@ html[data-layout-chrome="compact"] .bd-ops__btn {
   flex: 1 1 calc(50% - 0.2rem);
   min-width: 0;
   justify-content: center;
-}
-
-html[data-layout-chrome="compact"] .bd-ops__steps {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
 }
 
 /* Landscape tablet: HUD density + Gantt bottom clearance */
@@ -1784,12 +1631,6 @@ html[data-layout-chrome="compact"] .guest-preview-panel .admin-floating-panel__b
 }
 
 /* SIM chip error toast inside gear dropdown */
-html[data-layout-chrome="compact"] .admin-gear__footer .sim-error-toast {
-  max-width: min(16rem, calc(100vw - 2rem));
-  right: 0;
-  left: auto;
-  font-size: 0.72rem;
-}
 
 /* Admin panel error boundary */
 html[data-layout-chrome="compact"] .ml-content.flex.min-h-\[40dvh\] {
@@ -1848,9 +1689,7 @@ html[data-layout-chrome="compact"] .admin-page-toolbar {
   backdrop-filter: blur(8px);
 }
 
-html[data-layout-chrome="compact"] .onboarding-checklist,
-html[data-layout-chrome="compact"] .admin-home-section,
-html[data-layout-chrome="compact"] .booking-ops-actions {
+html[data-layout-chrome="compact"] .admin-home-section {
   content-visibility: auto;
   contain: layout style;
   contain-intrinsic-size: auto 8rem;
@@ -1923,32 +1762,7 @@ html[data-layout-chrome="compact"] .statistics-page .statistics-card {
   contain-intrinsic-size: auto 6rem;
 }
 
-html[data-layout-chrome="compact"] .statistics-page .grid.gap-6 {
-  grid-template-columns: minmax(0, 1fr);
-}
-
 /* ── Pass 15: invoice line cards + print CTA ── */
-
-html[data-layout-chrome="compact"] .invoice-line-cards {
-  display: block;
-}
-
-html[data-layout-chrome="compact"] .invoice-table-desktop {
-  display: none;
-}
-
-html:not([data-layout-chrome="compact"]) .invoice-line-cards {
-  display: none;
-}
-
-html[data-layout-chrome="compact"] .informal-invoice-print {
-  width: 100%;
-  justify-content: center;
-}
-
-html[data-layout-chrome="compact"] .informal-invoice-actions {
-  flex-direction: column;
-}
 
 /* ── Pass 16: pricing comparison cards + tenant detail + booking CTAs ── */
 
@@ -1986,7 +1800,6 @@ html[data-layout-chrome="compact"] .nestio-tenant-option input[type="checkbox"] 
   flex-shrink: 0;
 }
 
-html[data-layout-chrome="compact"] .phone-booking-form__checkbox,
 html[data-layout-chrome="compact"] .phone-booking-form label:has(input[type="checkbox"]) {
   min-height: var(--ml-touch-min, 2.75rem);
   display: flex;
@@ -1995,7 +1808,6 @@ html[data-layout-chrome="compact"] .phone-booking-form label:has(input[type="che
   padding-block: 0.35rem;
 }
 
-html[data-layout-chrome="compact"] .phone-booking-form__checkbox input[type="checkbox"],
 html[data-layout-chrome="compact"] .phone-booking-form label:has(input[type="checkbox"]) input[type="checkbox"] {
   width: 1.25rem;
   height: 1.25rem;
@@ -2110,12 +1922,6 @@ html[data-layout-chrome="compact"] .admin-staff-password-panel input {
   font-size: max(16px, 0.875rem);
   min-height: var(--ml-touch-min, 2.75rem);
   width: 100%;
-}
-
-html[data-layout-chrome="compact"] .admin-staff-password-panel__submit {
-  width: 100%;
-  min-height: var(--ml-touch-min, 2.75rem);
-  font-size: max(16px, 0.875rem);
 }
 
 html[data-layout-chrome="compact"] .guest-blacklist-panel__trigger {
@@ -2379,24 +2185,6 @@ html[data-layout-chrome="compact"] .guest-stay-review-form__summary {
   touch-action: manipulation;
 }
 
-html[data-layout-chrome="compact"] .guest-stay-review-form__metrics {
-  grid-template-columns: minmax(0, 1fr) !important;
-}
-
-html[data-layout-chrome="compact"] .guest-stay-review-form__metrics select,
-html[data-layout-chrome="compact"] .guest-stay-review-form__metrics input {
-  font-size: max(16px, 0.875rem);
-  min-height: var(--ml-touch-min, 2.75rem);
-  width: 100%;
-}
-
-html[data-layout-chrome="compact"] .guest-stay-review-form__note textarea {
-  font-size: max(16px, 0.875rem);
-  min-height: 5.5rem;
-  width: 100%;
-  touch-action: manipulation;
-}
-
 html[data-layout-chrome="compact"] .guest-stay-review-form__submit {
   width: 100%;
   min-height: var(--ml-touch-min, 2.75rem);
@@ -2534,8 +2322,7 @@ html[data-layout-chrome="compact"] .admin-page .rounded-2xl.border {
 }
 
 html[data-layout-chrome="compact"] .admin-page-main,
-html[data-layout-chrome="compact"] .ml-main,
-html[data-layout-chrome="compact"] .admin-panel__body {
+html[data-layout-chrome="compact"] .ml-main {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
   scroll-padding-bottom: var(--ml-page-scroll-bottom, calc(var(--ml-safe-bottom, 0px) + 0.35rem));
@@ -2574,7 +2361,6 @@ html[data-layout-chrome="compact"] .admin-gear__dropdown--portal {
 }
 
 /* ── Booking detail & modals ── */
-html[data-layout-chrome="compact"] .admin-modal,
 html[data-layout-chrome="compact"] .checkin-modal {
   width: min(calc(var(--ml-vvw, 100vw) - 1rem), 28rem);
   max-height: min(92dvh, var(--ml-vvh, 100dvh));

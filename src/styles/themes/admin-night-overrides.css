@@ -68,16 +68,6 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 }
 
 /* ── Gantt radial home (default.css amestecă white în night) ── */
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .gantt-radial {
-  --gantt-home-surface-top: color-mix(in srgb, var(--admin-panel-bg) 94%, var(--surface-3));
-  --gantt-home-surface-bottom: color-mix(
-    in srgb,
-    var(--admin-panel-bg) 86%,
-    var(--pending-border) 14%
-  );
-  --gantt-home-door-top: color-mix(in srgb, var(--pending-border) 58%, var(--surface-2));
-  --gantt-home-door-bottom: color-mix(in srgb, var(--admin-accent) 72%, #0b0d12);
-}
 
 /* ── Dialoguri / modale cu Tailwind hardcodat ── */
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .gantt-check-time-dialog {
@@ -196,7 +186,6 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 /* ── Admin home panels ── */
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-home-panel,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-home-requests-item,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-today-board__card,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-home-window-body {
   background: var(--admin-panel-bg) !important;
   border-color: var(--admin-panel-border) !important;
@@ -211,8 +200,7 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-home-panel__desc,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-home-hero__meta,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-home-kpi,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-today-board__cleaning-hint {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-home-kpi {
   color: var(--admin-text-muted) !important;
 }
 
@@ -228,11 +216,6 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-home-kpi--alert strong {
   color: #fca5a5 !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-today-board--compact .admin-today-board__card .text-zinc-600,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-today-board--compact .admin-today-board__card .text-zinc-500 {
-  color: var(--admin-text-muted) !important;
 }
 
 /* ── Check-in stepper & buttons ── */
@@ -324,13 +307,9 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 }
 
 /* ── Gantt panels cu fundal deschis hardcodat ── */
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .gantt-today-panel {
-  border-color: color-mix(in srgb, var(--active-border) 35%, var(--admin-panel-border)) !important;
-}
 
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .gantt-stay-note,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .gantt-stay-note__card,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .gantt-inline-controls,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .gantt-compact-toolbar {
   background: var(--admin-panel-bg);
   border-color: var(--admin-panel-border);
@@ -426,53 +405,5 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 }
 
 /* ── Admin flat surfaces (night) ── */
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-surface-bg {
-  background: var(--surface);
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-tint-info-bg {
-  background: color-mix(in srgb, var(--info) 10%, var(--surface));
-  border-color: color-mix(in srgb, var(--info) 28%, var(--border));
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-tint-warning-bg {
-  background: color-mix(in srgb, var(--pending-bg) 85%, var(--surface));
-  border-color: color-mix(in srgb, var(--pending-border) 35%, var(--border));
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-tint-success-bg {
-  background: color-mix(in srgb, var(--active-bg) 80%, var(--surface));
-  border-color: color-mix(in srgb, var(--active-border) 35%, var(--border));
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-tint-danger-bg {
-  background: color-mix(in srgb, var(--cancelled-bg) 75%, var(--surface));
-  border-color: color-mix(in srgb, var(--cancelled-border) 35%, var(--border));
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-tint-violet-bg {
-  background: color-mix(in srgb, var(--blocked-bg) 80%, var(--surface));
-  border-color: color-mix(in srgb, var(--blocked-border) 30%, var(--border));
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-tint-sky-bg {
-  background: color-mix(in srgb, var(--hold-bg) 80%, var(--surface));
-  border-color: color-mix(in srgb, var(--hold-border) 30%, var(--border));
-}
 
 /* ── Gantt semantic fills — contrast AA pe fundal închis ── */
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .gantt-bar-fill-active {
-  background: color-mix(
-    in srgb,
-    var(--active-bg) 42%,
-    var(--active-border) 58%
-  );
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .gantt-bar-fill-pending {
-  background: var(--pending-bg);
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .gantt-bar-fill-past {
-  background: var(--past-bg);
-}

@@ -48,17 +48,6 @@
   color: var(--guest-muted);
 }
 
-.guest-app__card {
-  border-radius: 1rem;
-  border: 1px solid var(--guest-border);
-  background: color-mix(in srgb, var(--guest-card) 88%, transparent);
-  padding: 1rem;
-}
-
-.guest-app__card--elevated {
-  background: color-mix(in srgb, var(--guest-card-elevated) 92%, transparent);
-}
-
 .guest-app__panel {
   border-radius: 0.75rem;
   border: 1px solid var(--guest-border);
@@ -66,37 +55,8 @@
   padding: 1rem;
 }
 
-.guest-app__link-row {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 0.75rem;
-  border: 1px solid var(--guest-border);
-  background: color-mix(in srgb, var(--guest-card) 90%, transparent);
-  padding: 0.75rem 1rem;
-  text-align: left;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.guest-app__link-row:hover {
-  border-color: var(--guest-accent);
-  background: var(--guest-card-elevated);
-}
-
 .guest-app__link-row__label {
   font-weight: 500;
-  color: var(--guest-fg);
-}
-
-.guest-app__back-link {
-  display: inline-flex;
-  font-size: 0.875rem;
-  color: var(--guest-muted);
-  transition: color 0.15s ease;
-}
-
-.guest-app__back-link:hover {
   color: var(--guest-fg);
 }
 
@@ -138,10 +98,6 @@
   margin-top: 0.5rem;
   font-size: 0.875rem;
   color: var(--guest-subtle, color-mix(in srgb, var(--guest-fg) 88%, transparent));
-}
-
-.guest-app__alert-warn__body--spaced {
-  margin-top: 1rem;
 }
 
 .guest-app__alert-warn__hint {
@@ -211,12 +167,6 @@
   justify-content: center;
 }
 
-.guest-app__alert-error__code {
-  margin-top: 0.75rem;
-  font-size: 0.75rem;
-  color: var(--guest-muted);
-}
-
 .guest-app__banner-mock {
   margin-bottom: 1rem;
   border-radius: 0.5rem;
@@ -284,18 +234,6 @@
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--guest-primary-fg);
-}
-
-.guest-app__placeholder {
-  display: flex;
-  aspect-ratio: 4 / 3;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.75rem;
-  border: 1px solid var(--guest-border);
-  background: color-mix(in srgb, var(--guest-card) 70%, transparent);
-  font-size: 0.75rem;
-  color: var(--guest-muted);
 }
 
 .guest-stay-milestones__list {
@@ -393,7 +331,6 @@
 }
 
 .guest-app__header-back:focus-visible,
-.guest-app__link-row:focus-visible,
 .guest-app__bottom-nav__link:focus-visible,
 .guest-app__copy-field__btn:focus-visible,
 .guest-app__btn-primary:focus-visible,
@@ -533,11 +470,6 @@
   text-decoration: none;
 }
 
-.guest-app__wifi-quick__network {
-  margin-top: 0.75rem;
-  font-size: 0.875rem;
-}
-
 .guest-app__copy-field--compact {
   margin-top: 0.75rem;
   border-radius: 0.75rem;
@@ -549,10 +481,6 @@
 .guest-app__copy-field__btn {
   min-height: 2.75rem;
   min-width: 4.5rem;
-}
-
-.guest-app__link-row {
-  min-height: 3rem;
 }
 
 .guest-app__inline-link {
@@ -632,11 +560,6 @@
 .guest-app__bottom-nav__link--active {
   color: var(--guest-accent);
   background: color-mix(in srgb, var(--guest-accent) 10%, transparent);
-}
-
-.guest-app__bottom-nav__icon {
-  font-size: 1rem;
-  line-height: 1;
 }
 
 .guest-app__bottom-nav__label {
@@ -1810,20 +1733,6 @@
 
 .guest-feedback__star--active {
   color: #f59e0b;
-}
-
-.guest-feedback__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.8125rem;
-  color: #f59e0b;
-}
-
-.guest-feedback__badge svg {
-  width: 14px;
-  height: 14px;
-  fill: currentColor;
 }
 
 /* ── Weather Widget ───────────────────────────────────── */

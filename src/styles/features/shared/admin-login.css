@@ -324,16 +324,6 @@
   flex-shrink: 0;
 }
 
-.admin-login-submit__spinner .locale-flag-spinner {
-  width: 1.35rem;
-  height: 1.35rem;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35));
-}
-
-.admin-login-submit__spinner .locale-flag-spinner__ring {
-  animation-duration: 0.75s;
-}
-
 .admin-login-back {
   display: block;
   text-align: center;

@@ -375,156 +375,11 @@
   padding: 0.85rem 1rem !important;
 }
 
-.admin-home .admin-home-window-body--compact {
-  padding: 0.3rem 0.55rem !important;
-}
-
-.admin-home .admin-today-board {
-  padding: 0.15rem 0.25rem;
-}
-
-.admin-home .admin-today-board--compact {
-  padding: 0.1rem 0.15rem;
-}
-
-.admin-today-board--compact .admin-today-board__cleaning-hint {
-  margin: 0 0 0.25rem;
-  font-size: 0.58rem;
-  font-weight: 600;
-  line-height: 1.2;
-  color: color-mix(in srgb, #0369a1 75%, #0f172a);
-}
-
-.admin-today-board--compact .admin-today-board__grid {
-  display: grid;
-  gap: 0.35rem;
-}
-
-@media (min-width: 1024px) {
-  .admin-today-board--compact .admin-today-board__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-.admin-today-board--compact .admin-today-board__col-title {
-  margin: 0;
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.admin-today-board--compact .admin-today-board__col-title--in {
-  color: #065f46;
-}
-
-.admin-today-board--compact .admin-today-board__col-title--out {
-  color: #92400e;
-}
-
-.admin-today-board--compact .admin-today-board__col-title--clean {
-  color: #5b21b6;
-}
-
-.admin-today-board--compact .admin-today-board__col-hint {
-  margin: 0.05rem 0 0;
-  font-size: 0.52rem;
-  font-weight: 600;
-  line-height: 1.2;
-  color: #71717a;
-}
-
-.admin-today-board--compact .admin-today-board__col-body {
-  margin-top: 0.15rem;
-}
-
-.admin-today-board--compact .admin-today-board__list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  margin: 0.15rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.admin-today-board--compact .admin-today-board__empty {
-  margin: 0.15rem 0 0;
-  font-size: 0.62rem;
-  font-weight: 600;
-  line-height: 1.25;
-  color: #71717a;
-}
-
-.admin-today-board--compact .admin-today-board__card {
-  border-radius: var(--radius-sm, 0.45rem);
-  border: 1px solid var(--admin-surface-border, #e4e4e7);
-  background: var(--admin-surface-bg, #fff);
-  padding: 0.28rem 0.45rem;
-  font-size: 0.62rem;
-  line-height: 1.25;
-  box-shadow: var(--admin-surface-shadow, none);
-}
-
-.admin-today-board--compact .admin-today-board__card--link {
-  display: block;
-  text-decoration: none;
-  transition:
-    border-color 0.12s ease,
-    box-shadow 0.12s ease;
-}
-
-.admin-today-board--compact .admin-today-board__card--link:hover {
-  border-color: var(--admin-tint-success-border, #a7f3d0);
-  text-decoration: none;
-}
-
-.admin-today-board--compact .admin-today-board__card--clean {
-  border-color: color-mix(in srgb, #c4b5fd 65%, #e4e4e7);
-}
-
-.admin-today-board--compact .admin-today-board__card p {
-  margin: 0;
-}
-
-.admin-today-board--compact .admin-today-board__card p + p {
-  margin-top: 0.08rem;
-}
-
-.admin-today-board--compact .admin-today-board__card .font-semibold {
-  font-weight: 700;
-  color: #18181b;
-}
-
-.admin-today-board--compact .admin-today-board__card .text-zinc-600 {
-  color: #52525b;
-}
-
-.admin-today-board--compact .admin-today-board__card .text-zinc-500,
-.admin-today-board--compact .admin-today-board__card .text-xs {
-  font-size: 0.55rem;
-  color: #71717a;
-}
-
-.admin-today-board--compact .admin-today-board__card-link {
-  margin-top: 0.08rem !important;
-  font-size: 0.55rem !important;
-}
-
 .admin-home-section .admin-panel {
   border-radius: calc(var(--admin-radius, 0.75rem) + 2px);
 }
 
-.admin-home-split {
-  display: grid;
-  gap: var(--admin-home-gap);
-  margin-top: var(--admin-home-gap);
-}
-
 @media (min-width: 1024px) {
-  .admin-home-split {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-  }
 
   .admin-home-split--requests-only {
     grid-template-columns: 1fr;
@@ -585,87 +440,10 @@
 }
 
 /* Acțiuni rapide */
-.admin-home-actions {
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-@media (min-width: 640px) {
-  .admin-home-actions {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-.admin-home-action {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.65rem;
-  overflow: hidden;
-  border-radius: 0.75rem;
-  border: 1px solid var(--admin-panel-border, #e4e4e7);
-  background: var(--admin-panel-bg, #fff);
-  padding: 0.7rem 0.75rem;
-  text-decoration: none;
-  transition:
-    transform 0.14s ease,
-    border-color 0.14s ease,
-    box-shadow 0.14s ease;
-}
-
-.admin-home-action:hover {
-  border-color: color-mix(in srgb, var(--admin-accent) 35%, var(--admin-panel-border));
-  text-decoration: none;
-}
-
-.admin-home-action:active {
-  filter: brightness(0.97);
-  transform: translateY(0) scale(0.97);
-  transition-duration: 0.06s;
-}
 
 .admin-home-action--requests {
   border-color: color-mix(in srgb, #f87171 50%, var(--admin-panel-border));
   animation: admin-requests-glow-pulse 2.2s ease-in-out infinite;
-}
-
-.admin-home-action__icon {
-  display: flex;
-  height: 2.25rem;
-  width: 2.25rem;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.55rem;
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.admin-home-action__title {
-  font-size: 0.8125rem;
-  font-weight: 800;
-  line-height: 1.2;
-  color: var(--admin-text, #18181b);
-}
-
-.admin-home-action__desc {
-  margin-top: 0.15rem;
-  font-size: 0.625rem;
-  font-weight: 600;
-  line-height: 1.25;
-  color: var(--admin-text-muted, #71717a);
-}
-
-.admin-home-action__badge {
-  display: inline-flex;
-  margin-top: 0.35rem;
-  border-radius: 9999px;
-  padding: 0.1rem 0.45rem;
-  font-size: 0.5625rem;
-  font-weight: 800;
-  background: color-mix(in srgb, #dc2626 88%, white);
-  color: #fff;
 }
 
 /* Listă cereri */
@@ -748,31 +526,6 @@
   .admin-home-buildings-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-}
-
-.admin-home-empty {
-  border-radius: 0.75rem;
-  border: 2px dashed var(--admin-panel-border, #d4d4d8);
-  padding: var(--ml-space-lg, 1rem) 0.85rem;
-  text-align: center;
-}
-
-.admin-home-empty p {
-  margin: 0;
-  font-size: 0.875rem;
-  color: var(--admin-text-muted, #71717a);
-}
-
-.admin-home-empty a {
-  display: inline-flex;
-  margin-top: 1rem;
-  border-radius: 9999px;
-  padding: 0.5rem 1.15rem;
-  font-size: 0.8125rem;
-  font-weight: 800;
-  background: var(--admin-text, #18181b);
-  color: var(--admin-panel-bg, #fff);
-  text-decoration: none;
 }
 
 /* Splash lumină — tab Cereri noi */
@@ -1289,18 +1042,6 @@
   .checkin-quest__meter-seg--current {
     animation: none;
   }
-}
-
-.admin-today-board {
-  border-radius: var(--admin-surface-radius, 1.25rem);
-  border: 1px solid var(--admin-tint-sky-border, #bae6fd);
-  background: var(--admin-tint-sky-bg, #f0f9ff);
-  box-shadow: var(--admin-surface-shadow, none);
-  padding: 0.35rem 0.5rem;
-}
-
-.admin-today-board--compact {
-  border-radius: var(--radius-sm, 0.65rem);
 }
 
 .admin-today-board__badge {

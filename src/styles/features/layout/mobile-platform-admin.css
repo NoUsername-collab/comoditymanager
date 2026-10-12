@@ -391,7 +391,6 @@ html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header_
 
 
 /* Platform / platform-admin — single gutter (no Tailwind px-* stacking) */
-html[data-layout-chrome="compact"] .ml-shell--platform-admin .platform-admin-main,
 html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-main {
   padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
   padding-block: var(--ml-page-gutter-block)
@@ -405,7 +404,6 @@ html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-main {
 
 
 
-html[data-layout-chrome="compact"] .ml-shell--platform-admin .platform-admin-header__inner,
 html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__inner {
   padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
   min-width: 0;

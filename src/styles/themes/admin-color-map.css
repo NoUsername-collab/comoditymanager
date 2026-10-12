@@ -13,29 +13,19 @@
    ════════════════════════════════════════════════════════════════ */
 
 /* Dark text (zinc-900, zinc-800, slate-900, etc.) → primary text */
-.text-zinc-900,
-.text-slate-900,
-.text-gray-900 {
+.text-zinc-900 {
   color: var(--admin-text) !important;
 }
 
 /* Muted text (zinc-600, zinc-500, slate-600, etc.) → secondary text */
 .text-zinc-600,
-.text-zinc-500,
-.text-slate-600,
-.text-slate-500,
-.text-gray-600,
-.text-gray-500 {
+.text-zinc-500 {
   color: var(--admin-text-muted) !important;
 }
 
 /* Light text (zinc-300, zinc-200, slate-300, etc.) → muted text */
 .text-zinc-300,
-.text-zinc-200,
-.text-slate-300,
-.text-slate-200,
-.text-gray-300,
-.text-gray-200 {
+.text-zinc-200 {
   color: var(--text-faint) !important;
 }
 
@@ -45,14 +35,11 @@
 }
 
 /* Blue accent text */
-.text-blue-700,
-.text-blue-600,
-.text-blue-500 {
+.text-blue-700 {
   color: var(--admin-link) !important;
 }
 
 /* Status colors */
-.text-green-700,
 .text-emerald-700,
 .text-emerald-800 {
   color: var(--active-text) !important;
@@ -69,13 +56,7 @@
   color: var(--cancelled-text) !important;
 }
 
-.text-purple-700,
-.text-violet-700 {
-  color: var(--blocked-text) !important;
-}
-
-.text-sky-700,
-.text-cyan-700 {
+.text-sky-700 {
   color: var(--hold-text) !important;
 }
 
@@ -89,14 +70,10 @@
 }
 
 /* Light gray background → secondary surface */
-.bg-gray-50,
-.bg-slate-50,
 .bg-zinc-50 {
   background: var(--surface-2) !important;
 }
 
-.bg-gray-100,
-.bg-slate-100,
 .bg-zinc-100 {
   background: var(--surface-3) !important;
 }
@@ -104,13 +81,11 @@
 /* Dark gray background → primary surface (in night mode) */
 .bg-zinc-800,
 .bg-zinc-900,
-.bg-slate-800,
 .bg-gray-800 {
   background: var(--surface-2) !important;
 }
 
 /* Status backgrounds */
-.bg-green-50,
 .bg-emerald-50 {
   background: var(--admin-tint-success-bg) !important;
 }
@@ -123,13 +98,11 @@
   background: var(--admin-tint-danger-bg) !important;
 }
 
-.bg-purple-50,
 .bg-violet-50 {
   background: var(--admin-tint-violet-bg) !important;
 }
 
-.bg-sky-50,
-.bg-cyan-50 {
+.bg-sky-50 {
   background: var(--admin-tint-sky-bg) !important;
 }
 
@@ -142,20 +115,15 @@
    ════════════════════════════════════════════════════════════════ */
 
 /* Neutral borders */
-.border-zinc-200,
-.border-slate-200,
-.border-gray-200 {
+.border-zinc-200 {
   border-color: var(--admin-panel-border) !important;
 }
 
-.border-zinc-300,
-.border-slate-300,
-.border-gray-300 {
+.border-zinc-300 {
   border-color: var(--border-strong) !important;
 }
 
 /* Status borders */
-.border-green-200,
 .border-emerald-200 {
   border-color: var(--active-border) !important;
 }
@@ -168,16 +136,11 @@
   border-color: var(--cancelled-border) !important;
 }
 
-.border-purple-200,
-.border-violet-200,
-.border-violet-300 {
+.border-violet-200 {
   border-color: var(--blocked-border) !important;
 }
 
-.border-sky-200,
-.border-sky-300,
-.border-cyan-200,
-.border-cyan-300 {
+.border-sky-200 {
   border-color: var(--hold-border) !important;
 }
 
@@ -188,24 +151,6 @@
 /* ════════════════════════════════════════════════════════════════
    FILL & STROKE MAPPINGS — SVG & icon colors
    ════════════════════════════════════════════════════════════════ */
-
-.fill-white {
-  fill: var(--admin-panel-bg) !important;
-}
-
-.fill-zinc-900,
-.fill-slate-900,
-.fill-gray-900 {
-  fill: var(--admin-text) !important;
-}
-
-.stroke-white {
-  stroke: var(--admin-panel-bg) !important;
-}
-
-.stroke-zinc-900 {
-  stroke: var(--admin-text) !important;
-}
 
 /* ════════════════════════════════════════════════════════════════
    SPECIFIC COMPONENT PATTERNS from globals.css overrides
@@ -229,13 +174,10 @@ textarea::placeholder {
    RING/FOCUS COLORS — keyboard navigation
    ════════════════════════════════════════════════════════════════ */
 
-.ring-zinc-200,
-.ring-slate-200,
-.ring-gray-200 {
+.ring-zinc-200 {
   --tw-ring-color: color-mix(in srgb, var(--admin-panel-border) 80%, transparent) !important;
 }
 
-.ring-blue-500,
 .ring-indigo-500 {
   --tw-ring-color: var(--admin-focus-ring) !important;
 }

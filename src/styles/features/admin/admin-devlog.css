@@ -98,13 +98,6 @@
   gap: 2px;
 }
 
-.devlog-empty {
-  padding: 2rem;
-  text-align: center;
-  font-size: 0.85rem;
-  color: var(--text-faint);
-}
-
 .devlog-entry {
   content-visibility: auto;
   contain-intrinsic-size: auto 3.5rem;

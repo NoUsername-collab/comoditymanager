@@ -723,11 +723,6 @@ html[data-layout-chrome="compact"] .gantt-summary-cell__value {
   line-height: 1;
 }
 
-html[data-layout-chrome="compact"] .gantt-summary-cell__total {
-  font-size: 0.24rem;
-  line-height: 1;
-}
-
 /* Scroll vertical prin tot Gantt-ul — nu bloca touch pe grid */
 html[data-layout-chrome="compact"] .gantt-drag-row {
   touch-action: pan-y;
@@ -822,14 +817,6 @@ html[data-layout-chrome="compact"] .gantt-building-header__title {
   font-size: 0.36rem !important;
   line-height: 1 !important;
   letter-spacing: 0 !important;
-}
-
-html[data-layout-chrome="compact"] .gantt-building-header__count {
-  margin-left: 0.04rem !important;
-  padding: 0 0.06rem !important;
-  font-size: 0.32rem !important;
-  line-height: 1 !important;
-  border-width: 0.5px !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header__chevron {
@@ -1012,10 +999,6 @@ html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay-chrome__label {
   line-height: 1;
 }
 
-html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__micro {
-  display: none !important;
-}
-
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip {
   display: inline-flex !important;
   flex-shrink: 0;
@@ -1023,39 +1006,8 @@ html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip {
   padding: 0 0.02rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__details {
-  display: flex !important;
-  position: static !important;
-  flex: 0 0 auto;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.1rem;
-  min-width: 0;
-  opacity: 1 !important;
-  transform: none !important;
-  pointer-events: auto !important;
-}
-
-html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__details-head {
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 0.1rem;
-  min-width: 0;
-}
-
-html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__detail-badges {
-  margin-left: 0;
-  gap: 0.08rem;
-}
-
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__timeline {
   display: none;
-}
-
-html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__alerts {
-  gap: 0.1rem;
-  min-height: 0;
 }
 
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__alert {
@@ -1570,11 +1522,6 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell__val
   line-height: 1 !important;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell__total {
-  font-size: 0.24rem !important;
-  line-height: 1 !important;
-}
-
 /* TODAY — same inset on date, FREE and room grid for symmetry */
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell--today {
   box-shadow: inset 2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9) !important;
@@ -1631,13 +1578,6 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header .
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header__title {
   font-size: 0.36rem !important;
-  line-height: 1 !important;
-}
-
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header__count {
-  margin-left: 0.04rem !important;
-  padding: 0 0.06rem !important;
-  font-size: 0.32rem !important;
   line-height: 1 !important;
 }
 

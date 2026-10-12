@@ -179,17 +179,9 @@ html[data-theme="default"][data-mode="night"] {
 }
 
 /* Variantă dedicată fundal deschis (opțional logo/logo-dark.png) */
-.brand-logo-img--light-bg {
-  visibility: hidden;
-  pointer-events: none;
-}
 
 .group:hover .brand-logo-shell {
   animation: brand-float 3.8s ease-in-out infinite, brand-wiggle 0.55s ease;
-}
-
-.group:hover .brand-logo-img--onyx-bg {
-  filter: var(--logo-img-filter-hover, var(--logo-img-filter, none));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -204,9 +196,5 @@ html[data-theme="default"][data-mode="night"] {
 
   .group:hover .brand-logo-shell {
     animation: none;
-  }
-
-  .group:hover .brand-logo-img--onyx-bg {
-    filter: var(--logo-img-filter, none);
   }
 }

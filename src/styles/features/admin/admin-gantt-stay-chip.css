@@ -2,10 +2,6 @@
  * Gantt stay cards — „Operațiune Chip” (CSS/SVG gratuit, fără artă externă).
  */
 
-.gantt-stay--chip .gantt-stay__micro {
-  display: none;
-}
-
 .gantt-stay--chip {
   container-type: inline-size;
   container-name: gantt-stay;
@@ -86,7 +82,6 @@
 
 /* Stay chip — hide redundant stamp/policy copy; the guest name stays visible */
 .gantt-stay--chip .gantt-stay__stamp,
-.gantt-stay--chip .gantt-stay__policy-note,
 .gantt-occ-bar--chip .gantt-stay__surface-text {
   display: none !important;
 }
@@ -106,41 +101,6 @@
   align-self: stretch;
   gap: 0.1rem;
   padding: 0 0.04rem;
-}
-
-.gantt-stay--chip .gantt-stay__details {
-  position: static;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  flex-shrink: 0;
-  gap: 0.12rem;
-  min-width: 0;
-  opacity: 1;
-  pointer-events: auto;
-  transform: none;
-}
-
-.gantt-stay--chip .gantt-stay__details-head {
-  display: flex;
-  align-items: center;
-  gap: 0.18rem;
-  min-width: 0;
-}
-
-.gantt-stay--chip .gantt-stay__detail-badges {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.14rem;
-  margin-left: 0;
-  flex-shrink: 0;
-}
-
-.gantt-stay--chip .gantt-stay__alerts {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.18rem;
-  min-height: 0.55rem;
 }
 
 .gantt-stay--chip .gantt-stay__alert {
@@ -168,23 +128,7 @@
   padding-inline: 0.1rem;
 }
 
-.gantt-stay--chip .gantt-stay__timeline,
-.gantt-stay--chip .gantt-stay__timeline--chip {
-  display: none !important;
-}
-
-.gantt-stay--chip .gantt-stay__timeline--chip .gantt-stay__timeline-track {
-  position: relative;
-  display: block;
-  height: 2px;
-  width: 100%;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--stay-text, currentColor) 22%, transparent);
-  overflow: hidden;
-}
-
-.gantt-stay--chip .gantt-stay__timeline--chip .gantt-stay__timeline-knob,
-.gantt-stay--chip .gantt-stay__timeline--chip .gantt-stay__timeline-divider {
+.gantt-stay--chip .gantt-stay__timeline {
   display: none !important;
 }
 
@@ -305,23 +249,6 @@
   font-size: 0.5rem !important;
 }
 
-.gantt-stay--chip .gantt-stay__avatar--hex {
-  display: inline-flex;
-  height: 1.15rem;
-  width: 1.15rem;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.4375rem;
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  color: inherit;
-  background: color-mix(in srgb, var(--stay-text, currentColor) 16%, transparent);
-  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--stay-border) 35%, transparent);
-}
-
 .gantt-stay--chip .gantt-stay__badge {
   display: inline-flex;
   min-width: 1.125rem;
@@ -385,25 +312,10 @@
   }
 }
 
-.gantt-stay--chip .gantt-stay__micro-dot--early-out,
 .gantt-stay--chip .gantt-stay__today-icon--early-out {
   color: #b91c1c !important;
   background: color-mix(in srgb, #ef4444 24%, transparent) !important;
   box-shadow: none;
-}
-
-.gantt-stay--chip .gantt-stay__policy-note {
-  display: block;
-  margin-top: 0.12rem;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.5rem;
-  font-weight: 700;
-  line-height: 1.2;
-  color: color-mix(in srgb, var(--stay-text, currentColor) 72%, transparent);
-  opacity: 0.92;
 }
 
 .gantt-stay--chip .gantt-stay__today-icon {
@@ -607,10 +519,6 @@ html[data-theme="default-night"] .gantt-stay--chip .gantt-stay__end-tab-bulb {
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--stay-border, currentColor) 35%, transparent) !important;
     z-index: 3 !important;
   }
-}
-
-.gantt-stay-chrome--snapped.gantt-stay--chip {
-  filter: saturate(1.12) brightness(1.04);
 }
 
 /* Lățime responsivă (container queries) */

@@ -45,89 +45,6 @@ html[data-layout-chrome="compact"] .gantt-shell table {
 
 
 /* Wide chrome, narrow viewport (was gantt-premium.css @media 1180 / 860) */
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__row--primary {
-  grid-template-columns: minmax(0, 1fr) auto;
-}
-
-
-
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__primary-section--rooms {
-  grid-column: 1 / -1;
-  justify-content: flex-start;
-}
-
-
-
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__row--navigator {
-  align-items: stretch;
-}
-
-
-
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__navigator-band {
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.55rem;
-}
-
-
-
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__side-dock--left,
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__side-dock--right,
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__navigator-main {
-  justify-content: center;
-  justify-self: stretch;
-  grid-row: auto;
-  grid-column: 1;
-}
-
-
-
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__navigator-main {
-  pointer-events: auto;
-}
-
-
-
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__row--primary {
-  justify-content: center;
-  min-height: auto;
-}
-
-
-
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__center,
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__primary-section--rooms {
-  justify-content: flex-start;
-}
-
-
-
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__center {
-  flex: 0 0 auto;
-  position: static;
-  transform: none;
-}
-
-
-
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__room-picker-shell,
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__period-main .gantt-toolbar__period-shell {
-  min-width: 0;
-}
-
-
-
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__side-dock > * {
-  width: 100%;
-}
-
-
-
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-toolbar__period--hero,
-html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-toolbar__quick-jumps {
-  flex-wrap: wrap;
-  justify-content: center;
-}
 
 
 
@@ -136,12 +53,6 @@ html[data-layout-chrome="compact"] .gantt-filters-panel,
 html[data-layout-chrome="compact"] .admin-floating-panel {
   max-width: min(360px, calc(100vw - 1rem));
   margin-inline: auto;
-}
-
-
-
-html[data-layout-chrome="compact"] .gantt-inline-controls__period-main {
-  min-width: 0;
 }
 
 
@@ -341,10 +252,6 @@ html[data-layout-chrome="compact"] .gantt-filters-panel .gantt-seg__label {
 
 
 /* Gantt footer legend: clear home indicator (no bottom nav) */
-html[data-layout-chrome="compact"] .gantt-footer-legend--compact {
-  margin-bottom: 0.15rem;
-  padding-bottom: max(0.35rem, var(--ml-safe-bottom, 0px));
-}
 
 
 
@@ -536,8 +443,7 @@ html[data-layout-chrome="compact"] .gantt-check-time-dialog--sheet {
 
 
 /* Long-press context menus: avoid accidental selection on Gantt bars */
-html[data-layout-chrome="compact"] .gantt-seg__btn,
-html[data-layout-chrome="compact"] .gantt-room-label {
+html[data-layout-chrome="compact"] .gantt-seg__btn {
   -webkit-user-select: none;
   user-select: none;
 }
@@ -564,14 +470,6 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-co
 
 
 
-html[data-layout-chrome="compact"] .gantt-view-switcher {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.65rem;
-}
-
-
-
 html[data-layout-chrome="compact"] .gantt-view-switcher__tabs {
   width: 100%;
   display: grid;
@@ -590,23 +488,6 @@ html[data-layout-chrome="compact"] .gantt-view-switcher__tabs button {
   text-align: center;
   padding-inline: 0.35rem;
   font-size: max(12px, 0.75rem);
-}
-
-
-
-html[data-layout-chrome="compact"] .gantt-view-switcher__select {
-  width: 100%;
-  max-width: 100%;
-  min-height: var(--ml-touch-min, 2.75rem);
-  font-size: max(16px, 0.875rem);
-}
-
-
-
-html[data-layout-chrome="compact"] .gantt-view-switcher > span.ml-auto {
-  margin-left: 0 !important;
-  width: 100%;
-  text-align: center;
 }
 
 
@@ -705,8 +586,7 @@ html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn {
 
 
 @media (prefers-reduced-motion: reduce) {
-  html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip,
-  html[data-layout-chrome="compact"] .gantt-cap-bulb-glow {
+  html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip {
     animation: none !important;
   }
 }

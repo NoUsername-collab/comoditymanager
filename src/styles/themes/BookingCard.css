@@ -54,16 +54,6 @@
 }
 
 /* Anulat */
-.gantt-booking-card--cancelled {
-  opacity: 0.45;
-  text-decoration: line-through;
-}
-
-.gantt-booking-card--cancelled {
-  background: var(--booking-cancelled-bg) !important;
-  border-color: var(--booking-cancelled-border) !important;
-  color: var(--booking-cancelled-text);
-}
 
 /* Hold / blocare */
 .gantt-booking-card--hold.gantt-occ-bar {
@@ -94,14 +84,3 @@
 }
 
 /* Zone timeline */
-html[data-theme] .gantt-day-cell--checkout {
-  background: var(--gantt-zone-checkout) !important;
-}
-
-html[data-theme] .gantt-day-cell--clean {
-  background: var(--gantt-zone-clean) !important;
-}
-
-html[data-theme] .gantt-day-cell--checkin {
-  background: var(--gantt-zone-checkin) !important;
-}

@@ -50,11 +50,6 @@
    * filter:blur(42px) + transform infinit — cel mai scump lucru
    * pe mobile GPU. Le oprim animațiile și reducem blur-ul.
    */
-  .admin-dn-liquid__blob {
-    animation-play-state: paused !important;
-    filter: blur(18px); /* 42px → 18px: blur cost ∝ radius², 5× mai ieftin */
-    will-change: auto; /* eliberăm GPU layer-ul rezervat inutil */
-  }
 
   /* Logo float e decorativ — oprim pe mobile */
   .brand-logo-shell,
@@ -63,10 +58,6 @@
   }
 
   /* HUD sync dot pulse — OK dacă e doar opacity, fără transform scale */
-  .admin-hud__sync-dot--live {
-    animation: none;
-    opacity: 0.9;
-  }
 
   /* Bottom nav active indicator — GPU layer explicit pentru scaleX */
   .ml-bottom-nav__link::before {
@@ -74,12 +65,6 @@
   }
 
   /* Dezactivăm hover transforms pe mobile — nu există hover real */
-  .admin-hud__chip--ghost:hover {
-    transform: none;
-    background: var(--admin-chip-bg, var(--admin-surface-bg, #ffffff));
-    border-color: var(--admin-chip-border, #e4e4e7);
-    box-shadow: none;
-  }
 }
 
 
@@ -87,15 +72,9 @@
 
 /* prefers-reduced-motion: oprește absolut totul continuu */
 @media (prefers-reduced-motion: reduce) {
-  .admin-dn-liquid__blob {
-    animation: none !important;
-    filter: none;
-    opacity: 0.3;
-  }
 
-  .admin-hud__sync-dot--live,
   .admin-requests-glow-pulse,
-  .setup-issue-badge {
+.setup-issue-badge {
     animation: none !important;
   }
 }

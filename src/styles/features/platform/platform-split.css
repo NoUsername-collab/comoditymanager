@@ -167,53 +167,6 @@
   color: var(--light-muted);
 }
 
-.landing-surface--light .landing-hero__note {
-  color: var(--light-muted);
-}
-
-.landing-surface--light .landing-hero__tools-link {
-  color: var(--light-accent-deep);
-}
-
-.landing-surface--light .landing-cta--ghost {
-  color: var(--light-accent-deep);
-  border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
-  background: color-mix(in srgb, #fff 70%, var(--light-accent-soft));
-}
-
-.landing-surface--light .landing-cta--ghost:hover {
-  background: #fff;
-  border-color: var(--light-accent);
-}
-
-.landing-surface--light .landing-cta--ghost:active {
-  background: #f8f8f8;
-  border-color: var(--light-accent);
-  transform: scale(0.97);
-  filter: brightness(0.92);
-  transition-duration: 0.06s;
-}
-
-.landing-surface--light .landing-cta--link {
-  color: var(--light-muted);
-  text-decoration-color: color-mix(in srgb, var(--light-muted) 45%, transparent);
-}
-
-.landing-surface--light .landing-cta--link:hover {
-  color: var(--light-accent-deep);
-  text-decoration-color: var(--light-accent);
-}
-
-.landing-surface--soft .landing-cta--link {
-  color: var(--light-muted);
-  text-decoration-color: color-mix(in srgb, var(--light-muted) 45%, transparent);
-}
-
-.landing-surface--soft .landing-cta--link:hover {
-  color: var(--light-accent-deep);
-  text-decoration-color: var(--light-accent);
-}
-
 .landing-surface--light .landing-cta--primary {
   background: var(--light-accent-deep, #1d4ed8);
   color: #ffffff;
@@ -234,47 +187,6 @@
   color: var(--light-muted);
 }
 
-.landing-surface--light .landing-trust {
-  border-block-color: var(--light-border);
-  background: color-mix(in srgb, #fff 72%, var(--light-accent-soft));
-}
-
-.landing-surface--light .landing-trust__lead {
-  color: var(--light-muted);
-}
-
-.landing-surface--light .landing-trust__items {
-  color: var(--light-fg);
-}
-
-.landing-surface--light .landing-trust__items span::before {
-  color: var(--light-accent);
-}
-
-.landing-surface--light .landing-comparison__col {
-  background: var(--light-card);
-  border-color: var(--light-border);
-  box-shadow: none;
-}
-
-.landing-surface--light .landing-comparison__col--bad {
-  background: color-mix(in srgb, #fef2f2 85%, #fff);
-  border-color: color-mix(in srgb, #fca5a5 40%, var(--light-border));
-}
-
-.landing-surface--light .landing-comparison__col--good {
-  background: color-mix(in srgb, #eff6ff 80%, #fff);
-  border-color: color-mix(in srgb, #93c5fd 45%, var(--light-border));
-}
-
-.landing-surface--light .landing-comparison__heading {
-  color: var(--light-fg);
-}
-
-.landing-surface--light .landing-comparison__list {
-  color: var(--light-muted);
-}
-
 /* Soft band (features, pricing, CTA) */
 .landing-surface--soft .landing-section__title,
 .landing-surface--soft .landing-final-cta__title {
@@ -282,47 +194,12 @@
 }
 
 .landing-surface--soft .landing-section__lead,
-.landing-surface--soft .landing-final-cta__text,
-.landing-surface--soft .landing-feature__desc,
-.landing-surface--soft .landing-step__desc {
+.landing-surface--soft .landing-final-cta__text {
   color: var(--light-muted);
-}
-
-.landing-surface--soft .landing-feature {
-  background: #ffffff;
-  border-color: var(--light-border);
-  box-shadow: none;
-}
-
-.landing-surface--soft .landing-feature:hover {
-  border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
-}
-
-.landing-surface--soft .landing-feature:active {
-  border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
-  transform: translateY(0);
-  filter: brightness(0.92);
-  transition-duration: 0.06s;
-}
-
-.landing-surface--soft .landing-feature__title,
-.landing-surface--soft .landing-step__title {
-  color: var(--light-fg);
-}
-
-.landing-surface--soft .landing-step__num {
-  background: var(--light-accent-soft);
-  color: var(--light-accent-deep);
 }
 
 .landing-surface--soft .landing-final-cta {
   background: color-mix(in srgb, var(--light-accent-soft) 35%, transparent);
-}
-
-.landing-surface--soft .landing-cta--ghost {
-  color: var(--light-accent-deep);
-  border-color: color-mix(in srgb, var(--light-accent) 30%, var(--light-border));
-  background: #fff;
 }
 
 .landing-surface--soft .landing-pricing-note {
@@ -337,74 +214,8 @@
   color: var(--light-muted);
 }
 
-.landing-surface--light .landing-price-card {
-  background: #fff;
-  border-color: var(--light-border);
-  box-shadow: none;
-}
-
-.landing-surface--light .landing-price-card--featured {
-  border-color: var(--light-accent);
-  box-shadow: none;
-}
-
-.landing-surface--light .landing-price-card__amount,
-.landing-surface--light .landing-price-card__name,
-.landing-surface--light .landing-price-card__rooms {
-  color: var(--light-fg);
-}
-
-.landing-surface--light .landing-price-card__currency,
-.landing-surface--light .landing-price-card__features li {
-  color: var(--light-muted);
-}
-
-.landing-surface--light .landing-price-card__tier,
-.landing-surface--light .landing-price-card__period {
-  color: var(--light-accent-deep);
-}
-
-.landing-surface--light .landing-cta--outline {
-  color: var(--light-accent-deep);
-  border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
-}
-
 .landing-surface--light .landing-pricing-note {
   color: var(--light-muted);
-}
-
-.landing-showcase--pro {
-  border-color: color-mix(in srgb, var(--light-accent) 22%, var(--light-border));
-  background: var(--light-card);
-  box-shadow: none;
-}
-
-.landing-showcase--pro .landing-showcase__chrome {
-  border-bottom-color: var(--light-border);
-}
-
-.landing-showcase--pro .landing-showcase__chrome span {
-  background: color-mix(in srgb, var(--light-muted) 28%, transparent);
-}
-
-.landing-showcase--pro .landing-showcase__sidebar {
-  border-right-color: var(--light-border);
-}
-
-.landing-showcase--pro .landing-showcase__nav {
-  background: color-mix(in srgb, var(--light-muted) 16%, transparent);
-}
-
-.landing-showcase--pro .landing-showcase__nav--active {
-  background: color-mix(in srgb, var(--light-accent) 45%, transparent);
-}
-
-.landing-showcase--pro .landing-showcase__row {
-  background: color-mix(in srgb, var(--light-muted) 12%, transparent);
-}
-
-.landing-showcase--pro .landing-showcase__row--accent {
-  background: color-mix(in srgb, var(--light-accent) 32%, transparent);
 }
 
 .landing-hero__inner--centered {
@@ -459,68 +270,3 @@
 }
 
 /* Tools, trust cards, social proof (split theme) */
-.landing-surface--light .landing-social-proof {
-  background: #fff;
-  border-color: color-mix(in srgb, var(--light-accent) 18%, var(--light-border));
-}
-
-.landing-surface--light .landing-social-proof__quote p {
-  color: var(--light-fg);
-}
-
-.landing-surface--light .landing-social-proof__caption {
-  color: var(--light-muted);
-}
-
-.landing-surface--soft .landing-tool {
-  background: #fff;
-  border-color: var(--light-border);
-}
-
-.landing-surface--soft .landing-tool:hover {
-  border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
-}
-
-.landing-surface--soft .landing-tool__icon-wrap {
-  background: var(--light-accent-soft);
-  color: var(--light-accent-deep);
-}
-
-.landing-surface--soft .landing-tool__title {
-  color: var(--light-fg);
-}
-
-.landing-surface--soft .landing-tool__desc {
-  color: var(--light-muted);
-}
-
-.landing-surface--soft .landing-trust-card {
-  background: #fff;
-  border-color: var(--light-border);
-}
-
-.landing-surface--soft .landing-trust-card__title {
-  color: var(--light-fg);
-}
-
-.landing-surface--soft .landing-trust-card__desc,
-.landing-surface--soft .landing-trust-card__legal {
-  color: var(--light-muted);
-}
-
-.landing-surface--soft .landing-trust-card__legal a {
-  color: var(--light-accent-deep);
-}
-
-.landing-showcase--pro .landing-showcase__gantt-head {
-  border-bottom-color: var(--light-border);
-}
-
-.landing-showcase--pro .landing-showcase__gantt-day,
-.landing-showcase--pro .landing-showcase__gantt-room {
-  color: var(--light-muted);
-}
-
-.landing-showcase--pro .landing-showcase__gantt-track {
-  background: color-mix(in srgb, var(--light-muted) 10%, transparent);
-}

@@ -31,9 +31,7 @@ html[data-layout-chrome="compact"] .admin-settings-summary {
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
-html[data-layout-chrome="compact"] .admin-palette-tokens,
-html[data-layout-chrome="compact"] .admin-palette-zones,
-html[data-layout-chrome="compact"] .admin-palette-extend__modes {
+html[data-layout-chrome="compact"] .admin-palette-zones {
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
@@ -324,19 +322,6 @@ html[data-layout-chrome="compact"] .admin-location-lock-bar {
   align-items: stretch;
   gap: 0.5rem;
   width: 100%;
-}
-
-html[data-layout-chrome="compact"] .admin-location-lock-bar__badge {
-  text-align: center;
-  font-size: max(16px, 0.75rem);
-  padding-block: 0.5rem;
-}
-
-html[data-layout-chrome="compact"] .admin-location-lock-btn {
-  width: 100%;
-  min-height: var(--ml-touch-min, 2.75rem);
-  font-size: max(16px, 0.875rem);
-  touch-action: manipulation;
 }
 
 html[data-layout-chrome="compact"] .admin-settings-cta {

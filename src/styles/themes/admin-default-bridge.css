@@ -21,10 +21,6 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
   color: var(--status-confirmed-text) !important;
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .text-emerald-600 {
-  color: var(--admin-link) !important;
-}
-
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .bg-emerald-100 {
   background: var(--status-confirmed-bg) !important;
 }
@@ -40,9 +36,7 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 }
 
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .text-amber-800,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .text-amber-700,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .text-orange-800,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .text-orange-700 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .text-amber-700 {
   color: var(--status-pending-text) !important;
 }
 
@@ -52,29 +46,16 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
   background: var(--status-pending-bg) !important;
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .border-amber-200,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .border-orange-300 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .border-amber-200 {
   border-color: var(--status-pending-border) !important;
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .text-yellow-800,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .text-yellow-700 {
   color: var(--status-hold-text) !important;
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .bg-yellow-50,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .bg-yellow-100 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .bg-yellow-50 {
   background: var(--status-hold-bg) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .text-stone-800,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .text-stone-700 {
-  color: var(--status-block-text) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .bg-stone-100,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .bg-stone-200 {
-  background: var(--status-block-bg) !important;
 }
 
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .text-rose-700,
@@ -82,7 +63,6 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
   color: var(--admin-danger-text) !important;
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .bg-rose-50,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"]) .admin-shell .bg-red-50 {
   background: var(--admin-danger-bg) !important;
 }

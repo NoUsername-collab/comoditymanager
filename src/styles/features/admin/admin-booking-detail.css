@@ -500,62 +500,6 @@
   margin-top: 0.5rem;
 }
 
-.bd-ops__steps {
-  display: flex;
-  align-items: flex-start;
-  margin: 0.5rem 0 0.6rem;
-}
-
-.bd-ops__step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.12rem;
-  flex: 1;
-  text-align: center;
-}
-
-.bd-ops__step-dot {
-  width: 0.6rem;
-  height: 0.6rem;
-  border-radius: 50%;
-  background: var(--admin-panel-border, #d4d4d8);
-  border: 2px solid var(--surface, #fff);
-  box-shadow: 0 0 0 2px var(--admin-panel-border, #d4d4d8);
-  transition: background 0.2s, box-shadow 0.2s;
-}
-
-.bd-ops__step--active .bd-ops__step-dot {
-  background: var(--admin-accent, #059669);
-  box-shadow: 0 0 0 2px var(--admin-accent, #059669);
-}
-
-.bd-ops__step-label {
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--admin-text-muted, #71717a);
-}
-
-.bd-ops__step-value {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--admin-text, #18181b);
-  font-variant-numeric: tabular-nums;
-}
-
-.bd-ops__step-line {
-  flex: 1;
-  height: 2px;
-  background: var(--admin-panel-border, #d4d4d8);
-  margin-top: 0.3rem;
-  align-self: flex-start;
-  border-radius: 1px;
-}
-
-.bd-ops__step-line--done { background: var(--admin-accent, #059669); }
-
 .bd-ops__actions {
   display: flex;
   gap: 0.4rem;
@@ -1224,62 +1168,6 @@
 .bd-confirm__submit:disabled { background: var(--admin-panel-border, #d4d4d8); color: var(--admin-text-muted, #71717a); cursor: not-allowed; }
 
 /* ── Legacy compat ────────────────────────────────────────────── */
-.booking-section {
-  padding: 0.7rem 0.9rem;
-  border-radius: 0.6rem;
-  border: 1px solid var(--admin-panel-border, #e4e4e7);
-  background: var(--surface, #fff);
-}
-
-.booking-section + .booking-section { margin-top: 0.5rem; }
-
-.booking-section__title {
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--admin-text-muted, #71717a);
-  margin-bottom: 0.4rem;
-}
-
-.booking-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.booking-status-badge--cerere_noua { background: #fef3c7; color: #92400e; }
-.booking-status-badge--confirmata  { background: #d1fae5; color: #065f46; }
-.booking-status-badge--anulata     { background: #fee2e2; color: #991b1b; }
-
-.booking-guest-info { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; font-size: 0.9rem; }
-.booking-guest-info dt { color: var(--admin-text-muted, #71717a); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-.booking-guest-info dd { font-weight: 600; color: var(--admin-text, #18181b); }
-
-.booking-notes {
-  padding: 0.5rem 0.7rem;
-  border-radius: 0.45rem;
-  background: var(--surface-2, #f4f4f5);
-  border: 1px solid var(--admin-panel-border, #e4e4e7);
-  font-size: 0.9rem;
-  color: var(--admin-text, #18181b);
-  white-space: pre-wrap;
-  line-height: 1.45;
-}
-
-.booking-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
 
 /* Responsive: mobile-layout-premium.css + mobile-layout-pages.css */
 

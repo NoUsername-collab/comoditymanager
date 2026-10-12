@@ -202,46 +202,6 @@
   transition-duration: 0.06s;
 }
 
-.admin-home-mood {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 600;
-  line-height: 1.4;
-  color: color-mix(in srgb, var(--admin-accent, #059669) 70%, var(--admin-text, #18181b));
-}
-
-.admin-home-briefing {
-  margin: 0;
-  border-radius: 0.35rem;
-  border: none;
-  border-left: 2px solid color-mix(in srgb, var(--admin-accent) 40%, var(--admin-panel-border));
-  background: none;
-  padding: 0.05rem 0 0.05rem 0.5rem;
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: var(--admin-text-muted, #52525b);
-}
-
-.admin-home-milestones {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin: 0;
-}
-
-.admin-home-milestone {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  border-radius: 9999px;
-  border: 1px solid color-mix(in srgb, #fbbf24 45%, var(--admin-panel-border));
-  background: color-mix(in srgb, #fffbeb 70%, #fff);
-  padding: 0.2rem 0.55rem;
-  font-size: 0.625rem;
-  font-weight: 800;
-  color: #92400e;
-}
-
 .admin-fx-settings {
   padding: 0.25rem 0;
 }
@@ -266,10 +226,6 @@
   color: var(--admin-text-muted, #71717a);
 }
 
-.gantt-stay-chrome--snapped {
-  animation: gantt-stay-snap 0.35s ease-out;
-}
-
 @keyframes gantt-stay-snap {
   0% {
     transform: scale(1.04);
@@ -283,14 +239,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .admin-toast {
-    animation: none;
-  }
-
-  .gantt-stay-chrome--snapped {
-    animation: none;
-  }
-
-  .locale-flag-spinner__ring {
     animation: none;
   }
 }

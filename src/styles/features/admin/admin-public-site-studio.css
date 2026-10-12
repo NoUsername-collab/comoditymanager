@@ -173,17 +173,6 @@
   color: var(--admin-text, #18181b);
 }
 
-.pub-gallery-editor__item--upload {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-}
-
-.pub-gallery-editor__item--upload .pub-gallery-editor__actions {
-  flex-direction: row;
-  align-self: flex-end;
-}
-
 @media (max-width: 1099px) {
   .pub-locale-tabs {
     position: sticky;

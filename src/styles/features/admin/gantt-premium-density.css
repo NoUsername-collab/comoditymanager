@@ -63,12 +63,6 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__
   height: var(--gantt-touch-min, 2.75rem);
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__density-btn {
-  padding: 0.14rem 0.38rem;
-  border-radius: 0.38rem;
-  font-size: 0.54rem;
-}
-
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn {
   width: 1.02rem;
   height: 1.02rem;
@@ -181,10 +175,6 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell {
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell__value {
   font-size: 0.58rem;
-}
-
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell__total {
-  font-size: 0.5rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-viewport-header--calendar .gantt-viewport-header__room,
@@ -686,11 +676,6 @@ html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt
   font-size: 0.68rem;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-cell__total,
-html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-summary-cell__total {
-  font-size: 0.58rem;
-}
-
 /* Gantt toolbar + action strip −30% (compact calendar) */
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar {
   gap: 0.2rem;
@@ -844,13 +829,6 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-too
   line-height: 1.1;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__density-btn {
-  padding: 0.34rem 0.55rem;
-  border-radius: 0.52rem;
-  font-size: 0.7rem;
-  line-height: 1.1;
-}
-
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__icon-btn {
   width: 1.88rem;
   height: 1.88rem;
@@ -947,31 +925,6 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__bad
 /* ═══════════════════════════════════════════════════════════════
    Desktop density toggle — comfortable (default) vs compact overview
    ═══════════════════════════════════════════════════════════════ */
-
-.gantt-compact-toolbar__density-btn {
-  flex-shrink: 0;
-  border-radius: 0.52rem;
-  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
-  padding: 0.28rem 0.62rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1.15;
-  color: var(--text-muted);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.gantt-compact-toolbar__density-btn--compact {
-  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
-  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
-  color: var(--text);
-}
-
-.gantt-compact-toolbar__density-btn:hover {
-  border-color: color-mix(in srgb, var(--accent) 28%, var(--border));
-  color: var(--text);
-}
 
 html:not([data-layout-chrome="compact"]) .gantt-shell[data-gantt-coverage="10"] {
   --gantt-day-header-row-h: 3.55rem;

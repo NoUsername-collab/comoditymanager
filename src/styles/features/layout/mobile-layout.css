@@ -43,7 +43,6 @@
   contain: layout style;
 }
 
-.ml-shell__main,
 .ml-main {
   flex: 1 1 auto;
   min-width: 0;
@@ -84,14 +83,6 @@ html[data-layout-chrome="compact"] .ml-bottom-nav__list {
   margin: 0;
   padding: 0.2rem 0.15rem 0.15rem;
   list-style: none;
-}
-
-html[data-layout-chrome="compact"] .ml-bottom-nav__list--six {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-
-html[data-layout-chrome="compact"] .ml-bottom-nav__list--six .ml-bottom-nav__label {
-  font-size: 0.56rem;
 }
 
 html[data-layout-chrome="compact"] .ml-bottom-nav__item {
@@ -178,17 +169,6 @@ html[data-layout-chrome="compact"] .ml-bottom-nav__badge {
   line-height: 1.2;
 }
 
-html[data-layout-chrome="compact"] .ml-bottom-nav__badge--dot {
-  top: -0.05rem;
-  right: -0.05rem;
-  min-width: 0.45rem;
-  min-height: 0.45rem;
-  width: 0.45rem;
-  height: 0.45rem;
-  padding: 0;
-  border: 1.5px solid var(--admin-page-bg, #0f172a);
-}
-
 html[data-layout-chrome="compact"] .ml-bottom-nav__label {
   max-width: 100%;
   overflow: hidden;
@@ -208,7 +188,6 @@ html[data-layout-chrome="compact"] .admin-shell > .admin-hud-alert {
 }
 
 html[data-layout-chrome="compact"] .admin-shell > .admin-page-main,
-html[data-layout-chrome="compact"] .admin-shell > .admin-shell-client-wrap,
 html[data-layout-chrome="compact"] .admin-shell .admin-page-main {
   padding-top: 0 !important;
   margin-top: 0 !important;

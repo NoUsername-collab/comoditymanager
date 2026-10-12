@@ -1,13 +1,5 @@
 /* WebGL liquid — lichid în mișcare continuă (shader + fallback CSS) */
 
-.admin-liquid-shell {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 0;
-}
-
 .admin-liquid-shader {
   position: absolute;
   inset: 0;
@@ -25,54 +17,9 @@
   height: 100%;
 }
 
-.admin-liquid-shell--hero .admin-liquid-shader {
-  filter: saturate(1.15);
-}
-
 /* Shader activ → ascunde blob-urile CSS */
-.admin-liquid-shell:has(.admin-liquid-shader--active) .admin-dn-liquid--fallback {
-  opacity: 0;
-  visibility: hidden;
-}
 
 /* Fallback CSS — schelet unic default */
-html[data-theme="default"] .admin-dn-liquid--fallback .admin-dn-liquid__blob {
-  animation-duration: 9s, 12s !important;
-  animation-timing-function: ease-in-out !important;
-  animation-iteration-count: infinite !important;
-  filter: blur(48px) saturate(1.2);
-  opacity: 0.75 !important;
-}
-
-html[data-theme="default"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sun {
-  background: radial-gradient(
-    circle at 35% 35%,
-    var(--color-accent) 0%,
-    color-mix(in srgb, var(--color-accent-muted) 55%, transparent) 50%,
-    transparent 72%
-  ) !important;
-  animation: admin-liquid-drift-a 11s ease-in-out infinite, admin-liquid-morph 7s ease-in-out infinite !important;
-}
-
-html[data-theme="default"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sky {
-  background: radial-gradient(
-    ellipse at 50% 40%,
-    var(--color-accent-muted) 0%,
-    color-mix(in srgb, var(--color-accent) 35%, transparent) 55%,
-    transparent 75%
-  ) !important;
-  animation: admin-liquid-drift-b 13s ease-in-out infinite reverse, admin-liquid-morph 9s ease-in-out infinite reverse !important;
-}
-
-html[data-theme="default"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--night-deep {
-  background: radial-gradient(
-    ellipse at 60% 55%,
-    var(--color-focus) 0%,
-    color-mix(in srgb, var(--color-accent) 40%, transparent) 55%,
-    transparent 78%
-  ) !important;
-  animation: admin-liquid-drift-c 10s ease-in-out infinite, admin-liquid-morph 8s ease-in-out infinite !important;
-}
 
 @keyframes admin-liquid-drift-a {
   0%,
@@ -126,16 +73,8 @@ html[data-theme="default"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--ni
   }
 }
 
-html[data-theme="default"] .admin-liquid-shell {
-  display: none !important;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .admin-liquid-shader {
     display: none !important;
-  }
-
-  html[data-theme="default"] .admin-dn-liquid--fallback .admin-dn-liquid__blob {
-    animation: none !important;
   }
 }
