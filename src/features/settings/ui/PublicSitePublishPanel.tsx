@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { PublicSiteImageField } from "@/features/settings/ui/PublicSiteImageField";
@@ -20,6 +21,7 @@ export function PublicSitePublishPanel({
   onPublish,
   pending,
   dirty,
+  siteUrl,
 }: {
   readiness: PublicSiteReadinessItem[];
   onGoTo: (tab: PublicSiteEditorTab) => void;
@@ -27,6 +29,8 @@ export function PublicSitePublishPanel({
   onPublish: (published: boolean) => void;
   pending: boolean;
   dirty: boolean;
+  /** Address of the live site, to copy or send once it is online. */
+  siteUrl: string;
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const te = useTranslations("admin.pages.publicSite.editor");
@@ -87,6 +91,10 @@ export function PublicSitePublishPanel({
           </>
         ) : null}
       </div>
+
+      {config.published && draft.published ? (
+        <SiteShare siteUrl={siteUrl} name={config.displayName} />
+      ) : null}
 
       <EditorGroup title={te("googleTitle")} description={te("googleDesc")}>
         <div className="pub-editor-serp" aria-label={te("googlePreviewLabel")}>
@@ -227,5 +235,49 @@ export function PublicSitePublishPanel({
         </div>
       </EditorAdvanced>
     </>
+  );
+}
+
+/** Right after publishing: the address in plain sight, ready to copy or send. */
+function SiteShare({ siteUrl, name }: { siteUrl: string; name: string }) {
+  const te = useTranslations("admin.pages.publicSite.editor");
+  const [copied, setCopied] = useState(false);
+  const shown = siteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const whatsappHref = `https://wa.me/?text=${encodeURIComponent(
+    te("shareMessage", { name, url: siteUrl }),
+  )}`;
+
+  function copy() {
+    void navigator.clipboard
+      .writeText(siteUrl)
+      .then(() => setCopied(true))
+      .catch(() => setCopied(false));
+  }
+
+  return (
+    <div className="pub-editor-share">
+      <p className="pub-editor-share__label">{te("shareTitle")}</p>
+      <a
+        href={siteUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="pub-editor-share__url"
+      >
+        {shown}
+      </a>
+      <div className="pub-editor-share__actions">
+        <AdminButton type="button" variant="secondary" size="sm" onClick={copy}>
+          {copied ? te("shareCopied") : te("shareCopy")}
+        </AdminButton>
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pub-editor-share__whatsapp"
+        >
+          {te("shareWhatsapp")}
+        </a>
+      </div>
+    </div>
   );
 }

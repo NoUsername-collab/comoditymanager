@@ -1493,6 +1493,11 @@
           "publishing": "Se salvează…",
           "publishAnyway": "{count, plural, one {Mai ai # lucru de completat} few {Mai ai # lucruri de completat} other {Mai ai # de lucruri de completat}} — poți publica și acum, apoi completezi.",
           "publishSavesAll": "Se salvează și celelalte modificări nesalvate.",
+          "shareTitle": "Site-ul tău e online la adresa:",
+          "shareCopy": "Copiază adresa",
+          "shareCopied": "Adresă copiată",
+          "shareWhatsapp": "Trimite pe WhatsApp",
+          "shareMessage": "Uite site-ul {name}: {url}",
           "previewClickHint": "Apasă pe orice parte a paginii ca s-o editezi",
           "quickStart": {
             "open": "✨ Pornire rapidă",

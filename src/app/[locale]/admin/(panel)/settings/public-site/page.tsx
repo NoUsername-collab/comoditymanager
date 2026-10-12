@@ -8,6 +8,7 @@ import {
   canEditPensionSettingsUi,
   guardSettingsPermission,
 } from "@/lib/settings/page-context";
+import { resolveTenantPublicSiteUrl } from "@/lib/tenant/site-url";
 import "@/styles/features/admin/admin-public-site-studio.css";
 
 export default async function PublicSiteSettingsPage({
@@ -15,12 +16,13 @@ export default async function PublicSiteSettingsPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const [t, params, locale, ctx, bundle] = await Promise.all([
+  const [t, params, locale, ctx, bundle, siteUrl] = await Promise.all([
     getTranslations("admin.pages.publicSite"),
     searchParams,
     getLocale(),
     guardSettingsPermission("pension_settings"),
     loadPublicSiteAdminBundle(),
+    resolveTenantPublicSiteUrl(),
   ]);
 
   if (!bundle) {
@@ -47,6 +49,7 @@ export default async function PublicSiteSettingsPage({
         primaryContact={primaryContact}
         readOnly={readOnly}
         alerts={alerts}
+        siteUrl={siteUrl}
       />
     </Suspense>
   );

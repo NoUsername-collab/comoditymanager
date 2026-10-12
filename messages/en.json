@@ -1509,6 +1509,11 @@
           "publishing": "Saving…",
           "publishAnyway": "{count, plural, one {# thing still missing} other {# things still missing}} — you can publish now and finish later.",
           "publishSavesAll": "Your other unsaved changes are saved too.",
+          "shareTitle": "Your site is online at:",
+          "shareCopy": "Copy address",
+          "shareCopied": "Address copied",
+          "shareWhatsapp": "Send on WhatsApp",
+          "shareMessage": "Here is the {name} website: {url}",
           "previewClickHint": "Tap any part of the page to edit it",
           "quickStart": {
             "open": "✨ Quick start",

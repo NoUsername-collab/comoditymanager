@@ -53,12 +53,14 @@ export function PublicSiteSettingsForm({
   primaryContact,
   readOnly = false,
   alerts = [],
+  siteUrl,
 }: {
   config: PublicSiteConfig;
   locale: string;
   primaryContact: PensionContact;
   readOnly?: boolean;
   alerts?: SettingsAlert[];
+  siteUrl: string;
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const te = useTranslations("admin.pages.publicSite.editor");
@@ -338,6 +340,7 @@ export function PublicSiteSettingsForm({
                   onPublish={setPublished}
                   pending={pending}
                   dirty={dirty}
+                  siteUrl={siteUrl}
                 />
               ) : null}
             </PublicSiteEditorProvider>

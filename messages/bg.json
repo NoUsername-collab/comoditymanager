@@ -1468,6 +1468,11 @@
           "publishing": "Запазване…",
           "publishAnyway": "{count, plural, one {Остава # нещо за попълване} other {Остават # неща за попълване}} — може да публикувате сега и да довършите после.",
           "publishSavesAll": "Запазват се и другите незапазени промени.",
+          "shareTitle": "Сайтът ви е онлайн на адрес:",
+          "shareCopy": "Копирай адреса",
+          "shareCopied": "Адресът е копиран",
+          "shareWhatsapp": "Изпрати в WhatsApp",
+          "shareMessage": "Ето сайта на {name}: {url}",
           "previewClickHint": "Натиснете която и да е част от страницата, за да я редактирате",
           "quickStart": {
             "open": "✨ Бърз старт",
