@@ -13,6 +13,7 @@ import {
   type TenantMemberRole,
 } from "@/services/tenant-members";
 import { logAdminActivityFromSession } from "@/services/activity-log";
+import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 
 type ActionResult =
   | { ok: true }
@@ -85,10 +86,7 @@ export async function inviteStaffAction(
         return { ok: false, error: t("alreadyHasOwner") };
       }
     }
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : t("genericError"),
-    };
+    return { ok: false, error: settingsActionErrorMessage(e, t) };
   }
 }
 
@@ -127,10 +125,7 @@ export async function changeStaffRoleAction(
         return { ok: false, error: t("cannotDemoteLastOwner") };
       }
     }
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : t("genericError"),
-    };
+    return { ok: false, error: settingsActionErrorMessage(e, t) };
   }
 }
 
@@ -164,10 +159,7 @@ export async function deactivateStaffAction(
         return { ok: false, error: t("cannotDeactivateOwner") };
       }
     }
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : t("genericError"),
-    };
+    return { ok: false, error: settingsActionErrorMessage(e, t) };
   }
 }
 
@@ -196,9 +188,6 @@ export async function reactivateStaffAction(
     revalidatePath("/admin/settings/staff");
     return { ok: true };
   } catch (e) {
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : t("genericError"),
-    };
+    return { ok: false, error: settingsActionErrorMessage(e, t) };
   }
 }

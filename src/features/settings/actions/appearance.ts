@@ -17,6 +17,7 @@ import { parseStatisticsVisibility } from "@/domain/settings/statistics-visibili
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { migrateLegacyPaletteKey } from "@/lib/themes";
 import { getTranslations } from "next-intl/server";
+import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 
 export async function updateAppearanceSettingsAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
@@ -92,9 +93,6 @@ export async function updateStatisticsVisibilityAction(
     ) {
       return { ok: false, error: t("statisticsVisibilityMigrationRequired") };
     }
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : t("genericError"),
-    };
+    return { ok: false, error: settingsActionErrorMessage(e, t) };
   }
 }

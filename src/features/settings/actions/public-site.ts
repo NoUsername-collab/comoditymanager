@@ -8,6 +8,7 @@ import { resolveRequestTenant } from "@/lib/tenant/active";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { upsertPublicSiteSettingsImpl } from "@/services/public-site/mutations";
 import { getTranslations } from "next-intl/server";
+import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 
 export async function savePublicSiteSettingsAction(
   input: unknown,
@@ -65,7 +66,7 @@ export async function savePublicSiteSettingsAction(
     if (message === "public_site.migration_missing") {
       return { ok: false, error: t("publicSiteMigrationRequired") };
     }
-    return { ok: false, error: message || t("genericError") };
+    return { ok: false, error: settingsActionErrorMessage(error, t) };
   }
 }
 
@@ -122,6 +123,6 @@ export async function uploadPublicSiteImageAction(
     ) {
       return { ok: false, error: t("roleForbidden") };
     }
-    return { ok: false, error: message || t("genericError") };
+    return { ok: false, error: settingsActionErrorMessage(error, t) };
   }
 }

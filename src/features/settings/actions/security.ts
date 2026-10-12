@@ -22,6 +22,7 @@ import { updateStaffPasswordByEmail } from "@/services/staff-accounts";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getTranslations } from "next-intl/server";
+import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 
 export async function updateTeamPermissionsAction(
   formData: FormData,
@@ -56,12 +57,9 @@ export async function updateTeamPermissionsAction(
       e instanceof Error &&
       e.message === TEAM_PERMISSIONS_MIGRATION_ERROR
     ) {
-      return { ok: false, error: t("genericError") };
+      return { ok: false, error: t("teamPermissionsMigrationRequired") };
     }
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : t("genericError"),
-    };
+    return { ok: false, error: settingsActionErrorMessage(e, t) };
   }
 }
 

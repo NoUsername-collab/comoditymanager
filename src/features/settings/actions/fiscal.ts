@@ -9,6 +9,7 @@ import { updateTenantFiscalSettings } from "@/services/tenant-fiscal-settings";
 import { checkinSettingsCacheTag } from "@/services/checkin/settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
+import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 
 export async function updateFiscalBillingSettingsAction(
   formData: FormData
@@ -122,9 +123,6 @@ export async function updateFiscalBillingSettingsAction(
       const tFiscal = await getTranslations("admin.pages.settings.fiscal");
       return { ok: false, error: tFiscal("saveMissingRow") };
     }
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : t("genericError"),
-    };
+    return { ok: false, error: settingsActionErrorMessage(e, t) };
   }
 }

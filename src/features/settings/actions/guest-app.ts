@@ -9,6 +9,7 @@ import { requireStaffPermission } from "@/lib/auth/require-staff";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
+import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 
 export async function saveGuestAppSettingsAction(
   input: unknown,
@@ -54,6 +55,6 @@ export async function saveGuestAppSettingsAction(
     ) {
       return { ok: false, error: t("roleForbidden") };
     }
-    return { ok: false, error: message || t("genericError") };
+    return { ok: false, error: settingsActionErrorMessage(error, t) };
   }
 }

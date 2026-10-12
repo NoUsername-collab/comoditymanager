@@ -6,6 +6,7 @@ import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { parseEmailSettingsPartial } from "@/domain/settings/schemas/email";
 import { getTranslations } from "next-intl/server";
+import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 
 export async function updateEmailSettingsAction(
   formData: FormData
@@ -60,10 +61,7 @@ export async function updateEmailSettingsAction(
     bustPensionSettingsCache(await resolveTenantIdForData());
     return { ok: true };
   } catch (e) {
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : t("genericError"),
-    };
+    return { ok: false, error: settingsActionErrorMessage(e, t) };
   }
 }
 

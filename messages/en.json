@@ -3669,6 +3669,7 @@
       "identityLogoInvalid": "The logo address is not valid. Upload it again or remove it, then save.",
       "identityMigrationRequired": "Property identity is missing a database update. Apply migrations 079 and 101, then save again.",
       "identitySettingsMissing": "Property settings were not found. Reload the page and try again.",
+      "teamPermissionsMigrationRequired": "Team permissions are missing a database update. Apply migration 083, then save again.",
       "genericError": "An error occurred. Please try again."
     },
     "availabilityLightSummary": {

@@ -25,6 +25,7 @@ import { checkinSettingsCacheTag } from "@/services/checkin/settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { migrateLegacyPaletteKey } from "@/lib/themes";
 import { getTranslations } from "next-intl/server";
+import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 
 export async function unlockLocationAdminAction(formData: FormData) {
   const [t, { user }, ip] = await Promise.all([
@@ -175,11 +176,7 @@ export async function updatePensionIdentityAction(
     if (e instanceof Error && e.message === "settings.pension_settings_missing") {
       return { ok: false, error: t("identitySettingsMissing") };
     }
-    console.error("[updatePensionIdentityAction]", e);
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : t("genericError"),
-    };
+    return { ok: false, error: settingsActionErrorMessage(e, t) };
   }
 }
 
@@ -251,10 +248,7 @@ export async function updateBookingRulesSettingsAction(
     ) {
       return { ok: false, error: t("bookingRulesMigrationRequired") };
     }
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : t("genericError"),
-    };
+    return { ok: false, error: settingsActionErrorMessage(e, t) };
   }
 }
 

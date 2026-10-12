@@ -3639,11 +3639,11 @@
       "emailSendFailed": "Emailul nu a putut fi trimis.",
       "invalidEmail": "Format email invalid.",
       "invalidRole": "Rol invalid.",
-      "memberAlreadyExists": "Acest membru exista deja in echipa.",
-      "alreadyHasOwner": "Exista deja un proprietar.",
-      "memberIdRequired": "ID membru lipsa.",
-      "cannotDemoteLastOwner": "Nu poti schimba rolul ultimului proprietar.",
-      "cannotDeactivateOwner": "Nu poti dezactiva proprietarul.",
+      "memberAlreadyExists": "Persoana aceasta e deja în echipă.",
+      "alreadyHasOwner": "Pensiunea are deja un proprietar.",
+      "memberIdRequired": "Nu știm despre ce membru e vorba. Reîncarcă pagina și încearcă din nou.",
+      "cannotDemoteLastOwner": "Nu poți schimba rolul singurului proprietar. Numește întâi alt proprietar.",
+      "cannotDeactivateOwner": "Proprietarul nu poate fi dezactivat.",
       "publicSiteMediaTooLarge": "Pozele trebuie să fie JPEG, PNG sau WebP, maxim 5 MB.",
       "publicSiteMediaType": "Folosește o poză JPEG, PNG sau WebP.",
       "publicSiteMediaEmpty": "Alege o poză de încărcat.",
@@ -3652,7 +3652,8 @@
       "identityLogoInvalid": "Logo-ul nu are o adresă validă. Încarcă-l din nou sau scoate-l, apoi salvează.",
       "identityMigrationRequired": "Datele de identitate au nevoie de o actualizare în baza de date. Rulează migrările 079 și 101, apoi salvează din nou.",
       "identitySettingsMissing": "Nu am găsit setările proprietății. Reîncarcă pagina și încearcă din nou.",
-      "genericError": "A aparut o eroare. Incearca din nou."
+      "teamPermissionsMigrationRequired": "Permisiunile echipei au nevoie de o actualizare în baza de date. Rulează migrarea 083, apoi salvează din nou.",
+      "genericError": "Nu am putut salva. Verifică conexiunea și încearcă din nou; dacă se repetă, scrie-ne la suport."
     },
     "availabilityLightSummary": {
       "minFree": "Minim liber",
