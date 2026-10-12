@@ -265,8 +265,8 @@
 }
 
 .onboarding-bar {
-  border-bottom: 1px solid color-mix(in srgb, var(--admin-border, #3f3f46) 80%, transparent);
-  background: color-mix(in srgb, var(--admin-surface, #18181b) 92%, transparent);
+  border-bottom: 1px solid var(--admin-panel-border, #cbd5e1);
+  background: var(--admin-panel-bg, #ffffff);
 }
 
 .onboarding-bar__inner {
@@ -290,13 +290,13 @@
   margin: 0;
   font-size: 0.875rem;
   font-weight: 650;
-  color: var(--admin-text, #fafafa);
+  color: var(--admin-text, #0f172a);
 }
 
 .onboarding-bar__lead {
   margin: 0;
   font-size: 0.75rem;
-  color: var(--admin-muted, #a1a1aa);
+  color: var(--admin-text-muted, #64748b);
 }
 
 .onboarding-bar__cta {
@@ -307,8 +307,8 @@
   min-height: 2.25rem;
   padding: 0.35rem 0.9rem;
   border-radius: 0.5rem;
-  background: var(--admin-text, #fafafa);
-  color: var(--admin-surface, #18181b);
+  background: var(--admin-btn-primary-bg, var(--admin-accent, #166534));
+  color: var(--admin-btn-primary-text, #ffffff);
   font-size: 0.8125rem;
   font-weight: 650;
   text-decoration: none;
