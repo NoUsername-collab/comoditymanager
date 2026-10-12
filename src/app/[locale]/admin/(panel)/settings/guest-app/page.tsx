@@ -16,7 +16,12 @@ export default async function GuestAppSettingsPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const [t, params, ctx, { tenant, settings, displayName, publicThemeId, logoUrl }] =
+  const [
+    t,
+    params,
+    ctx,
+    { tenant, settings, displayName, publicThemeId, logoUrl, primaryContact, primaryAddress },
+  ] =
     await Promise.all([
       getTranslations("admin.pages.guestApp"),
       searchParams,
@@ -46,6 +51,8 @@ export default async function GuestAppSettingsPage({
         displayName={displayName}
         publicThemeId={publicThemeId}
         logoUrl={logoUrl}
+        primaryContact={primaryContact}
+        primaryAddress={primaryAddress}
         readOnly={readOnly}
         alerts={alerts}
       />

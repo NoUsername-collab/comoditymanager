@@ -955,6 +955,70 @@ html[data-layout-chrome="compact"] .settings-shell__group {
   align-self: flex-start;
 }
 
+.identity-contact-summary {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: color-mix(in srgb, var(--admin-panel-bg, #fff) 90%, var(--admin-page-bg, #f4f4f5));
+}
+
+.identity-contact-summary__lead {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--admin-text, #18181b);
+}
+
+.identity-contact-summary__list {
+  margin: 0;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.identity-contact-summary__row {
+  display: grid;
+  grid-template-columns: minmax(6rem, auto) minmax(0, 1fr);
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.identity-contact-summary__row dt {
+  color: var(--admin-text-muted, #71717a);
+}
+
+.identity-contact-summary__row dd {
+  margin: 0;
+  color: var(--admin-text, #18181b);
+  overflow-wrap: anywhere;
+}
+
+.identity-contact-summary__empty {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.identity-contact-summary__link {
+  justify-self: start;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  color: var(--admin-link, var(--admin-accent, #15803d));
+  text-decoration: underline;
+}
+
+.identity-contact-override > summary {
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.identity-contact-override[open] > summary {
+  margin-bottom: 0.65rem;
+}
+
 .pub-notice-editor {
   display: flex;
   flex-direction: column;

@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import type { BookingNoticeDraft } from "@/features/public-site/domain/booking-notice";
 import type { PublicSiteSettingsInput } from "@/features/public-site/domain/types";
 import { BookingNoticeEditor } from "@/features/settings/ui/BookingNoticeEditor";
+import { IdentityContactSummary } from "@/features/settings/ui/IdentityContactSummary";
 import {
   EditorAdvanced,
   EditorField,
@@ -19,7 +20,15 @@ import {
 export function PublicSiteContactPanel() {
   const t = useTranslations("admin.pages.publicSite");
   const te = useTranslations("admin.pages.publicSite.editor");
-  const { config, draft, copy, patchDraft, setDraft, fieldError } = usePublicSiteEditor();
+  const { config, draft, copy, patchDraft, setDraft, fieldError, primaryContact } =
+    usePublicSiteEditor();
+  // What visitors see: a site-only value wins, else Identity fills the gap.
+  const shown = {
+    phone: draft.contactPhone.trim() || (draft.usePrimaryContact ? primaryContact.phone : null),
+    email: draft.contactEmail.trim() || (draft.usePrimaryContact ? primaryContact.email : null),
+    whatsapp:
+      draft.contactWhatsapp.trim() || (draft.usePrimaryContact ? primaryContact.whatsapp : null),
+  };
 
   function patchNotice(noticeDraft: BookingNoticeDraft) {
     setDraft((d) => syncStudioStructure(patchStudioCopy(d, { noticeDraft })));
@@ -28,6 +37,8 @@ export function PublicSiteContactPanel() {
   return (
     <>
       <EditorGroup title={te("contactTitle")} description={te("contactDesc")}>
+        <IdentityContactSummary contact={shown} lead={te("contactFromIdentity")} />
+        <EditorAdvanced label={te("contactOverrideTitle")}>
         <EditorToggle
           label={te("usePrimaryContact")}
           hint={te("usePrimaryContactHint")}
@@ -57,7 +68,7 @@ export function PublicSiteContactPanel() {
             error={fieldError("contact.whatsapp")}
           />
         </div>
-        <EditorAdvanced label={te("socialTitle")}>
+        <p className="pub-editor-lead mt-3">{te("socialTitle")}</p>
           <div className="admin-settings-fields admin-settings-fields--2col">
             <EditorField
               label="Facebook"

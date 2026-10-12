@@ -1307,6 +1307,8 @@
           "logoLabel": "Logo",
           "logoHint": "Încarcă orice poză ai. O așezăm noi în pătrat, pe site și în aplicația oaspeților. JPEG, PNG sau WebP, maxim 5 MB.",
           "cardAddressTitle": "Adresa pensiunii",
+          "summaryEmpty": "Încă nu ai pus telefon sau email în Identitate pensiune.",
+          "summaryChange": "Schimbă în Identitate pensiune",
           "cardAddressDesc": "Apare pe site lângă hartă, pe facturi și în fișa turistului.",
           "addressStreet": "Stradă și număr",
           "addressStreetPlaceholder": "Ex.: Str. Principală nr. 12",
@@ -1429,7 +1431,7 @@
           "saved": "Setări fiscale salvate",
           "saveError": "Nu s-a putut salva",
           "saveMissingRow": "Setările pensiunii nu sunt încă create. Contactează suportul Zalmox.",
-          "incompleteWarning": "Ca să poți emite facturi, mai trebuie completate codul fiscal (CUI) și adresa. Codul îl pui aici cu „Editează”; adresa, în Identitate pensiune.",
+          "incompleteWarning": "Ca să poți emite facturi, mai trebuie completate codul fiscal (CUI), mai jos, și adresa, în Identitate pensiune.",
           "addressInIdentity": "Schimbă în Identitate pensiune",
           "completeOk": "Ai tot ce trebuie ca să emiți facturi.",
           "propertyName": "Numele pensiunii (din Identitate pensiune)",
@@ -1514,10 +1516,11 @@
               },
               "contact": {
                 "title": "Cum te contactează oaspeții?",
-                "lead": "Apar în josul site-ului. Cel puțin un telefon sau un e-mail."
+                "lead": "Vin din Identitate pensiune și apar în josul site-ului."
               }
             },
             "nameLabel": "Numele pensiunii",
+            "contactFromIdentity": "Oaspeții te contactează la datele din Identitate pensiune:",
             "subtitleLabel": "O propoziție despre voi",
             "subtitlePlaceholder": "Ex.: Pensiune liniștită la poalele munților, cu mic dejun de casă.",
             "introLabel": "Câteva rânduri despre pensiune (opțional)",
@@ -1552,9 +1555,6 @@
                 "desc": "Gri-albastru, curat și simplu."
               }
             },
-            "phoneLabel": "Telefon",
-            "emailLabel": "E-mail",
-            "contactHint": "Dacă ai completat deja Identitate pensiune, poți lăsa gol.",
             "skip": "Sari peste, completez singur",
             "back": "Înapoi",
             "next": "Mai departe",
@@ -1696,6 +1696,8 @@
           },
           "contactTitle": "Date de contact",
           "contactDesc": "Apar în subsolul site-ului și în banda de contact.",
+          "contactFromIdentity": "Pe site apar datele din Identitate pensiune:",
+          "contactOverrideTitle": "Alt contact doar pentru site",
           "usePrimaryContact": "Completează automat din Identitate pensiune",
           "usePrimaryContactHint": "Câmpurile goale de mai jos iau datele de acolo.",
           "socialTitle": "Rețele sociale și Telegram",
@@ -1950,6 +1952,8 @@
         "stateHidden": "Ascunsă",
         "hotelContent": "Informații despre pensiune",
         "usePrimaryContact": "Folosește telefon și email din Identitate pensiune",
+        "contactFromIdentity": "Oaspeții văd în aplicație datele din Identitate pensiune:",
+        "contactOverrideTitle": "Alt contact doar pentru aplicația oaspeților",
         "shortDescription": "Descriere scurtă",
         "longDescription": "Descriere detaliată",
         "address": "Adresă",

@@ -1,5 +1,6 @@
 "use client";
 
+import type { PensionContact } from "@/domain/settings/pension-identity";
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
@@ -16,6 +17,8 @@ import type {
 
 export type PublicSiteEditorApi = {
   config: PublicSiteConfig;
+  /** Contact from Property identity; the site shows it unless overridden. */
+  primaryContact: PensionContact;
   draft: PublicSiteStudioDraft;
   copy: LocaleCopy;
   readOnly: boolean;

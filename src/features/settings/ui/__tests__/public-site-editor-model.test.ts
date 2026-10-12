@@ -132,7 +132,6 @@ describe("public site editor model", () => {
         heroImageUrl: "hero.jpg",
         galleryUrls: ["a.jpg", "", "a.jpg"],
         styleId: "seaside",
-        contactPhone: "+40 700 000 000",
       },
       () => `g${++seq}`,
     );
@@ -143,7 +142,8 @@ describe("public site editor model", () => {
     expect(next.templateId).toBe("immersive");
     expect(next.themeId).toBe("mediterranean");
     expect(next.sectionOrder[0]).toBe("gallery");
-    expect(next.contactPhone).toBe("+40 700 000 000");
+    // Contact belongs to Property identity; the quick start leaves the site's own fields alone.
+    expect(next.contactPhone).toBe(draft.contactPhone);
     expect(isFreshPublicSite(next)).toBe(false);
   });
 });

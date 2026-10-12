@@ -165,6 +165,7 @@ export async function resolveGuestAppContext(
           identity.contact,
           settings.content.hotel,
           true,
+          identity.address,
         ),
       }
     : settings.content.hotel;

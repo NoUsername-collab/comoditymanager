@@ -221,8 +221,6 @@ export type QuickStartAnswers = {
   heroImageUrl: string;
   galleryUrls: string[];
   styleId: PublicStylePresetId | null;
-  contactPhone: string;
-  contactEmail: string;
 };
 
 export function quickStartAnswersFrom(draft: PublicSiteStudioDraft): QuickStartAnswers {
@@ -237,8 +235,6 @@ export function quickStartAnswersFrom(draft: PublicSiteStudioDraft): QuickStartA
     heroImageUrl: draft.heroImageUrl,
     galleryUrls: draft.galleryItems.map((item) => item.url).filter((url) => url.trim()),
     styleId: preset?.id ?? null,
-    contactPhone: draft.contactPhone,
-    contactEmail: draft.contactEmail,
   };
 }
 
@@ -289,8 +285,6 @@ export function applyQuickStart(
     heroImageUrl: answers.heroImageUrl.trim() || draft.heroImageUrl,
     galleryItems,
     galleryVisible: draft.galleryVisible || added.length > 0,
-    contactPhone: answers.contactPhone.trim() || draft.contactPhone,
-    contactEmail: answers.contactEmail.trim() || draft.contactEmail,
   };
 }
 

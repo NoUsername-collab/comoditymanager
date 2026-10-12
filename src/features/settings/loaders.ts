@@ -11,6 +11,7 @@ import {
 import { ensureGuestAppSettingsRow } from "@/services/guest-app/mutations";
 import { listLocationStructure } from "@/services/location-structure";
 import { getPensionIdentity } from "@/services/pension-identity";
+import { EMPTY_PENSION_CONTACT } from "@/domain/settings/pension-identity";
 import {
   getPensionSettings,
   pensionStatisticsVisibility,
@@ -108,7 +109,15 @@ export async function loadPublicSiteAdminBundle() {
 export async function loadGuestAppSettingsPage() {
   const tenant = await resolveRequestTenant();
   if (!tenant) {
-    return { tenant: null, settings: null, displayName: "", publicThemeId: "noir", logoUrl: "" };
+    return {
+      tenant: null,
+      settings: null,
+      displayName: "",
+      publicThemeId: "noir",
+      logoUrl: "",
+      primaryContact: { ...EMPTY_PENSION_CONTACT },
+      primaryAddress: null,
+    };
   }
   const [settings, identity, publicConfig] = await Promise.all([
     ensureGuestAppSettingsRow(tenant.id).catch(() => null),
@@ -121,6 +130,8 @@ export async function loadGuestAppSettingsPage() {
     displayName: identity?.displayName?.trim() || tenant.display_name,
     publicThemeId: publicConfig?.themeId ?? "noir",
     logoUrl: publicConfig?.chrome.logoUrl ?? identity?.logoUrl ?? "",
+    primaryContact: identity?.contact ?? { ...EMPTY_PENSION_CONTACT },
+    primaryAddress: identity?.address ?? null,
   };
 }
 

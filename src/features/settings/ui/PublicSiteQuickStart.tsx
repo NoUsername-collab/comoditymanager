@@ -6,6 +6,7 @@ import { resolvePublicThemeStyle } from "@/features/public-site/themes/loader";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { PublicSiteImageField } from "@/features/settings/ui/PublicSiteImageField";
 import { EditorField } from "@/features/settings/ui/PublicSiteEditorKit";
+import { IdentityContactSummary } from "@/features/settings/ui/IdentityContactSummary";
 import {
   PUBLIC_STYLE_PRESETS,
   type QuickStartAnswers,
@@ -20,6 +21,7 @@ const MAX_QUICK_PHOTOS = 8;
  */
 export function PublicSiteQuickStart({
   initial,
+  contact,
   displayName,
   language,
   otherLanguages,
@@ -28,6 +30,8 @@ export function PublicSiteQuickStart({
   onClose,
 }: {
   initial: QuickStartAnswers;
+  /** What visitors will see, taken from Property identity. */
+  contact: { phone?: string | null; email?: string | null; whatsapp?: string | null };
   displayName: string;
   /** Name of the language being written, e.g. „Română”. */
   language: string;
@@ -178,19 +182,13 @@ export function PublicSiteQuickStart({
 
           {current === "contact" ? (
             <div className="admin-settings-fields">
-              <EditorField
-                label={t("phoneLabel")}
-                type="tel"
-                value={answers.contactPhone}
-                placeholder="+40 7xx xxx xxx"
-                onChange={(contactPhone) => patch({ contactPhone })}
-              />
-              <EditorField
-                label={t("emailLabel")}
-                type="email"
-                value={answers.contactEmail}
-                onChange={(contactEmail) => patch({ contactEmail })}
-                hint={t("contactHint")}
+              <IdentityContactSummary
+                contact={{
+                  phone: contact.phone ?? null,
+                  email: contact.email ?? null,
+                  whatsapp: contact.whatsapp ?? null,
+                }}
+                lead={t("contactFromIdentity")}
               />
               {otherLanguages.length > 0 ? (
                 <p className="pub-quickstart__note">

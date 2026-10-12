@@ -1301,6 +1301,8 @@
           "logoLabel": "Logo",
           "logoHint": "Upload any image. We fit it into a square on your site and in the guest app. JPEG, PNG or WebP, up to 5 MB.",
           "cardAddressTitle": "Property address",
+          "summaryEmpty": "No phone or email in Property identity yet.",
+          "summaryChange": "Change in Property identity",
           "cardAddressDesc": "Shown on the site next to the map, on invoices and on the tourist sheet.",
           "addressStreet": "Street and number",
           "addressStreetPlaceholder": "E.g. 12 Main Street",
@@ -1444,7 +1446,7 @@
           "saved": "Fiscal settings saved",
           "saveError": "Could not save",
           "saveMissingRow": "Your property settings aren't set up yet. Contact Zalmox support.",
-          "incompleteWarning": "To issue invoices, the tax ID and address still need filling in. Add the tax ID here with “Edit”; the address goes in Property identity.",
+          "incompleteWarning": "To issue invoices, the tax ID (below) and the address (in Property identity) still need filling in.",
           "addressInIdentity": "Change in Property identity",
           "completeOk": "Minimum billing data is complete.",
           "propertyName": "Property name",
@@ -1530,10 +1532,11 @@
               },
               "contact": {
                 "title": "How do guests reach you?",
-                "lead": "Shown at the bottom of the site. At least a phone or an email."
+                "lead": "They come from Property identity and show at the bottom of the site."
               }
             },
             "nameLabel": "Property name",
+            "contactFromIdentity": "Guests reach you with the details from Property identity:",
             "subtitleLabel": "One sentence about you",
             "subtitlePlaceholder": "E.g.: A quiet guesthouse at the foot of the mountains, with home-made breakfast.",
             "introLabel": "A few lines about the property (optional)",
@@ -1568,9 +1571,6 @@
                 "desc": "Blue-grey, clean and simple."
               }
             },
-            "phoneLabel": "Phone",
-            "emailLabel": "Email",
-            "contactHint": "If Property identity is already filled in, you can leave this empty.",
             "skip": "Skip, I’ll fill it in myself",
             "back": "Back",
             "next": "Next",
@@ -1712,6 +1712,8 @@
           },
           "contactTitle": "Contact details",
           "contactDesc": "Shown in the site footer and contact band.",
+          "contactFromIdentity": "The site shows the details from Property identity:",
+          "contactOverrideTitle": "A different contact for the site only",
           "usePrimaryContact": "Fill in automatically from Property identity",
           "usePrimaryContactHint": "Empty fields below use the details from there.",
           "socialTitle": "Social media & Telegram",
@@ -1967,6 +1969,8 @@
         "stateHidden": "Hidden",
         "hotelContent": "Property info",
         "usePrimaryContact": "Use phone and email from Property identity",
+        "contactFromIdentity": "Guests see the details from Property identity in the app:",
+        "contactOverrideTitle": "A different contact for the guest app only",
         "shortDescription": "Short description",
         "longDescription": "Long description",
         "address": "Address",

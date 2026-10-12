@@ -22,6 +22,8 @@ import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { SettingsFieldHint } from "@/components/admin/settings/SettingsFieldHint";
 import { GuestAppSettingsPreview } from "@/features/settings/ui/GuestAppSettingsPreview";
 import { GuestAppStudio } from "@/features/settings/ui/GuestAppStudio";
+import { IdentityContactSummary } from "@/features/settings/ui/IdentityContactSummary";
+import type { PensionContact } from "@/domain/settings/pension-identity";
 import {
   buildGuestAppStudioDraft,
   studioDraftToGuestAppSettings,
@@ -52,6 +54,8 @@ export function GuestAppSettingsForm({
   displayName,
   publicThemeId,
   logoUrl,
+  primaryContact,
+  primaryAddress,
   readOnly = false,
   alerts = [],
 }: {
@@ -59,6 +63,9 @@ export function GuestAppSettingsForm({
   displayName: string;
   publicThemeId: string;
   logoUrl: string;
+  /** Contact and address from Property identity, shown unless overridden here. */
+  primaryContact: PensionContact;
+  primaryAddress: string | null;
   readOnly?: boolean;
   alerts?: SettingsAlert[];
 }) {
@@ -175,16 +182,23 @@ export function GuestAppSettingsForm({
 
         <FormSection title={t("hotelContent")}>
           <div className="admin-settings-fields admin-settings-fields--2col">
-            <label className="pub-settings-section-toggle admin-settings-fields__full">
-              <input
-                type="checkbox"
-                checked={draft.usePrimaryContact}
-                onChange={(e) =>
-                  patchDraft({ usePrimaryContact: e.target.checked })
+            <div className="admin-settings-fields__full">
+              <IdentityContactSummary
+                contact={{
+                  phone:
+                    draft.hotelPhone.trim() ||
+                    (draft.usePrimaryContact ? primaryContact.phone : null),
+                  email:
+                    draft.hotelEmail.trim() ||
+                    (draft.usePrimaryContact ? primaryContact.email : null),
+                  whatsapp: draft.usePrimaryContact ? primaryContact.whatsapp : null,
+                }}
+                address={
+                  draft.address.trim() || (draft.usePrimaryContact ? primaryAddress : null)
                 }
+                lead={t("contactFromIdentity")}
               />
-              <span>{t("usePrimaryContact")}</span>
-            </label>
+            </div>
             <label className="admin-settings-fields__full">
               <span>{t("shortDescription")}</span>
               <textarea
@@ -202,34 +216,47 @@ export function GuestAppSettingsForm({
               />
             </label>
             <label className="admin-settings-fields__full">
-              <span>{t("address")}</span>
-              <input
-                value={draft.address}
-                onChange={(e) => patchDraft({ address: e.target.value })}
-              />
-            </label>
-            <label>
-              <span>{t("phone")}</span>
-              <input
-                value={draft.hotelPhone}
-                onChange={(e) => patchDraft({ hotelPhone: e.target.value })}
-              />
-            </label>
-            <label>
-              <span>Email</span>
-              <input
-                type="email"
-                value={draft.hotelEmail}
-                onChange={(e) => patchDraft({ hotelEmail: e.target.value })}
-              />
-            </label>
-            <label className="admin-settings-fields__full">
               <span>Website</span>
               <input
                 value={draft.website}
                 onChange={(e) => patchDraft({ website: e.target.value })}
               />
             </label>
+            <details className="admin-settings-fields__full identity-contact-override">
+              <summary>{t("contactOverrideTitle")}</summary>
+              <div className="admin-settings-fields admin-settings-fields--2col">
+                <label className="pub-settings-section-toggle admin-settings-fields__full">
+                  <input
+                    type="checkbox"
+                    checked={draft.usePrimaryContact}
+                    onChange={(e) => patchDraft({ usePrimaryContact: e.target.checked })}
+                  />
+                  <span>{t("usePrimaryContact")}</span>
+                </label>
+                <label className="admin-settings-fields__full">
+                  <span>{t("address")}</span>
+                  <input
+                    value={draft.address}
+                    onChange={(e) => patchDraft({ address: e.target.value })}
+                  />
+                </label>
+                <label>
+                  <span>{t("phone")}</span>
+                  <input
+                    value={draft.hotelPhone}
+                    onChange={(e) => patchDraft({ hotelPhone: e.target.value })}
+                  />
+                </label>
+                <label>
+                  <span>Email</span>
+                  <input
+                    type="email"
+                    value={draft.hotelEmail}
+                    onChange={(e) => patchDraft({ hotelEmail: e.target.value })}
+                  />
+                </label>
+              </div>
+            </details>
           </div>
         </FormSection>
 

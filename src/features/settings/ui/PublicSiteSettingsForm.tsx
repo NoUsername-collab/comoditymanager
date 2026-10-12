@@ -113,6 +113,7 @@ export function PublicSiteSettingsForm({
 
   const api: PublicSiteEditorApi = {
     config,
+    primaryContact,
     draft,
     copy,
     readOnly,
@@ -259,6 +260,7 @@ export function PublicSiteSettingsForm({
         quickStartOpen ? (
           <PublicSiteQuickStart
             initial={quickStartAnswersFrom(draft)}
+            contact={previewConfig.contact}
             displayName={config.displayName}
             language={languageName(draft.editLocale)}
             otherLanguages={PUBLIC_LOCALES.filter((loc) => loc !== draft.editLocale).map(

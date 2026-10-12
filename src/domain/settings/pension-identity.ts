@@ -61,21 +61,26 @@ export function resolveHotelContactWithPrimary(
         phone?: string;
         email?: string;
         website?: string;
+        address?: string;
       }
     | undefined,
   usePrimary: boolean,
+  /** Property address from Identity, used when the guest app has none of its own. */
+  primaryAddress?: string | null,
 ): {
   phone?: string;
   email?: string;
   website?: string;
+  address?: string;
 } {
-  if (!usePrimary || !hotel) {
+  if (!usePrimary) {
     return hotel ?? {};
   }
 
   return {
     ...hotel,
-    phone: hotel.phone?.trim() || primary.phone || undefined,
-    email: hotel.email?.trim() || primary.email || undefined,
+    phone: hotel?.phone?.trim() || primary.phone || undefined,
+    email: hotel?.email?.trim() || primary.email || undefined,
+    address: hotel?.address?.trim() || primaryAddress?.trim() || undefined,
   };
 }
