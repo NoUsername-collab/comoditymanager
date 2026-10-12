@@ -10,6 +10,7 @@ import {
 import type { EmailDeliveryConfig } from "@/lib/email/provider";
 import type { TransactionalEmailIdentity } from "@/services/email-identity";
 import type { EmailSettings } from "@/services/email-settings";
+import type { PlanEmailScope } from "@/core/config/plans";
 import {
   settingsPartialChanged,
   useSettingsSaveFeedback,
@@ -22,12 +23,14 @@ type Props = {
   settings: EmailSettings;
   delivery: EmailDeliveryConfig;
   identity: TransactionalEmailIdentity;
+  emailScope: PlanEmailScope;
 };
 
 export function EmailSettingsPanel({
   settings: initial,
   delivery,
   identity,
+  emailScope,
 }: Props) {
   const t = useTranslations("admin.pages.settings.email");
   const tSettings = useTranslations("admin.pages.settings");
@@ -143,6 +146,18 @@ export function EmailSettingsPanel({
           {t("providerNotConfigured")}
         </p>
       ) : null}
+      {emailScope === "none" ? (
+        <p className="settings-alerts__item settings-alerts__item--warning" role="status">
+          {t("planSendsNone")}
+        </p>
+      ) : null}
+      {emailScope === "confirmation" ? (
+        <p className="settings-alerts__item settings-alerts__item--warning" role="status">
+          {t("planSendsConfirmation")}
+        </p>
+      ) : null}
+      {emailScope === "none" ? null : (
+      <>
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
           <span className="checkin-settings__section-title">
@@ -165,6 +180,7 @@ export function EmailSettingsPanel({
         </SettingRow>
       </div>
 
+      {emailScope === "stay" ? (
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
           <span className="checkin-settings__section-title">
@@ -209,6 +225,7 @@ export function EmailSettingsPanel({
           </label>
         </SettingRow>
       </div>
+      ) : null}
 
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
@@ -237,6 +254,7 @@ export function EmailSettingsPanel({
           </label>
         </SettingRow>
 
+        {emailScope === "stay" ? (
         <SettingRow
           label={t("notifyCancellation")}
           description={t("notifyCancellationDesc")}
@@ -253,6 +271,7 @@ export function EmailSettingsPanel({
             <span className="checkin-toggle__slider" />
           </label>
         </SettingRow>
+        ) : null}
       </div>
 
       <div className="checkin-settings__section">
@@ -361,6 +380,8 @@ export function EmailSettingsPanel({
           </div>
         </div>
       </details>
+      </>
+      )}
 
       <SettingsDraftSaveBar draft={text} errorFallback={t("saveError")} />
     </div>

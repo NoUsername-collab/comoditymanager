@@ -20,6 +20,11 @@ import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
+import { getPlanConfig } from "@/core/config/plans";
+import {
+  planAllowsEmailKind,
+  type TenantEmailKind,
+} from "@/domain/email/plan-email-scope";
 
 type EmailNotifyFlag =
   | "email_notify_new_request"
@@ -64,10 +69,16 @@ async function loadIdentity() {
   return resolveTransactionalEmailIdentity();
 }
 
-async function sendForCurrentTenant(message: Parameters<typeof sendEmail>[0]) {
+async function sendForCurrentTenant(
+  message: Parameters<typeof sendEmail>[0],
+  kind: TenantEmailKind,
+) {
   const tenantId = await resolveTenantIdForData();
   const tenant = await getTenantById(tenantId);
   if (!tenant) return sendEmail(message);
+  if (!planAllowsEmailKind(getPlanConfig(tenant.plan_id).emailScope, kind)) {
+    return { success: true as const, messageId: "skipped-plan-email" };
+  }
   return sendTenantEmail(tenantId, tenant.slug, message);
 }
 
@@ -115,7 +126,7 @@ export async function notifyOwnerNewRequest(data: {
         data.emailSettings?.email_reply_to,
         data.guestEmail,
       ),
-    });
+    }, "stay");
 
     logEmailResult("notifyOwnerNewRequest", result);
   } catch (error) {
@@ -162,7 +173,7 @@ export async function notifyGuestConfirmed(data: {
       html: template.html,
       text: template.text,
       replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to),
-    });
+    }, "confirmation");
 
     logEmailResult("notifyGuestConfirmed", result);
   } catch (error) {
@@ -203,7 +214,7 @@ export async function notifyGuestAppLink(data: {
       html: template.html,
       text: template.text,
       replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to),
-    });
+    }, "stay");
 
     logEmailResult("notifyGuestAppLink", result);
   } catch (error) {
@@ -240,7 +251,7 @@ export async function notifyGuestCancelled(data: {
       html: template.html,
       text: template.text,
       replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to),
-    });
+    }, "stay");
 
     logEmailResult("notifyGuestCancelled", result);
   } catch (error) {
@@ -270,6 +281,12 @@ export async function notifyOwnerDailySummary(data: {
       getTenantById(data.tenantId),
     ]);
     const template = dailySummaryToOwner(data.summary);
+    if (
+      tenant &&
+      !planAllowsEmailKind(getPlanConfig(tenant.plan_id).emailScope, "stay")
+    ) {
+      return;
+    }
 
     const result = tenant
       ? await sendTenantEmail(data.tenantId, tenant.slug, {

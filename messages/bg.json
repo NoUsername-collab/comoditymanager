@@ -910,51 +910,6 @@
       "invalidToken": "Линкът за нулиране е невалиден или изтекъл. Поискайте нов.",
       "genericError": "Нещо се обърка. Моля, опитайте отново."
     },
-    "onboarding": {
-      "title": "Добре дошли в Zalmox",
-      "lead": "Назовете имота, добавете стаи, после отворете календара.",
-      "stepProperty": "Имот",
-      "stepRooms": "Стаи",
-      "step1Title": "Как се казва вашият имот?",
-      "step1Lead": "Името и часовете за настаняване/напускане се показват на публичния сайт и в потвържденията.",
-      "propertyNameLabel": "Име на имота",
-      "propertyNamePlaceholder": "напр. Пансион Цветница",
-      "checkInLabel": "Настаняване по подразбиране",
-      "checkOutLabel": "Напускане по подразбиране",
-      "nextBtn": "Продължете",
-      "saving": "Запазване…",
-      "step2Title": "Добавете стаи",
-      "step2Lead": "Всяка стая става ред в календара. Можете да добавите още по-късно.",
-      "buildingNameLabel": "Име на сградата",
-      "buildingNamePlaceholder": "напр. Основна къща",
-      "roomNameLabel": "Стая",
-      "roomNamePlaceholder": "напр. 1",
-      "roomTypeLabel": "Тип",
-      "roomPriceLabel": "Цена / нощувка",
-      "roomPricePlaceholder": "По избор",
-      "addRoomBtn": "Добавете още една стая",
-      "removeRoomBtn": "Премахни",
-      "finishBtn": "Отворете календара",
-      "skipToAdmin": "Пропусни засега",
-      "alreadyHasRooms": "Стаите вече са в календара.",
-      "inventoryEmpty": "Добавете поне една стая с име.",
-      "inventoryNoType": "Изберете тип за всяка стая.",
-      "noRoomTypes": "Липсват типове стаи за този имот. Свържете се с поддръжката.",
-      "bannerTitle": "Завършете настройката",
-      "bannerLead": "Добавете поне една стая, за да се вижда календарът.",
-      "bannerCta": "Продължете настройката",
-      "genericError": "Нещо се обърка. Моля, опитайте отново.",
-      "steps": {
-        "property": "Име на имота",
-        "propertyDesc": "Името, което гостите виждат в потвържденията и на сайта.",
-        "inventory": "Стаи",
-        "inventoryDesc": "Поне една стая в календара.",
-        "publicSite": "Публичен сайт",
-        "publicSiteDesc": "Публикувайте началната страница, когато сте готови.",
-        "inviteTeam": "Поканете екипа",
-        "inviteTeamDesc": "Добавете персонал след като календарът е готов."
-      }
-    },
     "mfa": {
       "loginStep": "Стъпка 2",
       "loginTitle": "Двустепенна автентикация",
@@ -1206,6 +1161,8 @@
           "notifyDailySummaryDesc": "Дневен имейл с преглед на check-in/out",
           "guestNotificationsTitle": "Имейли до гостите",
           "guestNotificationsDesc": "Какво получават гостите автоматично",
+          "planSendsNone": "Basic не изпраща имейл. Потвърждението е в Light.",
+          "planSendsConfirmation": "Light изпраща само имейла за потвърждение.",
           "notifyConfirmation": "Потвърждение на резервация",
           "notifyConfirmationDesc": "Автоматичен имейл при потвърдена резервация",
           "notifyCancellation": "Анулиране на резервация",
@@ -2453,6 +2410,7 @@
       "invoice": {
         "description": "Презентация за клиента — не замества фискална фактура.",
         "backToBooking": "Назад към резервацията",
+        "planRequired": "PDF фактурите са в Light и PRO.",
         "title": "Информативен документ"
       },
       "staffManagement": {
@@ -3157,11 +3115,11 @@
       "endNumber": "До номер",
       "howManyRooms": "Колко стаи",
       "bulkNamingLegend": "Формат на имена (bulk)",
-      "bulkNamingPrefix": "Префикс + номер",
+      "bulkNamingPrefix": "Префикс на етаж (10 и стая 10 → 110)",
       "bulkNamingNumbersOnly": "Само номер",
       "bulkPreviewLabel": "Преглед",
       "bulkConflictWarning": "Тези имена вече съществуват в сградата: {names}. Промени интервала „От номер“.",
-      "bulkAutoStartHint": "Интервалът започва автоматично след последната стая в сградата.",
+      "bulkAutoStartHint": "Интервалът започва автоматично след последната стая на избрания етаж.",
       "pricePerNightRon": "Цена / нощ (RON)",
       "autoPriceHint": "0 = автоматично изчисление ({suggestedPrice} RON предложено)",
       "roomOptions": "Опции за стая",
@@ -3169,9 +3127,11 @@
       "maxExtraBeds": "Макс. допълнителни легла",
       "createRooms": "Създай стаите",
       "saveRoom": "Запази стаята",
-      "namePrefixEmptyHint": "Празно = само числа (1, 2, 3 …)",
       "namePrefixOptional": "Префикс (по избор)",
-      "namePrefixPlaceholder": "Стая или остави празно",
+      "namePrefixEmptyHint": "Празно = само номер. Текстът остава залепен: Стая1.",
+      "namePrefixPlaceholder": "10",
+      "digitPrefixHint": "Числов префикс на етаж. Стая 10 става {example}.",
+      "useFloorPrefix": "Етаж {level}: сложи префикс {prefix}",
       "roomNamePlaceholderPlain": "напр. 1 или Стая 1"
     },
     "roomOptionFields": {
@@ -3227,6 +3187,8 @@
       "noRoomsOnFloor": "Няма стаи на този етаж.",
       "withoutFloorSection": "Стаи без зададен етаж",
       "addRoomOnFloor": "Стая на етаж",
+      "addFloorPrefix": "Добави префикс {prefix}",
+      "floorPrefixHint": "Етаж {level}: стая 1 е {first}, стая 10 е {tenth}.",
       "occupancyDashboard": "Наличност",
       "noBuildingsYet": "Все още няма конфигурирани сгради.",
       "createFirstBuilding": "Създайте първата сграда",
@@ -3374,6 +3336,8 @@
       "invoiceSellerDetailsMissing": "Попълнете ДДС номер и адрес на обекта в Настройки → Данъци и фактуриране → Туристическа карта (ANAF).",
       "invoiceBookingNotConfirmed": "Фактура може да се издаде само за потвърдени резервации.",
       "invoiceFullyInvoiced": "Резервацията вече е напълно фактурирана.",
+      "invoicePlanRequired": "PDF фактурите са в Light и PRO.",
+      "teamLimit": "Планът позволява {count} души в екипа, включително собственика.",
       "invoiceAmountExceedsRemaining": "Сумата надвишава остатъка за фактуриране.",
       "invoiceInvalidAmount": "Невалидна сума за фактуриране.",
       "proformaFullyInvoiced": "Няма остатък за проформа фактуриране.",
@@ -4695,7 +4659,7 @@
       "routingKind": "Режим на показване",
       "statusPending": "Активира се (може да отнеме до 48 часа)",
       "statusVerified": "Верифициран",
-      "upgradeForCustom": "Собствен домейн: наличен от план Professional."
+      "upgradeForCustom": "Собствен домейн: наличен от плана PRO."
     }
   },
   "booking": {
@@ -4758,9 +4722,9 @@
   },
   "signup": {
     "heroTitle": "Upravlyavaj pansiona si moderno",
-    "heroSubtitle": "Gantt kalendar, nastanyavaniya, check-in i zayavki za rezervaciya. Bezplatno za 5 stai.",
+    "heroSubtitle": "Kalendar, prestoi, check-in i zayavki. Basic e 0 EUR, bez tavan na staite.",
     "benefit1Title": "Bezplatno zavinagi",
-    "benefit1Desc": "5 stai, bez ogranichenie, bez kreditna karta.",
+    "benefit1Desc": "Bez tavan na staite, bez srok, bez kreditna karta.",
     "benefit2Title": "Gotovo za 30 sekundi",
     "benefit2Desc": "Syzdaj akount, dobavi stai, poluchavaj rezervacii.",
     "benefit3Title": "Nula dvojni rezervacii",
@@ -4782,9 +4746,9 @@
     "countryMD": "Moldova",
     "countryBG": "Bylgariya",
     "starterPlan": "Plan Starter — Bezplatno",
-    "starterDetail": "5 stai, Gantt, Guest App, publichna stranica",
-    "freePlan": "Plan Free — Bezplatno",
-    "freePlanDetail": "5 stai, Gantt, Guest App, publichna stranica",
+    "starterDetail": "Kalendar, guest app, publichna stranica",
+    "freePlan": "Basic — 0 EUR",
+    "freePlanDetail": "Kalendar, guest app, publichna stranica. Bez imeil i bez faktura.",
     "submitButton": "Syzdaj akount",
     "submitting": "Syzdavane na akaunta...",
     "alreadyHaveAccount": "Veche imash akount?",
@@ -4815,7 +4779,7 @@
   },
   "landing": {
     "metaTitle": "Zalmox — софтуер за рецепция на пансиони",
-    "metaDescription": "Календар на рецепцията, директни заявки и линк за престоя. Пет стаи безплатно, без карта и без комисиона за резервациите от сайта.",
+    "metaDescription": "Календар на рецепцията, директни заявки и линк за престоя. Basic е 0 EUR, без карта и без комисиона за резервациите от сайта.",
     "heroBadge": "Софтуер за рецепция · Румъния · Молдова · България",
     "heroTitle": "Рецепцията, на един <accent>календар</accent>",
     "heroSubtitle": "Стаи, престои и заявки от сайта на пансиона, на един екран. Вие потвърждавате всяка резервация. Без комисиона за престоите, дошли директно.",
@@ -4823,7 +4787,7 @@
     "heroCtaDemo": "Заявете демонстрация",
     "heroCtaLogin": "Вход",
     "heroCtaSecondary": "Вижте инструментите",
-    "heroNote": "Без карта. Пет стаи в плана Free, без срок. Комисиона 0% за директните заявки.",
+    "heroNote": "Без карта. Basic е 0 EUR, без срок. Комисиона 0% за директните заявки.",
     "demoEmailSubject": "Демонстрация Zalmox — пансион",
     "shiftTitle": "Смяната се вижда от един поглед",
     "shiftDesc": "Кой е настанен, кой пристига и кой заминава. Престоят се мести в друга стая от мрежата. Една стая не може да поеме два престоя по едно и също време.",
@@ -4835,8 +4799,8 @@
     "statsAria": "Основни предимства на Zalmox",
     "stat1Value": "0 EUR",
     "stat1Label": "За начало",
-    "stat2Value": "5",
-    "stat2Label": "Стаи в Free",
+    "stat2Value": "∞",
+    "stat2Label": "Стаи, на всички планове",
     "stat3Value": "0%",
     "stat3Label": "Комисиона за директни",
     "stat4Value": "RO · EN · BG",
@@ -4846,7 +4810,7 @@
     "featGanttDesc": "Стаите са в редове, дните — по хоризонтала. Преместете престой в друга стая от мрежата. Една стая не може да поеме два престоя в едни и същи дати.",
     "featGanttL1": "Седмица и месец, на същия календар",
     "featGanttL2": "Преместване между стаи, от мрежата",
-    "featGanttL3": "Карта на заетостта, от плана Essential",
+    "featGanttL3": "Карта на заетостта, от плана PRO",
     "featGanttL4": "Задържания и блокирания, видими върху стаята",
     "featSiteEyebrow": "Публичен сайт",
     "featSiteTitle": "Страницата за резервации на пансиона",
@@ -4854,14 +4818,14 @@
     "featSiteL1": "Включено във всички планове",
     "featSiteL2": "Заявка за резервация. Онлайн плащането не е включено",
     "featSiteL3": "Потвърждение от панела на рецепцията",
-    "featSiteL4": "Адрес в zalmox.app. Собствен домейн от плана Professional",
+    "featSiteL4": "Адрес в zalmox.app. Собствен домейн от плана PRO",
     "featGuestEyebrow": "Гост",
     "featGuestTitle": "Линк за престоя в телефона на госта",
     "featGuestDesc": "Без приложение за инсталиране. Wi-Fi, информация за обекта и онлайн настаняване, за времето на престоя.",
     "featGuestL1": "Онлайн настаняване преди пристигане",
     "featGuestL2": "Паролата за Wi-Fi, от линка",
     "featGuestL3": "Удобства и информация за пансиона",
-    "featGuestL4": "Съобщение за потвърждение, когато имейлът е настроен",
+    "featGuestL4": "Имейл за потвърждение, от плана Light",
     "heroSocialQuote": "„Заменя тетрадката и Excel с календар, който наистина работи.“",
     "heroSocialCaption": "Малки пансион в Румъния, Молдова и България",
     "problemTitle": "Звучи познато?",
@@ -4881,7 +4845,7 @@
     "tools": {
       "gantt": {
         "title": "Календар",
-        "desc": "Всички стаи и престои на една страница. Преместване от мрежата, цвят по сграда и карта на заетостта от Essential."
+        "desc": "Всички стаи и престои на една страница. Преместване от мрежата, цвят по сграда и карта на заетостта от PRO."
       },
       "stays": {
         "title": "Престои и заявки",
@@ -4901,7 +4865,7 @@
       },
       "fiscal": {
         "title": "Фактури",
-        "desc": "PDF фактури за гости, от плана Professional. Връзката с e-Factura ANAF не е налична."
+        "desc": "PDF фактури за гости, от плана Light. Връзката с e-Factura ANAF не е налична."
       },
       "buildings": {
         "title": "Няколко сгради",
@@ -4950,7 +4914,7 @@
     "trustLegalSuffix": ".",
     "pricingCompareCta": "Сравнете всички планове",
     "finalCtaTitle": "Отворете <accent>календара</accent>",
-    "finalCtaText": "Пет стаи, без карта и без срок. Директните заявки се потвърждават от същия екран.",
+    "finalCtaText": "Basic е 0 EUR, без карта и без срок. Директните заявки се потвърждават от същия екран.",
     "finalCtaButton": "Създайте безплатен акаунт",
     "mockup": {
       "calendarTitle": "Календар",
@@ -4990,10 +4954,10 @@
   "pricing": {
     "heroBadge": "Прозрачни цени",
     "pageTitle": "Планове, които растат с вашия имот",
-    "pageLead": "Започнете безплатно с 5 стаи. Надградете само когато е нужно — без договор, без неустойки.",
+    "pageLead": "Basic е 0 EUR, без таван на стаите. Light и PRO се избират за фактура, имейл и канал за продажба.",
     "statsAria": "Обобщение на цените",
     "statFree": "За начало",
-    "statRooms": "Стаи в Free",
+    "statRooms": "Стаи, на всички планове",
     "statCommission": "Комисион директни резервации",
     "gridTitle": "Изберете подходящ план",
     "gridLead": "Цени в EUR, месечен абонамент. Отмяна когато поискате.",
@@ -5007,52 +4971,52 @@
     "comparisonLead": "Всички планове включват Gantt, резервации, Guest App и публична страница.",
     "faqTitle": "Често задавани въпроси",
     "faq1Q": "Наистина ли е 0 EUR?",
-    "faq1A": "Да. Free включва 5 стаи, календар, линк за престоя и публичната страница, без карта и без срок. Имейлите се изпращат само ако изпращането е настроено.",
-    "faq2Q": "Кога преминавате към Essential (15 EUR)?",
-    "faq2A": "Когато имате до 20 стаи и искате карта на заетостта, експорт на статистики, 5 члена на екипа или сайт без марката Zalmox.",
-    "faq3Q": "Какво включва Professional (35 EUR)?",
-    "faq3A": "Стаи без ограничение на броя, екип без ограничение, собствен домейн, PDF фактури и до 3 обекта. e-Factura ANAF не е свързана.",
-    "faq4Q": "За кого е Business (69 EUR)?",
-    "faq4A": "За няколко обекта: до 10 единици, въвеждане и приоритетна поддръжка. API и SLA от 99,9% не са включени.",
+    "faq1A": "Да. Basic включва календара, линка за престоя и публичната страница, без карта и без срок. Не изпраща имейл и не издава фактура.",
+    "faq2Q": "Кога преминавате към Light (9 EUR)?",
+    "faq2A": "Когато искате PDF фактура и един имейл за потвърждение на престой. Таванът е 300 потвърждения на месец. Марката Zalmox остава на сайта.",
+    "faq3Q": "Какво включва PRO (29 EUR)?",
+    "faq3A": "PDF фактури, съобщения за престоя до 2 000 на месец, собствен домейн, iCal, карта на заетостта, до 3 обекта и 8 души в екипа. e-Factura ANAF не е свързана.",
+    "faq4Q": "Какво не е включено?",
+    "faq4A": "Онлайн плащане, WhatsApp, e-Factura ANAF, API и SLA от 99,9% не са част от никой план.",
     "finalTitle": "Започнете безплатно",
-    "finalText": "5 стаи, 0 EUR, настройка за минути.",
+    "finalText": "0 EUR, без таван на стаите, настройка за минути.",
     "finalCta": "Създайте безплатен акаунт",
     "plans": {
       "free": {
-        "name": "Free",
-        "tagline": "Старт без карта",
-        "roomLine": "До {count} стаи",
-        "f1": "Визуален Gantt календар",
-        "f2": "Резервации и профили на гости",
-        "f3": "Email известия (когато са настроени)",
-        "f4": "Guest app",
-        "f5": "Публична страница",
-        "f6": "2 члена на екипа",
+        "name": "Basic",
+        "tagline": "Рецепция, без карта",
+        "roomLine": "Без таван на стаите",
+        "f1": "Календар и престои",
+        "f2": "Досиета на гости и настаняване",
+        "f3": "Guest app и публична страница",
+        "f4": "Марка Zalmox на сайта",
+        "f5": "2 души в екипа",
+        "f6": "Без имейл и без фактура",
         "cta": "Започнете безплатно"
       },
       "essential": {
-        "name": "Essential",
-        "tagline": "Вашият имот, вашата марка",
-        "roomLine": "До {count} стаи",
-        "f1": "Всичко от Free",
-        "f2": "Heatmap за заетост",
-        "f3": "Експорт на статистики",
-        "f4": "Без брандинг Zalmox на сайта",
-        "f5": "5 члена на екипа",
-        "f6": "",
-        "cta": "Пробвайте Essential"
+        "name": "Light",
+        "tagline": "Фактура и едно потвърждение",
+        "roomLine": "Без таван на стаите",
+        "f1": "Всичко от Basic",
+        "f2": "PDF фактури",
+        "f3": "Един имейл за потвърждение на престой",
+        "f4": "До 300 потвърждения на месец",
+        "f5": "Марката Zalmox остава на сайта",
+        "f6": "Един обект, 2 души в екипа",
+        "cta": "Изберете Light"
       },
       "professional": {
-        "name": "Professional",
-        "tagline": "Неограничени стаи, без изненади",
-        "roomLine": "{count} стаи",
-        "f1": "Всичко от Essential",
-        "f2": "Вътрешни PDF фактури",
-        "f3": "Custom домейн + без брандинг",
-        "f4": "Неограничен екип",
-        "f5": "До 3 имота",
-        "f6": "",
-        "cta": "Изберете Professional"
+        "name": "PRO",
+        "tagline": "Сайт, iCal и заетост",
+        "roomLine": "Без таван на стаите",
+        "f1": "Всичко от Light",
+        "f2": "Съобщения за престоя, до 2 000 на месец",
+        "f3": "Собствен домейн, без марка Zalmox",
+        "f4": "iCal и карта на заетостта",
+        "f5": "До 3 обекта",
+        "f6": "8 души в екипа",
+        "cta": "Изберете PRO"
       },
       "business": {
         "name": "Business",
@@ -5070,9 +5034,9 @@
     "comparison": {
       "featureCol": "Функция",
       "plans": {
-        "free": "Free",
-        "essential": "Essential",
-        "professional": "Professional",
+        "free": "Basic",
+        "essential": "Light",
+        "professional": "PRO",
         "business": "Business"
       },
       "rows": {
@@ -5083,15 +5047,15 @@
         "modules": "Включено"
       },
       "rooms": {
-        "free": "5",
-        "essential": "20",
-        "professional": "Неограничено",
+        "free": "Без таван",
+        "essential": "Без таван",
+        "professional": "Без таван",
         "business": "Неограничено"
       },
       "team": {
         "free": "2",
-        "essential": "5",
-        "professional": "Неограничен",
+        "essential": "2",
+        "professional": "8",
         "business": "Неограничен"
       },
       "gantt": {
@@ -5102,14 +5066,14 @@
       },
       "branding": {
         "free": "Да",
-        "essential": "Не",
+        "essential": "Да",
         "professional": "Не",
         "business": "Не"
       },
       "modules": {
-        "free": "Страница + Guest App",
-        "essential": "+ heatmap, експорт",
-        "professional": "+ PDF фактури, домейн",
+        "free": "Страница + guest app",
+        "essential": "+ PDF фактура, едно потвърждение",
+        "professional": "+ домейн, iCal, заетост",
         "business": "+ до 10 имота"
       }
     }

@@ -13,9 +13,14 @@ export function issueMatchesSettingsPath(
   const normalizedNav = normalizePath(navPath);
   const normalizedIssue = normalizePath(issue.settingsPath);
 
+  const issueIsInsideNav =
+    normalizedNav !== "/admin/settings" &&
+    normalizedIssue.startsWith(`${normalizedNav}/`);
+
   return (
     normalizedNav === normalizedIssue ||
-    normalizedNav.startsWith(`${normalizedIssue}/`)
+    normalizedNav.startsWith(`${normalizedIssue}/`) ||
+    issueIsInsideNav
   );
 }
 

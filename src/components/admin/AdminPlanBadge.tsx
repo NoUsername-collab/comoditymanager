@@ -1,8 +1,8 @@
 import { getTenantContext } from "@/core/tenant/context";
 
 const PLAN_STYLE: Record<string, { bg: string; text: string; label: string }> = {
-  free:         { bg: "var(--plan-free-bg)", text: "var(--plan-free-text)", label: "FREE" },
-  essential:    { bg: "var(--plan-essential-bg)", text: "var(--plan-essential-text)", label: "ESSENTIAL" },
+  free:         { bg: "var(--plan-free-bg)", text: "var(--plan-free-text)", label: "BASIC" },
+  essential:    { bg: "var(--plan-essential-bg)", text: "var(--plan-essential-text)", label: "LIGHT" },
   professional: { bg: "var(--plan-professional-bg)", text: "var(--plan-professional-text)", label: "PRO" },
   business:     { bg: "var(--plan-business-bg)", text: "var(--plan-business-text)", label: "BUSINESS" },
 };

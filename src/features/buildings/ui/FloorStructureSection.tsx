@@ -6,6 +6,11 @@ import {
   AdminTextActionLink,
 } from "@/components/admin/ui/AdminTextAction";
 import { useTranslations } from "next-intl";
+import {
+  floorLevelFromStructure,
+  floorNumberPrefix,
+  joinRoomPrefix,
+} from "@/domain/room/bulk-names";
 import type { StructureFloor } from "@/services/location-structure";
 import {
   updateFloorFormAction,
@@ -41,6 +46,9 @@ export function FloorStructureSection({
     return () => window.clearTimeout(tmr);
   }, [state?.ok]);
 
+  const floorLevel = floorLevelFromStructure(floor.level_number, floor.name);
+  const floorPrefix = floorLevel != null ? floorNumberPrefix(floorLevel) : null;
+
   const feedback =
     state?.messageKey === "floorUpdated"
       ? tActions("floorUpdated")
@@ -60,6 +68,15 @@ export function FloorStructureSection({
       <div className="floor-structure-section__head mb-2 flex flex-wrap items-start justify-between gap-2">
         <div>
           <h3 className="text-sm font-bold text-zinc-800">{floor.name}</h3>
+          {floorPrefix && floorLevel != null ? (
+            <p className="mt-0.5 text-xs text-zinc-500">
+              {t("floorPrefixHint", {
+                level: floorLevel,
+                first: joinRoomPrefix(floorPrefix, 1),
+                tenth: joinRoomPrefix(floorPrefix, 10),
+              })}
+            </p>
+          ) : null}
           {floor.duplicateName && (
             <p className="mt-0.5 text-xs font-medium text-amber-900">
               {t("duplicateFloorHint")}
@@ -82,6 +99,15 @@ export function FloorStructureSection({
           >
             + {t("addRoomOnFloor")}
           </AdminTextActionLink>
+          {floorPrefix ? (
+            <AdminTextActionLink
+              href={`/admin/rooms/new?building=${buildingId}&floor=${floor.id}&return_to=structure&bulk=prefix`}
+              variant="neutral"
+              className="floor-structure-section__action text-xs"
+            >
+              {t("addFloorPrefix", { prefix: floorPrefix })}
+            </AdminTextActionLink>
+          ) : null}
         </div>
       </div>
 

@@ -9,6 +9,7 @@ import {
   guardSettingsPermission,
   pensionSettingsErrorMessage,
 } from "@/lib/settings/page-context";
+import { getTenantContext } from "@/core/tenant/context";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,7 @@ export default async function SettingsEmailPage({
             settings={emailSettings}
             delivery={getEmailDeliveryConfig()}
             identity={emailIdentity}
+            emailScope={getTenantContext().plan.emailScope}
           />
         ) : (
           <p className="settings-empty settings-empty--error">{t("genericError")}</p>

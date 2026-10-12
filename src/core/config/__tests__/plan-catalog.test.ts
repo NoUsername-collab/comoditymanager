@@ -7,7 +7,8 @@ import {
 describe("plan-catalog", () => {
   it("breaks down included vs addon modules", () => {
     const breakdown = breakdownTenantModules("essential", ["whatsapp"]);
-    expect(breakdown.includedInPlan).toContain("ical_sync");
+    expect(breakdown.includedInPlan).toContain("invoicing");
+    expect(breakdown.includedInPlan).not.toContain("ical_sync");
     expect(breakdown.activeAddons).toEqual(["whatsapp"]);
     expect(breakdown.effective).toContain("whatsapp");
   });

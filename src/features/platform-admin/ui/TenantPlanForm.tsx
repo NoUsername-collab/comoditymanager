@@ -6,11 +6,10 @@ import { useRouter } from "@/i18n/navigation";
 import { changeTenantPlanAction } from "@/features/platform-admin/tenant-actions";
 import { PLAN_CONFIGS, type CloudPlan, type PlanId } from "@/core/config/plans";
 
-const CLOUD_PLAN_IDS: CloudPlan[] = [
+const SOLD_CLOUD_PLAN_IDS: CloudPlan[] = [
   "free",
   "essential",
   "professional",
-  "business",
 ];
 
 export function TenantPlanForm({
@@ -43,7 +42,10 @@ export function TenantPlanForm({
   return (
     <div className="space-y-3">
       <div className="space-y-2">
-        {CLOUD_PLAN_IDS.map((planId) => {
+        {(currentPlan === "business"
+          ? [...SOLD_CLOUD_PLAN_IDS, "business" as const]
+          : SOLD_CLOUD_PLAN_IDS
+        ).map((planId) => {
           const plan = PLAN_CONFIGS[planId];
           return (
             <label

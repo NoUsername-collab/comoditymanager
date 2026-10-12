@@ -18,6 +18,7 @@ import { buildTenantAdminUrl } from "@/lib/tenant/host";
 import { withTenantId } from "@/lib/tenant/scope";
 import { getPrimaryTenantSlugForUser, getTenantMemberRole } from "@/services/tenant-members";
 import { getMfaAccessState } from "@/lib/auth/mfa-session";
+import { ONBOARDING_PATH } from "@/domain/onboarding/steps";
 import { tenantHasAnyRoom } from "@/services/onboarding";
 import {
   enforceRateLimit,
@@ -41,7 +42,7 @@ async function resolveFirstRunDestination(
   const memberRole = await getTenantMemberRole(tenantId, userId);
   if (memberRole !== "owner" && memberRole !== "admin") return safeNext;
   const hasRooms = await tenantHasAnyRoom(tenantId);
-  return hasRooms ? safeNext : "/admin/onboarding";
+  return hasRooms ? safeNext : ONBOARDING_PATH;
 }
 
 async function finalizeStaffLogin(

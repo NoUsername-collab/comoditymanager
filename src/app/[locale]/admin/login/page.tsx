@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/navigation";
+import { ONBOARDING_PATH } from "@/domain/onboarding/steps";
 import { AdminLoginForm } from "@/features/auth/ui/AdminLoginForm";
 import { getTranslations } from "next-intl/server";
 import "@/styles/features/shared/admin-login.css";
@@ -22,7 +23,7 @@ export default async function AdminLoginPage({
       ? params.next
       : null;
   const next =
-    requestedNext ?? (params.signup === "1" ? "/admin/onboarding" : "/admin");
+    requestedNext ?? (params.signup === "1" ? ONBOARDING_PATH : "/admin");
   const authError =
     params.error === "unauthorized"
       ? t("notMemberOfPension")

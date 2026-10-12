@@ -161,7 +161,7 @@ describe("computeSettingsCompletion", () => {
     });
     expect(withoutRooms.items.find((item) => item.id === "inventory")?.done).toBe(false);
     expect(withoutRooms.items.find((item) => item.id === "inventory")?.href).toBe(
-      "/admin/onboarding",
+      "/admin/settings/location/structure",
     );
 
     const withRooms = computeSettingsCompletion({

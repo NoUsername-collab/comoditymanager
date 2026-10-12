@@ -43,6 +43,19 @@ describe("issueMatchesSettingsPath", () => {
     );
   });
 
+  it("matches a buildings page from the location nav, not from settings home", () => {
+    const structureIssue: SetupIssue = {
+      ...ROOMS_ISSUE,
+      settingsPath: "/admin/settings/location/structure",
+    };
+    expect(
+      issueMatchesSettingsPath(structureIssue, "/admin/settings/location")
+    ).toBe(true);
+    expect(
+      issueMatchesSettingsPath(structureIssue, "/admin/settings")
+    ).toBe(false);
+  });
+
   it("matches nested location routes", () => {
     expect(
       issueMatchesSettingsPath(ROOMS_ISSUE, "/admin/settings/location")

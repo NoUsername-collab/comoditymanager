@@ -9,7 +9,6 @@ export const CLOUD_PLAN_ORDER: CloudPlan[] = [
   "free",
   "essential",
   "professional",
-  "business",
 ];
 
 export function getCloudMarketingPlans(): PlanConfig[] {

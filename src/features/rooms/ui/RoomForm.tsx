@@ -6,12 +6,16 @@ import type { OptionPolicyMode } from "@/types/room-catalog";
 import {
   buildBulkRoomNames,
   findDuplicateRoomNames,
+  floorLevelFromStructure,
+  floorNumberPrefix,
+  isDigitPrefix,
+  joinRoomPrefix,
   suggestNextBulkStartNumber,
   type BulkNamingMode,
 } from "@/domain/room/bulk-names";
 import { roomScopeKey } from "@/domain/room/scope-key";
 import { computeRoomPrice, policyModeForOption, resolveOptionEnabled } from "@/lib/room-catalog-pricing";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
@@ -30,6 +34,7 @@ type Props = {
   nextSortByBuilding?: Record<string, number>;
   defaultBuildingId?: string;
   defaultFloorId?: string;
+  defaultBulk?: "prefix";
   returnTo?: "structure";
   formError?: string | null;
 };
@@ -68,12 +73,15 @@ export function RoomForm({
   nextSortByBuilding = {},
   defaultBuildingId,
   defaultFloorId,
+  defaultBulk,
   returnTo,
   formError,
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const tRooms = useTranslations("admin.roomForm");
-  const [mode, setMode] = useState<"single" | "bulk">("single");
+  const [mode, setMode] = useState<"single" | "bulk">(
+    defaultBulk === "prefix" ? "bulk" : "single"
+  );
   const initial =
     defaultBuildingId && buildings.some((b) => b.id === defaultBuildingId)
       ? defaultBuildingId
@@ -87,7 +95,9 @@ export function RoomForm({
   const [floorId, setFloorId] = useState(initialFloor);
   const defaultTypeId = types.find((t) => t.slug === "double")?.id ?? types[0]?.id ?? "";
   const [typeId, setTypeId] = useState(defaultTypeId);
-  const [bulkNaming, setBulkNaming] = useState<BulkNamingMode>("number_only");
+  const [bulkNaming, setBulkNaming] = useState<BulkNamingMode>(
+    defaultBulk === "prefix" ? "prefix" : "number_only"
+  );
   const [namePrefix, setNamePrefix] = useState("");
   const [startNumber, setStartNumber] = useState(1);
   const [endNumber, setEndNumber] = useState(10);
@@ -95,6 +105,12 @@ export function RoomForm({
 
   const building = buildings.find((b) => b.id === buildingId);
   const floors = floorsByBuilding[buildingId] ?? [];
+  const selectedFloor = floors.find((floor) => floor.id === floorId) ?? null;
+  const floorLevel = selectedFloor
+    ? floorLevelFromStructure(selectedFloor.level_number, selectedFloor.name)
+    : null;
+  const floorPrefix = floorLevel != null ? floorNumberPrefix(floorLevel) : null;
+  const appliedFloorPrefix = useRef<string | null>(null);
   const policies = policiesByBuilding[buildingId] ?? [];
   const selectedType = types.find((t) => t.id === typeId) ?? null;
 
@@ -120,6 +136,18 @@ export function RoomForm({
     setStartNumber(nextStart);
     setEndNumber(nextStart + 9);
   }, [buildingId, floorId, mode, bulkNaming, namePrefix, existingNames, nextSortByBuilding]);
+
+  useEffect(() => {
+    if (mode !== "bulk" || bulkNaming !== "prefix" || !floorPrefix) return;
+    setNamePrefix((current) => {
+      const trimmed = current.trim();
+      if (trimmed === "" || trimmed === appliedFloorPrefix.current) {
+        appliedFloorPrefix.current = floorPrefix;
+        return floorPrefix;
+      }
+      return current;
+    });
+  }, [mode, bulkNaming, floorPrefix]);
 
   const bulkCount = Math.max(1, (endNumber || startNumber) - startNumber + 1);
 
@@ -256,7 +284,13 @@ export function RoomForm({
                   name="bulk_naming_mode"
                   value="prefix"
                   checked={bulkNaming === "prefix"}
-                  onChange={() => setBulkNaming("prefix")}
+                  onChange={() => {
+                    setBulkNaming("prefix");
+                    if (floorPrefix && namePrefix.trim() === "") {
+                      appliedFloorPrefix.current = floorPrefix;
+                      setNamePrefix(floorPrefix);
+                    }
+                  }}
                 />
                 {tRooms("bulkNamingPrefix")}
               </label>
@@ -266,7 +300,11 @@ export function RoomForm({
                 <label className="block sm:col-span-1">
                   <span className="text-sm font-medium">{tRooms("namePrefixOptional")}</span>
                   <span className="mt-0.5 block text-xs text-zinc-500">
-                    {tRooms("namePrefixEmptyHint")}
+                    {isDigitPrefix(namePrefix.trim())
+                      ? tRooms("digitPrefixHint", {
+                          example: joinRoomPrefix(namePrefix.trim(), 10),
+                        })
+                      : tRooms("namePrefixEmptyHint")}
                   </span>
                   <AdminInput
                     name="name_prefix"
@@ -275,6 +313,21 @@ export function RoomForm({
                     placeholder={tRooms("namePrefixPlaceholder")}
                     className="mt-1"
                   />
+                  {floorPrefix && floorLevel != null ? (
+                    <button
+                      type="button"
+                      className="mt-2 text-left text-xs font-medium text-zinc-800 underline"
+                      onClick={() => {
+                        appliedFloorPrefix.current = floorPrefix;
+                        setNamePrefix(floorPrefix);
+                      }}
+                    >
+                      {tRooms("useFloorPrefix", {
+                        level: floorLevel,
+                        prefix: floorPrefix,
+                      })}
+                    </button>
+                  ) : null}
                 </label>
               ) : (
                 <input type="hidden" name="name_prefix" value="" />

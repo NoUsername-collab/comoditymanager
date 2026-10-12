@@ -33,15 +33,20 @@ describe("PLAN_CONFIGS", () => {
     expect(hybridPlans).toHaveLength(3);
   });
 
-  describe("Free plan", () => {
+  describe("Basic plan", () => {
     const free = PLAN_CONFIGS.free;
 
-    it("limits rooms to 5", () => {
-      expect(free.maxRooms).toBe(5);
+    it("does not cap rooms", () => {
+      expect(free.maxRooms).toBe(Infinity);
+      expect(free.priceEur).toBe(0);
+      expect(free.label).toBe("Basic");
     });
 
-    it("shows platform branding", () => {
+    it("shows platform branding and does not send email", () => {
       expect(free.showBranding).toBe(true);
+      expect(free.emailScope).toBe("none");
+      expect(free.emailMonthlyCap).toBe(0);
+      expect(free.coreFeatures).not.toContain("email_notifications");
     });
 
     it("includes Gantt and the basics", () => {
@@ -53,43 +58,49 @@ describe("PLAN_CONFIGS", () => {
 
     it("includes public_page module", () => {
       expect(free.includedModules).toContain("public_page");
+      expect(free.includedModules).not.toContain("invoicing");
     });
 
-    it("limited to 1 property", () => {
+    it("limited to 1 property and 2 team members", () => {
       expect(free.maxProperties).toBe(1);
+      expect(free.maxTeamMembers).toBe(2);
     });
   });
 
-  describe("Essential plan", () => {
+  describe("Light plan", () => {
     const essential = PLAN_CONFIGS.essential;
 
-    it("limits rooms to 20", () => {
-      expect(essential.maxRooms).toBe(20);
+    it("is the 9 EUR invoice and confirmation plan", () => {
+      expect(essential.priceEur).toBe(9);
+      expect(essential.label).toBe("Light");
+      expect(essential.maxRooms).toBe(Infinity);
+      expect(essential.emailScope).toBe("confirmation");
+      expect(essential.emailMonthlyCap).toBe(300);
     });
 
-    it("hides platform branding", () => {
-      expect(essential.showBranding).toBe(false);
+    it("keeps platform branding", () => {
+      expect(essential.showBranding).toBe(true);
     });
 
-    it("includes Gantt", () => {
-      expect(essential.coreFeatures).toContain("gantt");
-    });
-
-    it("includes public_page module", () => {
-      expect(essential.includedModules).toContain("public_page");
-    });
-
-    it("includes iCal sync but NOT invoicing", () => {
-      expect(essential.includedModules).toContain("ical_sync");
-      expect(essential.includedModules).not.toContain("invoicing");
+    it("includes invoicing and not iCal", () => {
+      expect(essential.includedModules).toContain("invoicing");
+      expect(essential.includedModules).not.toContain("ical_sync");
+      expect(essential.coreFeatures).not.toContain("heatmap");
+      expect(essential.coreFeatures).not.toContain("custom_domain");
     });
   });
 
-  describe("Professional plan", () => {
+  describe("PRO plan", () => {
     const professional = PLAN_CONFIGS.professional;
 
-    it("has unlimited rooms", () => {
+    it("is 29 EUR with unlimited rooms", () => {
+      expect(professional.priceEur).toBe(29);
+      expect(professional.label).toBe("PRO");
       expect(professional.maxRooms).toBe(Infinity);
+      expect(professional.maxTeamMembers).toBe(8);
+      expect(professional.maxProperties).toBe(3);
+      expect(professional.emailMonthlyCap).toBe(2_000);
+      expect(professional.emailScope).toBe("stay");
     });
 
     it("hides platform branding", () => {
@@ -107,14 +118,14 @@ describe("PLAN_CONFIGS", () => {
     it("includes invoicing but NOT whatsapp (add-on only)", () => {
       expect(professional.includedModules).toContain("invoicing");
       expect(professional.includedModules).not.toContain("whatsapp");
+      expect(professional.includedModules).not.toContain("api_access");
     });
 
-    it("has priority support", () => {
-      expect(professional.coreFeatures).toContain("priority_support");
-    });
-
-    it("has custom domain", () => {
+    it("has custom domain and heatmap", () => {
       expect(professional.coreFeatures).toContain("custom_domain");
+      expect(professional.coreFeatures).toContain("heatmap");
+      expect(professional.coreFeatures).not.toContain("priority_support");
+      expect(professional.coreFeatures).not.toContain("sla_guarantee");
     });
   });
 
@@ -165,17 +176,18 @@ describe("PLAN_CONFIGS", () => {
     });
   });
 
-  describe("local plans mirror cloud features", () => {
-    it("local_essential has same features as Essential cloud", () => {
+  describe("local plans keep the previous feature ladder", () => {
+    it("local essential still includes heatmap and email", () => {
       const localEssential = PLAN_CONFIGS.local_essential;
-      const essential = PLAN_CONFIGS.essential;
-      expect(localEssential.coreFeatures).toEqual(essential.coreFeatures);
+      expect(localEssential.coreFeatures).toContain("heatmap");
+      expect(localEssential.coreFeatures).toContain("email_notifications");
+      expect(localEssential.emailScope).toBe("stay");
     });
 
-    it("local_professional has same features as Professional cloud", () => {
+    it("local professional still includes priority support", () => {
       const localProfessional = PLAN_CONFIGS.local_professional;
-      const professional = PLAN_CONFIGS.professional;
-      expect(localProfessional.coreFeatures).toEqual(professional.coreFeatures);
+      expect(localProfessional.coreFeatures).toContain("priority_support");
+      expect(localProfessional.coreFeatures).toContain("custom_domain");
     });
   });
 });

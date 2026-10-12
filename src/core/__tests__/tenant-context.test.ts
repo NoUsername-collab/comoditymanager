@@ -25,8 +25,10 @@ describe("TenantContext", () => {
       const ctx = buildTenantContext(DEFAULT_TENANT);
       expect(ctx.hasFeature("gantt")).toBe(true);
       expect(ctx.hasFeature("calendar")).toBe(true);
-      expect(ctx.hasFeature("priority_support")).toBe(true);
-      expect(ctx.hasFeature("sla_guarantee")).toBe(false); // Business only
+      expect(ctx.hasFeature("heatmap")).toBe(true);
+      expect(ctx.hasFeature("custom_domain")).toBe(true);
+      expect(ctx.hasFeature("priority_support")).toBe(false);
+      expect(ctx.hasFeature("sla_guarantee")).toBe(false);
     });
 
     it("has correct modules for Professional plan", () => {
@@ -68,11 +70,10 @@ describe("TenantContext", () => {
       createdAt: "2025-07-01T00:00:00.000Z",
     };
 
-    it("limits rooms to 5", () => {
+    it("does not cap rooms", () => {
       const ctx = buildTenantContext(freeTenant);
       expect(ctx.canAddRoom(4)).toBe(true);
-      expect(ctx.canAddRoom(5)).toBe(false);
-      expect(ctx.canAddRoom(10)).toBe(false);
+      expect(ctx.canAddRoom(40)).toBe(true);
     });
 
     it("has Gantt but not Professional-only features", () => {

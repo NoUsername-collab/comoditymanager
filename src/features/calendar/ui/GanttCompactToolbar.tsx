@@ -44,6 +44,7 @@ export function GanttCompactToolbar({
   onCalendarPatch,
   isAvailabilityPanelOpen,
   onToggleAvailabilityPanel,
+  showHeatmap = true,
   isFiltersOpen,
   hasActiveFilters,
   onToggleFilters,
@@ -78,6 +79,7 @@ export function GanttCompactToolbar({
   onCalendarPatch: (patch: GanttCalendarPatch) => void;
   isAvailabilityPanelOpen: boolean;
   onToggleAvailabilityPanel: () => void;
+  showHeatmap?: boolean;
   isFiltersOpen: boolean;
   hasActiveFilters: boolean;
   onToggleFilters: (anchorRect: DOMRect) => void;
@@ -183,6 +185,7 @@ export function GanttCompactToolbar({
           </select>
         </div>
 
+        {showHeatmap ? (
         <button
           type="button"
           className={`gantt-compact-toolbar__icon-btn ${isAvailabilityPanelOpen ? "gantt-compact-toolbar__icon-btn--active" : ""}`}
@@ -192,6 +195,7 @@ export function GanttCompactToolbar({
         >
           <HudIconGrid className="h-3.5 w-3.5" />
         </button>
+        ) : null}
 
         <button
           type="button"

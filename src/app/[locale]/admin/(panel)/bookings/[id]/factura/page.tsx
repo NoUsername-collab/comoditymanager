@@ -11,6 +11,7 @@ import {
 import { resolveDefaultProformaAmount } from "@/domain/invoice/proforma";
 import { loadBookingInvoicePage, proformaCanConvert } from "@/features/bookings/loaders";
 import { getTranslations } from "next-intl/server";
+import { checkModule } from "@/core/hooks/use-feature-gate";
 import "@/styles/features/shared/invoice-print.css";
 
 export default async function BookingInvoicePage({
@@ -63,8 +64,9 @@ export default async function BookingInvoicePage({
     ),
   }));
 
-  const canIssueNext = financial.remainingToInvoice > 0;
-  const canIssueProforma = financial.remainingToInvoice > 0;
+  const invoicingEnabled = checkModule("invoicing");
+  const canIssueNext = invoicingEnabled && financial.remainingToInvoice > 0;
+  const canIssueProforma = invoicingEnabled && financial.remainingToInvoice > 0;
   const nextInvoiceAmount = resolveDefaultInvoiceAmount({
     remainingToInvoice: financial.remainingToInvoice,
     uninvoicedPaid: financial.uninvoicedPaid,
@@ -84,6 +86,11 @@ export default async function BookingInvoicePage({
       bodyClassName="print:border-0 print:shadow-none"
     >
       <div className="print:border-0 print:bg-white">
+        {invoicingEnabled ? null : (
+          <p className="mb-4 text-sm text-[var(--ml-text-muted,#78716c)] print:hidden">
+            {tPage("planRequired")}
+          </p>
+        )}
         <BookingInvoicePanel
           bookingId={id}
           document={preview}

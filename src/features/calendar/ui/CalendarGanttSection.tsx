@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { checkFeature } from "@/core/hooks/use-feature-gate";
 import { CalendarAvailabilityStream } from "@/features/calendar/ui/CalendarAvailabilityStream";
 import { AdminAvailabilitySkeleton } from "@/components/admin/loading/AdminAvailabilitySkeleton";
 import { GanttCalendarLazy } from "@/features/calendar/ui/GanttCalendarLazy";
@@ -61,6 +62,7 @@ export async function CalendarGanttSection({
     localePromise,
     loadCalendarGanttPage(searchParams, localePromise),
   ]);
+  const showHeatmap = checkFeature("heatmap");
 
   const refDate = parseIso(effectiveToday);
   const year = Number(params.y) || refDate.getFullYear();
@@ -292,8 +294,10 @@ export async function CalendarGanttSection({
           arrivalsCount={todayArrivalsCount}
           departuresCount={todayDeparturesCount}
           cleanCount={todayCleanCount}
+          showHeatmap={showHeatmap}
         />
       </AdminPanel>
+      {showHeatmap ? (
       <GanttAvailabilityHeatmapPanelLazy
         open={availabilityState.open}
         closeHref={closeAvailabilityHref}
@@ -317,6 +321,7 @@ export async function CalendarGanttSection({
           </Suspense>
         ) : null}
       </GanttAvailabilityHeatmapPanelLazy>
+      ) : null}
     </AdminPageFrame>
   );
 }

@@ -134,7 +134,7 @@ describe("resolveRoomsMissingSetupIssue", () => {
     expect(issue).toEqual({
       id: SETUP_ISSUE_IDS.ROOMS_MISSING,
       severity: "warning",
-      settingsPath: "/admin/onboarding",
+      settingsPath: "/admin/settings/location/structure",
       labelKey: "roomsMissing",
     });
   });

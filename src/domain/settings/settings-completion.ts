@@ -82,7 +82,7 @@ export function computeSettingsCompletion(opts: {
       id: "inventory",
       labelKey: "checklistInventory",
       done: roomCount >= 1,
-      href: roomCount >= 1 ? "/admin/rooms" : "/admin/onboarding",
+      href: roomCount >= 1 ? "/admin/rooms" : "/admin/settings/location/structure",
     },
   ];
 

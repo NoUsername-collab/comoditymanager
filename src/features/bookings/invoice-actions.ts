@@ -4,9 +4,23 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { ensureTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
+import { assertModule, ModuleGateError } from "@/core/hooks/use-feature-gate";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { issueBookingInvoice } from "@/services/issued-invoice";
 import { getTranslations } from "next-intl/server";
+
+async function invoicingPlanError(): Promise<string | null> {
+  try {
+    assertModule("invoicing");
+    return null;
+  } catch (error) {
+    if (error instanceof ModuleGateError) {
+      const t = await getTranslations("admin.serverActions");
+      return t("invoicePlanRequired");
+    }
+    throw error;
+  }
+}
 
 export async function issueBookingInvoiceAction(
   bookingId: string,
@@ -14,6 +28,8 @@ export async function issueBookingInvoiceAction(
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   await ensureTenantContextFromRequest();
   const t = await getTranslations("admin.serverActions");
+  const planError = await invoicingPlanError();
+  if (planError) return { ok: false, error: planError };
   await requireLocationAdmin();
 
   const result = await issueBookingInvoice(
@@ -62,6 +78,8 @@ export async function issueBookingProformaAction(
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   await ensureTenantContextFromRequest();
   const t = await getTranslations("admin.serverActions");
+  const planError = await invoicingPlanError();
+  if (planError) return { ok: false, error: planError };
   await requireLocationAdmin();
 
   const { issueBookingProforma } = await import("@/services/booking-proforma");
@@ -109,6 +127,8 @@ export async function convertProformaToInvoiceAction(
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   await ensureTenantContextFromRequest();
   const t = await getTranslations("admin.serverActions");
+  const planError = await invoicingPlanError();
+  if (planError) return { ok: false, error: planError };
   await requireLocationAdmin();
 
   const { convertProformaToInvoice } = await import("@/services/booking-proforma");

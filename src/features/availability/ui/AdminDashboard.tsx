@@ -9,6 +9,7 @@ import { RoomAvailabilityGrid } from "@/components/admin/ui/RoomAvailabilityGrid
 import { CheckInMilestoneBoard } from "@/features/availability/ui/CheckInMilestoneBoard";
 import { TodayBoardBadges } from "@/features/availability/ui/TodayBoardBadges";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
+import { ONBOARDING_PATH } from "@/domain/onboarding/steps";
 
 export async function AdminDashboard({
   data,
@@ -234,7 +235,7 @@ export async function AdminDashboard({
             emoji="🛏"
             title={tCommon("noRoomsConfigured")}
             description={tDashboard("configureRoomsFromSettings")}
-            actionHref="/admin/onboarding"
+            actionHref={ONBOARDING_PATH}
             actionLabel={tDashboard("openConfiguration")}
           />
         )}

@@ -1,6 +1,46 @@
 export type BulkNamingMode = "prefix" | "number_only";
 
-/** Generează numele camerelor pentru bulk create (aceeași logică client + server). */
+/** Floor 1 uses stem 10, so room 10 is 110. Floor 12 uses stem 120, so room 3 is 1203. */
+export function floorNumberPrefix(level: number): string | null {
+  if (!Number.isInteger(level) || level < 1) return null;
+  return String(level * 10);
+}
+
+export function floorLevelFromStructure(
+  levelNumber: number | null | undefined,
+  name: string,
+): number | null {
+  if (
+    levelNumber != null &&
+    Number.isInteger(levelNumber) &&
+    levelNumber >= 1
+  ) {
+    return levelNumber;
+  }
+  const match = name.trim().match(/(\d+)\s*$/);
+  if (!match) return null;
+  const parsed = Number(match[1]);
+  return Number.isInteger(parsed) && parsed >= 1 ? parsed : null;
+}
+
+export function isDigitPrefix(prefix: string): boolean {
+  return /^\d+$/.test(prefix);
+}
+
+/**
+ * A digit prefix is a floor stem, not text glued to the room index.
+ * Stem 10 and room 10 become 110. A text prefix stays "Camera" + 1.
+ */
+export function joinRoomPrefix(prefix: string, roomNumber: number): string {
+  const trimmed = prefix.trim();
+  if (!trimmed) return String(roomNumber);
+  if (isDigitPrefix(trimmed)) {
+    return String(Number(trimmed) * 10 + roomNumber);
+  }
+  return `${trimmed}${roomNumber}`;
+}
+
+/** Room names for bulk create. The same rule runs in the form and on the server. */
 export function buildBulkRoomNames(
   mode: BulkNamingMode,
   namePrefix: string,
@@ -14,8 +54,7 @@ export function buildBulkRoomNames(
     if (mode === "number_only") {
       names.push(String(num));
     } else {
-      const prefix = namePrefix.trim();
-      names.push(prefix ? `${prefix}${num}` : String(num));
+      names.push(joinRoomPrefix(namePrefix, num));
     }
   }
   return names.map((n) => n.trim()).filter(Boolean);
@@ -67,6 +106,18 @@ export function suggestNextBulkStartNumber(
   }
 
   const prefix = namePrefix.trim();
+  if (isDigitPrefix(prefix)) {
+    const base = Number(prefix) * 10;
+    let maxIndex = 0;
+    for (const name of existingNames) {
+      const value = Number.parseInt(name.trim(), 10);
+      if (!Number.isFinite(value) || String(value) !== name.trim()) continue;
+      const index = value - base;
+      if (index >= 1 && index <= 99 && index > maxIndex) maxIndex = index;
+    }
+    return maxIndex > 0 ? maxIndex + 1 : 1;
+  }
+
   let max = 0;
   const re = prefix
     ? new RegExp(`^${escapeRegex(prefix)}(\\d+)\\s*$`, "i")

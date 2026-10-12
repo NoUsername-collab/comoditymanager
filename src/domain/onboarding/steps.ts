@@ -23,7 +23,8 @@ export interface OnboardingStep {
   optional?: boolean;
 }
 
-export const ONBOARDING_PATH = "/admin/onboarding";
+/** Buildings and rooms. First-run setup and the old welcome screen both land here. */
+export const ONBOARDING_PATH = "/admin/settings/location/structure";
 
 export const ONBOARDING_STEPS: OnboardingStep[] = [
   {

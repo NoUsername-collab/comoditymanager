@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import {
   buildBulkRoomNames,
+  floorLevelFromStructure,
+  floorNumberPrefix,
+  joinRoomPrefix,
   normalizeRoomNameKey,
   findDuplicateRoomNames,
   suggestNextBulkStartNumber,
@@ -39,6 +42,38 @@ describe("buildBulkRoomNames", () => {
     const result = buildBulkRoomNames("prefix", "  Room  ", 1, 1);
     // "  Room  " is trimmed to "Room", then "Room1"
     expect(result).toEqual(["Room1"]);
+  });
+
+  it("numbers a floor stem so room 10 is 110, not 1010", () => {
+    expect(joinRoomPrefix("10", 1)).toBe("101");
+    expect(joinRoomPrefix("10", 10)).toBe("110");
+    expect(buildBulkRoomNames("prefix", "10", 1, 10)).toEqual([
+      "101",
+      "102",
+      "103",
+      "104",
+      "105",
+      "106",
+      "107",
+      "108",
+      "109",
+      "110",
+    ]);
+  });
+
+  it("uses the same stem on higher floors", () => {
+    expect(floorNumberPrefix(1)).toBe("10");
+    expect(floorNumberPrefix(2)).toBe("20");
+    expect(floorNumberPrefix(12)).toBe("120");
+    expect(joinRoomPrefix("20", 10)).toBe("210");
+    expect(joinRoomPrefix("120", 3)).toBe("1203");
+    expect(floorNumberPrefix(0)).toBeNull();
+  });
+
+  it("reads the floor level from the stored number, then from the name", () => {
+    expect(floorLevelFromStructure(1, "Parter")).toBe(1);
+    expect(floorLevelFromStructure(null, "Etaj 2")).toBe(2);
+    expect(floorLevelFromStructure(null, "Parter")).toBeNull();
   });
 });
 
@@ -109,6 +144,16 @@ describe("suggestNextBulkStartNumber", () => {
     expect(suggestNextBulkStartNumber(["1", "2", "5"], "number_only", "")).toBe(
       6
     );
+  });
+
+  it("continues a floor stem after 110", () => {
+    expect(suggestNextBulkStartNumber(["101", "102", "110"], "prefix", "10")).toBe(
+      11
+    );
+  });
+
+  it("ignores a concatenated 1010 when suggesting the next room", () => {
+    expect(suggestNextBulkStartNumber(["101", "1010"], "prefix", "10")).toBe(2);
   });
 
   it("returns 1 when building has no matching names", () => {

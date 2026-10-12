@@ -80,9 +80,10 @@ describe("Feature Gates", () => {
       expect(() => assertCanAddRoom(2)).not.toThrow();
     });
 
-    it("blocks rooms at limit", () => {
+    it("allows rooms on Basic", () => {
       setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
-      expect(() => assertCanAddRoom(5)).toThrow(LimitGateError);
+      expect(() => assertCanAddRoom(5)).not.toThrow();
+      expect(() => assertCanAddRoom(40)).not.toThrow();
     });
 
     it("allows unlimited rooms on Professional", () => {
@@ -119,12 +120,16 @@ describe("Feature Gates", () => {
       expect(getMinimumPlanForFeature("calendar")).toBe("free");
     });
 
-    it("returns essential for heatmap", () => {
-      expect(getMinimumPlanForFeature("heatmap")).toBe("essential");
+    it("returns professional for heatmap", () => {
+      expect(getMinimumPlanForFeature("heatmap")).toBe("professional");
     });
 
-    it("returns professional for priority_support", () => {
-      expect(getMinimumPlanForFeature("priority_support")).toBe("professional");
+    it("returns essential for confirmation email", () => {
+      expect(getMinimumPlanForFeature("email_notifications")).toBe("essential");
+    });
+
+    it("returns business for priority_support", () => {
+      expect(getMinimumPlanForFeature("priority_support")).toBe("business");
     });
 
     it("returns business for sla_guarantee", () => {
@@ -137,8 +142,9 @@ describe("Feature Gates", () => {
       expect(getMinimumPlanForModule("public_page")).toBe("free");
     });
 
-    it("returns essential for ical_sync", () => {
-      expect(getMinimumPlanForModule("ical_sync")).toBe("essential");
+    it("returns essential for invoicing and professional for ical", () => {
+      expect(getMinimumPlanForModule("invoicing")).toBe("essential");
+      expect(getMinimumPlanForModule("ical_sync")).toBe("professional");
     });
 
     it("returns business for api_access", () => {
@@ -157,7 +163,7 @@ describe("Feature Gates", () => {
       const map = buildFeatureMap();
 
       expect(map.planId).toBe("professional");
-      expect(map.planLabel).toBe("Professional");
+      expect(map.planLabel).toBe("PRO");
       expect(map.mode).toBe("cloud");
       expect(map.showBranding).toBe(false);
       expect(map.maxRooms).toBe(Infinity);
@@ -177,7 +183,8 @@ describe("Feature Gates", () => {
       const map = buildFeatureMap();
 
       expect(map.showBranding).toBe(true);
-      expect(map.maxRooms).toBe(5);
+      expect(map.maxRooms).toBe(Infinity);
+      expect(map.features.email_notifications).toBe(false);
       expect(map.features.gantt).toBe(true);
       expect(map.modules.invoicing).toBe(false);
     });

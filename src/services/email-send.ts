@@ -13,7 +13,7 @@ export async function sendTenantEmail(
 ): Promise<EmailResult> {
   const resolution = await resolveTenantEmailSendForTenant(tenantId, tenantSlug);
 
-  if (!resolution.canSend) {
+  if (!resolution.canSend || resolution.monthlyCap === 0) {
     if (process.env.NODE_ENV === "development") {
       console.log(
         `[EMAIL-SKIP] tenant=${tenantSlug} reason=${resolution.skipReason ?? "unknown"}`,

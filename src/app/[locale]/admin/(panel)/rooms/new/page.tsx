@@ -14,6 +14,7 @@ export default async function NewRoomPage({
     building?: string;
     floor?: string;
     return_to?: string;
+    bulk?: string;
     error?: string;
     names?: string;
   }>;
@@ -28,6 +29,7 @@ export default async function NewRoomPage({
       building: defaultBuildingId,
       floor: defaultFloorId,
       return_to,
+      bulk,
       error: errorCode,
       names: errorNames,
     },
@@ -157,6 +159,7 @@ export default async function NewRoomPage({
             nextSortByBuilding={nextSortByBuilding}
             defaultBuildingId={defaultBuildingId}
             defaultFloorId={defaultFloorId}
+            defaultBulk={bulk === "prefix" ? "prefix" : undefined}
             returnTo={backToStructure ? "structure" : undefined}
             formError={formError}
           />

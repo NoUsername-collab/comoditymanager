@@ -130,6 +130,7 @@ export function GanttCalendar({
   departuresCount = 0,
   cleanCount = 0,
   departurePolicy,
+  showHeatmap = true,
 }: {
   viewRange: GanttViewRange;
   rooms: GanttRoom[];
@@ -153,6 +154,7 @@ export function GanttCalendar({
   departuresCount?: number;
   cleanCount?: number;
   departurePolicy?: GanttDeparturePolicy;
+  showHeatmap?: boolean;
 }) {
   const effectiveToday = todayProp ?? todayIso();
   const { bookings, occupancy } = useGanttLiveCalendar(
@@ -658,6 +660,7 @@ export function GanttCalendar({
           onCalendarPatch={pushCalendarPatch}
           isAvailabilityPanelOpen={isAvailabilityPanelOpen}
           onToggleAvailabilityPanel={toggleAvailabilityPanel}
+          showHeatmap={showHeatmap}
           isFiltersOpen={isFiltersOpen}
           hasActiveFilters={hasActiveFilters}
           onToggleFilters={handleToggleFilters}

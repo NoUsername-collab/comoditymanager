@@ -14,6 +14,8 @@ import {
 } from "@/services/tenant-members";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { settingsActionErrorMessage } from "@/lib/settings/action-error";
+import { getPlanConfig } from "@/core/config/plans";
+import { getTenantById } from "@/services/tenants";
 
 type ActionResult =
   | { ok: true }
@@ -57,6 +59,17 @@ export async function inviteStaffAction(
     // Only valid roles
     if (!["admin", "operator"].includes(role)) {
       return { ok: false, error: t("invalidRole") };
+    }
+
+    const record = await getTenantById(tenant.id);
+    if (record) {
+      const plan = getPlanConfig(record.plan_id);
+      if (Number.isFinite(plan.maxTeamMembers)) {
+        const members = await listActiveTenantMembers(tenant.id);
+        if (members.length >= plan.maxTeamMembers) {
+          return { ok: false, error: t("teamLimit", { count: plan.maxTeamMembers }) };
+        }
+      }
     }
 
     const member = await inviteTenantMember({
@@ -174,6 +187,17 @@ export async function reactivateStaffAction(
 
     const memberId = String(formData.get("member_id") ?? "");
     if (!memberId) return { ok: false, error: t("memberIdRequired") };
+
+    const record = await getTenantById(tenant.id);
+    if (record) {
+      const plan = getPlanConfig(record.plan_id);
+      if (Number.isFinite(plan.maxTeamMembers)) {
+        const members = await listActiveTenantMembers(tenant.id);
+        if (members.length >= plan.maxTeamMembers) {
+          return { ok: false, error: t("teamLimit", { count: plan.maxTeamMembers }) };
+        }
+      }
+    }
 
     await reactivateTenantMember(tenant.id, memberId);
 

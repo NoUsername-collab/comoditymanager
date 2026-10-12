@@ -22,7 +22,7 @@ export type { CloudPlan as DeprecatedCloudPlan };
 // ─── Add-on Modules ─────────────────────────────────────────────
 export type ModuleId =
   | "ical_sync"        // iCal sync (Booking, Airbnb)
-  | "invoicing"        // Facturare + e-Factura ANAF
+  | "invoicing"        // PDF invoices
   | "whatsapp"         // WhatsApp notifications
   | "guest_app"        // Alfred-style guest web app per stay
   | "public_page"      // Public booking page
@@ -62,10 +62,35 @@ export interface PlanConfig {
   maxProperties: number;
   /** Monthly transactional email cap; null = unlimited. Operator may override per tenant. */
   emailMonthlyCap: number | null;
+  /** Which outbound messages this plan may send. */
+  emailScope: PlanEmailScope;
 }
+
+export type PlanEmailScope = "none" | "confirmation" | "stay";
 
 // ─── Feature sets per tier ──────────────────────────────────────
 
+const BASIC_FEATURES: CoreFeature[] = [
+  "calendar",
+  "gantt",
+  "guest_files",
+  "bookings",
+  "themes",
+  "rooms_unlimited",
+];
+
+const LIGHT_FEATURES: CoreFeature[] = [
+  ...BASIC_FEATURES,
+  "email_notifications",
+];
+
+const PRO_FEATURES: CoreFeature[] = [
+  ...LIGHT_FEATURES,
+  "heatmap",
+  "custom_domain",
+];
+
+/** Previous ladder, kept for local and hybrid deployments. */
 const FREE_FEATURES: CoreFeature[] = [
   "calendar",
   "gantt",
@@ -102,48 +127,50 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
   free: {
     id: "free",
     mode: "cloud",
-    label: "Free",
+    label: "Basic",
     priceEur: 0,
-    maxRooms: 5,
+    maxRooms: Infinity,
     maxTeamMembers: 2,
-    coreFeatures: FREE_FEATURES,
+    coreFeatures: BASIC_FEATURES,
     includedModules: ["public_page", "guest_app"],
     showBranding: true,
     maxProperties: 1,
-    emailMonthlyCap: 300,
+    emailMonthlyCap: 0,
+    emailScope: "none",
   },
   essential: {
     id: "essential",
     mode: "cloud",
-    label: "Essential",
-    priceEur: 15,
-    maxRooms: 20,
-    maxTeamMembers: 5,
-    coreFeatures: ESSENTIAL_FEATURES,
-    includedModules: ["public_page", "guest_app", "ical_sync", "advanced_reports"],
-    showBranding: false,
+    label: "Light",
+    priceEur: 9,
+    maxRooms: Infinity,
+    maxTeamMembers: 2,
+    coreFeatures: LIGHT_FEATURES,
+    includedModules: ["public_page", "guest_app", "invoicing"],
+    showBranding: true,
     maxProperties: 1,
-    emailMonthlyCap: 2_000,
+    emailMonthlyCap: 300,
+    emailScope: "confirmation",
   },
   professional: {
     id: "professional",
     mode: "cloud",
-    label: "Professional",
-    priceEur: 35,
+    label: "PRO",
+    priceEur: 29,
     maxRooms: Infinity,
-    maxTeamMembers: Infinity,
-    coreFeatures: PROFESSIONAL_FEATURES,
+    maxTeamMembers: 8,
+    coreFeatures: PRO_FEATURES,
     includedModules: [
       "public_page",
       "guest_app",
-      "ical_sync",
       "invoicing",
+      "ical_sync",
       "advanced_reports",
-      // whatsapp = add-on only (Meta API has per-message cost passed to client)
     ],
     showBranding: false,
     maxProperties: 3,
-    emailMonthlyCap: null,
+    emailMonthlyCap: 2_000,
+    emailScope: "stay",
   },
   business: {
     id: "business",
@@ -167,6 +194,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     showBranding: false,
     maxProperties: 10,
     emailMonthlyCap: null,
+    emailScope: "stay",
   },
 
   // ── Local ──────────────────────────────────────────────────────
@@ -182,6 +210,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     showBranding: false,
     maxProperties: 1,
     emailMonthlyCap: 2_000,
+    emailScope: "stay",
   },
   local_professional: {
     id: "local_professional",
@@ -195,6 +224,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     showBranding: false,
     maxProperties: 1,
     emailMonthlyCap: null,
+    emailScope: "stay",
   },
   local_business: {
     id: "local_business",
@@ -213,6 +243,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     showBranding: false,
     maxProperties: 5,
     emailMonthlyCap: null,
+    emailScope: "stay",
   },
 
   // ── Hybrid ────────────────────────────────────────────────────
@@ -228,6 +259,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     showBranding: false,
     maxProperties: 1,
     emailMonthlyCap: 2_000,
+    emailScope: "stay",
   },
   hybrid_professional: {
     id: "hybrid_professional",
@@ -241,6 +273,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     showBranding: false,
     maxProperties: 1,
     emailMonthlyCap: null,
+    emailScope: "stay",
   },
   hybrid_business: {
     id: "hybrid_business",
@@ -259,6 +292,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     showBranding: false,
     maxProperties: 5,
     emailMonthlyCap: null,
+    emailScope: "stay",
   },
 };
 
@@ -284,7 +318,7 @@ export const MODULE_CATALOG: Record<ModuleId, ModuleInfo> = {
     label: "Facturare",
     icon: "receipt",
     pricePerMonth: 6,
-    description: "Facturi + e-Factura ANAF",
+    description: "Facturi PDF",
   },
   whatsapp: {
     id: "whatsapp",
