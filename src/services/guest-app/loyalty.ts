@@ -1,3 +1,4 @@
+import { accessCodeCandidates } from "@/domain/guest-app/access-code";
 import { randomBytes } from "node:crypto";
 import { cache } from "react";
 import {
@@ -310,15 +311,15 @@ export const resolveLoyaltyFromStayAccessCode = cache(
         return { ok: false, reason: "disabled" };
       }
 
-      const accessCode = rawCode.trim().toLowerCase();
-      if (!accessCode) return { ok: false, reason: "not_found" };
+      const accessCodes = accessCodeCandidates(rawCode);
+      if (!accessCodes) return { ok: false, reason: "not_found" };
 
       const { tenantId, supabase } = await getGuestAppPublicDb();
       const { data: accessRow, error } = await supabase
         .from("booking_guest_access")
         .select("booking_id, revoked_at")
         .eq("tenant_id", tenantId)
-        .ilike("access_code", accessCode)
+        .in("access_code", accessCodes)
         .maybeSingle();
 
       if (error) {

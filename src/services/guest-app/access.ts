@@ -1,3 +1,4 @@
+import { accessCodeCandidates } from "@/domain/guest-app/access-code";
 import { randomBytes } from "node:crypto";
 import { cache } from "react";
 import {
@@ -23,10 +24,6 @@ import { getGuestAppSettings, getGuestAppSettingsPublic } from "./settings";
 import { getGuestAppPublicDb } from "./public-db";
 import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { isGuestAppMigrationMissing } from "./map";
-
-function normalizeAccessCode(raw: string): string {
-  return raw.trim().toLowerCase();
-}
 
 function generateAccessCode(): string {
   return randomBytes(9).toString("base64url").slice(0, 12).toLowerCase();
@@ -175,8 +172,8 @@ export const resolveGuestAccessByCode = cache(async function resolveGuestAccessB
       return { ok: false, reason: "not_found" };
     }
 
-    const accessCode = normalizeAccessCode(rawCode);
-    if (!accessCode) return { ok: false, reason: "not_found" };
+    const accessCodes = accessCodeCandidates(rawCode);
+    if (!accessCodes) return { ok: false, reason: "not_found" };
 
     const settings = await getGuestAppSettingsPublic();
     if (!settings.enabled) return { ok: false, reason: "disabled" };
@@ -186,7 +183,7 @@ export const resolveGuestAccessByCode = cache(async function resolveGuestAccessB
       .from("booking_guest_access")
       .select("booking_id, access_code, revoked_at, issued_at")
       .eq("tenant_id", tenantId)
-      .ilike("access_code", accessCode)
+      .in("access_code", accessCodes)
       .maybeSingle();
 
     if (error) {
@@ -227,7 +224,7 @@ export const resolveGuestAccessByCode = cache(async function resolveGuestAccessB
 
     return {
       ok: true,
-      accessCode,
+      accessCode: String(accessRow.access_code),
       booking,
       settings,
     };
