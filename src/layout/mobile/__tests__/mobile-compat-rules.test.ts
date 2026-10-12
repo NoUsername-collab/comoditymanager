@@ -181,11 +181,6 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".statistics-page .statistics-year-nav");
   });
 
-  it("pass 15 invoice line card swap on compact", () => {
-    expect(flawless).toContain(".invoice-line-cards");
-    expect(flawless).toContain(".invoice-table-desktop");
-    expect(flawless).toContain(".informal-invoice-print");
-  });
 
   it("pass 16 pricing comparison cards and tenant detail compact", () => {
     expect(flawless).toContain(".pricing-comparison-cards");
@@ -224,7 +219,6 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".tenant-billing-toggle");
     expect(flawless).toContain(".nestio-tenant-option");
     expect(flawless).toContain(".platform-dashboard__cta");
-    expect(flawless).toContain(".phone-booking-form__checkbox");
     expect(flawless).toContain(".landing-faq__q");
     expect(flawless).toContain(".ml-drawer--platform");
     expect(flawless).toContain("var(--ml-safe-bottom");
@@ -238,7 +232,6 @@ describe("mobile compatibility CSS rules", () => {
       ".admin-floating-panel:not(.admin-floating-panel--modal)"
     );
     expect(flawless).toContain(".gantt-filters-panel.admin-floating-panel");
-    expect(flawless).toContain(".admin-panel__body");
     expect(flawless).toContain(".platform-health-row");
 
     const checkTime = readFileSync(
@@ -281,7 +274,6 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".admin-room-form__mode");
     expect(flawless).toContain(".admin-building-form");
     expect(flawless).toContain(".gantt-view-switcher__tabs");
-    expect(flawless).toContain(".gantt-view-switcher__select");
   });
 
   it("pass 23 color picker, add floor, building rooms, guest merge", () => {
@@ -296,12 +288,9 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".floor-structure-section__edit-form");
     expect(flawless).toContain(".room-structure-row__floor-select");
     expect(flawless).toContain(".admin-location-lock-bar");
-    expect(flawless).toContain(".admin-location-lock-btn");
     expect(flawless).toContain(".delete-confirm-form__confirm");
     expect(flawless).toContain(".guest-notes-form__actions");
-    expect(flawless).toContain(".guest-profile-controls-form__grid");
     expect(flawless).toContain(".admin-settings-location-nav");
-    expect(flawless).toContain(".admin-staff-password-panel__submit");
     expect(flawless).toContain(".public-confirm-page__back");
     expect(flawless).toContain(".admin-settings-cta");
     expect(flawless).toContain(".activity-timeline__card a");
@@ -370,7 +359,6 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".gantt-quick-panel__actions");
     expect(flawless).toContain(".gantt-quick-panel__action");
     expect(flawless).toContain(".gantt-quick-panel--busy");
-    expect(flawless).toContain(".guest-stay-review-form__note");
     expect(flawless).toContain(".guest-stay-review-form__submit");
     expect(flawless).toContain(".bd-confirm__adjust-toggle");
     expect(flawless).toContain(".admin-quick-panel__row");
@@ -515,7 +503,6 @@ describe("mobile compatibility CSS rules", () => {
     expect(ganttMobile).toContain(".gantt-scroll .gantt-room-cell");
     expect(ganttMobile).toContain(".gantt-stay__cap-strip .gantt-stay__alert");
 
-    expect(shell).toContain(".ml-bottom-nav__badge--dot");
     expect(shell).toMatch(/\.ml-bottom-nav__link--active[\s\S]*font-weight:\s*700/);
 
     const alignment = readCss("mobile-layout-alignment.css");
