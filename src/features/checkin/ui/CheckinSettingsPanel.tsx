@@ -9,6 +9,8 @@ import {
   settingsPartialChanged,
   useSettingsSaveFeedback,
 } from "@/hooks/useSettingsSaveFeedback";
+import { useSettingsDraft } from "@/hooks/useSettingsDraft";
+import { SettingsDraftSaveBar } from "@/components/admin/settings/SettingsDraftSaveBar";
 
 type Props = {
   settings: CheckinSettings;
@@ -34,26 +36,18 @@ function SettingRow({ label, description, children }: SettingRowProps) {
   );
 }
 
-/** Number field that saves when the operator is done typing (blur or Enter), not per keystroke. */
+/** Number field kept in the page draft; it is saved with the bottom bar. */
 function NumberSetting({
   value,
   min,
   max,
-  onCommit,
+  onChange,
 }: {
   value: number;
   min?: number;
   max?: number;
-  onCommit: (value: number) => void;
+  onChange: (value: number) => void;
 }) {
-  const [draft, setDraft] = useState(String(value));
-  useEffect(() => setDraft(String(value)), [value]);
-
-  function commit() {
-    const next = Number(draft) || 0;
-    if (next !== value) onCommit(next);
-  }
-
   return (
     <input
       type="number"
@@ -61,15 +55,8 @@ function NumberSetting({
       className="checkin-field__input"
       min={min}
       max={max}
-      value={draft}
-      onChange={(e) => setDraft(e.target.value)}
-      onBlur={commit}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          commit();
-        }
-      }}
+      value={Number.isFinite(value) ? value : ""}
+      onChange={(e) => onChange(Number(e.target.value) || 0)}
     />
   );
 }
@@ -88,6 +75,7 @@ function appendFormValue(fd: FormData, key: string, value: unknown) {
 
 export function CheckinSettingsPanel({ settings: initial }: Props) {
   const t = useTranslations("admin.pages.settings.checkin");
+  const tSettings = useTranslations("admin.pages.settings");
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState<CheckinSettings>(initial);
@@ -153,11 +141,23 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
     [savePartial]
   );
 
+  /** Amounts and percentages wait for the Save button in the bottom bar. */
+  const draft = useSettingsDraft(
+    {
+      checkin_min_payment_pct: settings.checkin_min_payment_pct,
+      checkin_deposit_amount: settings.checkin_deposit_amount,
+      early_checkin_fee: settings.early_checkin_fee,
+      early_checkout_fee: settings.early_checkout_fee,
+      late_checkout_fee: settings.late_checkout_fee,
+    },
+    (_values, changed) => savePartial(changed),
+  );
+
   return (
     <div className="checkin-settings">
       <h3 className="checkin-settings__title">{t("title")}</h3>
       <p className="checkin-settings__autosave" role="note">
-        {t("autosaveHint")}
+        {tSettings("saveModelHint")}
       </p>
 
       {/* ── Identitate & documente ──────────────────────────── */}
@@ -245,8 +245,8 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
             <NumberSetting
               min={1}
               max={100}
-              value={settings.checkin_min_payment_pct}
-              onCommit={(v) => persist({ checkin_min_payment_pct: v })}
+              value={draft.values.checkin_min_payment_pct}
+              onChange={(v) => draft.set("checkin_min_payment_pct", v)}
             />
           </SettingRow>
         )}
@@ -280,8 +280,8 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           <SettingRow label={t("depositAmount")}>
             <NumberSetting
               min={0}
-              value={settings.checkin_deposit_amount}
-              onCommit={(v) => persist({ checkin_deposit_amount: v })}
+              value={draft.values.checkin_deposit_amount}
+              onChange={(v) => draft.set("checkin_deposit_amount", v)}
             />
           </SettingRow>
         )}
@@ -325,8 +325,8 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           <SettingRow label={t("earlyCheckinFee")} description={t("policyFeeHint")}>
             <NumberSetting
               min={0}
-              value={settings.early_checkin_fee}
-              onCommit={(v) => persist({ early_checkin_fee: v })}
+              value={draft.values.early_checkin_fee}
+              onChange={(v) => draft.set("early_checkin_fee", v)}
             />
           </SettingRow>
         )}
@@ -351,8 +351,8 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           <SettingRow label={t("earlyCheckoutFee")} description={t("policyFeeHint")}>
             <NumberSetting
               min={0}
-              value={settings.early_checkout_fee}
-              onCommit={(v) => persist({ early_checkout_fee: v })}
+              value={draft.values.early_checkout_fee}
+              onChange={(v) => draft.set("early_checkout_fee", v)}
             />
           </SettingRow>
         )}
@@ -377,8 +377,8 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           <SettingRow label={t("lateCheckoutFee")} description={t("policyFeeHint")}>
             <NumberSetting
               min={0}
-              value={settings.late_checkout_fee}
-              onCommit={(v) => persist({ late_checkout_fee: v })}
+              value={draft.values.late_checkout_fee}
+              onChange={(v) => draft.set("late_checkout_fee", v)}
             />
           </SettingRow>
         )}
@@ -455,6 +455,8 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           </label>
         </SettingRow>
       </details>
+
+      <SettingsDraftSaveBar draft={draft} errorFallback={t("saveError")} />
     </div>
   );
 }

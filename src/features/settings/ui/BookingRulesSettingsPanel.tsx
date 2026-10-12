@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/features/checkin/ui/import-checkin-styles";
 import { updateBookingRulesSettingsAction } from "@/features/settings/actions";
@@ -8,6 +8,8 @@ import {
   settingsPartialChanged,
   useSettingsSaveFeedback,
 } from "@/hooks/useSettingsSaveFeedback";
+import { useSettingsDraft, type SettingsSaveResult } from "@/hooks/useSettingsDraft";
+import { SettingsDraftSaveBar } from "@/components/admin/settings/SettingsDraftSaveBar";
 import {
   buildCancellationPolicyText,
   type BookingRulesSettings,
@@ -20,8 +22,6 @@ type Props = {
   settings: BookingRulesSettings;
   locale: "ro" | "en" | "bg";
 };
-
-const SAVE_DELAY_MS = 700;
 
 function newSeasonId(): string {
   return `season-${Date.now().toString(36)}`;
@@ -54,138 +54,117 @@ export function BookingRulesSettingsPanel({
   locale,
 }: Props) {
   const t = useTranslations("admin.pages.settings.booking");
+  const tSettings = useTranslations("admin.pages.settings");
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
-  const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState(initial);
 
-  const policyPreview = useMemo(
-    () => buildCancellationPolicyText(settings, locale),
-    [settings, locale]
-  );
-
-  // Edits apply at once on screen; the server gets one merged save after a short pause,
-  // so typing a policy text or a price is not a request (and toast) per keystroke.
-  const pendingRef = useRef<Partial<BookingRulesSettings>>({});
-  const baseRef = useRef(settings);
-  const timerRef = useRef<number | null>(null);
-  const flushRef = useRef<() => void>(() => {});
-
-  function save(changes: Partial<BookingRulesSettings>) {
-    if (!settingsPartialChanged(settings, changes)) return;
-    if (Object.keys(pendingRef.current).length === 0) baseRef.current = settings;
-    pendingRef.current = { ...pendingRef.current, ...changes };
-    setSettings((current) => ({ ...current, ...changes }));
-    if (timerRef.current !== null) window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => flushRef.current(), SAVE_DELAY_MS);
+  async function send(partial: Partial<BookingRulesSettings>): Promise<SettingsSaveResult> {
+    const fd = new FormData();
+    if (partial.cancellationPolicyType !== undefined) {
+      fd.set("cancellation_policy_type", partial.cancellationPolicyType);
+    }
+    if (partial.cancellationPolicyDays !== undefined) {
+      fd.set("cancellation_policy_days", String(partial.cancellationPolicyDays));
+    }
+    if (partial.cancellationPolicyCustomText !== undefined) {
+      fd.set("cancellation_policy_custom_text", partial.cancellationPolicyCustomText ?? "");
+    }
+    if (partial.pricingWeekendEnabled !== undefined) {
+      fd.set("pricing_weekend_enabled", partial.pricingWeekendEnabled ? "1" : "0");
+    }
+    if (partial.pricingWeekendMode !== undefined) {
+      fd.set("pricing_weekend_mode", partial.pricingWeekendMode);
+    }
+    if (partial.pricingWeekendMultiplier !== undefined) {
+      fd.set("pricing_weekend_multiplier", String(partial.pricingWeekendMultiplier));
+    }
+    if (partial.pricingSeasons !== undefined) {
+      fd.set("pricing_seasons", JSON.stringify(partial.pricingSeasons));
+    }
+    const result = await updateBookingRulesSettingsAction(fd);
+    if (result.ok) {
+      setSettings((current) => ({ ...current, ...partial }));
+      notifySuccess(t("saved"));
+    } else {
+      notifyError(t("saveError"), result.error);
+    }
+    return result;
   }
 
-  flushRef.current = () => {
-    timerRef.current = null;
-    const partial = pendingRef.current;
-    if (Object.keys(partial).length === 0) return;
-    pendingRef.current = {};
-    const previous = baseRef.current;
+  /** Pickers and switches save as soon as they change. */
+  function saveNow(partial: Partial<BookingRulesSettings>) {
+    if (!settingsPartialChanged(settings, partial)) return;
+    const previous = settings;
+    setSettings((current) => ({ ...current, ...partial }));
+    void send(partial).then((result) => {
+      if (!result.ok) setSettings(previous);
+    });
+  }
 
-    void (async () => {
-      setIsSaving(true);
-      try {
-        const fd = new FormData();
-        if (partial.cancellationPolicyType !== undefined) {
-          fd.set("cancellation_policy_type", partial.cancellationPolicyType);
-        }
-        if (partial.cancellationPolicyDays !== undefined) {
-          fd.set("cancellation_policy_days", String(partial.cancellationPolicyDays));
-        }
-        if (partial.cancellationPolicyCustomText !== undefined) {
-          fd.set(
-            "cancellation_policy_custom_text",
-            partial.cancellationPolicyCustomText ?? ""
-          );
-        }
-        if (partial.pricingWeekendEnabled !== undefined) {
-          fd.set("pricing_weekend_enabled", partial.pricingWeekendEnabled ? "1" : "0");
-        }
-        if (partial.pricingWeekendMode !== undefined) {
-          fd.set("pricing_weekend_mode", partial.pricingWeekendMode);
-        }
-        if (partial.pricingWeekendMultiplier !== undefined) {
-          fd.set(
-            "pricing_weekend_multiplier",
-            String(partial.pricingWeekendMultiplier)
-          );
-        }
-        if (partial.pricingSeasons !== undefined) {
-          fd.set("pricing_seasons", JSON.stringify(partial.pricingSeasons));
-        }
-
-        const result = await updateBookingRulesSettingsAction(fd);
-        if (result.ok) {
-          notifySuccess(t("saved"));
-        } else {
-          notifyError(result.error ?? t("saveError"));
-          revert();
-        }
-      } catch (e) {
-        notifyError(
-          t("saveError"),
-          e instanceof Error ? e.message : undefined
-        );
-        revert();
-      } finally {
-        setIsSaving(false);
-      }
-    })();
-
-    /** Undo only the fields this save carried; later edits stay on screen. */
-    function revert() {
-      const restored: Partial<BookingRulesSettings> = {};
-      for (const key of Object.keys(partial) as (keyof BookingRulesSettings)[]) {
-        Object.assign(restored, { [key]: previous[key] });
-      }
-      setSettings((current) => ({ ...current, ...restored }));
-    }
+  /** Typed values wait for the Save button in the bottom bar. */
+  const draft = useSettingsDraft(
+    {
+      cancellationPolicyDays: settings.cancellationPolicyDays,
+      cancellationPolicyCustomText: settings.cancellationPolicyCustomText ?? "",
+      pricingWeekendMultiplier: settings.pricingWeekendMultiplier,
+      pricingSeasons: settings.pricingSeasons,
+    },
+    (_values, changed) =>
+      send({
+        ...changed,
+        ...(changed.cancellationPolicyCustomText !== undefined
+          ? { cancellationPolicyCustomText: changed.cancellationPolicyCustomText.trim() || null }
+          : {}),
+      }),
+  );
+  const view: BookingRulesSettings = {
+    ...settings,
+    ...draft.values,
+    cancellationPolicyCustomText: draft.values.cancellationPolicyCustomText || null,
   };
 
-  // Leaving the page within the pause still saves what was typed.
-  useEffect(() => () => flushRef.current(), []);
+  const policyPreview = useMemo(
+    () => buildCancellationPolicyText(view, locale),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- view is rebuilt each render from these
+    [settings, draft.values, locale],
+  );
 
   function updateSeason(index: number, patch: Partial<PricingSeason>) {
-    const next = settings.pricingSeasons.map((season, i) =>
-      i === index ? { ...season, ...patch } : season
+    draft.set(
+      "pricingSeasons",
+      view.pricingSeasons.map((season, i) => (i === index ? { ...season, ...patch } : season)),
     );
-    save({ pricingSeasons: next });
   }
 
   function addSeason() {
-    if (settings.pricingSeasons.length >= 8) return;
-    save({
-      pricingSeasons: [
-        ...settings.pricingSeasons,
-        {
-          id: newSeasonId(),
-          name: t("seasonDefaultName"),
-          startMonth: 6,
-          startDay: 1,
-          endMonth: 8,
-          endDay: 31,
-          multiplier: 1.2,
-        },
-      ],
-    });
+    if (view.pricingSeasons.length >= 8) return;
+    draft.set("pricingSeasons", [
+      ...view.pricingSeasons,
+      {
+        id: newSeasonId(),
+        name: t("seasonDefaultName"),
+        startMonth: 6,
+        startDay: 1,
+        endMonth: 8,
+        endDay: 31,
+        multiplier: 1.2,
+      },
+    ]);
   }
 
   function removeSeason(index: number) {
-    save({
-      pricingSeasons: settings.pricingSeasons.filter((_, i) => i !== index),
-    });
+    draft.set(
+      "pricingSeasons",
+      view.pricingSeasons.filter((_, i) => i !== index),
+    );
   }
 
-  const weekendPercent = Math.round((settings.pricingWeekendMultiplier - 1) * 100);
+  const weekendPercent = Math.round((view.pricingWeekendMultiplier - 1) * 100);
 
   return (
     <div className="checkin-settings">
       <p className="checkin-settings__autosave" role="note">
-        {t("autosaveHint")}
+        {tSettings("saveModelHint")}
       </p>
       <h3 className="checkin-settings__title">{t("cancellationTitle")}</h3>
 
@@ -194,7 +173,7 @@ export function BookingRulesSettingsPanel({
           className="checkin-field__input"
           value={settings.cancellationPolicyType}
           onChange={(e) =>
-            save({
+            saveNow({
               cancellationPolicyType: e.target.value as CancellationPolicyType,
             })
           }
@@ -213,14 +192,12 @@ export function BookingRulesSettingsPanel({
             min={0}
             max={90}
             className="checkin-field__input checkin-field__input--narrow"
-            value={settings.cancellationPolicyDays}
+            value={view.cancellationPolicyDays}
             onChange={(e) =>
-              save({
-                cancellationPolicyDays: Math.min(
-                  90,
-                  Math.max(0, Number(e.target.value) || 0)
-                ),
-              })
+              draft.set(
+                "cancellationPolicyDays",
+                Math.min(90, Math.max(0, Number(e.target.value) || 0)),
+              )
             }
           />
         </SettingRow>
@@ -231,10 +208,8 @@ export function BookingRulesSettingsPanel({
           <textarea
             className="checkin-field__input checkin-field__input--wide"
             rows={4}
-            value={settings.cancellationPolicyCustomText ?? ""}
-            onChange={(e) =>
-              save({ cancellationPolicyCustomText: e.target.value || null })
-            }
+            value={draft.values.cancellationPolicyCustomText}
+            onChange={(e) => draft.set("cancellationPolicyCustomText", e.target.value)}
           />
         </SettingRow>
       ) : null}
@@ -248,7 +223,7 @@ export function BookingRulesSettingsPanel({
           <input
             type="checkbox"
             checked={settings.pricingWeekendEnabled}
-            onChange={(e) => save({ pricingWeekendEnabled: e.target.checked })}
+            onChange={(e) => saveNow({ pricingWeekendEnabled: e.target.checked })}
           />
           <span>{settings.pricingWeekendEnabled ? t("enabled") : t("disabled")}</span>
         </label>
@@ -261,7 +236,7 @@ export function BookingRulesSettingsPanel({
               className="checkin-field__input"
               value={settings.pricingWeekendMode}
               onChange={(e) =>
-                save({ pricingWeekendMode: e.target.value as WeekendPricingMode })
+                saveNow({ pricingWeekendMode: e.target.value as WeekendPricingMode })
               }
             >
               <option value="fri_sat">{t("weekendFriSat")}</option>
@@ -278,7 +253,7 @@ export function BookingRulesSettingsPanel({
                 value={weekendPercent}
                 onChange={(e) => {
                   const pct = Math.min(400, Math.max(0, Number(e.target.value) || 0));
-                  save({ pricingWeekendMultiplier: 1 + pct / 100 });
+                  draft.set("pricingWeekendMultiplier", 1 + pct / 100);
                 }}
               />
               <span>%</span>
@@ -297,17 +272,17 @@ export function BookingRulesSettingsPanel({
             type="button"
             className="checkin-stepper__btn checkin-stepper__btn--secondary"
             onClick={addSeason}
-            disabled={isSaving || settings.pricingSeasons.length >= 8}
+            disabled={view.pricingSeasons.length >= 8}
           >
             {t("addSeason")}
           </button>
         </div>
 
-        {settings.pricingSeasons.length === 0 ? (
+        {view.pricingSeasons.length === 0 ? (
           <p className="settings-season-empty">{t("seasonsEmpty")}</p>
         ) : (
           <div className="settings-season-list">
-            {settings.pricingSeasons.map((season, index) => (
+            {view.pricingSeasons.map((season, index) => (
               <div key={season.id} className="settings-season-card">
                 <input
                   className="checkin-field__input"
@@ -376,6 +351,8 @@ export function BookingRulesSettingsPanel({
           </div>
         )}
       </div>
+
+      <SettingsDraftSaveBar draft={draft} errorFallback={t("saveError")} />
     </div>
   );
 }

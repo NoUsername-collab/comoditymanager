@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useSettingsSaveFeedback } from "@/hooks/useSettingsSaveFeedback";
-import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
 import { updateTeamPermissionsAction } from "@/features/settings/actions";
 import {
   PERMISSION_GROUP_IDS,
@@ -48,27 +47,24 @@ export function TeamPermissionsPanel({ permissions: initial }: Props) {
   const [permissions, setPermissions] = useState(initial);
   const [pending, startTransition] = useTransition();
 
+  /** Each tick saves at once, like every other switch in settings. */
   function setRolePermission(
     role: "admin" | "operator",
     group: PermissionGroupId,
     value: boolean,
   ) {
-    setPermissions((prev) => ({
-      ...prev,
-      [role]: { ...prev[role], [group]: value },
-    }));
-  }
-
-  function save() {
+    const previous = permissions;
+    const next = { ...permissions, [role]: { ...permissions[role], [group]: value } };
+    setPermissions(next);
     startTransition(async () => {
       const fd = new FormData();
-      fd.set("team_permissions", JSON.stringify(permissions));
+      fd.set("team_permissions", JSON.stringify(next));
       const res = await updateTeamPermissionsAction(fd);
       if (res.ok) {
         notifySuccess(t("saved"));
       } else {
-        notifyError(res.error ?? t("saveError"));
-        setPermissions(initial);
+        notifyError(t("saveError"), res.error);
+        setPermissions(previous);
       }
     });
   }
@@ -107,17 +103,6 @@ export function TeamPermissionsPanel({ permissions: initial }: Props) {
           </article>
         ))}
       </div>
-
-      <SettingsSaveBar status={pending ? "saving" : "idle"}>
-        <button
-          type="button"
-          className="admin-btn admin-btn--primary admin-btn--lg"
-          disabled={pending}
-          onClick={save}
-        >
-          {pending ? t("saving") : t("save")}
-        </button>
-      </SettingsSaveBar>
     </div>
   );
 }

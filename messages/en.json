@@ -1110,6 +1110,10 @@
         "navSearchEmpty": "No sections match your search.",
         "quickJumpAria": "Quick jump between settings sections",
         "allSaved": "All changes saved.",
+        "saveModelHint": "Switches and choices save right away. What you type (text, amounts, percentages) you save with the button below.",
+        "saveBarSave": "Save",
+        "saveBarSaving": "Saving…",
+        "saveBarDiscard": "Discard",
         "saveBarAria": "Settings save actions",
         "livePreview": "Live preview",
         "livePreviewAria": "Public site preview",
@@ -1193,7 +1197,6 @@
         "emailTitle": "Email notifications",
         "emailSubtitle": "Configure which emails are sent automatically",
         "email": {
-          "autosaveHint": "Changes save automatically when you leave a field.",
           "advancedTitle": "Advanced settings",
           "advancedHint": "Your own sender address and the footer text. Usually fine as they are.",
           "masterToggleTitle": "General status",
@@ -1241,8 +1244,6 @@
           "roleOperator": "Receptionist",
           "roleOwner": "Owner",
           "ownerFullAccess": "Full access — cannot be changed",
-          "save": "Save permissions",
-          "saving": "Saving…",
           "saved": "Permissions saved",
           "saveError": "Save error",
           "groups": {
@@ -1334,7 +1335,6 @@
           "hint": "Housekeeping needs a gap between departure and arrival on the same calendar day."
         },
         "checkin": {
-          "autosaveHint": "Changes save automatically as soon as you change an option.",
           "advancedTitle": "Advanced settings",
           "advancedHint": "Keys, groups, people per room and edits after check-out. Usually fine as they are.",
           "sectionArrivals": "Special arrivals and departures",
@@ -1399,7 +1399,6 @@
           "touristSheetAddress": "Property address"
         },
         "booking": {
-          "autosaveHint": "Changes save automatically shortly after you stop typing.",
           "saved": "Settings saved",
           "saveError": "Could not save",
           "cancellationTitle": "Cancellation policy",
@@ -1442,9 +1441,6 @@
           "pageDesc": "VAT, invoice series, and tourist register / ANAF data",
           "title": "Tax & billing",
           "subtitle": "The details on your invoices and the tourist sheet. Press “Edit” to fill them in or change them.",
-          "edit": "Edit",
-          "save": "Save",
-          "cancel": "Cancel",
           "saved": "Fiscal settings saved",
           "saveError": "Could not save",
           "saveMissingRow": "Your property settings aren't set up yet. Contact Zalmox support.",

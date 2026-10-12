@@ -18,6 +18,8 @@ import {
   settingsPartialChanged,
   useSettingsSaveFeedback,
 } from "@/hooks/useSettingsSaveFeedback";
+import { useSettingsDraft, type SettingsSaveResult } from "@/hooks/useSettingsDraft";
+import { SettingsDraftSaveBar } from "@/components/admin/settings/SettingsDraftSaveBar";
 
 type Props = {
   country: TenantCountry;
@@ -72,10 +74,6 @@ function buildDraft(
   tenantFiscalSettings: TenantFiscalSettingsRecord
 ): FiscalDraft {
   const profile = getCountryFiscalProfile(country);
-  const effectiveRate = resolveInvoiceVatRate(
-    country,
-    bookingRules.invoiceVatRate
-  );
   return {
     taxId: checkinSettings.fisa_owner_cui ?? "",
     regCom: bookingRules.invoiceSellerRegCom ?? "",
@@ -105,16 +103,15 @@ export function FiscalBillingSettingsPanel({
   const t = useTranslations("admin.pages.settings.fiscal");
   const tCheckin = useTranslations("admin.pages.settings.checkin");
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [editing, setEditing] = useState(false);
+  // Owners edit in place; admins only read the summary.
+  const editing = !readOnly;
   const [bookingRules, setBookingRules] = useState(initialBooking);
   const [checkinSettings, setCheckinSettings] = useState(initialCheckin);
   const [tenantFiscalSettings, setTenantFiscalSettings] =
     useState(initialTenantFiscal);
-  const [draft, setDraft] = useState(() =>
-    buildDraft(initialBooking, initialCheckin, country, initialTenantFiscal)
-  );
+  const saved = buildDraft(bookingRules, checkinSettings, country, tenantFiscalSettings);
+  /** Switch positions shown while their save is on the way. */
+  const [pendingControls, setPendingControls] = useState<Partial<FiscalDraft>>({});
 
   const profile = useMemo(() => getCountryFiscalProfile(country), [country]);
 
@@ -131,20 +128,8 @@ export function FiscalBillingSettingsPanel({
     bookingRules.invoiceVatRate
   );
 
-  function startEdit() {
-    setDraft(buildDraft(bookingRules, checkinSettings, country, tenantFiscalSettings));
-    setEditing(true);
-  }
-
-  function cancelEdit() {
-    setSaveError(null);
-    setIsSaving(false);
-    setDraft(buildDraft(bookingRules, checkinSettings, country, tenantFiscalSettings));
-    setEditing(false);
-  }
-
-  function saveDraft() {
-    setSaveError(null);
+  /** Saves whatever in `draft` differs from what is stored. */
+  async function persist(draft: FiscalDraft): Promise<SettingsSaveResult> {
     const nextBooking: Partial<BookingRulesSettings> = {};
     const nextCheckin: Partial<CheckinSettings> = {};
 
@@ -204,75 +189,82 @@ export function FiscalBillingSettingsPanel({
         nextFiscal.anafEnv !== undefined ||
         nextFiscal.anafCif !== undefined);
     if (!bookingChanged && !checkinChanged && !fiscalChanged) {
-      setEditing(false);
-      return;
+      return { ok: true };
     }
 
-    void (async () => {
-      setIsSaving(true);
-      try {
-        const fd = new FormData();
-        if (nextBooking.invoiceSeries !== undefined) {
-          fd.set("invoice_series", nextBooking.invoiceSeries);
-        }
-        if (nextBooking.invoiceSellerRegCom !== undefined) {
-          fd.set("invoice_seller_reg_com", nextBooking.invoiceSellerRegCom ?? "");
-        }
-        if (nextBooking.invoiceVatEnabled !== undefined) {
-          fd.set("invoice_vat_enabled", nextBooking.invoiceVatEnabled ? "true" : "false");
-        }
-        if (nextBooking.invoiceVatRate !== undefined) {
-          fd.set(
-            "invoice_vat_rate",
-            nextBooking.invoiceVatRate != null ? String(nextBooking.invoiceVatRate) : ""
-          );
-        }
-        if (nextBooking.invoicePricesIncludeVat !== undefined) {
-          fd.set(
-            "invoice_prices_include_vat",
-            nextBooking.invoicePricesIncludeVat ? "true" : "false"
-          );
-        }
-        if (nextCheckin.fisa_owner_cui !== undefined) {
-          fd.set("fisa_owner_cui", nextCheckin.fisa_owner_cui ?? "");
-        }
-        if (nextCheckin.fisa_tourism_license !== undefined) {
-          fd.set("fisa_tourism_license", nextCheckin.fisa_tourism_license ?? "");
-        }
-        if (fiscalChanged) {
-          fd.set("fiscal_provider", draft.fiscalProvider);
-          fd.set("anaf_enabled", draft.anafEnabled ? "true" : "false");
-          fd.set("anaf_env", draft.anafEnv);
-          fd.set("anaf_cif", draft.anafCif);
-        }
+    const fd = new FormData();
+    if (nextBooking.invoiceSeries !== undefined) {
+      fd.set("invoice_series", nextBooking.invoiceSeries);
+    }
+    if (nextBooking.invoiceSellerRegCom !== undefined) {
+      fd.set("invoice_seller_reg_com", nextBooking.invoiceSellerRegCom ?? "");
+    }
+    if (nextBooking.invoiceVatEnabled !== undefined) {
+      fd.set("invoice_vat_enabled", nextBooking.invoiceVatEnabled ? "true" : "false");
+    }
+    if (nextBooking.invoiceVatRate !== undefined) {
+      fd.set(
+        "invoice_vat_rate",
+        nextBooking.invoiceVatRate != null ? String(nextBooking.invoiceVatRate) : ""
+      );
+    }
+    if (nextBooking.invoicePricesIncludeVat !== undefined) {
+      fd.set(
+        "invoice_prices_include_vat",
+        nextBooking.invoicePricesIncludeVat ? "true" : "false"
+      );
+    }
+    if (nextCheckin.fisa_owner_cui !== undefined) {
+      fd.set("fisa_owner_cui", nextCheckin.fisa_owner_cui ?? "");
+    }
+    if (nextCheckin.fisa_tourism_license !== undefined) {
+      fd.set("fisa_tourism_license", nextCheckin.fisa_tourism_license ?? "");
+    }
+    if (fiscalChanged) {
+      fd.set("fiscal_provider", draft.fiscalProvider);
+      fd.set("anaf_enabled", draft.anafEnabled ? "true" : "false");
+      fd.set("anaf_env", draft.anafEnv);
+      fd.set("anaf_cif", draft.anafCif);
+    }
 
-        const result = await updateFiscalBillingSettingsAction(fd);
-        if (!result.ok) {
-          setSaveError(result.error ?? t("saveError"));
-          notifyError(t("saveError"), result.error ?? "");
-          return;
-        }
+    const result = await updateFiscalBillingSettingsAction(fd);
+    if (!result.ok) {
+      notifyError(t("saveError"), result.error ?? "");
+      return { ok: false, error: result.error };
+    }
 
-        const updatedBooking = { ...bookingRules, ...nextBooking };
-        const updatedCheckin = { ...checkinSettings, ...nextCheckin };
-        const updatedFiscal = { ...tenantFiscalSettings, ...nextFiscal };
-        setBookingRules(updatedBooking);
-        setCheckinSettings(updatedCheckin);
-        setTenantFiscalSettings(updatedFiscal);
-        setDraft(
-          buildDraft(updatedBooking, updatedCheckin, country, updatedFiscal)
-        );
-        setEditing(false);
-        notifySuccess(t("saved"));
-      } catch (e) {
-        const message = e instanceof Error ? e.message : t("saveError");
-        setSaveError(message);
-        notifyError(t("saveError"), message);
-      } finally {
-        setIsSaving(false);
-      }
-    })();
+    setBookingRules((current) => ({ ...current, ...nextBooking }));
+    setCheckinSettings((current) => ({ ...current, ...nextCheckin }));
+    setTenantFiscalSettings((current) => ({ ...current, ...nextFiscal }));
+    notifySuccess(t("saved"));
+    return { ok: true };
   }
+
+  /** Switches and pickers save at once; on failure they flip back. */
+  function saveControl(partial: Partial<FiscalDraft>) {
+    setPendingControls((current) => ({ ...current, ...partial }));
+    void persist({ ...saved, ...partial }).finally(() => {
+      setPendingControls((current) => {
+        const next = { ...current };
+        for (const key of Object.keys(partial) as (keyof FiscalDraft)[]) delete next[key];
+        return next;
+      });
+    });
+  }
+
+  /** Typed values wait for the Save button in the bottom bar. */
+  const text = useSettingsDraft(
+    {
+      taxId: saved.taxId,
+      regCom: saved.regCom,
+      tourismLicense: saved.tourismLicense,
+      invoiceSeries: saved.invoiceSeries,
+      vatRate: saved.vatRate,
+      anafCif: saved.anafCif,
+    },
+    (values) => persist({ ...saved, ...values }),
+  );
+  const draft: FiscalDraft = { ...saved, ...pendingControls, ...text.values };
 
   function labelFor(key: "taxId" | "regCom" | "tourismLicense") {
     const map = {
@@ -290,40 +282,7 @@ export function FiscalBillingSettingsPanel({
           <h3 className="checkin-settings__title">{t("title")}</h3>
           <p className="checkin-settings__note">{t("subtitle")}</p>
         </div>
-        {!readOnly && !editing ? (
-          <button
-            type="button"
-            className="checkin-stepper__btn checkin-stepper__btn--secondary"
-            onClick={startEdit}
-          >
-            {t("edit")}
-          </button>
-        ) : !readOnly && editing ? (
-          <div className="fiscal-settings__edit-actions">
-            <button
-              type="button"
-              className="checkin-stepper__btn checkin-stepper__btn--primary"
-              disabled={isSaving}
-              onClick={saveDraft}
-            >
-              {isSaving ? t("save") + "…" : t("save")}
-            </button>
-            <button
-              type="button"
-              className="checkin-stepper__btn checkin-stepper__btn--secondary"
-              onClick={cancelEdit}
-            >
-              {t("cancel")}
-            </button>
-          </div>
-        ) : null}
       </div>
-
-      {saveError ? (
-        <p className="checkin-sheet-save__error" role="alert">
-          {saveError}
-        </p>
-      ) : null}
 
       <div className="fiscal-settings__profile">
         <div className="fiscal-settings__country-badge">
@@ -434,7 +393,7 @@ export function FiscalBillingSettingsPanel({
             <input
               className="checkin-field__input"
               value={draft.taxId}
-              onChange={(e) => setDraft({ ...draft, taxId: e.target.value })}
+              onChange={(e) => text.set("taxId", e.target.value)}
             />
           </SettingRow>
 
@@ -442,7 +401,7 @@ export function FiscalBillingSettingsPanel({
             <input
               className="checkin-field__input"
               value={draft.regCom}
-              onChange={(e) => setDraft({ ...draft, regCom: e.target.value })}
+              onChange={(e) => text.set("regCom", e.target.value)}
             />
           </SettingRow>
 
@@ -451,7 +410,7 @@ export function FiscalBillingSettingsPanel({
               className="checkin-field__input"
               value={draft.tourismLicense}
               onChange={(e) =>
-                setDraft({ ...draft, tourismLicense: e.target.value })
+                text.set("tourismLicense", e.target.value)
               }
             />
           </SettingRow>
@@ -471,7 +430,7 @@ export function FiscalBillingSettingsPanel({
               value={draft.invoiceSeries}
               maxLength={12}
               onChange={(e) =>
-                setDraft({ ...draft, invoiceSeries: e.target.value.toUpperCase() })
+                text.set("invoiceSeries", e.target.value.toUpperCase())
               }
             />
           </SettingRow>
@@ -482,7 +441,7 @@ export function FiscalBillingSettingsPanel({
                 type="checkbox"
                 checked={draft.vatEnabled}
                 onChange={(e) =>
-                  setDraft({ ...draft, vatEnabled: e.target.checked })
+                  saveControl({ vatEnabled: e.target.checked })
                 }
               />
               <span className="checkin-toggle__slider" />
@@ -507,7 +466,7 @@ export function FiscalBillingSettingsPanel({
                     className="checkin-field__input checkin-field__input--narrow"
                     value={draft.vatRate}
                     onChange={(e) =>
-                      setDraft({ ...draft, vatRate: e.target.value })
+                      text.set("vatRate", e.target.value)
                     }
                   />
                   <span>%</span>
@@ -519,7 +478,7 @@ export function FiscalBillingSettingsPanel({
                     type="checkbox"
                     checked={draft.pricesIncludeVat}
                     onChange={(e) =>
-                      setDraft({ ...draft, pricesIncludeVat: e.target.checked })
+                      saveControl({ pricesIncludeVat: e.target.checked })
                     }
                   />
                   <span className="checkin-toggle__slider" />
@@ -539,8 +498,7 @@ export function FiscalBillingSettingsPanel({
               className="checkin-field__input"
               value={draft.fiscalProvider}
               onChange={(e) =>
-                setDraft({
-                  ...draft,
+                saveControl({
                   fiscalProvider:
                     e.target.value === "anaf" ? "anaf" : "internal_pdf",
                 })
@@ -558,7 +516,7 @@ export function FiscalBillingSettingsPanel({
                     type="checkbox"
                     checked={draft.anafEnabled}
                     onChange={(e) =>
-                      setDraft({ ...draft, anafEnabled: e.target.checked })
+                      saveControl({ anafEnabled: e.target.checked })
                     }
                   />
                   <span className="checkin-toggle__slider" />
@@ -569,8 +527,7 @@ export function FiscalBillingSettingsPanel({
                   className="checkin-field__input checkin-field__input--narrow"
                   value={draft.anafEnv}
                   onChange={(e) =>
-                    setDraft({
-                      ...draft,
+                    saveControl({
                       anafEnv: e.target.value === "prod" ? "prod" : "test",
                     })
                   }
@@ -584,7 +541,7 @@ export function FiscalBillingSettingsPanel({
                   className="checkin-field__input"
                   value={draft.anafCif}
                   placeholder={checkinSettings.fisa_owner_cui ?? ""}
-                  onChange={(e) => setDraft({ ...draft, anafCif: e.target.value })}
+                  onChange={(e) => text.set("anafCif", e.target.value)}
                 />
               </SettingRow>
             </>
@@ -593,6 +550,8 @@ export function FiscalBillingSettingsPanel({
       ) : null}
 
       <p className="checkin-settings__note">{t("invoiceNextHint")}</p>
+
+      {editing ? <SettingsDraftSaveBar draft={text} errorFallback={t("saveError")} /> : null}
     </div>
   );
 }

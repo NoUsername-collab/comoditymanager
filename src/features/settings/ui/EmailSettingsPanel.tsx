@@ -14,6 +14,8 @@ import {
   settingsPartialChanged,
   useSettingsSaveFeedback,
 } from "@/hooks/useSettingsSaveFeedback";
+import { useSettingsDraft } from "@/hooks/useSettingsDraft";
+import { SettingsDraftSaveBar } from "@/components/admin/settings/SettingsDraftSaveBar";
 
 type Props = {
   settings: EmailSettings;
@@ -49,15 +51,10 @@ export function EmailSettingsPanel({
   identity,
 }: Props) {
   const t = useTranslations("admin.pages.settings.email");
+  const tSettings = useTranslations("admin.pages.settings");
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState<EmailSettings>(initial);
-  const [fromName, setFromName] = useState(initial.email_from_name ?? "");
-  const [fromAddress, setFromAddress] = useState(initial.email_from_address ?? "");
-  const [replyTo, setReplyTo] = useState(initial.email_reply_to ?? "");
-  const [customFooter, setCustomFooter] = useState(
-    initial.email_custom_footer ?? ""
-  );
   const [isSendingTest, setIsSendingTest] = useState(false);
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
@@ -65,10 +62,6 @@ export function EmailSettingsPanel({
   useEffect(() => {
     setSettings(initial);
     settingsRef.current = initial;
-    setFromName(initial.email_from_name ?? "");
-    setFromAddress(initial.email_from_address ?? "");
-    setReplyTo(initial.email_reply_to ?? "");
-    setCustomFooter(initial.email_custom_footer ?? "");
   }, [initial]);
 
   const persist = useCallback(
@@ -112,6 +105,34 @@ export function EmailSettingsPanel({
     [notifyError, notifySuccess, t]
   );
 
+  const text = useSettingsDraft(
+    {
+      email_from_name: settings.email_from_name ?? "",
+      email_reply_to: settings.email_reply_to ?? "",
+      email_from_address: settings.email_from_address ?? "",
+      email_custom_footer: settings.email_custom_footer ?? "",
+    },
+    async (_values, changed) => {
+      const fd = new FormData();
+      const partial: Partial<EmailSettings> = {};
+      for (const [key, value] of Object.entries(changed)) {
+        const clean = String(value ?? "").trim() || null;
+        fd.set(key, clean ?? "");
+        (partial as Record<string, string | null>)[key] = clean;
+      }
+      const result = await updateEmailSettingsAction(fd);
+      if (result.ok) {
+        const updated = { ...settingsRef.current, ...partial };
+        settingsRef.current = updated;
+        setSettings(updated);
+        notifySuccess(t("saved"));
+      }
+      return result;
+    },
+  );
+  const fromName = text.values.email_from_name;
+  const fromAddress = text.values.email_from_address;
+
   async function handleSendTest() {
     setIsSendingTest(true);
     try {
@@ -136,7 +157,7 @@ export function EmailSettingsPanel({
   return (
     <div className="checkin-settings">
       <p className="checkin-settings__autosave" role="note">
-        {t("autosaveHint")}
+        {tSettings("saveModelHint")}
       </p>
       {!delivery.configured ? (
         <p className="settings-alerts__item settings-alerts__item--warning" role="status">
@@ -272,8 +293,7 @@ export function EmailSettingsPanel({
               className="checkin-field__input"
               placeholder={identity.displayName}
               value={fromName}
-              onChange={(e) => setFromName(e.target.value)}
-              onBlur={() => persist({ email_from_name: fromName.trim() || null })}
+              onChange={(e) => text.set("email_from_name", e.target.value)}
             />
           </div>
         </div>
@@ -283,9 +303,8 @@ export function EmailSettingsPanel({
             type="email"
             className="checkin-field__input"
             placeholder={identity.defaultReplyTo ?? "contact@pensiune.ro"}
-            value={replyTo}
-            onChange={(e) => setReplyTo(e.target.value)}
-            onBlur={() => persist({ email_reply_to: replyTo.trim() || null })}
+            value={text.values.email_reply_to}
+            onChange={(e) => text.set("email_reply_to", e.target.value)}
           />
         </SettingRow>
 
@@ -335,8 +354,7 @@ export function EmailSettingsPanel({
               className="checkin-field__input"
               placeholder={identity.defaultReplyTo ?? `noreply@${identity.mailDomain}`}
               value={fromAddress}
-              onChange={(e) => setFromAddress(e.target.value)}
-              onBlur={() => persist({ email_from_address: fromAddress.trim() || null })}
+              onChange={(e) => text.set("email_from_address", e.target.value)}
             />
           </div>
         </div>
@@ -358,15 +376,14 @@ export function EmailSettingsPanel({
             <textarea
               className="checkin-field__input checkin-field__input--textarea"
               rows={2}
-              value={customFooter}
-              onChange={(e) => setCustomFooter(e.target.value)}
-              onBlur={() =>
-                persist({ email_custom_footer: customFooter.trim() || null })
-              }
+              value={text.values.email_custom_footer}
+              onChange={(e) => text.set("email_custom_footer", e.target.value)}
             />
           </div>
         </div>
       </details>
+
+      <SettingsDraftSaveBar draft={text} errorFallback={t("saveError")} />
     </div>
   );
 }

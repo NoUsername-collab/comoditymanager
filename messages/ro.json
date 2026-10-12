@@ -1112,6 +1112,10 @@
         "navSearchEmpty": "Nicio secțiune nu corespunde căutării.",
         "quickJumpAria": "Salt rapid între secțiuni de setări",
         "allSaved": "Toate modificările sunt salvate.",
+        "saveModelHint": "Comutatoarele și alegerile se salvează imediat. Ce scrii (texte, sume, procente) salvezi cu butonul de jos.",
+        "saveBarSave": "Salvează",
+        "saveBarSaving": "Se salvează…",
+        "saveBarDiscard": "Renunță",
         "saveBarAria": "Acțiuni salvare setări",
         "livePreview": "Previzualizare live",
         "livePreviewAria": "Previzualizare site public",
@@ -1195,7 +1199,6 @@
         "emailTitle": "Notificări email",
         "emailSubtitle": "Configurează ce emailuri se trimit automat",
         "email": {
-          "autosaveHint": "Modificările se salvează automat când ieși dintr-un câmp.",
           "advancedTitle": "Setări avansate",
           "advancedHint": "Adresa ta de expeditor și textul de la final. De obicei nu trebuie schimbate.",
           "masterToggleTitle": "Status general",
@@ -1243,8 +1246,6 @@
           "roleOperator": "Recepționer",
           "roleOwner": "Proprietar",
           "ownerFullAccess": "Acces complet — nemodificabil",
-          "save": "Salvează permisiuni",
-          "saving": "Se salvează…",
           "saved": "Permisiuni salvate",
           "saveError": "Eroare la salvare",
           "groups": {
@@ -1319,7 +1320,6 @@
           "hint": "Curățenia are nevoie de un interval între plecare și sosire în aceeași zi calendaristică."
         },
         "checkin": {
-          "autosaveHint": "Modificările se salvează automat, imediat ce schimbi o opțiune.",
           "advancedTitle": "Setări avansate",
           "advancedHint": "Chei, grupuri, persoane pe cameră și modificări după plecare. De obicei nu trebuie schimbate.",
           "sectionArrivals": "Sosiri și plecări speciale",
@@ -1384,7 +1384,6 @@
           "touristSheetAddress": "Adresa imobilului"
         },
         "booking": {
-          "autosaveHint": "Modificările se salvează automat, la scurt timp după ce termini de scris.",
           "saved": "Setări salvate",
           "saveError": "Nu s-a putut salva",
           "cancellationTitle": "Politici anulare",
@@ -1427,9 +1426,6 @@
           "pageDesc": "TVA, serie facturi și date pentru fișa turist / ANAF",
           "title": "Fiscal & facturare",
           "subtitle": "Datele de pe factură și de pe fișa turistului. Apasă „Editează” ca să le completezi sau să le schimbi.",
-          "edit": "Editează",
-          "save": "Salvează",
-          "cancel": "Anulează",
           "saved": "Setări fiscale salvate",
           "saveError": "Nu s-a putut salva",
           "saveMissingRow": "Setările pensiunii nu sunt încă create. Contactează suportul Zalmox.",
