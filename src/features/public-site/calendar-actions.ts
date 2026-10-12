@@ -11,6 +11,7 @@ import { guestNamesFromForm } from "@/domain/guest-name";
 import { loadGuestStayPreview } from "@/services/guest-stay-preview";
 import { getRoomsByIds } from "@/services/rooms-admin";
 import { stayNightCount } from "@/lib/stay-dates";
+import { computeStandardStayTotal } from "@/domain/pricing/nightly-rates";
 import { requireAnyStaff } from "@/lib/auth/require-admin";
 import {
   checkRateLimit,
@@ -117,29 +118,32 @@ export async function submitGuestRequestAction(formData: FormData) {
         return { ok: false as const, error: t("selectVariant") };
       }
 
-      const [, rooms] = await Promise.all([
+      const [, rooms, pricingRules] = await Promise.all([
         assertRoomsAvailableForStay(check_in, check_out, roomIds),
         getRoomsByIds(roomIds),
+        import("@/services/booking-rules-settings").then((m) =>
+          m.getStayPricingRules().catch(() => null),
+        ),
       ]);
       if (rooms.length !== roomIds.length) {
         return { ok: false as const, error: t("variantUnavailable") };
       }
 
-      const selectedTitle = String(formData.get("selected_title") ?? "").trim();
-      const totalFromForm = Number(formData.get("selected_total_estimate"));
+      // Price and title come from the server, never from the form: a visitor could send any value.
       const nights = stayNightCount(check_in, check_out);
-      const total_estimate_ron =
-        Number.isFinite(totalFromForm) && totalFromForm > 0
-          ? totalFromForm
-          : rooms.reduce((sum, room) => sum + Number(room.price_per_night), 0) *
-            nights;
+      const total_estimate_ron = computeStandardStayTotal(
+        rooms.map((room) => ({ price_per_night: Number(room.price_per_night) })),
+        check_in,
+        check_out,
+        pricingRules,
+      );
 
       const roomList = rooms
         .map((r) => `${r.name} (${r.building_name})`)
         .join(", ");
       const variantBlock = [
         tServer("selectedVariantHeader"),
-        selectedTitle || roomList,
+        roomList,
         tServer("selectedVariantRooms", { roomList }),
         tServer("selectedVariantNights", { nights }),
         tServer("selectedVariantEstimate", { total: total_estimate_ron }),
