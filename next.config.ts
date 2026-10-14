@@ -9,6 +9,10 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
+// React needs eval() in development only (server error stacks in the browser).
+// Production never uses it, so the live CSP stays without 'unsafe-eval'.
+const devEval = process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : "";
+
 const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_BUILD_SHA:
@@ -68,7 +72,7 @@ const nextConfig: NextConfig = {
           key: "Content-Security-Policy",
           value: [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://vercel.live https://*.vercel-scripts.com https://*.sentry.io",
+            `script-src 'self' 'unsafe-inline'${devEval} https://vercel.live https://*.vercel-scripts.com https://*.sentry.io`,
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in",
             "font-src 'self' data:",
