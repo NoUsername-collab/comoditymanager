@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { parseRoomSleepingLimits } from "@/domain/room/sleeping-limits";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
@@ -105,6 +106,7 @@ export async function createRoomAction(formData: FormData) {
       formData.get("max_extra_beds_per_room") ?? 0
     );
     const enabled_option_ids = parseSelectedOptionIds(formData).filter(Boolean);
+    const { max_cots, max_occupancy } = parseRoomSleepingLimits(formData);
 
     if (!building_id || !room_type_definition_id) {
       await redirectRoomFormError(formData, "server", undefined, {
@@ -141,6 +143,8 @@ export async function createRoomAction(formData: FormData) {
           naming_mode,
           allows_extra_beds,
           max_extra_beds_per_room,
+          max_cots,
+          max_occupancy,
           enabled_option_ids,
           price_per_night,
           sort_order_start: sort_order,
@@ -221,6 +225,8 @@ export async function createRoomAction(formData: FormData) {
         capacity_base: 2,
         allows_extra_beds,
         max_extra_beds_per_room,
+        max_cots,
+        max_occupancy,
         enabled_option_ids,
         price_per_night,
         sort_order,

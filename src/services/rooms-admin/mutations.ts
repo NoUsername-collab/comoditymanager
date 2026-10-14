@@ -21,6 +21,8 @@ export async function updateRoom(
     capacity_base: number;
     allows_extra_beds: boolean;
     max_extra_beds_per_room: number;
+    max_cots: number;
+    max_occupancy: number | null;
     enabled_option_ids: string[];
     price_per_night: number;
     sort_order: number;
@@ -68,6 +70,8 @@ export async function updateRoom(
       max_extra_beds_per_room: input.allows_extra_beds
         ? input.max_extra_beds_per_room
         : 0,
+      max_cots: input.max_cots,
+      max_occupancy: input.max_occupancy,
       has_ac,
       price_per_night: price,
       sort_order: input.sort_order,

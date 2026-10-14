@@ -16,17 +16,28 @@ import type { ConfirmRoomOption } from "@/services/booking-confirm";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { addDays, clampCheckInDate, todayIso } from "@/lib/stay-dates";
 import { stayNightCount } from "@/lib/stay-dates";
+import type { SharedInventory } from "@/domain/availability/stay-capacity";
+import { quoteStay } from "@/domain/availability/stay-quote";
+import type { StayPricingRules } from "@/domain/settings/booking-rules";
 import {
-  canRoomsHostGuests,
-  totalCapacityOfRooms,
-} from "@/domain/availability/stay-capacity";
-import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
+  partyAgesComplete,
+  partyHeadcount,
+  type ChildPolicy,
+  type Party,
+} from "@/domain/availability/party";
+import {
+  PartyFields,
+  PartyHiddenInputs,
+} from "@/features/bookings/ui/party/PartyFields";
 
 type Props = {
   draft: GuestRebookDraft;
   initialRooms: ConfirmRoomOption[];
   initialCanFulfill: boolean;
   initialMinRooms: number;
+  childPolicy: ChildPolicy;
+  inventory: SharedInventory;
+  pricingRules: StayPricingRules;
   checkInTime: string;
   checkOutTime: string;
   /** Pagină dedicată: link înapoi. În colaps: folosește onCancel. */
@@ -49,6 +60,9 @@ export function GuestRebookStayForm({
   initialRooms,
   initialCanFulfill,
   initialMinRooms,
+  childPolicy: initialChildPolicy,
+  inventory: initialInventory,
+  pricingRules: initialPricingRules,
   checkInTime,
   checkOutTime,
   backHref,
@@ -59,6 +73,7 @@ export function GuestRebookStayForm({
 }: Props) {
   const t = useTranslations("admin.pages.guestRebook");
   const tConfirm = useTranslations("admin.confirmRooms");
+  const tParty = useTranslations("party");
   const tCommon = useTranslations("admin.common");
   const tErrors = useTranslations("errors");
   const locale = useLocale();
@@ -79,10 +94,10 @@ export function GuestRebookStayForm({
   const [guestFirstName, setGuestFirstName] = useState(draft.guestFirstName);
   const [guestEmail, setGuestEmail] = useState(draft.guestEmail);
   const [guestPhone, setGuestPhone] = useState(draft.guestPhone);
-  const [numAdults, setNumAdults] = useState(draft.numAdults);
-  const [numChildren, setNumChildren] = useState(draft.numChildren);
-  const [hasMinor, setHasMinor] = useState(draft.hasMinor);
-  const [minorAge, setMinorAge] = useState(draft.minorAge);
+  const [party, setParty] = useState<Party>(draft.party);
+  const [childPolicy, setChildPolicy] = useState(initialChildPolicy);
+  const [inventory, setInventory] = useState(initialInventory);
+  const [pricingRules, setPricingRules] = useState(initialPricingRules);
   const [notes, setNotes] = useState(draft.notes);
 
   const [availableRooms, setAvailableRooms] = useState(initialRooms);
@@ -97,11 +112,13 @@ export function GuestRebookStayForm({
 
   const [previewPending, startPreview] = useTransition();
   const invalidInterval = !checkIn || !checkOut || checkOut <= checkIn;
-  const guestCount = numAdults + numChildren;
+  const guestCount = partyHeadcount(party);
+  const agesComplete = partyAgesComplete(party);
+  const partyKey = JSON.stringify(party);
   const nights = !invalidInterval ? stayNightCount(checkIn, checkOut) : 0;
 
   const refreshRooms = useCallback(() => {
-    if (invalidInterval) {
+    if (invalidInterval || !agesComplete) {
       setAvailableRooms([]);
       setCanFulfill(false);
       setMinRoomsNeeded(0);
@@ -111,8 +128,7 @@ export function GuestRebookStayForm({
       const res = await previewGuestRebookRoomsAction({
         check_in: checkIn,
         check_out: checkOut,
-        num_adults: numAdults,
-        num_children: numChildren,
+        party: JSON.parse(partyKey) as Party,
       });
       if (!res.ok) {
         setRoomsError(tErrors("pickDates"));
@@ -121,6 +137,9 @@ export function GuestRebookStayForm({
         return;
       }
       setRoomsError(null);
+      setChildPolicy(res.rooms.childPolicy);
+      setInventory(res.rooms.inventory);
+      setPricingRules(res.rooms.pricingRules);
       setAvailableRooms(res.rooms.availableRooms);
       setCanFulfill(res.rooms.canFulfill);
       setMinRoomsNeeded(res.rooms.minRoomsNeeded);
@@ -132,7 +151,7 @@ export function GuestRebookStayForm({
         return next;
       });
     });
-  }, [checkIn, checkOut, numAdults, numChildren, invalidInterval, tErrors]);
+  }, [checkIn, checkOut, partyKey, agesComplete, invalidInterval, tErrors]);
 
   useEffect(() => {
     const timer = window.setTimeout(refreshRooms, 280);
@@ -144,16 +163,25 @@ export function GuestRebookStayForm({
     [availableRooms, selected]
   );
 
-  const standardTotal = useMemo(
+  // Same quote as the server: rooms, extra beds and cots, child rules and free stock.
+  const quote = useMemo(
     () =>
-      selectedRooms.length > 0 && nights > 0
-        ? computeStandardStayTotal(selectedRooms, checkIn, checkOut)
-        : 0,
-    [selectedRooms, checkIn, checkOut, nights]
+      nights > 0
+        ? quoteStay({
+            rooms: selectedRooms,
+            party,
+            policy: childPolicy,
+            inventory,
+            checkIn,
+            checkOut,
+            pricingRules,
+          })
+        : null,
+    [selectedRooms, party, childPolicy, inventory, checkIn, checkOut, nights, pricingRules]
   );
+  const standardTotal = quote?.total ?? 0;
 
-  const selectedCapacity = totalCapacityOfRooms(selectedRooms);
-  const selectionHostsGuests = canRoomsHostGuests(guestCount, selectedRooms);
+  const selectionHostsGuests = quote != null;
   const noRoomsAvailable = availableRooms.length === 0;
   const showGlobalUnavailable =
     !invalidInterval && (!canFulfill || noRoomsAvailable);
@@ -164,7 +192,7 @@ export function GuestRebookStayForm({
     !invalidInterval &&
     guestPhone.trim().length > 0 &&
     guestLastName.trim().length > 0 &&
-    (!hasMinor || minorAge.trim().length > 0) &&
+    agesComplete &&
     (selected.size === 0 ||
       (canFulfill &&
         selectionHostsGuests &&
@@ -297,30 +325,9 @@ export function GuestRebookStayForm({
               className="mt-1"
             />
           </label>
-          <label className="block text-sm">
-            {t("adults")}
-            <AdminInput
-              name="num_adults"
-              type="number"
-              min={1}
-              required
-              value={numAdults}
-              onChange={(e) => setNumAdults(Math.max(1, Number(e.target.value) || 1))}
-              className="mt-1"
-            />
-          </label>
-          <label className="block text-sm">
-            {t("children")}
-            <AdminInput
-              name="num_children"
-              type="number"
-              min={0}
-              value={numChildren}
-              onChange={(e) => setNumChildren(Math.max(0, Number(e.target.value) || 0))}
-              className="mt-1"
-            />
-          </label>
         </div>
+        <PartyFields value={party} onChange={setParty} appearance="reception" />
+        <PartyHiddenInputs party={party} />
         <p className="text-xs text-zinc-500">
           {tConfirm("checkTimes", { checkIn: checkInTime, checkOut: checkOutTime })}
         </p>
@@ -334,26 +341,6 @@ export function GuestRebookStayForm({
             {formatStayPeriod(checkIn, checkOut, locale, true)} · {nights}{" "}
             {nights === 1 ? tConfirm("night") : tConfirm("nights")}
           </p>
-        )}
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            name="has_minor"
-            checked={hasMinor}
-            onChange={(e) => setHasMinor(e.target.checked)}
-          />
-          {t("hasMinor")}
-        </label>
-        {hasMinor && (
-          <label className="block text-sm">
-            {t("minorAge")}
-            <AdminInput
-              name="minor_age"
-              value={minorAge}
-              onChange={(e) => setMinorAge(e.target.value)}
-              className="mt-1 max-w-xs"
-            />
-          </label>
         )}
         <label className="block text-sm">
           {t("notes")}
@@ -440,11 +427,7 @@ export function GuestRebookStayForm({
 
         {showSelectionError && (
           <p className="text-sm text-red-800" role="alert">
-            {tConfirm("selectedCapacityInsufficient", {
-              capacity: selectedCapacity,
-              guests: guestCount,
-              personsShort: tCommon("personsShort"),
-            })}
+            {tParty("selectionDoesNotFit", { guests: guestCount })}
           </p>
         )}
 

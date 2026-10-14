@@ -9,6 +9,7 @@ import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import { RoomOptionFields } from "@/features/rooms/ui/RoomOptionFields";
+import { RoomSleepingLimitFields } from "@/features/rooms/ui/RoomSleepingLimitFields";
 
 type RoomData = {
   id: string;
@@ -19,6 +20,8 @@ type RoomData = {
   capacity_base: number;
   allows_extra_beds: boolean;
   max_extra_beds_per_room: number;
+  max_cots?: number;
+  max_occupancy?: number | null;
   price_per_night: number;
   is_active: boolean;
   sort_order: number;
@@ -180,6 +183,11 @@ export function RoomEditForm({
           className="mt-1"
         />
       </label>
+
+      <RoomSleepingLimitFields
+        maxCots={room.max_cots ?? 0}
+        maxOccupancy={room.max_occupancy ?? null}
+      />
 
       <label className="block">
         <span className="text-sm font-medium">{tCommon("displayOrder")}</span>

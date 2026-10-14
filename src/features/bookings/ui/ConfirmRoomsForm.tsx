@@ -5,19 +5,20 @@ import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { stayNightCount } from "@/lib/stay-dates";
 import type { StayPricingRules } from "@/domain/settings/booking-rules";
-import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
 import type { ConfirmRoomOption } from "@/services/booking-confirm";
 import { RoomFeatureBadges } from "@/features/rooms/ui/RoomFeatureBadges";
-import {
-  canRoomsHostGuests,
-  totalCapacityOfRooms,
-} from "@/domain/availability/stay-capacity";
+import type { SharedInventory } from "@/domain/availability/stay-capacity";
+import { quoteStay } from "@/domain/availability/stay-quote";
+import type { ChildPolicy, Party } from "@/domain/availability/party";
 
 type Props = {
   bookingId: string;
   checkIn: string;
   checkOut: string;
   guestCount: number;
+  party: Party;
+  childPolicy: ChildPolicy;
+  inventory: SharedInventory;
   minRoomsNeeded: number;
   canFulfill: boolean;
   availableRooms: ConfirmRoomOption[];
@@ -42,6 +43,9 @@ export function ConfirmRoomsForm({
   checkIn,
   checkOut,
   guestCount,
+  party,
+  childPolicy,
+  inventory,
   minRoomsNeeded,
   canFulfill,
   availableRooms,
@@ -55,6 +59,7 @@ export function ConfirmRoomsForm({
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const tConfirm = useTranslations("admin.confirmRooms");
+  const tParty = useTranslations("party");
   const validDefaults = defaultSelectedIds.filter((id) =>
     availableRooms.some((r) => r.id === id)
   );
@@ -73,13 +78,21 @@ export function ConfirmRoomsForm({
     [availableRooms, selected]
   );
 
-  const standardTotal = useMemo(
+  // Same quote as the server: rooms, extra beds and cots, child rules and free stock.
+  const quote = useMemo(
     () =>
-      selectedRooms.length > 0
-        ? computeStandardStayTotal(selectedRooms, checkIn, checkOut, pricingRules)
-        : 0,
-    [selectedRooms, checkIn, checkOut, pricingRules]
+      quoteStay({
+        rooms: selectedRooms,
+        party,
+        policy: childPolicy,
+        inventory,
+        checkIn,
+        checkOut,
+        pricingRules,
+      }),
+    [selectedRooms, party, childPolicy, inventory, checkIn, checkOut, pricingRules]
   );
+  const standardTotal = quote?.total ?? 0;
 
   const adjustmentNum = adjustment === "" ? 0 : Number(adjustment);
   const adjustmentValid =
@@ -89,8 +102,7 @@ export function ConfirmRoomsForm({
       ? Math.round((standardTotal + adjustmentNum) * 100) / 100
       : standardTotal;
 
-  const selectedCapacity = totalCapacityOfRooms(selectedRooms);
-  const selectionHostsGuests = canRoomsHostGuests(guestCount, selectedRooms);
+  const selectionHostsGuests = quote != null;
 
   const noRoomsAvailable = availableRooms.length === 0;
   const showGlobalUnavailable = !canFulfill || noRoomsAvailable;
@@ -106,22 +118,13 @@ export function ConfirmRoomsForm({
     !noRoomsAvailable &&
     (!modifyPrice || adjustmentValid);
 
+  // Any number of rooms may be picked (e.g. parents asked for a separate
+  // children's room); the selection only has to host the family.
   function toggle(id: string) {
     setSelected((prev) => {
       const next = new Set(prev);
-      const isCurrentlySelected = next.has(id);
-
-      // Guard: prevent selecting more rooms than minRoomsNeeded
-      if (!isCurrentlySelected && next.size >= minRoomsNeeded) {
-        // Already have enough rooms - don't allow more selections
-        return prev;
-      }
-
-      if (isCurrentlySelected) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }
@@ -167,7 +170,7 @@ export function ConfirmRoomsForm({
         <div className="bd-room-progress">
           <div className="bd-room-progress__track">
             <div
-              className={`bd-room-progress__fill ${selected.size >= minRoomsNeeded ? "bd-room-progress__fill--done" : ""}`}
+              className={`bd-room-progress__fill ${selectionHostsGuests ? "bd-room-progress__fill--done" : ""}`}
               style={{ width: `${Math.min((selected.size / minRoomsNeeded) * 100, 100)}%` }}
             />
             {/* Notch marks for each room needed */}
@@ -179,8 +182,8 @@ export function ConfirmRoomsForm({
               />
             ))}
           </div>
-          <span className={`bd-room-progress__label ${selected.size >= minRoomsNeeded ? "bd-room-progress__label--done" : ""}`}>
-            {selected.size >= minRoomsNeeded
+          <span className={`bd-room-progress__label ${selectionHostsGuests ? "bd-room-progress__label--done" : ""}`}>
+            {selectionHostsGuests
               ? tConfirm("roomGoalReached")
               : tConfirm("roomProgress", { current: selected.size, needed: minRoomsNeeded })}
           </span>
@@ -248,11 +251,7 @@ export function ConfirmRoomsForm({
       {/* Capacity error */}
       {showSelectionError && (
         <div role="alert" className="bd-confirm__alert bd-confirm__alert--warn">
-          {tConfirm("selectedCapacityInsufficient", {
-            capacity: selectedCapacity,
-            guests: guestCount,
-            personsShort: tCommon("personsShort"),
-          })}
+          {tParty("selectionDoesNotFit", { guests: guestCount })}
         </div>
       )}
 

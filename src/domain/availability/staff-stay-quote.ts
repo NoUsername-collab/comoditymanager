@@ -1,10 +1,20 @@
 import {
-  canRoomsHostGuests,
-  minRoomsToHostGuests,
-  roomMaxCapacity,
+  canRoomsHostParty,
+  minRoomsToHostParty,
+  rankRoomSetsForParty,
   totalCapacityOfRooms,
+  UNLIMITED_INVENTORY,
+  type InventoryUsage,
   type RoomCapacity,
+  type RoomPlacement,
+  type SharedInventory,
 } from "@/domain/availability/stay-capacity";
+import { quoteStay } from "@/domain/availability/stay-quote";
+import {
+  partyHeadcount,
+  type ChildPolicy,
+  type Party,
+} from "@/domain/availability/party";
 import {
   computeRoomStayPricing,
   computeStandardStayTotal,
@@ -43,17 +53,15 @@ export type StaffStayQuote = {
   canFulfill: boolean;
   estimateRon: number;
   lines: StaffStayQuoteLine[];
+  /** Extra beds and cots of the selection, priced when the property charges for them. */
+  usage: InventoryUsage;
+  extrasTotal: number;
+  /** Who sleeps where in the selected rooms; empty when they cannot host the party. */
+  placement: RoomPlacement[];
 };
 
 export function staffStaySelectionKey(roomIds: string[]): string {
   return [...roomIds].sort().join(",");
-}
-
-function compareRoomsByPriceThenName(a: StaffStayQuoteRoom, b: StaffStayQuoteRoom): number {
-  if (a.price_per_night !== b.price_per_night) {
-    return a.price_per_night - b.price_per_night;
-  }
-  return a.name.localeCompare(b.name);
 }
 
 function roomsByIds(
@@ -66,68 +74,42 @@ function roomsByIds(
     .filter((room): room is StaffStayQuoteRoom => Boolean(room));
 }
 
-function cheapestSingleThatFits(
-  rooms: StaffStayQuoteRoom[],
-  guestCount: number,
-): StaffStayQuoteRoom | null {
-  const fits = rooms.filter((room) => roomMaxCapacity(room) >= guestCount);
-  if (fits.length === 0) return null;
-  return [...fits].sort(compareRoomsByPriceThenName)[0] ?? null;
-}
-
-/** Cheapest rooms first until capacity covers the party. */
-function greedyCoverByPrice(
-  rooms: StaffStayQuoteRoom[],
-  guestCount: number,
-): StaffStayQuoteRoom[] | null {
-  const picked: StaffStayQuoteRoom[] = [];
-  let capacity = 0;
-  for (const room of [...rooms].sort(compareRoomsByPriceThenName)) {
-    if (capacity >= guestCount) break;
-    picked.push(room);
-    capacity += roomMaxCapacity(room);
-  }
-  return capacity >= guestCount ? picked : null;
-}
-
 export function buildStaffStaySuggestions(args: {
   availableRooms: StaffStayQuoteRoom[];
-  guestCount: number;
+  party: Party;
+  policy: ChildPolicy;
+  inventory?: SharedInventory;
   preferredIds: string[];
   checkIn: string;
   checkOut: string;
   pricingRules?: StayPricingRules | null;
 }): StaffStaySuggestion[] {
-  const guestCount = Math.max(1, args.guestCount);
+  const inventory = args.inventory ?? UNLIMITED_INVENTORY;
   const seen = new Set<string>();
   const out: StaffStaySuggestion[] = [];
 
   function push(kind: StaffStaySuggestionKind, rooms: StaffStayQuoteRoom[]) {
-    if (rooms.length === 0 || !canRoomsHostGuests(guestCount, rooms)) return;
     const id = staffStaySelectionKey(rooms.map((room) => room.id));
-    if (seen.has(id)) return;
+    if (rooms.length === 0 || seen.has(id)) return;
+    const quote = quoteStay({ ...args, rooms, inventory });
+    if (!quote) return;
     seen.add(id);
     out.push({
       id,
       kind,
       roomIds: rooms.map((room) => room.id),
       rooms,
-      estimateRon: computeStandardStayTotal(
-        rooms,
-        args.checkIn,
-        args.checkOut,
-        args.pricingRules,
-      ),
+      estimateRon: quote.total,
     });
   }
 
   push("preferred", roomsByIds(args.availableRooms, args.preferredIds));
 
-  const cheapestSingle = cheapestSingleThatFits(args.availableRooms, guestCount);
-  if (cheapestSingle) push("cheapest_single", [cheapestSingle]);
-
-  const combo = greedyCoverByPrice(args.availableRooms, guestCount);
-  if (combo && combo.length > 1) push("combo", combo);
+  const ranked = rankRoomSetsForParty(args.party, args.availableRooms, args.policy, inventory);
+  const single = ranked.find((set) => set.length === 1);
+  if (single) push("cheapest_single", single);
+  const combo = ranked.find((set) => set.length > 1);
+  if (combo) push("combo", combo);
 
   return out.slice(0, 3);
 }
@@ -148,71 +130,66 @@ export function resolveStaffStaySelection(args: {
   previousIds: string[];
   availableRooms: StaffStayQuoteRoom[];
   preferredIds: string[];
-  guestCount: number;
+  party: Party;
+  policy: ChildPolicy;
+  inventory?: SharedInventory;
   checkIn: string;
   checkOut: string;
   pricingRules?: StayPricingRules | null;
 }): string[] {
-  const guestCount = Math.max(1, args.guestCount);
+  const inventory = args.inventory ?? UNLIMITED_INVENTORY;
   const previous = roomsByIds(args.availableRooms, args.previousIds);
-  if (previous.length > 0 && canRoomsHostGuests(guestCount, previous)) {
+  if (previous.length > 0 && canRoomsHostParty(args.party, previous, args.policy, inventory)) {
     return previous.map((room) => room.id);
   }
 
   const preferred = roomsByIds(args.availableRooms, args.preferredIds);
-  if (preferred.length > 0 && canRoomsHostGuests(guestCount, preferred)) {
+  if (preferred.length > 0 && canRoomsHostParty(args.party, preferred, args.policy, inventory)) {
     return preferred.map((room) => room.id);
   }
 
   return (
-    buildStaffStaySuggestions({
-      availableRooms: args.availableRooms,
-      guestCount,
-      preferredIds: args.preferredIds,
-      checkIn: args.checkIn,
-      checkOut: args.checkOut,
-      pricingRules: args.pricingRules,
-    })[0]?.roomIds ?? preferred.map((room) => room.id)
+    buildStaffStaySuggestions(args)[0]?.roomIds ?? preferred.map((room) => room.id)
   );
-}
-
-export function partyGuestCount(numAdults: number, numChildren: number): number {
-  const adults = Number.isFinite(numAdults) ? Math.max(1, Math.floor(numAdults)) : 1;
-  const children = Number.isFinite(numChildren)
-    ? Math.max(0, Math.floor(numChildren))
-    : 0;
-  return adults + children;
 }
 
 export function quoteStaffStaySelection(args: {
   availableRooms: StaffStayQuoteRoom[];
   selectedIds: string[];
-  guestCount: number;
+  party: Party;
+  policy: ChildPolicy;
+  inventory?: SharedInventory;
   checkIn: string;
   checkOut: string;
   pricingRules?: StayPricingRules | null;
 }): StaffStayQuote {
-  const guestCount = Math.max(1, args.guestCount);
+  const inventory = args.inventory ?? UNLIMITED_INVENTORY;
   const idSet = new Set(args.selectedIds);
   const selected = args.availableRooms.filter((room) => idSet.has(room.id));
-  const { possible, minRooms } = minRoomsToHostGuests(guestCount, args.availableRooms);
+  const { possible, minRooms } = minRoomsToHostParty(
+    args.party,
+    args.availableRooms,
+    args.policy,
+    inventory,
+  );
+  const quote = quoteStay({ ...args, rooms: selected, inventory });
 
   return {
-    guestCount,
+    guestCount: partyHeadcount(args.party),
     selected,
     selectedCapacity: totalCapacityOfRooms(selected),
-    hostsGuests: selected.length > 0 && canRoomsHostGuests(guestCount, selected),
+    hostsGuests: quote != null,
     minRoomsNeeded: minRooms,
     canFulfill: possible,
+    // Rooms that cannot host the party still show what they cost, to help pick more.
     estimateRon:
-      selected.length > 0
-        ? computeStandardStayTotal(
-            selected,
-            args.checkIn,
-            args.checkOut,
-            args.pricingRules,
-          )
-        : 0,
+      quote?.total ??
+      (selected.length > 0
+        ? computeStandardStayTotal(selected, args.checkIn, args.checkOut, args.pricingRules)
+        : 0),
+    usage: quote?.usage ?? { extraBeds: 0, cots: 0 },
+    extrasTotal: quote?.extrasTotal ?? 0,
+    placement: quote?.placement ?? [],
     lines: selected.map((room) => {
       const pricing = computeRoomStayPricing(
         room,

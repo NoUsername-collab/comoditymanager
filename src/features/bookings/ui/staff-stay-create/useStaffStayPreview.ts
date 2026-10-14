@@ -5,8 +5,17 @@ import { previewStaffStayRoomsAction } from "@/features/bookings/staff-stay-acti
 import type { ConfirmRoomOption } from "@/services/booking-confirm";
 import type { StayPricingRules } from "@/domain/settings/booking-rules";
 import {
+  DEFAULT_CHILD_POLICY,
+  partyAgesComplete,
+  type ChildPolicy,
+  type Party,
+} from "@/domain/availability/party";
+import {
+  UNLIMITED_INVENTORY,
+  type SharedInventory,
+} from "@/domain/availability/stay-capacity";
+import {
   buildStaffStaySuggestions,
-  partyGuestCount,
   quoteStaffStaySelection,
   resolveStaffStaySelection,
 } from "@/domain/availability/staff-stay-quote";
@@ -14,26 +23,30 @@ import {
 export function useStaffStayPreview(args: {
   checkIn: string;
   checkOut: string;
-  numAdults: number;
-  numChildren: number;
+  party: Party;
   preferredRoomIds: string[];
   enabled: boolean;
 }) {
   const [pending, startPreview] = useTransition();
   const [rooms, setRooms] = useState<ConfirmRoomOption[]>([]);
   const [pricingRules, setPricingRules] = useState<StayPricingRules | null>(null);
+  const [policy, setPolicy] = useState<ChildPolicy>(DEFAULT_CHILD_POLICY);
+  const [inventory, setInventory] = useState<SharedInventory>(UNLIMITED_INVENTORY);
   const [error, setError] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const preferredKey = args.preferredRoomIds.join(",");
-  const guestCount = partyGuestCount(args.numAdults, args.numChildren);
+  // The party object changes on every keystroke; compare it by value.
+  const partyKey = JSON.stringify(args.party);
+  const party = useMemo(() => JSON.parse(partyKey) as Party, [partyKey]);
+  const agesComplete = partyAgesComplete(party);
   const intervalValid =
     Boolean(args.checkIn) &&
     Boolean(args.checkOut) &&
     args.checkIn < args.checkOut;
 
   useEffect(() => {
-    if (!args.enabled || !intervalValid) {
+    if (!args.enabled || !intervalValid || !agesComplete) {
       setRooms([]);
       return;
     }
@@ -43,8 +56,7 @@ export function useStaffStayPreview(args: {
         const res = await previewStaffStayRoomsAction({
           checkIn: args.checkIn,
           checkOut: args.checkOut,
-          numAdults: args.numAdults,
-          numChildren: args.numChildren,
+          party,
         });
         if (!res.ok) {
           setError(res.error);
@@ -54,12 +66,16 @@ export function useStaffStayPreview(args: {
         setError(null);
         setRooms(res.rooms.availableRooms);
         setPricingRules(res.pricingRules);
+        setPolicy(res.rooms.childPolicy);
+        setInventory(res.rooms.inventory);
         setSelectedIds((prev) =>
           resolveStaffStaySelection({
             previousIds: prev,
             availableRooms: res.rooms.availableRooms,
             preferredIds,
-            guestCount,
+            party,
+            policy: res.rooms.childPolicy,
+            inventory: res.rooms.inventory,
             checkIn: args.checkIn,
             checkOut: args.checkOut,
             pricingRules: res.pricingRules,
@@ -72,11 +88,10 @@ export function useStaffStayPreview(args: {
     args.checkIn,
     args.checkOut,
     args.enabled,
-    args.numAdults,
-    args.numChildren,
+    party,
+    agesComplete,
     preferredKey,
     intervalValid,
-    guestCount,
   ]);
 
   function toggleRoom(roomId: string) {
@@ -94,31 +109,36 @@ export function useStaffStayPreview(args: {
       quoteStaffStaySelection({
         availableRooms: rooms,
         selectedIds,
-        guestCount,
+        party,
+        policy,
+        inventory,
         checkIn: args.checkIn,
         checkOut: args.checkOut,
         pricingRules,
       }),
-    [rooms, selectedIds, guestCount, args.checkIn, args.checkOut, pricingRules],
+    [rooms, selectedIds, party, policy, inventory, args.checkIn, args.checkOut, pricingRules],
   );
 
   const suggestions = useMemo(
     () =>
       buildStaffStaySuggestions({
         availableRooms: rooms,
-        guestCount,
-        preferredIds: args.preferredRoomIds,
+        party,
+        policy,
+        inventory,
+        preferredIds: preferredKey ? preferredKey.split(",") : [],
         checkIn: args.checkIn,
         checkOut: args.checkOut,
         pricingRules,
       }),
-    [rooms, guestCount, preferredKey, args.checkIn, args.checkOut, pricingRules, args.preferredRoomIds],
+    [rooms, party, policy, inventory, preferredKey, args.checkIn, args.checkOut, pricingRules],
   );
 
   return {
     pending,
     error,
     rooms,
+    agesComplete,
     selectedIds,
     toggleRoom,
     applyRooms,

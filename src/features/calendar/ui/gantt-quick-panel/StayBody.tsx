@@ -12,11 +12,12 @@ import {
 import { BookingIdentityPanel, useBookingIdentity } from "@/features/bookings/ui/identity";
 import {
   StaffStayIntentToggle,
-  StaffStayOccupancyFields,
   StaffStayRoomPicker,
   useStaffStayPreview,
 } from "@/features/bookings/ui/staff-stay-create";
 import { DEFAULT_PARTY_ADULTS } from "@/lib/constants";
+import { buildParty, type Party } from "@/domain/availability/party";
+import { PartyFields } from "@/features/bookings/ui/party/PartyFields";
 import {
   publishGanttLiveBooking,
   removeGanttLiveBooking,
@@ -55,6 +56,7 @@ export function StayBody({
 }) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
+  const tParty = useTranslations("party");
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
   const identity = useBookingIdentity();
@@ -69,14 +71,14 @@ export function StayBody({
   useEffect(() => {
     if (mode === "request" || mode === "direct") setIntent(mode);
   }, [mode]);
-  const [numAdults, setNumAdults] = useState(DEFAULT_PARTY_ADULTS);
-  const [numChildren, setNumChildren] = useState(0);
+  const [party, setParty] = useState<Party>(() =>
+    buildParty({ adults: DEFAULT_PARTY_ADULTS, childAges: [] }),
+  );
 
   const stayPreview = useStaffStayPreview({
     checkIn,
     checkOut,
-    numAdults,
-    numChildren,
+    party,
     preferredRoomIds,
     enabled: !intervalInvalid,
   });
@@ -113,6 +115,10 @@ export function StayBody({
       onError(tGantt("quick.errors.checkoutAfterCheckin"));
       return;
     }
+    if (!stayPreview.agesComplete) {
+      onError(tParty("agesRequired"));
+      return;
+    }
     if (!stayPreview.quote.hostsGuests || stayPreview.selectedIds.length === 0) {
       onError(tGantt("quick.errors.chooseRoomsForGuests"));
       return;
@@ -141,8 +147,7 @@ export function StayBody({
       guestFirstName: titular.guestFirstName,
       guestEmail: titular.guestEmail,
       guestPhone: titular.guestPhone,
-      numAdults,
-      numChildren,
+      party,
       occupants,
     };
     const tempId = `optimistic:${crypto.randomUUID()}`;
@@ -160,8 +165,8 @@ export function StayBody({
         roomIds,
         roomName: roomNames.join(", "),
         roomNames,
-        numAdults,
-        numChildren,
+        numAdults: party.adults,
+        numChildren: party.childAges.length,
         totalPrice: stayPreview.quote.estimateRon,
       }),
     );
@@ -195,13 +200,7 @@ export function StayBody({
         onChange={handleIntentChange}
         appearance="admin"
       />
-      <StaffStayOccupancyFields
-        numAdults={numAdults}
-        numChildren={numChildren}
-        onAdultsChange={setNumAdults}
-        onChildrenChange={setNumChildren}
-        appearance="admin"
-      />
+      <PartyFields value={party} onChange={setParty} appearance="admin" />
       <StaffStayRoomPicker
         rooms={stayPreview.rooms}
         quote={stayPreview.quote}

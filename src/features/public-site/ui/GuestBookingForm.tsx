@@ -11,7 +11,16 @@ import {
   BookingIdentityPanel,
   useBookingIdentity,
 } from "@/features/bookings/ui/identity";
-import { RoomSelectionWithGuard } from "@/features/public-site/ui/RoomSelectionWithGuard";
+import { GuestStayOptionPicker } from "@/features/public-site/ui/GuestStayOptionPicker";
+import {
+  PartyFields,
+  PartyHiddenInputs,
+} from "@/features/bookings/ui/party/PartyFields";
+import {
+  buildParty,
+  partyAgesComplete,
+  type Party,
+} from "@/domain/availability/party";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
 import { DEFAULT_PARTY_ADULTS } from "@/lib/constants";
 import type {
@@ -36,19 +45,20 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const t = useTranslations("public.form");
   const tErrors = useTranslations("errors");
   const tCommon = useTranslations("common");
+  const tParty = useTranslations("party");
 
   const today = todayIso();
   const defaultDates = defaultNewStayDates(today);
 
   const [step, setStep] = useState<Step>("dates");
-  const [hasMinor, setHasMinor] = useState(false);
   const [checkIn, setCheckIn] = useState(defaultDates.checkIn);
   const [checkOut, setCheckOut] = useState(defaultDates.checkOut);
-  const [numAdults, setNumAdults] = useState(DEFAULT_PARTY_ADULTS);
-  const [numChildren, setNumChildren] = useState(0);
+  const [party, setParty] = useState<Party>(() =>
+    buildParty({ adults: DEFAULT_PARTY_ADULTS, childAges: [] }),
+  );
   const [preview, setPreview] = useState<GuestStayPreview | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
-  const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
+  const [selectedOption, setSelectedOption] = useState<GuestStayOption | null>(null);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptGdpr, setAcceptGdpr] = useState(false);
   const [previewPending, startPreviewTransition] = useTransition();
@@ -56,11 +66,20 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
 
   const minCheckOut = checkIn ? addDays(checkIn, 1) : "";
 
+  function resetPreview() {
+    setPreview(null);
+    setSelectedOption(null);
+  }
+
+  function onPartyChange(next: Party) {
+    setParty(next);
+    resetPreview();
+  }
+
   function onCheckInChange(value: string) {
     const nextCheckIn = clampCheckInDate(value, today);
     setCheckIn(nextCheckIn);
-    setPreview(null);
-    setSelectedRoomIds([]);
+    resetPreview();
     if (!nextCheckIn) {
       setCheckOut("");
       return;
@@ -73,18 +92,20 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
 
   function loadPreview() {
     setPreviewError(null);
-    setPreview(null);
-    setSelectedRoomIds([]);
+    resetPreview();
     if (!checkIn || !checkOut) {
       setPreviewError(tErrors("pickDates"));
+      return;
+    }
+    if (!partyAgesComplete(party)) {
+      setPreviewError(tParty("agesRequired"));
       return;
     }
     startPreviewTransition(async () => {
       const res = await previewGuestStayAction({
         check_in: checkIn,
         check_out: checkOut,
-        num_adults: numAdults,
-        num_children: numChildren,
+        party,
       });
       if (!res.ok) {
         setPreviewError(res.error);
@@ -137,9 +158,9 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
       <div className="public-notice public-notice--success p-4 text-center">
         <p className="text-lg font-semibold">{t("successTitle")}</p>
         <p className="mt-2 text-sm opacity-90">{t("successBody")}</p>
-        {selectedRoomIds.length > 0 && (
+        {selectedOption && (
           <p className="mt-3 text-xs opacity-80">
-            {t("successRooms", { count: selectedRoomIds.length, defaultValue: `Rooms selected: ${selectedRoomIds.length}` })}
+            {t("successRooms", { count: selectedOption.rooms.length })}
           </p>
         )}
       </div>
@@ -152,13 +173,13 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const canSubmitContact =
     acceptTerms &&
     acceptGdpr &&
-    selectedRoomIds.length > 0 &&
+    selectedOption != null &&
     step === "contact" &&
     identity.canSubmit;
 
   const steps: { key: Step; label: string }[] = [
     { key: "dates", label: t("stepDates") },
-    { key: "rooms", label: t("stepRooms", { defaultValue: "Select Rooms" }) },
+    { key: "rooms", label: t("stepRooms") },
     { key: "contact", label: t("stepContact") },
   ];
 
@@ -215,8 +236,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
                 disabled={!checkIn}
                 onChange={(e) => {
                   setCheckOut(e.target.value);
-                  setPreview(null);
-                  setSelectedRoomIds([]);
+                  resetPreview();
                 }}
                 className="mt-1 w-full"
               />
@@ -224,37 +244,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
             </label>
           </div>
 
-          <div className="guest-form-grid-2 grid grid-cols-2 gap-3">
-            <label className="site-field">
-              {t("adults")}
-              <input
-                type="number"
-                min={1}
-                required
-                value={numAdults}
-                onChange={(e) => {
-                  setNumAdults(Number(e.target.value) || 1);
-                  setPreview(null);
-                  setSelectedRoomIds([]);
-                }}
-                className="mt-1 w-full"
-              />
-            </label>
-            <label className="site-field">
-              {t("children")}
-              <input
-                type="number"
-                min={0}
-                value={numChildren}
-                onChange={(e) => {
-                  setNumChildren(Number(e.target.value) || 0);
-                  setPreview(null);
-                  setSelectedRoomIds([]);
-                }}
-                className="mt-1 w-full"
-              />
-            </label>
-          </div>
+          <PartyFields value={party} onChange={onPartyChange} appearance="public" />
 
           {previewError && (
             <p className="text-sm text-red-600">{previewError}</p>
@@ -263,7 +253,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
           <button
             type="button"
             onClick={loadPreview}
-            disabled={previewPending || !checkIn || !checkOut}
+            disabled={previewPending || !checkIn || !checkOut || !partyAgesComplete(party)}
             className="site-cta w-full justify-center py-2.5 disabled:opacity-50"
           >
             {previewPending ? t("previewLoading") : t("previewButton")}
@@ -272,17 +262,18 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
       )}
 
       {step === "rooms" && preview && (
-        <RoomSelectionWithGuard
+        <GuestStayOptionPicker
           preview={preview}
-          onComplete={(selectedIds) => {
-            setSelectedRoomIds(selectedIds);
+          selectedOptionId={selectedOption?.option_id ?? null}
+          onSelect={(option) => {
+            setSelectedOption(option);
             setStep("contact");
           }}
-          onCancel={() => setStep("dates")}
+          onBack={() => setStep("dates")}
         />
       )}
 
-      {step === "contact" && selectedRoomIds.length > 0 && preview && (
+      {step === "contact" && selectedOption && preview && (
         <form
           action={formAction}
           onSubmit={(event) => {
@@ -292,52 +283,32 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
         >
           <input type="hidden" name="check_in" value={checkIn} />
           <input type="hidden" name="check_out" value={checkOut} />
-          <input type="hidden" name="num_adults" value={numAdults} />
-          <input type="hidden" name="num_children" value={numChildren} />
+          <PartyHiddenInputs party={party} />
           <input
             type="hidden"
-            name="selected_room_ids"
-            value={selectedRoomIds.join(",")}
+            name="selected_option_id"
+            value={selectedOption.option_id}
           />
 
           <div className="public-summary-box">
             <p className="public-summary-box__title">{t("summaryTitle")}</p>
             <p className="public-summary-box__meta">
-              {selectedRoomIds.length} room{selectedRoomIds.length !== 1 ? "s" : ""} selected
+              {selectedOption.rooms.map((room) => room.name).join(", ")}
             </p>
             <p className="public-summary-box__meta">
-              {checkIn} → {checkOut} ({preview?.nights || 0} nights)
+              {t("estimate", {
+                total: selectedOption.total_estimate_ron,
+                nights: preview.nights,
+              })}
             </p>
             <button
               type="button"
               className="mt-2 text-xs font-semibold text-[var(--site-accent)] underline"
               onClick={() => setStep("rooms")}
             >
-              {t("changeRooms", { defaultValue: "Change rooms" })}
+              {t("changeVariant")}
             </button>
           </div>
-
-          <label className="flex items-center gap-2 text-sm text-[var(--site-fg)]">
-            <input
-              type="checkbox"
-              name="has_minor"
-              checked={hasMinor}
-              onChange={(e) => setHasMinor(e.target.checked)}
-              className="rounded"
-            />
-            {t("hasMinor")}
-          </label>
-
-          {hasMinor && (
-            <label className="site-field">
-              {t("minorAge")}
-              <input
-                name="minor_age"
-                placeholder={t("minorAgePlaceholder")}
-                className="mt-1 w-full"
-              />
-            </label>
-          )}
 
           <BookingIdentityPanel identity={identity} appearance="public" />
           <label className="site-field">

@@ -28,6 +28,10 @@ export type Room = {
   capacity_base: number;
   allows_extra_beds: boolean;
   max_extra_beds_per_room: number;
+  /** Baby cots that fit in the room. */
+  max_cots: number;
+  /** Most people allowed, babies included; null = only the beds limit. */
+  max_occupancy: number | null;
   has_ac: boolean;
   price_per_night: number;
   is_active: boolean;

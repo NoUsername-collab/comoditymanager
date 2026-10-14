@@ -6,12 +6,18 @@ import { GuestRebookStayForm } from "@/features/guests/ui/GuestRebookStayForm";
 import { loadGuestRebookPanelAction } from "@/features/guests/rebook-actions";
 import type { GuestRebookDraft } from "@/services/guest-rebook";
 import type { ConfirmRoomOption } from "@/services/booking-confirm";
+import type { ChildPolicy } from "@/domain/availability/party";
+import type { SharedInventory } from "@/domain/availability/stay-capacity";
+import type { StayPricingRules } from "@/domain/settings/booking-rules";
 
 export type GuestRebookPanelPayload = {
   draft: GuestRebookDraft;
   initialRooms: ConfirmRoomOption[];
   initialCanFulfill: boolean;
   initialMinRooms: number;
+  childPolicy: ChildPolicy;
+  inventory: SharedInventory;
+  pricingRules: StayPricingRules;
   checkInTime: string;
   checkOutTime: string;
 };
@@ -112,6 +118,9 @@ export function GuestRebookStayCollapse({
             initialRooms={payload.initialRooms}
             initialCanFulfill={payload.initialCanFulfill}
             initialMinRooms={payload.initialMinRooms}
+            childPolicy={payload.childPolicy}
+            inventory={payload.inventory}
+            pricingRules={payload.pricingRules}
             checkInTime={payload.checkInTime}
             checkOutTime={payload.checkOutTime}
             onCancel={close}

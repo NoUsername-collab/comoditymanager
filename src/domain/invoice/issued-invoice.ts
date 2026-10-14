@@ -105,6 +105,39 @@ function buildLineFromRoomPricing(
   };
 }
 
+const EXTRA_LINE_LABELS: Record<"ro" | "en" | "bg", { extraBed: string; cot: string }> = {
+  ro: { extraBed: "Pat suplimentar", cot: "Pătuț bebeluș" },
+  en: { extraBed: "Extra bed", cot: "Baby cot" },
+  bg: { extraBed: "Допълнително легло", cot: "Бебешка кошара" },
+};
+
+/** One line per charged extra (extra beds, cots): quantity = items × nights. */
+function buildExtraLines(
+  usage: { extraBeds: number; cots: number } | undefined,
+  nights: number,
+  rules: StayPricingRules | null | undefined,
+  locale: "ro" | "en" | "bg"
+): IssuedInvoiceLine[] {
+  if (!usage || nights <= 0) return [];
+  const labels = EXTRA_LINE_LABELS[locale];
+  const items: { description: string; count: number; fee: number }[] = [
+    { description: labels.extraBed, count: usage.extraBeds, fee: rules?.extraBedFee ?? 0 },
+    { description: labels.cot, count: usage.cots, fee: rules?.cotFee ?? 0 },
+  ];
+  return items
+    .filter((item) => item.count > 0 && item.fee > 0)
+    .map((item) => {
+      const quantity = item.count * nights;
+      return {
+        description: item.description,
+        quantity,
+        unit_price: item.fee,
+        line_total: Math.round(quantity * item.fee * 100) / 100,
+        room_id: null,
+      };
+    });
+}
+
 const INVOICE_KIND_LINE_RO: Record<InvoiceKind, string> = {
   advance: "Cazare — avans",
   partial: "Cazare — factură parțială",
@@ -311,13 +344,15 @@ export function buildIssuedInvoiceDocument(input: {
     price_per_night: number;
   }>;
   pricing_rules?: StayPricingRules | null;
+  /** Extra beds and cots the stay uses, invoiced when the property charges for them. */
+  usage?: { extraBeds: number; cots: number };
   locale?: "ro" | "en" | "bg";
   country?: TenantCountry;
   vat_enabled?: boolean;
   vat_rate?: number | null;
   prices_include_vat?: boolean;
 }): IssuedInvoiceDocument {
-  const lines = input.rooms.map((room) =>
+  const roomLines = input.rooms.map((room) =>
     buildLineFromRoomPricing(
       room,
       computeRoomStayPricing(
@@ -328,6 +363,15 @@ export function buildIssuedInvoiceDocument(input: {
       )
     )
   );
+  const lines = [
+    ...roomLines,
+    ...buildExtraLines(
+      input.usage,
+      stayNightCount(input.check_in, input.check_out),
+      input.pricing_rules,
+      input.locale ?? "ro"
+    ),
+  ];
   const linesTotal =
     Math.round(lines.reduce((sum, line) => sum + line.line_total, 0) * 100) /
     100;

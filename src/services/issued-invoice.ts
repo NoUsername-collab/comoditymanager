@@ -33,6 +33,26 @@ import { getTenantDisplayName } from "@/services/tenants";
 import { enqueueFiscalSubmission } from "@/services/fiscal-submission";
 import { getLocale } from "next-intl/server";
 import { resolveTenantCountryForRequest } from "@/lib/tenant/resolve-fiscal-tenant";
+import {
+  partyFromBooking,
+  type ChildPolicy,
+} from "@/domain/availability/party";
+import {
+  placeParty,
+  placementUsage,
+  type InventoryUsage,
+  type RoomCapacity,
+} from "@/domain/availability/stay-capacity";
+
+/** Extra beds and cots the stay uses in its rooms, worked out like at booking time. */
+function stayUsage(
+  booking: Parameters<typeof partyFromBooking>[0],
+  rooms: RoomCapacity[],
+  policy: ChildPolicy
+): InventoryUsage {
+  const placed = placeParty(partyFromBooking(booking), rooms, policy);
+  return placed ? placementUsage(placed) : { extraBeds: 0, cots: 0 };
+}
 
 const BOOKING_INVOICE_SELECT = [
   "id",
@@ -289,6 +309,7 @@ export async function issueBookingInvoice(
           total_price: booking.total_price,
           rooms: roomsForInvoice,
           pricing_rules: pricingRules,
+          usage: stayUsage(booking, rooms, bookingRules.childPolicy),
         })
       : buildAllocatedInvoiceDocument({
           ...documentBase,
@@ -469,6 +490,7 @@ export async function previewBookingInvoice(
         price_per_night: Number(r.price_per_night),
       })),
       pricing_rules: pricingRules,
+      usage: stayUsage(booking, rooms, bookingRules.childPolicy),
     });
   }
 

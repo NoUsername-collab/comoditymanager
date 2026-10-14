@@ -13,6 +13,7 @@ import { BookingGuestPhoneForm } from "@/features/bookings/ui/BookingGuestPhoneF
 import { BookingOperationalPanel } from "@/features/bookings/ui/BookingOperationalPanel";
 import { BookingActivitySection } from "@/features/activity/ui/BookingActivitySection";
 import { BookingStayEditor } from "@/features/bookings/ui/BookingStayEditor";
+import { partyFromBooking } from "@/domain/availability/party";
 import { ConfirmRoomsForm } from "@/features/bookings/ui/ConfirmRoomsForm";
 import { GuestDedupWarning } from "@/features/guests/ui/GuestDedupWarning";
 import { GuestAccessSharePanel } from "@/features/bookings/ui/GuestAccessSharePanel";
@@ -41,11 +42,12 @@ export default async function BookingDetailPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ return_to?: string }>;
 }) {
-  const [tPage, tCommon, tFlow, tStay, sp, data] = await Promise.all([
+  const [tPage, tCommon, tFlow, tStay, tParty, sp, data] = await Promise.all([
     getTranslations("admin.pages.bookingDetail"),
     getTranslations("admin.common"),
     getTranslations("booking.flowStatus"),
     getTranslations("admin.stayEditor"),
+    getTranslations("party"),
     searchParams,
     params.then(({ id }) => loadBookingDetailPage(id)),
   ]);
@@ -73,6 +75,9 @@ export default async function BookingDetailPage({
     checkInTime,
     checkOutTime,
     guestCount,
+    party,
+    childPolicy,
+    inventory,
     availableRooms,
     minRoomsNeeded,
     canFulfill,
@@ -159,8 +164,7 @@ export default async function BookingDetailPage({
                 bookingId={booking.id}
                 checkIn={booking.check_in}
                 checkOut={booking.check_out}
-                numAdults={booking.num_adults}
-                numChildren={booking.num_children}
+                party={partyFromBooking(booking)}
                 editable={canEditDates}
                 checkedIn={checkedIn}
                 editAction={editBookingDatesAction}
@@ -218,10 +222,19 @@ export default async function BookingDetailPage({
                 <span className="bd-info-label">{tPage("phone")}</span>
                 <span className="bd-info-value">{booking.guest_phone || "—"}</span>
               </div>
-              {booking.has_minor && booking.minor_age && (
+              {booking.num_children > 0 && (
                 <div className="bd-info-item">
-                  <span className="bd-info-label">{tPage("minorLabel")}</span>
-                  <span className="bd-info-value">{booking.minor_age}</span>
+                  <span className="bd-info-label">{tParty("childrenAgesLabel")}</span>
+                  <span className="bd-info-value">
+                    {booking.children_ages
+                      ? booking.children_ages
+                          .map((age) => tParty("ageOption", { age }))
+                          .join(", ")
+                      : booking.minor_age || tParty("agesUnknown")}
+                    {booking.children_separate_room
+                      ? ` · ${tParty("separateRoomRequested")}`
+                      : ""}
+                  </span>
                 </div>
               )}
             </div>
@@ -325,6 +338,9 @@ export default async function BookingDetailPage({
                 checkIn={booking.check_in}
                 checkOut={booking.check_out}
                 guestCount={guestCount}
+                party={party}
+                childPolicy={childPolicy}
+                inventory={inventory}
                 minRoomsNeeded={minRoomsNeeded}
                 canFulfill={canFulfill}
                 availableRooms={availableRooms}

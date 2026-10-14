@@ -45,29 +45,6 @@ function actorEmail(user: { email?: string | null } | null): string | null {
   return user?.email ?? null;
 }
 
-type GanttGuestIdentityInput = {
-  guestLastName: string;
-  guestFirstName: string;
-  guestEmail: string;
-  guestPhone?: string;
-};
-
-export type GanttRoomOccupantInput = GanttGuestIdentityInput & {
-  roomId: string;
-};
-
-function ganttCreateRoomIds(input: { roomId: string; roomIds?: string[] }): string[] {
-  const ids = [
-    ...new Set(
-      (input.roomIds && input.roomIds.length > 0
-        ? input.roomIds
-        : [input.roomId]
-      ).filter(Boolean)
-    ),
-  ];
-  return ids.length > 0 ? ids : [input.roomId];
-}
-
 async function scheduleBookingRevalidate(
   extra?: Parameters<typeof revalidateBookingSurfacesExtended>[0],
 ) {
@@ -230,11 +207,7 @@ export async function quickConfirmRequestFromGanttAction(
     if (roomIds.length === 0) {
       return { ok: false, error: t("assignRoomsBeforeConfirm") };
     }
-    const total = await resolveAssignedStayTotal(
-      booking.check_in,
-      booking.check_out,
-      roomIds,
-    );
+    const total = await resolveAssignedStayTotal({ ...booking, room_ids: roomIds });
     timer.mark("price");
     await confirmBookingWithRooms(bookingId, roomIds, total, {
       assignedRoomsOnly: true,
@@ -351,77 +324,6 @@ export async function undoGanttCreateAction(input: {
       error: e instanceof Error ? e.message : t("undoError"),
     };
   }
-}
-
-export async function createRequestFromGanttAction(input: {
-  roomId: string;
-  roomIds?: string[];
-  roomName?: string;
-  roomNames?: string[];
-  checkIn: string;
-  checkOut: string;
-  guestLastName: string;
-  guestFirstName: string;
-  guestEmail: string;
-  guestPhone?: string;
-  numAdults?: number;
-  numChildren?: number;
-  occupants?: GanttRoomOccupantInput[];
-  /** UI already checked the interval for conflicts — skip a second occupancy query. */
-  skipAvailabilityCheck?: boolean;
-}): Promise<ActionOk | ActionErr> {
-  const { createStaffStayAction } = await import(
-    "@/features/bookings/staff-stay-actions"
-  );
-  return createStaffStayAction({
-    intent: "request",
-    roomIds: ganttCreateRoomIds(input),
-    checkIn: input.checkIn,
-    checkOut: input.checkOut,
-    guestLastName: input.guestLastName,
-    guestFirstName: input.guestFirstName,
-    guestEmail: input.guestEmail,
-    guestPhone: input.guestPhone,
-    numAdults: input.numAdults ?? 1,
-    numChildren: input.numChildren ?? 0,
-    occupants: input.occupants,
-    skipAvailabilityCheck: input.skipAvailabilityCheck,
-  });
-}
-
-export async function createDirectStayFromGanttAction(input: {
-  roomId: string;
-  roomIds?: string[];
-  roomName?: string;
-  roomNames?: string[];
-  checkIn: string;
-  checkOut: string;
-  guestLastName: string;
-  guestFirstName: string;
-  guestEmail: string;
-  guestPhone?: string;
-  numAdults?: number;
-  numChildren?: number;
-  occupants?: GanttRoomOccupantInput[];
-  skipAvailabilityCheck?: boolean;
-}): Promise<ActionOk | ActionErr> {
-  const { createStaffStayAction } = await import(
-    "@/features/bookings/staff-stay-actions"
-  );
-  return createStaffStayAction({
-    intent: "direct",
-    roomIds: ganttCreateRoomIds(input),
-    checkIn: input.checkIn,
-    checkOut: input.checkOut,
-    guestLastName: input.guestLastName,
-    guestFirstName: input.guestFirstName,
-    guestEmail: input.guestEmail,
-    guestPhone: input.guestPhone,
-    numAdults: input.numAdults ?? 1,
-    numChildren: input.numChildren ?? 0,
-    occupants: input.occupants,
-    skipAvailabilityCheck: input.skipAvailabilityCheck,
-  });
 }
 
 export async function checkGanttIntervalAction(input: {

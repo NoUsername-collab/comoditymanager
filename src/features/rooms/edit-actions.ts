@@ -10,6 +10,7 @@ import { parseSelectedOptionIds } from "@/services/room-catalog";
 import { updateRoom } from "@/services/rooms-admin";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { revalidateStructurePaths } from "@/lib/cache/revalidate-structure";
+import { parseRoomSleepingLimits } from "@/domain/room/sleeping-limits";
 
 function roomReturnPath(formData: FormData): string {
   const raw = String(formData.get("return_to") ?? "").trim();
@@ -36,6 +37,7 @@ export async function updateRoomAction(formData: FormData) {
     formData.get("max_extra_beds_per_room") ?? 0
   );
   const is_active = formData.get("is_active") === "on";
+  const { max_cots, max_occupancy } = parseRoomSleepingLimits(formData);
   const enabled_option_ids = parseSelectedOptionIds(formData).filter(Boolean);
 
   if (!id || !building_id || !name) {
@@ -54,6 +56,8 @@ export async function updateRoomAction(formData: FormData) {
     capacity_base,
     allows_extra_beds,
     max_extra_beds_per_room,
+    max_cots,
+    max_occupancy,
     enabled_option_ids,
     price_per_night,
     sort_order,

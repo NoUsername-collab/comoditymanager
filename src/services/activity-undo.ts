@@ -174,6 +174,8 @@ async function undoBookingDatesEdited(entry: ActivityLogEntry): Promise<void> {
   const prevOut = metaString(entry.metadata, "prev_check_out");
   const prevAdults = entry.metadata.prev_num_adults;
   const prevChildren = entry.metadata.prev_num_children;
+  const prevAges = entry.metadata.prev_children_ages;
+  const prevSeparate = entry.metadata.prev_children_separate_room;
 
   if (!prevIn || !prevOut) throw new Error("activity.undo_missing_metadata");
 
@@ -185,6 +187,14 @@ async function undoBookingDatesEdited(entry: ActivityLogEntry): Promise<void> {
       check_out: prevOut,
       num_adults: prevAdults != null ? Number(prevAdults) : undefined,
       num_children: prevChildren != null ? Number(prevChildren) : undefined,
+      // Entries logged before ages existed carry no ages: the count alone is restored.
+      ...(prevChildren != null
+        ? {
+            children_ages: Array.isArray(prevAges) ? prevAges.map(Number) : null,
+            children_separate_room: prevSeparate === true,
+            has_minor: Number(prevChildren) > 0,
+          }
+        : {}),
     })
     .eq("tenant_id", tenantId)
     .eq("id", bookingId);

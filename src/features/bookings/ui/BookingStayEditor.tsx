@@ -8,13 +8,20 @@ import {
   stayNightCount,
   todayIso,
 } from "@/lib/stay-dates";
+import {
+  partyAgesComplete,
+  partyHeadcount,
+  PARTY_FORM_FIELDS,
+  storableChildAges,
+  type Party,
+} from "@/domain/availability/party";
+import { PartyFields } from "@/features/bookings/ui/party/PartyFields";
 
 type Props = {
   bookingId: string;
   checkIn: string;
   checkOut: string;
-  numAdults: number;
-  numChildren: number;
+  party: Party;
   editable: boolean;
   /** Guest already checked in — only allow checkout date changes */
   checkedIn?: boolean;
@@ -25,19 +32,18 @@ export function BookingStayEditor({
   bookingId,
   checkIn: initialCheckIn,
   checkOut: initialCheckOut,
-  numAdults: initialAdults,
-  numChildren: initialChildren,
+  party: initialParty,
   editable,
   checkedIn = false,
   editAction,
 }: Props) {
   const t = useTranslations("admin.stayEditor");
+  const tParty = useTranslations("party");
   const today = todayIso();
   const [editing, setEditing] = useState(false);
   const [checkIn, setCheckIn] = useState(initialCheckIn);
   const [checkOut, setCheckOut] = useState(initialCheckOut);
-  const [numAdults, setNumAdults] = useState(initialAdults);
-  const [numChildren, setNumChildren] = useState(initialChildren);
+  const [party, setParty] = useState<Party>(initialParty);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -46,14 +52,13 @@ export function BookingStayEditor({
   const hasChanges =
     checkIn !== initialCheckIn ||
     checkOut !== initialCheckOut ||
-    numAdults !== initialAdults ||
-    numChildren !== initialChildren;
+    JSON.stringify(party) !== JSON.stringify(initialParty);
+  const agesComplete = partyAgesComplete(party);
 
   function handleCancel() {
     setCheckIn(initialCheckIn);
     setCheckOut(initialCheckOut);
-    setNumAdults(initialAdults);
-    setNumChildren(initialChildren);
+    setParty(initialParty);
     setError(null);
     setEditing(false);
   }
@@ -63,6 +68,10 @@ export function BookingStayEditor({
       setError(t("minOneNight"));
       return;
     }
+    if (!agesComplete) {
+      setError(tParty("agesRequired"));
+      return;
+    }
     setError(null);
     setSaved(false);
 
@@ -70,8 +79,9 @@ export function BookingStayEditor({
     fd.set("id", bookingId);
     fd.set("check_in", checkIn);
     fd.set("check_out", checkOut);
-    fd.set("num_adults", String(numAdults));
-    fd.set("num_children", String(numChildren));
+    fd.set(PARTY_FORM_FIELDS.adults, String(party.adults));
+    fd.set(PARTY_FORM_FIELDS.childAges, JSON.stringify(storableChildAges(party) ?? []));
+    fd.set(PARTY_FORM_FIELDS.childrenSeparateRoom, party.childrenSeparateRoom ? "1" : "0");
 
     startTransition(async () => {
       const result = await editAction(fd);
@@ -139,33 +149,15 @@ export function BookingStayEditor({
             className="admin-stay-editor__input"
           />
         </label>
-        <label className={`admin-stay-editor__field ${checkedIn ? "admin-stay-editor__field--locked" : ""}`}>
-          <span className="admin-stay-editor__label">{t("adults")}</span>
-          <input
-            type="number"
-            min={1}
-            value={numAdults}
-            disabled={checkedIn}
-            onChange={(e) => setNumAdults(Math.max(1, Number(e.target.value) || 1))}
-            className="admin-stay-editor__input"
-          />
-        </label>
-        <label className={`admin-stay-editor__field ${checkedIn ? "admin-stay-editor__field--locked" : ""}`}>
-          <span className="admin-stay-editor__label">{t("children")}</span>
-          <input
-            type="number"
-            min={0}
-            value={numChildren}
-            disabled={checkedIn}
-            onChange={(e) => setNumChildren(Math.max(0, Number(e.target.value) || 0))}
-            className="admin-stay-editor__input"
-          />
-        </label>
       </div>
+      {/* Once the guests are in, only the checkout date may change. */}
+      {!checkedIn && (
+        <PartyFields value={party} onChange={setParty} appearance="admin" />
+      )}
 
       {nights > 0 && (
         <p className="admin-stay-editor__summary">
-          {nights} {nights === 1 ? t("nightSingular") : t("nightPlural")} · {numAdults + numChildren} {t("personsTotal")}
+          {nights} {nights === 1 ? t("nightSingular") : t("nightPlural")} · {partyHeadcount(party)} {t("personsTotal")}
         </p>
       )}
 
@@ -183,7 +175,7 @@ export function BookingStayEditor({
         <button
           type="button"
           onClick={handleSave}
-          disabled={pending || !hasChanges || nights < 1}
+          disabled={pending || !hasChanges || nights < 1 || !agesComplete}
           className="admin-stay-editor__save"
         >
           {pending ? t("saving") : t("saveDates")}

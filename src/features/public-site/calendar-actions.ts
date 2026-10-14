@@ -6,13 +6,17 @@ import { getTranslations } from "next-intl/server";
 import { createBookingRequest } from "@/services/bookings";
 import { assertRoomsAvailableForStay } from "@/services/bookings/availability";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
-import { assertValidGuestPhone, staffBookingEmail } from "@/domain/guest/normalize";
+import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import { guestNamesFromForm } from "@/domain/guest-name";
 import { loadGuestStayPreview } from "@/services/guest-stay-preview";
 import { getRoomsByIds } from "@/services/rooms-admin";
 import { stayNightCount } from "@/lib/stay-dates";
-import { computeStandardStayTotal } from "@/domain/pricing/nightly-rates";
-import { requireAnyStaff } from "@/lib/auth/require-admin";
+import { quoteStayForRooms } from "@/services/stay-quote";
+import {
+  parsePartyInput,
+  partyFromFormData,
+  type Party,
+} from "@/domain/availability/party";
 import {
   enforceRateLimit,
   getClientIp,
@@ -43,19 +47,15 @@ async function mustAcceptLegal(formData: FormData) {
 export async function previewGuestStayAction(input: {
   check_in: string;
   check_out: string;
-  num_adults: number;
-  num_children: number;
+  party: Party;
 }) {
   const t = await getTranslations("errors");
   try {
     await assertRateLimit(RATE_LIMIT_BOOKING_PREVIEW, "preview");
+    const party = parsePartyInput(input.party);
+    if (!party) return { ok: false as const, error: t("childAgesRequired") };
     const preview = await runInPublicBookingMode(() =>
-      loadGuestStayPreview(
-        input.check_in,
-        input.check_out,
-        input.num_adults,
-        input.num_children
-      )
+      loadGuestStayPreview(input.check_in, input.check_out, party)
     );
     return { ok: true as const, preview };
   } catch (e) {
@@ -86,12 +86,7 @@ export async function submitGuestRequestAction(formData: FormData) {
       const guest = guestNamesFromForm(formData);
       const guest_email = String(formData.get("guest_email") ?? "");
       const guest_phone = String(formData.get("guest_phone") ?? "");
-      const num_adults_raw = Number(formData.get("num_adults") ?? 1);
-      const num_children_raw = Number(formData.get("num_children") ?? 0);
-      const num_adults = Number.isFinite(num_adults_raw) && num_adults_raw >= 1 ? Math.floor(num_adults_raw) : 1;
-      const num_children = Number.isFinite(num_children_raw) && num_children_raw >= 0 ? Math.floor(num_children_raw) : 0;
-      const has_minor = formData.get("has_minor") === "on";
-      const minor_age = String(formData.get("minor_age") ?? "");
+      const party = partyFromFormData(formData);
       const notesRaw = String(formData.get("notes") ?? "").trim();
       const option_id = String(formData.get("selected_option_id") ?? "");
 
@@ -109,6 +104,9 @@ export async function submitGuestRequestAction(formData: FormData) {
       if (!isAtLeastOneNight(check_in, check_out)) {
         return { ok: false as const, error: t("minOneNight") };
       }
+      if (!party) {
+        return { ok: false as const, error: t("childAgesRequired") };
+      }
       if (!option_id) {
         return { ok: false as const, error: t("selectVariant") };
       }
@@ -118,25 +116,28 @@ export async function submitGuestRequestAction(formData: FormData) {
         return { ok: false as const, error: t("selectVariant") };
       }
 
-      const [, rooms, pricingRules] = await Promise.all([
+      const [, rooms] = await Promise.all([
         assertRoomsAvailableForStay(check_in, check_out, roomIds),
         getRoomsByIds(roomIds),
-        import("@/services/booking-rules-settings").then((m) =>
-          m.getStayPricingRules().catch(() => null),
-        ),
       ]);
       if (rooms.length !== roomIds.length) {
         return { ok: false as const, error: t("variantUnavailable") };
       }
 
-      // Price and title come from the server, never from the form: a visitor could send any value.
+      // Price and fit come from the server, never from the form: a visitor could send any value.
+      // The rooms must host this family under the child rules and the free extra beds / cots.
+      let total_estimate_ron: number;
+      try {
+        ({ total: total_estimate_ron } = await quoteStayForRooms({
+          party,
+          roomIds,
+          checkIn: check_in,
+          checkOut: check_out,
+        }));
+      } catch {
+        return { ok: false as const, error: t("variantUnavailable") };
+      }
       const nights = stayNightCount(check_in, check_out);
-      const total_estimate_ron = computeStandardStayTotal(
-        rooms.map((room) => ({ price_per_night: Number(room.price_per_night) })),
-        check_in,
-        check_out,
-        pricingRules,
-      );
 
       const roomList = rooms
         .map((r) => `${r.name} (${r.building_name})`)
@@ -160,10 +161,7 @@ export async function submitGuestRequestAction(formData: FormData) {
         ...guest,
         guest_email,
         guest_phone,
-        num_adults,
-        num_children,
-        has_minor,
-        minor_age,
+        party,
         notes,
         total_price: total_estimate_ron,
         room_ids: roomIds,
@@ -203,8 +201,8 @@ export async function submitGuestRequestAction(formData: FormData) {
                 guestPhone: guest_phone || null,
                 checkIn: check_in,
                 checkOut: check_out,
-                adults: num_adults,
-                children: num_children,
+                adults: party.adults,
+                children: party.childAges.length,
                 rooms: rooms.map((r) => r.name),
                 bookingId: bookingId ?? "unknown",
                 baseUrl,
@@ -226,61 +224,4 @@ export async function submitGuestRequestAction(formData: FormData) {
       };
     }
   });
-}
-
-/** Staff-entered stay (phone / walk-in at reception). */
-export async function submitPhoneBookingAction(formData: FormData) {
-  const [[t, tServer]] = await Promise.all([
-    Promise.all([
-      getTranslations("errors"),
-      getTranslations("public.serverActions"),
-    ]),
-    requireAnyStaff(),
-  ]);
-
-  const check_in = String(formData.get("check_in") ?? "");
-  const check_out = String(formData.get("check_out") ?? "");
-  const guest = guestNamesFromForm(formData);
-  const guest_email = String(formData.get("guest_email") ?? "");
-  const guest_phone = String(formData.get("guest_phone") ?? "");
-  const num_adults = Number(formData.get("num_adults") ?? 1);
-  const num_children = Number(formData.get("num_children") ?? 0);
-  const notesRaw = String(formData.get("notes") ?? "").trim();
-  const confirm_now = formData.get("confirm_now") === "on";
-
-  if (!check_in || !check_out || !guest_phone.trim()) {
-    throw new Error(t("fillRequired"));
-  }
-  if (!isAtLeastOneNight(check_in, check_out)) {
-    throw new Error(t("minOneNight"));
-  }
-  try {
-    assertValidGuestPhone(guest_phone);
-  } catch {
-    throw new Error(t("invalidPhone"));
-  }
-
-  const notes = notesRaw
-    ? tServer("phoneNoteWithDetails", { notes: notesRaw })
-    : tServer("phoneNoteDefault");
-
-  const id = await createBookingRequest({
-    check_in,
-    check_out,
-    ...guest,
-    guest_email: staffBookingEmail(guest_email),
-    guest_phone,
-    num_adults,
-    num_children,
-    has_minor: false,
-    minor_age: "",
-    notes,
-  });
-
-  revalidatePublicBookingSurfaces({ reception: true });
-
-  if (confirm_now) {
-    return { ok: true as const, bookingId: id, redirectConfirm: true };
-  }
-  return { ok: true as const, bookingId: id };
 }

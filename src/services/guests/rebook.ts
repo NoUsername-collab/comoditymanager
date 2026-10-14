@@ -42,34 +42,31 @@ import { getGuestBaseById } from "./lookup";
 import { assertRoomsAvailableForStay } from "@/services/bookings/availability";
 import { getLatestBookingForGuest } from "@/services/bookings";
 import { getRoomsByIds } from "@/services/rooms-admin";
+import {
+  partyFromBooking,
+  partyYearsLater,
+  type Party,
+} from "@/domain/availability/party";
+import { quoteStayForRooms } from "@/services/stay-quote";
 
-async function estimateTotalForRooms(
-  checkIn: string,
-  checkOut: string,
-  roomIds: string[]
-): Promise<number | null> {
-  if (roomIds.length === 0) return null;
-  const rooms = await getRoomsByIds(roomIds);
-  const nights = stayNightCount(checkIn, checkOut);
-  const raw = rooms.reduce(
-    (sum, r) => sum + Number(r.price_per_night) * nights,
-    0
-  );
-  return Math.round(raw * 100) / 100;
+/** Whole calendar years between two stays, so the children are as old as on the new dates. */
+function yearsBetween(fromIso: string, toIso: string): number {
+  return Number(toIso.slice(0, 4)) - Number(fromIso.slice(0, 4));
 }
 
+/** Same rooms on new dates: free, still hosting the (older) family, priced like any stay. */
 async function validateRebookRoomsAndEstimateTotal(
   checkIn: string,
   checkOut: string,
-  roomIds: string[]
+  roomIds: string[],
+  party: Party
 ): Promise<number | null> {
-  const [, total] = await Promise.all([
-    roomIds.length > 0
-      ? assertRoomsAvailableForStay(checkIn, checkOut, roomIds)
-      : Promise.resolve(),
-    estimateTotalForRooms(checkIn, checkOut, roomIds),
+  if (roomIds.length === 0) return null;
+  const [, quote] = await Promise.all([
+    assertRoomsAvailableForStay(checkIn, checkOut, roomIds),
+    quoteStayForRooms({ party, roomIds, checkIn, checkOut }),
   ]);
-  return total;
+  return quote.total;
 }
 
 export async function rebookGuestLastStay(guestId: string): Promise<string> {
@@ -85,10 +82,15 @@ export async function rebookGuestLastStay(guestId: string): Promise<string> {
   const shifted = shiftStayToNextFutureYear(last.check_in, last.check_out);
   const roomIds = last.room_ids;
 
+  const party = partyYearsLater(
+    partyFromBooking(last),
+    yearsBetween(last.check_in, shifted.check_in)
+  );
   const total = await validateRebookRoomsAndEstimateTotal(
     shifted.check_in,
     shifted.check_out,
-    roomIds
+    roomIds,
+    party
   );
 
   const { createBookingRequest } = await import("@/services/bookings");
@@ -100,10 +102,7 @@ export async function rebookGuestLastStay(guestId: string): Promise<string> {
     guest_first_name: guest.first_name,
     guest_email: guest.email ?? last.guest_email,
     guest_phone: guest.phone ?? last.guest_phone ?? "",
-    num_adults: last.num_adults,
-    num_children: last.num_children,
-    has_minor: last.has_minor,
-    minor_age: last.minor_age ?? "",
+    party,
     notes: `[Rebook] Ultimul sejur (${last.check_in} → ${last.check_out})`,
     total_price: total,
     room_ids: roomIds.length > 0 ? roomIds : undefined,
@@ -140,10 +139,15 @@ export async function rebookGuestSamePeriodNextYear(
   const shifted = shiftStayDatesByYears(last.check_in, last.check_out, 1);
   const roomIds = last.room_ids;
 
+  const party = partyYearsLater(
+    partyFromBooking(last),
+    yearsBetween(last.check_in, shifted.check_in)
+  );
   const total = await validateRebookRoomsAndEstimateTotal(
     shifted.check_in,
     shifted.check_out,
-    roomIds
+    roomIds,
+    party
   );
 
   const { createBookingRequest } = await import("@/services/bookings");
@@ -155,10 +159,7 @@ export async function rebookGuestSamePeriodNextYear(
     guest_first_name: guest.first_name,
     guest_email: guest.email ?? last.guest_email,
     guest_phone: guest.phone ?? last.guest_phone ?? "",
-    num_adults: last.num_adults,
-    num_children: last.num_children,
-    has_minor: last.has_minor,
-    minor_age: last.minor_age ?? "",
+    party,
     notes: `[Rebook] Aceeași perioadă an viitor (din ${last.check_in})`,
     total_price: total,
     room_ids: roomIds.length > 0 ? roomIds : undefined,

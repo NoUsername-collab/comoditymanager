@@ -21,13 +21,15 @@ import { bustPensionSettingsCache } from "@/lib/cache/revalidate-settings";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { optionalUrlSchema } from "@/domain/settings/schemas/shared";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
-import { updatePensionSettings } from "@/services/pension-settings";
+import { updateBedStock, updatePensionSettings } from "@/services/pension-settings";
 import {
+  parseFee,
   parsePricingSeasons,
   type CancellationPolicyType,
   type WeekendPricingMode,
 } from "@/domain/settings/booking-rules";
 import { updateBookingRulesSettings } from "@/services/booking-rules-settings";
+import { parseChildPolicyInput } from "@/domain/availability/party";
 import { checkinSettingsCacheTag } from "@/services/checkin/settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { migrateLegacyPaletteKey } from "@/lib/themes";
@@ -132,9 +134,11 @@ export async function updateOperationalSettingsAction(formData: FormData) {
   await redirect("/admin/settings/checkin?saved=1");
 }
 
-export async function updateExtraBedsCapAction(formData: FormData) {
+/** Extra beds and baby cots the property owns (two separate stocks). */
+export async function updateBedStockAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const parsed = parseExtraBedsMax(formData.get("total_extra_beds_max"));
+  const parsedCots = parseExtraBedsMax(formData.get("total_cots_max"));
 
   const [t, , pension] = await Promise.all([
     getTranslations("admin.serverActions"),
@@ -142,26 +146,24 @@ export async function updateExtraBedsCapAction(formData: FormData) {
     import("@/services/pension-settings").then((m) => m.getPensionSettings()),
   ]);
 
-  if (!parsed.ok) throw new Error(t("invalidExtraBeds"));
+  if (!parsed.ok || !parsedCots.ok) throw new Error(t("invalidExtraBeds"));
   if (!id) throw new Error(t("settingsNotConfigured"));
   if (!pension) throw new Error(t("settingsMissing"));
 
-  await updatePensionSettings(id, {
-    display_name: pension.display_name,
-    default_check_in_time: pension.default_check_in_time,
-    default_check_out_time: pension.default_check_out_time,
-    total_extra_beds_max: parsed.data.extraBedsMax,
-    admin_palette_source: pension.admin_palette_source ?? "catalog",
-    admin_palette_key: migrateLegacyPaletteKey(pension.admin_palette_key ?? "noir"),
-    admin_day_night: pension.admin_day_night ?? "night",
+  await updateBedStock(id, {
+    extraBeds: parsed.data.extraBedsMax,
+    cots: parsedCots.data.extraBedsMax,
   });
 
   await logAdminActivityFromSession({
     action: "settings.operational_updated",
     entityType: "settings",
     entityId: id,
-    summary: "Extra-bed cap updated",
-    metadata: { total_extra_beds_max: parsed.data.extraBedsMax },
+    summary: "Extra-bed and cot stock updated",
+    metadata: {
+      total_extra_beds_max: parsed.data.extraBedsMax,
+      total_cots_max: parsedCots.data.extraBedsMax,
+    },
   });
 
   const tenantId = await resolveTenantIdForData();
@@ -260,6 +262,23 @@ export async function updateBookingRulesSettingsAction(
       5,
       Math.max(1, Number(formData.get("pricing_weekend_multiplier")) || 1)
     );
+  }
+  if (formData.has("extra_bed_fee")) {
+    partial.extraBedFeePerNight = parseFee(formData.get("extra_bed_fee"));
+  }
+  if (formData.has("cot_fee")) {
+    partial.cotFeePerNight = parseFee(formData.get("cot_fee"));
+  }
+  if (formData.has("child_policy")) {
+    try {
+      const policy = parseChildPolicyInput(
+        JSON.parse(String(formData.get("child_policy") ?? "null"))
+      );
+      if (!policy) return { ok: false, error: t("genericError") };
+      partial.childPolicy = policy;
+    } catch {
+      return { ok: false, error: t("genericError") };
+    }
   }
   if (formData.has("pricing_seasons")) {
     try {

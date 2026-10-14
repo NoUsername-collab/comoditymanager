@@ -30,6 +30,9 @@ export default async function QuickConfirmPage({
     checkInTime,
     checkOutTime,
     guestCount,
+    party,
+    childPolicy,
+    inventory,
     availableRooms,
     minRoomsNeeded,
     canFulfill,
@@ -58,6 +61,9 @@ export default async function QuickConfirmPage({
           checkIn={booking.check_in}
           checkOut={booking.check_out}
           guestCount={guestCount}
+          party={party}
+          childPolicy={childPolicy}
+          inventory={inventory}
           minRoomsNeeded={minRoomsNeeded}
           canFulfill={canFulfill}
           availableRooms={availableRooms}

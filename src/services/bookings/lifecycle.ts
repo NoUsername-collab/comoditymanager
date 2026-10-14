@@ -26,7 +26,8 @@ import {
   listGuestProfileSummaries,
   resolveGuestAlertSnapshot,
 } from "@/services/guest-profiles";
-import { canRoomsHostGuests } from "@/domain/availability/stay-capacity";
+import { partyFromBooking } from "@/domain/availability/party";
+import { quoteStayForRooms } from "@/services/stay-quote";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 import { getRoomsByIds } from "@/services/rooms-admin";
 import { getAdminUser } from "@/lib/auth/require-admin";
@@ -66,9 +67,14 @@ export async function confirmBookingWithRooms(
   if (rooms.length !== roomIds.length) {
     throw new Error("booking.one_or_more_rooms_unavailable_reload");
   }
-  if (!canRoomsHostGuests(booking.num_adults + booking.num_children, rooms)) {
-    throw new Error("booking.selected_rooms_cannot_host_all_guests");
-  }
+  // Child rules, cots, people limits and the free extra-bed / cot stock.
+  await quoteStayForRooms({
+    party: partyFromBooking(booking),
+    roomIds,
+    checkIn: booking.check_in,
+    checkOut: booking.check_out,
+    excludeBookingId: bookingId,
+  });
   timer.mark("guards");
 
   const supabase = createPublicAdminClient();
@@ -245,10 +251,7 @@ export async function duplicateBookingAsRequest(bookingId: string): Promise<stri
       "",
     guest_email: b.guest_email,
     guest_phone: b.guest_phone ?? "",
-    num_adults: b.num_adults,
-    num_children: b.num_children,
-    has_minor: b.has_minor,
-    minor_age: b.minor_age ?? "",
+    party: partyFromBooking(b),
     notes: `[Duplicat] rebook similar · sursă ${bookingId.slice(0, 8)}`,
     room_ids: b.room_ids.length > 0 ? b.room_ids : undefined,
   });

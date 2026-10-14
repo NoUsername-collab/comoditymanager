@@ -139,6 +139,36 @@ export function computeRoomStayPricing(
   };
 }
 
+/** Extra beds and cots the stay uses, priced per night (free unless the property set a fee). */
+export function computeStayExtrasTotal(
+  usage: { extraBeds: number; cots: number },
+  checkIn: string,
+  checkOut: string,
+  rules?: StayPricingRules | null
+): number {
+  const nights = stayNightDates(checkIn, checkOut).length;
+  const perNight =
+    usage.extraBeds * (rules?.extraBedFee ?? 0) + usage.cots * (rules?.cotFee ?? 0);
+  return Math.round(perNight * nights * 100) / 100;
+}
+
+/** Rooms plus extra beds and cots: the one total every screen and the invoice use. */
+export function computeStayTotal(
+  rooms: RoomNightPrice[],
+  usage: { extraBeds: number; cots: number },
+  checkIn: string,
+  checkOut: string,
+  rules?: StayPricingRules | null
+): number {
+  return (
+    Math.round(
+      (computeStandardStayTotal(rooms, checkIn, checkOut, rules) +
+        computeStayExtrasTotal(usage, checkIn, checkOut, rules)) *
+        100
+    ) / 100
+  );
+}
+
 export function computeStandardStayTotal(
   rooms: RoomNightPrice[],
   checkIn: string,

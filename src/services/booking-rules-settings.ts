@@ -10,6 +10,7 @@ import {
   type BookingRulesSettings,
   type StayPricingRules,
 } from "@/domain/settings/booking-rules";
+import type { ChildPolicy } from "@/domain/availability/party";
 
 const BOOKING_RULES_SELECT = [
   "cancellation_policy_type",
@@ -27,6 +28,14 @@ const BOOKING_RULES_SELECT = [
   "invoice_vat_enabled",
   "invoice_vat_rate",
   "invoice_prices_include_vat",
+  "child_max_age",
+  "infant_max_age",
+  "children_share_bed",
+  "child_with_parents",
+  "lone_teen_with_parents",
+  "infants_with_parents",
+  "extra_bed_fee",
+  "cot_fee",
 ].join(", ");
 
 async function loadBookingRulesUncached(
@@ -74,6 +83,11 @@ export async function getStayPricingRules(): Promise<StayPricingRules> {
   return toStayPricingRules(settings);
 }
 
+export async function getChildPolicy(): Promise<ChildPolicy> {
+  const settings = await getBookingRulesSettings();
+  return settings.childPolicy;
+}
+
 export async function updateBookingRulesSettings(
   input: Partial<BookingRulesSettings>
 ): Promise<void> {
@@ -116,6 +130,20 @@ export async function updateBookingRulesSettings(
   }
   if (input.invoicePricesIncludeVat !== undefined) {
     update.invoice_prices_include_vat = input.invoicePricesIncludeVat;
+  }
+  if (input.childPolicy !== undefined) {
+    update.child_max_age = input.childPolicy.childMaxAge;
+    update.infant_max_age = input.childPolicy.infantMaxAge;
+    update.children_share_bed = input.childPolicy.childrenShareBed;
+    update.child_with_parents = input.childPolicy.childWithParents;
+    update.lone_teen_with_parents = input.childPolicy.loneTeenWithParents;
+    update.infants_with_parents = input.childPolicy.infantsWithParents;
+  }
+  if (input.extraBedFeePerNight !== undefined) {
+    update.extra_bed_fee = input.extraBedFeePerNight;
+  }
+  if (input.cotFeePerNight !== undefined) {
+    update.cot_fee = input.cotFeePerNight;
   }
 
   if (Object.keys(update).length === 0) return;

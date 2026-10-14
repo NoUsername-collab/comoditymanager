@@ -5,16 +5,19 @@ import {
   createBookingRequest,
   getBookingById,
 } from "@/services/bookings";
+import { quoteStayForRooms } from "@/services/stay-quote";
 import {
-  canRoomsHostGuests,
-  minRoomsToHostGuests,
-} from "@/domain/availability/stay-capacity";
+  partyFromBooking,
+  type ChildPolicy,
+  type Party,
+} from "@/domain/availability/party";
+import type { SharedInventory } from "@/domain/availability/stay-capacity";
+import type { StayPricingRules } from "@/domain/settings/booking-rules";
 import {
   loadAvailableRoomsForStay,
   type ConfirmRoomOption,
   type StayRoomsAvailability,
 } from "@/services/booking-confirm";
-import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
 import { getGuestBaseById } from "@/services/guests";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 
@@ -30,10 +33,8 @@ export type GuestRebookDraft = {
   guestPhone: string;
   checkIn: string;
   checkOut: string;
-  numAdults: number;
-  numChildren: number;
-  hasMinor: boolean;
-  minorAge: string;
+  /** Children of older bookings keep an unknown age until staff fills it in. */
+  party: Party;
   notes: string;
   defaultRoomIds: string[];
 };
@@ -43,6 +44,9 @@ export type GuestRebookPanelPayload = {
   initialRooms: ConfirmRoomOption[];
   initialCanFulfill: boolean;
   initialMinRooms: number;
+  childPolicy: ChildPolicy;
+  inventory: SharedInventory;
+  pricingRules: StayPricingRules;
   checkInTime: string;
   checkOutTime: string;
 };
@@ -75,10 +79,7 @@ const loadGuestRebookDraftCached = cache(async (
     guestPhone: guest.phone ?? booking.guest_phone ?? "",
     checkIn: booking.check_in,
     checkOut: booking.check_out,
-    numAdults: booking.num_adults,
-    numChildren: booking.num_children,
-    hasMinor: booking.has_minor,
-    minorAge: booking.minor_age ?? "",
+    party: partyFromBooking(booking),
     notes: defaultNotes,
     defaultRoomIds: booking.room_ids,
   };
@@ -91,32 +92,12 @@ export async function loadGuestRebookDraft(
   return loadGuestRebookDraftCached(guestId, sourceBookingId);
 }
 
-const loadPreviewGuestRebookRoomsCached = cache(async (
-  checkIn: string,
-  checkOut: string,
-  numAdults: number,
-  numChildren: number
-): Promise<StayRoomsAvailability> => {
-  const guestCount = Math.max(1, numAdults + numChildren);
-  return loadAvailableRoomsForStay({
-    checkIn,
-    checkOut,
-    guestCount,
-  });
-});
-
 export async function previewGuestRebookRooms(input: {
   checkIn: string;
   checkOut: string;
-  numAdults: number;
-  numChildren: number;
+  party: Party;
 }): Promise<StayRoomsAvailability> {
-  return loadPreviewGuestRebookRoomsCached(
-    input.checkIn,
-    input.checkOut,
-    input.numAdults,
-    input.numChildren
-  );
+  return loadAvailableRoomsForStay(input);
 }
 
 const loadGuestRebookPanelPayloadCached = cache(async (
@@ -125,12 +106,11 @@ const loadGuestRebookPanelPayloadCached = cache(async (
 ): Promise<GuestRebookPanelPayload> => {
   const draftPromise = loadGuestRebookDraftCached(guestId, sourceBookingId);
   const roomsPromise = draftPromise.then((draft) =>
-    loadPreviewGuestRebookRoomsCached(
-      draft.checkIn,
-      draft.checkOut,
-      draft.numAdults,
-      draft.numChildren
-    )
+    previewGuestRebookRooms({
+      checkIn: draft.checkIn,
+      checkOut: draft.checkOut,
+      party: draft.party,
+    })
   );
   const [draft, rooms] = await Promise.all([draftPromise, roomsPromise]);
   return {
@@ -138,6 +118,9 @@ const loadGuestRebookPanelPayloadCached = cache(async (
     initialRooms: rooms.availableRooms,
     initialCanFulfill: rooms.canFulfill,
     initialMinRooms: rooms.minRoomsNeeded,
+    childPolicy: rooms.childPolicy,
+    inventory: rooms.inventory,
+    pricingRules: rooms.pricingRules,
     checkInTime: rooms.checkInTime,
     checkOutTime: rooms.checkOutTime,
   };
@@ -167,10 +150,7 @@ export async function createGuestRebookStay(input: {
   guestFirstName: string;
   guestEmail: string;
   guestPhone: string;
-  numAdults: number;
-  numChildren: number;
-  hasMinor: boolean;
-  minorAge: string;
+  party: Party;
   notes: string;
   roomIds: string[];
 }): Promise<string> {
@@ -181,8 +161,7 @@ export async function createGuestRebookStay(input: {
       ? previewGuestRebookRooms({
           checkIn: input.checkIn,
           checkOut: input.checkOut,
-          numAdults: input.numAdults,
-          numChildren: input.numChildren,
+          party: input.party,
         })
       : Promise.resolve(null);
 
@@ -207,16 +186,15 @@ export async function createGuestRebookStay(input: {
     if (selected.length !== uniqueRooms.length) {
       throw new Error("booking.one_or_more_rooms_unavailable_reload");
     }
-    const guestCount = input.numAdults + input.numChildren;
-    if (!canRoomsHostGuests(guestCount, selected)) {
-      throw new Error("booking.selected_rooms_cannot_host_all_guests");
-    }
-    const { possible } = minRoomsToHostGuests(guestCount, availability.availableRooms);
-    if (!possible) {
-      throw new Error("booking.one_or_more_rooms_unavailable_reload");
-    }
+    // Child rules, cots, people limits, free extra beds / cots, and fees.
+    const quote = await quoteStayForRooms({
+      party: input.party,
+      roomIds: uniqueRooms,
+      checkIn: input.checkIn,
+      checkOut: input.checkOut,
+    });
     await assertRoomsAvailableForStay(input.checkIn, input.checkOut, uniqueRooms);
-    total = computeStandardStayTotal(selected, input.checkIn, input.checkOut);
+    total = quote.total;
   }
 
   const bookingId = await createBookingRequest({
@@ -227,10 +205,7 @@ export async function createGuestRebookStay(input: {
     guest_first_name: input.guestFirstName.trim(),
     guest_email: input.guestEmail.trim(),
     guest_phone: input.guestPhone.trim(),
-    num_adults: input.numAdults,
-    num_children: input.numChildren,
-    has_minor: input.hasMinor,
-    minor_age: input.minorAge,
+    party: input.party,
     notes: input.notes.trim(),
     total_price: total,
     room_ids: uniqueRooms.length > 0 ? uniqueRooms : undefined,

@@ -9,7 +9,8 @@ import type { BookingDetail } from "../types";
 const BOOKING_DETAIL_SELECT = `
   id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
   guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note,
-  num_adults, num_children, has_minor, minor_age, notes, total_price,
+  num_adults, num_children, children_ages, children_separate_room,
+  has_minor, minor_age, notes, total_price,
   actual_check_in_at, actual_check_out_at, actual_check_in_by, actual_check_out_by,
   booking_rooms ( room_id, rooms ( name ) )
 `;
@@ -29,6 +30,8 @@ type BookingDetailRow = {
   guest_alert_note: string | null;
   num_adults: number;
   num_children: number;
+  children_ages: number[] | null;
+  children_separate_room: boolean;
   has_minor: boolean;
   minor_age: string | null;
   notes: string | null;
@@ -80,6 +83,8 @@ async function mapBookingDetailFromRow(
     guest_profile: data.guest_id ? profiles.get(String(data.guest_id)) ?? null : null,
     num_adults: data.num_adults,
     num_children: data.num_children,
+    children_ages: data.children_ages ?? null,
+    children_separate_room: data.children_separate_room === true,
     has_minor: data.has_minor,
     minor_age: data.minor_age,
     notes: data.notes,
@@ -147,6 +152,8 @@ type BookingStayParams = {
   check_out: string;
   num_adults: number;
   num_children: number;
+  children_ages: number[] | null;
+  children_separate_room: boolean;
 };
 
 const loadBookingStayParams = cache(
@@ -154,7 +161,9 @@ const loadBookingStayParams = cache(
     const { tenantId, supabase } = await getTenantScope();
     const { data, error } = await supabase
       .from("bookings")
-      .select("id, check_in, check_out, num_adults, num_children")
+      .select(
+        "id, check_in, check_out, num_adults, num_children, children_ages, children_separate_room",
+      )
       .eq("tenant_id", tenantId)
       .eq("id", id)
       .maybeSingle();

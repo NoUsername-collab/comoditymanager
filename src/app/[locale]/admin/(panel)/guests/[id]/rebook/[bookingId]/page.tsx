@@ -28,6 +28,9 @@ export default async function GuestRebookStayPage({
     initialRooms,
     initialCanFulfill,
     initialMinRooms,
+    childPolicy,
+    inventory,
+    pricingRules,
     checkInTime,
     checkOutTime,
   } = payload;
@@ -63,6 +66,9 @@ export default async function GuestRebookStayPage({
         initialRooms={initialRooms}
         initialCanFulfill={initialCanFulfill}
         initialMinRooms={initialMinRooms}
+        childPolicy={childPolicy}
+        inventory={inventory}
+        pricingRules={pricingRules}
         checkInTime={checkInTime}
         checkOutTime={checkOutTime}
         backHref={backHref}

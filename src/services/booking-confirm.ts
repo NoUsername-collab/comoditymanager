@@ -5,18 +5,29 @@ import {
 } from "@/lib/constants";
 import { isRoomFreeForStay } from "@/domain/availability/rooms-free";
 import {
-  canRoomsHostGuests,
-  minRoomsToHostGuests,
+  minRoomsToHostParty,
   roomMaxCapacity,
+  type SharedInventory,
 } from "@/domain/availability/stay-capacity";
-import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
+import {
+  partyFromBooking,
+  partyHeadcount,
+  type ChildPolicy,
+  type Party,
+} from "@/domain/availability/party";
 import {
   getBookingById,
   getBookingStayParams,
   listOccupiedRoomRanges,
 } from "@/services/bookings";
 import { getPensionSettings } from "@/services/pension-settings";
-import { getStayPricingRules } from "@/services/booking-rules-settings";
+import { getBookingRulesSettings } from "@/services/booking-rules-settings";
+import {
+  toStayPricingRules,
+  type StayPricingRules,
+} from "@/domain/settings/booking-rules";
+import { getFreeStockForStay } from "@/services/stay-inventory";
+import { quoteStayForRooms } from "@/services/stay-quote";
 import { listAllRooms } from "@/services/rooms-admin";
 
 import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
@@ -31,34 +42,34 @@ export type ConfirmRoomOption = {
   capacity_base: number;
   allows_extra_beds: boolean;
   max_extra_beds_per_room: number;
+  max_cots: number;
+  max_occupancy: number | null;
   max_capacity: number;
   price_per_night: number;
 };
 
 /** Gantt / already-assigned rooms — skip the full hotel availability catalog. */
-export async function resolveAssignedStayTotal(
-  checkIn: string,
-  checkOut: string,
-  roomIds: string[],
-): Promise<number> {
-  const { getRoomsByIds } = await import("@/services/rooms-admin");
-  const [rooms, pricingRules] = await Promise.all([
-    getRoomsByIds(roomIds),
-    getStayPricingRules(),
-  ]);
-  if (rooms.length !== roomIds.length) {
-    throw new Error("booking.one_or_more_rooms_unavailable_reload");
-  }
-  const standard = computeStandardStayTotal(
-    rooms,
-    checkIn,
-    checkOut,
-    pricingRules,
-  );
-  if (!Number.isFinite(standard) || standard <= 0) {
+export async function resolveAssignedStayTotal(booking: {
+  id: string;
+  check_in: string;
+  check_out: string;
+  room_ids: string[];
+  num_adults: number;
+  num_children: number;
+  children_ages?: number[] | null;
+  children_separate_room?: boolean | null;
+}): Promise<number> {
+  const quote = await quoteStayForRooms({
+    party: partyFromBooking(booking),
+    roomIds: booking.room_ids,
+    checkIn: booking.check_in,
+    checkOut: booking.check_out,
+    excludeBookingId: booking.id,
+  });
+  if (!Number.isFinite(quote.total) || quote.total <= 0) {
     throw new Error("booking.calculated_price_invalid_check_room_prices");
   }
-  return standard;
+  return quote.total;
 }
 
 /** Preț înregistrat la confirmare — mereu total standard (+ supliment opțional). */
@@ -71,23 +82,17 @@ export async function resolveTotalPriceForConfirm(
     throw new Error("booking.select_at_least_one_room");
   }
 
-  const { getRoomsByIds } = await import("@/services/rooms-admin");
-  const [params, rooms, pricingRules] = await Promise.all([
-    getBookingStayParams(bookingId),
-    getRoomsByIds(roomIds),
-    getStayPricingRules(),
-  ]);
+  const params = await getBookingStayParams(bookingId);
   if (!params) throw new Error("booking.request_not_found");
-  if (rooms.length !== roomIds.length) {
-    throw new Error("booking.one_or_more_rooms_unavailable_reload");
-  }
 
-  const standard = computeStandardStayTotal(
-    rooms,
-    params.check_in,
-    params.check_out,
-    pricingRules
-  );
+  // Rooms plus extra beds and cots: the same total the guest saw.
+  const { total: standard } = await quoteStayForRooms({
+    party: partyFromBooking(params),
+    roomIds,
+    checkIn: params.check_in,
+    checkOut: params.check_out,
+    excludeBookingId: bookingId,
+  });
 
   if (!Number.isFinite(standard) || standard <= 0) {
     throw new Error("booking.calculated_price_invalid_check_room_prices");
@@ -110,6 +115,9 @@ type BookingConfirmContext = {
   checkInTime: string;
   checkOutTime: string;
   guestCount: number;
+  party: Party;
+  childPolicy: ChildPolicy;
+  inventory: SharedInventory;
   availableRooms: ConfirmRoomOption[];
   minRoomsNeeded: number;
   canFulfill: boolean;
@@ -119,6 +127,12 @@ export type StayRoomsAvailability = {
   checkInTime: string;
   checkOutTime: string;
   guestCount: number;
+  party: Party;
+  childPolicy: ChildPolicy;
+  /** Extra beds and baby cots still free on these dates. */
+  inventory: SharedInventory;
+  /** Weekend, seasons and extra-bed / cot fees — so every screen prices like the server. */
+  pricingRules: StayPricingRules;
   availableRooms: ConfirmRoomOption[];
   minRoomsNeeded: number;
   canFulfill: boolean;
@@ -127,12 +141,14 @@ export type StayRoomsAvailability = {
 const loadAvailableRoomsForStayCached = cache(async (
   checkIn: string,
   checkOut: string,
-  guestCount: number,
+  partyKey: string,
   excludeBookingId: string | undefined
 ): Promise<StayRoomsAvailability> => {
+  const party = JSON.parse(partyKey) as Party;
   const roomsPromise = listAllRooms();
-  const [settings, occupied, allRooms, optionSlugsByRoom] = await Promise.all([
+  const [settings, rules, occupied, allRooms, optionSlugsByRoom] = await Promise.all([
     getPensionSettings().catch(() => null),
+    getBookingRulesSettings(),
     listOccupiedRoomRanges(excludeBookingId, {
       rangeStart: checkIn,
       rangeEnd: checkOut,
@@ -146,6 +162,13 @@ const loadAvailableRoomsForStayCached = cache(async (
       )
       .catch(() => ({} as Record<string, string[]>)),
   ]);
+  const childPolicy = rules.childPolicy;
+  const inventory = await getFreeStockForStay({
+    checkIn,
+    checkOut,
+    policy: childPolicy,
+    excludeBookingId,
+  });
   const checkInTime =
     settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
   const checkOutTime =
@@ -174,19 +197,27 @@ const loadAvailableRoomsForStayCached = cache(async (
       capacity_base: r.capacity_base,
       allows_extra_beds: r.allows_extra_beds,
       max_extra_beds_per_room: r.max_extra_beds_per_room,
+      max_cots: r.max_cots,
+      max_occupancy: r.max_occupancy,
       max_capacity: roomMaxCapacity(r),
       price_per_night: r.price_per_night,
     }));
 
-  const { possible, minRooms } = minRoomsToHostGuests(
-    guestCount,
-    availableRooms
+  const { possible, minRooms } = minRoomsToHostParty(
+    party,
+    availableRooms,
+    childPolicy,
+    inventory
   );
 
   return {
     checkInTime,
     checkOutTime,
-    guestCount,
+    guestCount: partyHeadcount(party),
+    party,
+    childPolicy,
+    inventory,
+    pricingRules: toStayPricingRules(rules),
     availableRooms,
     minRoomsNeeded: minRooms,
     canFulfill: possible,
@@ -197,13 +228,13 @@ const loadAvailableRoomsForStayCached = cache(async (
 export async function loadAvailableRoomsForStay(input: {
   checkIn: string;
   checkOut: string;
-  guestCount: number;
+  party: Party;
   excludeBookingId?: string;
 }): Promise<StayRoomsAvailability> {
   return loadAvailableRoomsForStayCached(
     input.checkIn,
     input.checkOut,
-    input.guestCount,
+    JSON.stringify(input.party),
     input.excludeBookingId
   );
 }
@@ -217,7 +248,7 @@ const loadBookingConfirmContextCached = cache(async (
       ? loadAvailableRoomsForStayCached(
           params.check_in,
           params.check_out,
-          params.num_adults + params.num_children,
+          JSON.stringify(partyFromBooking(params)),
           bookingId
         )
       : null
@@ -228,13 +259,14 @@ const loadBookingConfirmContextCached = cache(async (
   ]);
   if (!booking || !rooms) return null;
 
-  const guestCount = booking.num_adults + booking.num_children;
-
   return {
     booking,
     checkInTime: rooms.checkInTime,
     checkOutTime: rooms.checkOutTime,
-    guestCount,
+    guestCount: rooms.guestCount,
+    party: rooms.party,
+    childPolicy: rooms.childPolicy,
+    inventory: rooms.inventory,
     availableRooms: rooms.availableRooms,
     minRoomsNeeded: rooms.minRoomsNeeded,
     canFulfill: rooms.canFulfill,

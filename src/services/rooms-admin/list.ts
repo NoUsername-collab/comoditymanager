@@ -20,7 +20,7 @@ async function listAllRoomsUncached(tenantId: string): Promise<RoomWithJoins[]> 
     .select(
       `
       id, building_id, floor_id, name, room_type, room_type_definition_id, capacity_base,
-      allows_extra_beds, max_extra_beds_per_room, has_ac, price_per_night,
+      allows_extra_beds, max_extra_beds_per_room, max_cots, max_occupancy, has_ac, price_per_night,
       is_active, sort_order,
       buildings ( name ),
       floors ( name ),
@@ -49,6 +49,8 @@ async function listAllRoomsUncached(tenantId: string): Promise<RoomWithJoins[]> 
       capacity_base: row.capacity_base,
       allows_extra_beds: row.allows_extra_beds,
       max_extra_beds_per_room: row.max_extra_beds_per_room,
+      max_cots: Number(row.max_cots ?? 0),
+      max_occupancy: row.max_occupancy ?? null,
       has_ac: row.has_ac,
       price_per_night: Number(row.price_per_night),
       is_active: row.is_active,
@@ -92,7 +94,7 @@ const loadRoomsByIds = cache(async (idsKey: string): Promise<RoomWithJoins[]> =>
     .select(
       `
       id, building_id, floor_id, name, room_type, room_type_definition_id, capacity_base,
-      allows_extra_beds, max_extra_beds_per_room, has_ac, price_per_night,
+      allows_extra_beds, max_extra_beds_per_room, max_cots, max_occupancy, has_ac, price_per_night,
       is_active, sort_order,
       buildings ( name ),
       floors ( name ),
@@ -163,7 +165,7 @@ const loadRoomById = cache(async (id: string) => {
       supabase
         .from("rooms")
         .select(
-          "id, building_id, floor_id, name, room_type, room_type_definition_id, capacity_base, allows_extra_beds, max_extra_beds_per_room, has_ac, price_per_night, is_active, sort_order, buildings ( ac_mode )"
+          "id, building_id, floor_id, name, room_type, room_type_definition_id, capacity_base, allows_extra_beds, max_extra_beds_per_room, max_cots, max_occupancy, has_ac, price_per_night, is_active, sort_order, buildings ( ac_mode )"
         )
         .eq("tenant_id", tenantId)
         .eq("id", id)

@@ -60,6 +60,7 @@ export function StaffStayRoomPicker({
   const t = useTranslations("admin.gantt.quick");
   const tConfirm = useTranslations("admin.confirmRooms");
   const tCommon = useTranslations("admin.common");
+  const tParty = useTranslations("party");
   const locale = useLocale();
   const selected = new Set(quote.selected.map((room) => room.id));
   const selectedKey = staffStaySelectionKey(quote.selected.map((room) => room.id));
@@ -253,11 +254,7 @@ export function StaffStayRoomPicker({
 
       {quote.selected.length > 0 && !quote.hostsGuests ? (
         <p className={reception ? "text-sm text-amber-200" : "admin-banner admin-banner--warning"} role="alert">
-          {tConfirm("selectedCapacityInsufficient", {
-            capacity: quote.selectedCapacity,
-            guests: quote.guestCount,
-            personsShort: tCommon("personsShort"),
-          })}
+          {tParty("selectionDoesNotFit", { guests: quote.guestCount })}
         </p>
       ) : null}
       {quote.selected.length === 0 ? (
@@ -271,6 +268,21 @@ export function StaffStayRoomPicker({
               <strong>{formatCurrency(line.lineTotal, locale)} RON</strong>
             </div>
           ))}
+          {quote.extrasTotal > 0 ? (
+            <div className="staff-stay-quote__row">
+              <span>
+                {[
+                  quote.usage.extraBeds > 0
+                    ? tParty("extraBedsCount", { count: quote.usage.extraBeds })
+                    : null,
+                  quote.usage.cots > 0 ? tParty("cotsCount", { count: quote.usage.cots }) : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </span>
+              <strong>{formatCurrency(quote.extrasTotal, locale)} RON</strong>
+            </div>
+          ) : null}
           <div className="staff-stay-quote__total">
             <span>{t("estimateLabel")}</span>
             <strong>{formatCurrency(quote.estimateRon, locale)} RON</strong>

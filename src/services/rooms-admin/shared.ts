@@ -10,6 +10,8 @@ export type CreateRoomInput = {
   capacity_base: number;
   allows_extra_beds: boolean;
   max_extra_beds_per_room: number;
+  max_cots: number;
+  max_occupancy: number | null;
   enabled_option_ids: string[];
   price_per_night: number;
   sort_order: number;
@@ -60,6 +62,8 @@ export function mapRoomRows(
     capacity_base: number;
     allows_extra_beds: boolean;
     max_extra_beds_per_room: number;
+    max_cots: number | null;
+    max_occupancy: number | null;
     has_ac: boolean;
     price_per_night: number;
     is_active: boolean;
@@ -83,6 +87,8 @@ export function mapRoomRows(
       capacity_base: row.capacity_base,
       allows_extra_beds: row.allows_extra_beds,
       max_extra_beds_per_room: row.max_extra_beds_per_room,
+      max_cots: Number(row.max_cots ?? 0),
+      max_occupancy: row.max_occupancy ?? null,
       has_ac: row.has_ac,
       price_per_night: Number(row.price_per_night),
       is_active: row.is_active,

@@ -509,11 +509,17 @@ export async function editBookingDatesAction(
   const id = readBookingId(formData);
   const check_in = String(formData.get("check_in") ?? "").trim();
   const check_out = String(formData.get("check_out") ?? "").trim();
-  const num_adults = Math.max(1, Math.floor(Number(formData.get("num_adults") ?? 1)));
-  const num_children = Math.max(0, Math.floor(Number(formData.get("num_children") ?? 0)));
+  const { partyFromFormData, storableChildAges } = await import(
+    "@/domain/availability/party"
+  );
+  const party = partyFromFormData(formData);
 
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   if (!check_in || !check_out) return { ok: false, error: "fillRequired" };
+  if (!party) return { ok: false, error: t("childAgesRequired") };
+  const num_adults = party.adults;
+  const num_children = party.childAges.length;
+  const children_ages = storableChildAges(party);
 
   const { isAtLeastOneNight } = await import("@/domain/booking/conflict");
   if (!isAtLeastOneNight(check_in, check_out)) {
@@ -530,6 +536,23 @@ export async function editBookingDatesAction(
     if (!before) throw new Error("booking.not_found");
     await assertBookingPostCheckoutEditAllowed(before);
 
+    // Rooms already assigned must still host the family on the new dates:
+    // child rules, cots, people limits and the free extra-bed / cot stock.
+    if (before.room_ids.length > 0) {
+      const { quoteStayForRooms } = await import("@/services/stay-quote");
+      try {
+        await quoteStayForRooms({
+          party,
+          roomIds: before.room_ids,
+          checkIn: check_in,
+          checkOut: check_out,
+          excludeBookingId: id,
+        });
+      } catch {
+        return { ok: false, error: t("roomsCannotHostGuests") };
+      }
+    }
+
     const { error } = await supabase
       .from("bookings")
       .update({
@@ -537,6 +560,9 @@ export async function editBookingDatesAction(
         check_out,
         num_adults,
         num_children,
+        children_ages,
+        children_separate_room: party.childrenSeparateRoom,
+        has_minor: num_children > 0,
       })
       .eq("tenant_id", tenantId)
       .eq("id", id);
@@ -558,10 +584,13 @@ export async function editBookingDatesAction(
         check_out,
         num_adults,
         num_children,
+        children_ages,
         prev_check_in: before.check_in,
         prev_check_out: before.check_out,
         prev_num_adults: before.num_adults,
         prev_num_children: before.num_children,
+        prev_children_ages: before.children_ages,
+        prev_children_separate_room: before.children_separate_room,
       },
     });
 

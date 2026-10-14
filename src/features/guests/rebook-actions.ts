@@ -6,6 +6,11 @@ import { revalidateBookingSurfacesExtended } from "@/lib/cache/revalidate-admin"
 import { requireStaffPermission } from "@/lib/auth/require-admin";
 import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import {
+  parsePartyInput,
+  partyFromFormData,
+  type Party,
+} from "@/domain/availability/party";
+import {
   createGuestRebookStay,
   loadGuestRebookDraft,
   previewGuestRebookRooms,
@@ -29,8 +34,7 @@ export async function loadGuestRebookPanelAction(
     const rooms = await previewGuestRebookRooms({
       checkIn: draft.checkIn,
       checkOut: draft.checkOut,
-      numAdults: draft.numAdults,
-      numChildren: draft.numChildren,
+      party: draft.party,
     });
     return {
       ok: true as const,
@@ -39,6 +43,9 @@ export async function loadGuestRebookPanelAction(
         initialRooms: rooms.availableRooms,
         initialCanFulfill: rooms.canFulfill,
         initialMinRooms: rooms.minRoomsNeeded,
+        childPolicy: rooms.childPolicy,
+        inventory: rooms.inventory,
+        pricingRules: rooms.pricingRules,
         checkInTime: rooms.checkInTime,
         checkOutTime: rooms.checkOutTime,
       },
@@ -51,18 +58,18 @@ export async function loadGuestRebookPanelAction(
 export async function previewGuestRebookRoomsAction(input: {
   check_in: string;
   check_out: string;
-  num_adults: number;
-  num_children: number;
+  party: Party;
 }) {
   await requireStaffPermission("booking_management");
   if (!input.check_in || !input.check_out || input.check_out <= input.check_in) {
     return { ok: false as const, error: "errors.pickDates" };
   }
+  const party = parsePartyInput(input.party);
+  if (!party) return { ok: false as const, error: "errors.childAgesRequired" };
   const rooms = await previewGuestRebookRooms({
     checkIn: input.check_in,
     checkOut: input.check_out,
-    numAdults: Math.max(1, input.num_adults),
-    numChildren: Math.max(0, input.num_children),
+    party,
   });
   return { ok: true as const, rooms };
 }
@@ -83,7 +90,8 @@ export async function submitGuestRebookStayAction(formData: FormData) {
   }
 
   const roomIds = formData.getAll("room_ids").map(String).filter(Boolean);
-  const hasMinor = formData.get("has_minor") === "on";
+  const party = partyFromFormData(formData);
+  if (!party) throw new Error(t("childAgesRequired"));
 
   const bookingId = await createGuestRebookStay({
     guestId,
@@ -94,10 +102,7 @@ export async function submitGuestRebookStayAction(formData: FormData) {
     guestFirstName: String(formData.get("guest_first_name") ?? ""),
     guestEmail: String(formData.get("guest_email") ?? ""),
     guestPhone,
-    numAdults: Math.max(1, Number(formData.get("num_adults") ?? 1)),
-    numChildren: Math.max(0, Number(formData.get("num_children") ?? 0)),
-    hasMinor,
-    minorAge: hasMinor ? String(formData.get("minor_age") ?? "") : "",
+    party,
     notes: String(formData.get("notes") ?? ""),
     roomIds,
   });

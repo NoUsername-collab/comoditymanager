@@ -5,6 +5,7 @@ Onboarding for **Zalmox** (platformă multi-tenant). Start: [README](../README.m
 ## Engineer
 - [tenant-security.md](./tenant-security.md) — izolare tenant, `DEV_TENANT_SLUG`
 - [DDD.md](./DDD.md) — limite domain
+- [copii-paturi-patuturi.md](./copii-paturi-patuturi.md) — copii, paturi suplimentare, pătuțuri, stoc și taxe
 - `npm test` — include import/CSS boundary audits
 
 ## Operare (live sau tenant nou)

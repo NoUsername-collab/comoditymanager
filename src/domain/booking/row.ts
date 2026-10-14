@@ -68,6 +68,9 @@ export type BookingSelectRow = {
 };
 
 export type BookingDetail = BookingRow & {
+  /** Age of each minor; null on bookings made before ages were asked. */
+  children_ages: number[] | null;
+  children_separate_room: boolean;
   has_minor: boolean;
   minor_age: string | null;
   notes: string | null;

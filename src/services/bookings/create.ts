@@ -37,6 +37,7 @@ import {
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp } from "@/lib/operational-check";
+import { storableChildAges, type Party } from "@/domain/availability/party";
 
 import { createServerTimer } from "@/lib/dev/server-timing";
 import { getBookingById } from "./queries";
@@ -94,10 +95,8 @@ export async function createBookingRequest(input: {
   guest_first_name: string;
   guest_email: string;
   guest_phone: string;
-  num_adults: number;
-  num_children: number;
-  has_minor: boolean;
-  minor_age: string;
+  /** Adults plus every minor by age. */
+  party: Party;
   notes: string;
   total_price?: number | null;
   /** Soft hold: camere blocate provizoriu (status rămâne cerere_noua). */
@@ -174,10 +173,12 @@ export async function createBookingRequest(input: {
         guest_id: guestId,
         guest_alert_level: guestAlert.level,
         guest_alert_note: guestAlert.note,
-        num_adults: input.num_adults,
-        num_children: input.num_children,
-        has_minor: input.has_minor,
-        minor_age: input.has_minor ? input.minor_age.trim() : null,
+        num_adults: input.party.adults,
+        num_children: input.party.childAges.length,
+        children_ages: storableChildAges(input.party),
+        children_separate_room: input.party.childrenSeparateRoom,
+        has_minor: input.party.childAges.length > 0,
+        minor_age: null,
         notes: input.notes.trim() || null,
         total_price: input.total_price ?? null,
       })

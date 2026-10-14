@@ -22,6 +22,7 @@ import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import { RoomOptionFields } from "@/features/rooms/ui/RoomOptionFields";
+import { RoomSleepingLimitFields } from "@/features/rooms/ui/RoomSleepingLimitFields";
 
 type Props = {
   buildings: Building[];
@@ -438,6 +439,8 @@ export function RoomForm({
             className="mt-1"
           />
         </label>
+
+        <RoomSleepingLimitFields />
 
         <AdminSubmitButton
           disabled={bulkBlocked}

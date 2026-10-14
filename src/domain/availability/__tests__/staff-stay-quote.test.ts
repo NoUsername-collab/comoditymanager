@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
   buildStaffStaySuggestions,
-  partyGuestCount,
+
   quoteStaffStaySelection,
   mergeStayRoomSelection,
   resolveStaffStaySelection,
   type StaffStayQuoteRoom,
 } from "@/domain/availability/staff-stay-quote";
 import type { StayPricingRules } from "@/domain/settings/booking-rules";
+import { DEFAULT_CHILD_POLICY, type Party } from "@/domain/availability/party";
+
+function adults(count: number, childAges: number[] = []): Party {
+  return { adults: count, childAges, childrenSeparateRoom: false };
+}
 
 function room(
   id: string,
@@ -48,7 +53,7 @@ describe("buildStaffStaySuggestions", () => {
   it("puts hosting Gantt rooms first, then cheapest single, then a cheaper combo", () => {
     const suggestions = buildStaffStaySuggestions({
       availableRooms: rooms,
-      guestCount: 3,
+      party: adults(3), policy: DEFAULT_CHILD_POLICY,
       preferredIds: ["c"],
       ...STAY,
     });
@@ -62,7 +67,7 @@ describe("buildStaffStaySuggestions", () => {
   it("skips preferred rooms that cannot host the party", () => {
     const suggestions = buildStaffStaySuggestions({
       availableRooms: rooms,
-      guestCount: 3,
+      party: adults(3), policy: DEFAULT_CHILD_POLICY,
       preferredIds: ["a"],
       ...STAY,
     });
@@ -74,7 +79,7 @@ describe("buildStaffStaySuggestions", () => {
   it("does not duplicate the cheapest single as a one-room combo", () => {
     const suggestions = buildStaffStaySuggestions({
       availableRooms: rooms,
-      guestCount: 2,
+      party: adults(2), policy: DEFAULT_CHILD_POLICY,
       preferredIds: [],
       ...STAY,
     });
@@ -90,7 +95,7 @@ describe("buildStaffStaySuggestions", () => {
     ];
     const suggestions = buildStaffStaySuggestions({
       availableRooms: many,
-      guestCount: 3,
+      party: adults(3), policy: DEFAULT_CHILD_POLICY,
       preferredIds: ["d"],
       ...STAY,
     });
@@ -119,7 +124,7 @@ describe("resolveStaffStaySelection", () => {
         previousIds: ["a", "b"],
         availableRooms: rooms,
         preferredIds: ["c"],
-        guestCount: 3,
+        party: adults(3), policy: DEFAULT_CHILD_POLICY,
         ...STAY,
       }),
     ).toEqual(["a", "b"]);
@@ -131,7 +136,7 @@ describe("resolveStaffStaySelection", () => {
         previousIds: ["a"],
         availableRooms: rooms,
         preferredIds: ["a"],
-        guestCount: 3,
+        party: adults(3), policy: DEFAULT_CHILD_POLICY,
         ...STAY,
       }),
     ).toEqual(["c"]);
@@ -143,18 +148,10 @@ describe("resolveStaffStaySelection", () => {
         previousIds: [],
         availableRooms: rooms,
         preferredIds: [],
-        guestCount: 2,
+        party: adults(2), policy: DEFAULT_CHILD_POLICY,
         ...STAY,
       }),
     ).toEqual(["a"]);
-  });
-});
-
-describe("partyGuestCount", () => {
-  it("counts adults and children like the public booking form", () => {
-    expect(partyGuestCount(2, 1)).toBe(3);
-    expect(partyGuestCount(0, 0)).toBe(1);
-    expect(partyGuestCount(1.8, -2)).toBe(1);
   });
 });
 
@@ -169,7 +166,7 @@ describe("quoteStaffStaySelection", () => {
     const quote = quoteStaffStaySelection({
       availableRooms: rooms,
       selectedIds: ["c"],
-      guestCount: 3,
+      party: adults(3), policy: DEFAULT_CHILD_POLICY,
       checkIn: "2026-09-10",
       checkOut: "2026-09-12",
     });
@@ -183,7 +180,7 @@ describe("quoteStaffStaySelection", () => {
     const tooSmall = quoteStaffStaySelection({
       availableRooms: rooms,
       selectedIds: ["a"],
-      guestCount: 3,
+      party: adults(3), policy: DEFAULT_CHILD_POLICY,
       checkIn: "2026-09-10",
       checkOut: "2026-09-12",
     });
@@ -193,7 +190,7 @@ describe("quoteStaffStaySelection", () => {
     const combo = quoteStaffStaySelection({
       availableRooms: rooms,
       selectedIds: ["a", "b"],
-      guestCount: 3,
+      party: adults(3), policy: DEFAULT_CHILD_POLICY,
       checkIn: "2026-09-10",
       checkOut: "2026-09-12",
     });
@@ -212,11 +209,43 @@ describe("quoteStaffStaySelection", () => {
     const quote = quoteStaffStaySelection({
       availableRooms: rooms,
       selectedIds: ["a"],
-      guestCount: 2,
+      party: adults(2), policy: DEFAULT_CHILD_POLICY,
       checkIn: "2026-09-10",
       checkOut: "2026-09-12",
       pricingRules: rules,
     });
     expect(quote.estimateRon).toBe(250);
+  });
+});
+
+describe("families", () => {
+  const rooms = [
+    room("a", "101", 2, 100),
+    room("b", "102", 2, 100),
+    room("c", "201", 4, 250),
+  ];
+
+  it("keeps parents and their child in one double instead of splitting", () => {
+    const suggestions = buildStaffStaySuggestions({
+      availableRooms: rooms,
+      party: adults(2, [6]),
+      policy: DEFAULT_CHILD_POLICY,
+      preferredIds: [],
+      ...STAY,
+    });
+    expect(suggestions.map((row) => row.roomIds)).toEqual([["a"]]);
+  });
+
+  it("quotes a double as hosting a family of four with two young children only with an extra bed", () => {
+    const quote = quoteStaffStaySelection({
+      availableRooms: rooms,
+      selectedIds: ["a"],
+      party: adults(2, [5, 8]),
+      policy: DEFAULT_CHILD_POLICY,
+      ...STAY,
+    });
+    expect(quote.hostsGuests).toBe(false);
+    expect(quote.guestCount).toBe(4);
+    expect(quote.minRoomsNeeded).toBe(1);
   });
 });

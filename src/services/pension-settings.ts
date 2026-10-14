@@ -25,6 +25,8 @@ export type PensionSettings = {
   default_check_in_time: string;
   default_check_out_time: string;
   total_extra_beds_max: number;
+  /** Baby cots the property owns. */
+  total_cots_max: number;
   admin_palette_source: "catalog";
   admin_palette_key: ThemeId;
   admin_day_night: ThemeMode;
@@ -37,7 +39,7 @@ function parseDayNight(raw: unknown): ThemeMode {
 }
 
 const PENSION_SETTINGS_BASE_SELECT =
-  "id, display_name, default_check_in_time, default_check_out_time, total_extra_beds_max, admin_palette_source, admin_palette_key, admin_day_night";
+  "id, display_name, default_check_in_time, default_check_out_time, total_extra_beds_max, total_cots_max, admin_palette_source, admin_palette_key, admin_day_night";
 
 async function getPensionSettingsUncached(tenantId: string): Promise<PensionSettings | null> {
   // Always read from public — pension settings are global, not sim-scoped
@@ -60,6 +62,7 @@ async function getPensionSettingsUncached(tenantId: string): Promise<PensionSett
     default_check_in_time: String(data.default_check_in_time).slice(0, 5),
     default_check_out_time: String(data.default_check_out_time).slice(0, 5),
     total_extra_beds_max: data.total_extra_beds_max,
+    total_cots_max: Number(data.total_cots_max ?? 0),
     admin_palette_source: "catalog",
     admin_palette_key: migrateLegacyPaletteKey(
       typeof data.admin_palette_key === "string" && data.admin_palette_key.length > 0
@@ -128,6 +131,24 @@ export async function updatePensionSettings(
       admin_palette_source: input.admin_palette_source,
       admin_palette_key: input.admin_palette_key,
       admin_day_night: input.admin_day_night,
+    })
+    .eq("tenant_id", tenantId)
+    .eq("id", id);
+
+  if (error) throw new Error(error.message);
+}
+
+/** Extra beds and baby cots the whole property owns. */
+export async function updateBedStock(
+  id: string,
+  input: { extraBeds: number; cots: number }
+): Promise<void> {
+  const { tenantId, supabase } = await getTenantScope();
+  const { error } = await supabase
+    .from("pension_settings")
+    .update({
+      total_extra_beds_max: input.extraBeds,
+      total_cots_max: input.cots,
     })
     .eq("tenant_id", tenantId)
     .eq("id", id);

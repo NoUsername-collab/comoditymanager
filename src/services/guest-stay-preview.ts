@@ -1,23 +1,26 @@
 import { cache } from "react";
 import { computeGuestStayOptions } from "@/domain/availability/guest-stay-options";
 import type { GuestStayPreview } from "@/domain/availability/guest-stay-options";
+import type { Party } from "@/domain/availability/party";
 import { listOccupiedRoomRanges } from "@/services/bookings";
 import { listAllRoomsForPublic } from "@/services/rooms-admin";
 import { getPensionSettings } from "@/services/pension-settings";
+import { getBookingRulesSettings } from "@/services/booking-rules-settings";
+import { getFreeStockForStay } from "@/services/stay-inventory";
+import { DEFAULT_BOOKING_RULES, toStayPricingRules } from "@/domain/settings/booking-rules";
 import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
 
-export const loadGuestStayPreview = cache(async (
+const loadGuestStayPreviewCached = cache(async (
   checkIn: string,
   checkOut: string,
-  numAdults: number,
-  numChildren: number
+  partyKey: string,
 ): Promise<GuestStayPreview> => {
-  const guestCount = Math.max(1, numAdults + numChildren);
+  const party = JSON.parse(partyKey) as Party;
 
-  const [roomsRaw, occupied, settings, pricingRules] = await Promise.all([
+  const [roomsRaw, occupied, settings, rules] = await Promise.all([
     listAllRoomsForPublic(),
     listOccupiedRoomRanges(undefined, {
       forPublicCalendar: true,
@@ -25,10 +28,14 @@ export const loadGuestStayPreview = cache(async (
       rangeEnd: checkOut,
     }),
     getPensionSettings().catch(() => null),
-    import("@/services/booking-rules-settings").then((m) =>
-      m.getStayPricingRules().catch(() => null)
-    ),
+    getBookingRulesSettings().catch(() => DEFAULT_BOOKING_RULES),
   ]);
+
+  const inventory = await getFreeStockForStay({
+    checkIn,
+    checkOut,
+    policy: rules.childPolicy,
+  });
 
   const checkInTime =
     settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
@@ -42,19 +49,31 @@ export const loadGuestStayPreview = cache(async (
       name: r.name,
       building_name: r.building_name,
       has_ac: r.has_ac,
-      capacity_max:
-        r.capacity_base +
-        (r.allows_extra_beds ? r.max_extra_beds_per_room : 0),
+      capacity_base: r.capacity_base,
+      allows_extra_beds: r.allows_extra_beds,
+      max_extra_beds_per_room: r.max_extra_beds_per_room,
+      max_cots: r.max_cots,
+      max_occupancy: r.max_occupancy,
       price_per_night: Number(r.price_per_night),
     }));
 
-  return computeGuestStayOptions(
+  return computeGuestStayOptions({
     rooms,
     occupied,
     checkIn,
     checkOut,
-    guestCount,
-    { checkIn: checkInTime, checkOut: checkOutTime },
-    pricingRules
-  );
+    party,
+    policy: rules.childPolicy,
+    inventory,
+    times: { checkIn: checkInTime, checkOut: checkOutTime },
+    pricingRules: toStayPricingRules(rules),
+  });
 });
+
+export async function loadGuestStayPreview(
+  checkIn: string,
+  checkOut: string,
+  party: Party,
+): Promise<GuestStayPreview> {
+  return loadGuestStayPreviewCached(checkIn, checkOut, JSON.stringify(party));
+}

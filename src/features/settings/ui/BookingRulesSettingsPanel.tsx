@@ -19,6 +19,7 @@ import {
   type WeekendPricingMode,
 } from "@/domain/settings/booking-rules";
 import { SettingRow } from "@/components/admin/settings/SettingRow";
+import { ChildPolicySettings } from "@/features/settings/ui/ChildPolicySettings";
 
 type Props = {
   settings: BookingRulesSettings;
@@ -125,6 +126,15 @@ export function BookingRulesSettingsPanel({
     if (partial.pricingSeasons !== undefined) {
       fd.set("pricing_seasons", JSON.stringify(partial.pricingSeasons));
     }
+    if (partial.extraBedFeePerNight !== undefined) {
+      fd.set("extra_bed_fee", String(partial.extraBedFeePerNight));
+    }
+    if (partial.cotFeePerNight !== undefined) {
+      fd.set("cot_fee", String(partial.cotFeePerNight));
+    }
+    if (partial.childPolicy !== undefined) {
+      fd.set("child_policy", JSON.stringify(partial.childPolicy));
+    }
     const result = await updateBookingRulesSettingsAction(fd);
     if (result.ok) {
       setSettings((current) => ({ ...current, ...partial }));
@@ -152,6 +162,8 @@ export function BookingRulesSettingsPanel({
       cancellationPolicyCustomText: settings.cancellationPolicyCustomText ?? "",
       pricingWeekendMultiplier: settings.pricingWeekendMultiplier,
       pricingSeasons: settings.pricingSeasons,
+      extraBedFeePerNight: settings.extraBedFeePerNight,
+      cotFeePerNight: settings.cotFeePerNight,
     },
     (_values, changed) =>
       send({
@@ -260,6 +272,14 @@ export function BookingRulesSettingsPanel({
       ) : null}
 
       <p className="settings-policy-preview">{policyPreview}</p>
+
+      <ChildPolicySettings
+        policy={settings.childPolicy}
+        onChange={(childPolicy) => saveNow({ childPolicy })}
+        extraBedFee={view.extraBedFeePerNight}
+        cotFee={view.cotFeePerNight}
+        onFeeChange={(key, value) => draft.set(key, value)}
+      />
 
       <h3 className="checkin-settings__title">{t("pricingTitle")}</h3>
 

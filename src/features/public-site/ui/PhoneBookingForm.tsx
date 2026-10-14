@@ -9,12 +9,13 @@ import {
 } from "@/features/bookings/ui/identity";
 import {
   StaffStayIntentToggle,
-  StaffStayOccupancyFields,
   StaffStayRoomPicker,
   useStaffStayPreview,
 } from "@/features/bookings/ui/staff-stay-create";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
 import { DEFAULT_PARTY_ADULTS } from "@/lib/constants";
+import { buildParty, type Party } from "@/domain/availability/party";
+import { PartyFields } from "@/features/bookings/ui/party/PartyFields";
 import {
   addDays,
   clampCheckInDate,
@@ -31,12 +32,14 @@ export function PhoneBookingForm({
 }) {
   const t = useTranslations("public.phoneForm");
   const tForm = useTranslations("public.form");
+  const tParty = useTranslations("party");
   const today = todayIso();
   const defaultDates = defaultNewStayDates(today);
   const [checkIn, setCheckIn] = useState(defaultDates.checkIn);
   const [checkOut, setCheckOut] = useState(defaultDates.checkOut);
-  const [numAdults, setNumAdults] = useState(DEFAULT_PARTY_ADULTS);
-  const [numChildren, setNumChildren] = useState(0);
+  const [party, setParty] = useState<Party>(() =>
+    buildParty({ adults: DEFAULT_PARTY_ADULTS, childAges: [] }),
+  );
   const [intent, setIntent] = useState<StaffStayIntent>("request");
   const [notes, setNotes] = useState("");
   const [pending, setPending] = useState(false);
@@ -48,8 +51,7 @@ export function PhoneBookingForm({
   const stayPreview = useStaffStayPreview({
     checkIn,
     checkOut,
-    numAdults,
-    numChildren,
+    party,
     preferredRoomIds,
     enabled: Boolean(checkIn && checkOut && checkIn < checkOut),
   });
@@ -67,6 +69,10 @@ export function PhoneBookingForm({
 
   async function onSubmit() {
     if (!identity.canSubmit) return;
+    if (!stayPreview.agesComplete) {
+      setError(tParty("agesRequired"));
+      return;
+    }
     if (!stayPreview.quote.hostsGuests) {
       setError(t("roomsRequired"));
       return;
@@ -82,8 +88,7 @@ export function PhoneBookingForm({
       guestFirstName: identity.guestFirstName,
       guestEmail: identity.guestEmail,
       guestPhone: identity.guestPhone,
-      numAdults,
-      numChildren,
+      party,
       notes: notes.trim() || undefined,
       source: "reception",
     });
@@ -147,13 +152,7 @@ export function PhoneBookingForm({
           <DateWeekdayHint iso={checkOut} />
         </label>
       </div>
-      <StaffStayOccupancyFields
-        numAdults={numAdults}
-        numChildren={numChildren}
-        onAdultsChange={setNumAdults}
-        onChildrenChange={setNumChildren}
-        appearance="reception"
-      />
+      <PartyFields value={party} onChange={setParty} appearance="reception" />
       <StaffStayRoomPicker
         rooms={stayPreview.rooms}
         quote={stayPreview.quote}

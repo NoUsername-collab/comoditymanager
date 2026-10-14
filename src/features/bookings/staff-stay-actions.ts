@@ -1,9 +1,7 @@
 "use server";
 
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
-import { canRoomsHostGuests } from "@/domain/availability/stay-capacity";
-import { partyGuestCount } from "@/domain/availability/staff-stay-quote";
-import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
+import { parsePartyInput, type Party } from "@/domain/availability/party";
 import { assertValidGuestPhone, staffBookingEmail } from "@/domain/guest/normalize";
 import type { BookingOccupantDraft } from "@/domain/booking/occupants";
 import type { StayPricingRules } from "@/domain/settings/booking-rules";
@@ -23,6 +21,7 @@ import {
   type StayRoomsAvailability,
 } from "@/services/booking-confirm";
 import { getStayPricingRules } from "@/services/booking-rules-settings";
+import { quoteStayForRooms } from "@/services/stay-quote";
 import { getRoomsByIds } from "@/services/rooms-admin";
 import { buildSyntheticGanttBookingRow } from "@/services/bookings/synthetic-gantt-row";
 import type { BookingRow } from "@/services/bookings/types";
@@ -47,8 +46,7 @@ export type StaffStayCreateInput = {
   guestFirstName: string;
   guestEmail: string;
   guestPhone?: string;
-  numAdults: number;
-  numChildren: number;
+  party: Party;
   notes?: string;
   occupants?: StaffStayOccupantInput[];
   skipAvailabilityCheck?: boolean;
@@ -88,8 +86,7 @@ function validateIdentity(
 export async function previewStaffStayRoomsAction(input: {
   checkIn: string;
   checkOut: string;
-  numAdults: number;
-  numChildren: number;
+  party: Party;
 }): Promise<
   | {
       ok: true;
@@ -103,13 +100,14 @@ export async function previewStaffStayRoomsAction(input: {
   if (!input.checkIn || !input.checkOut || !isAtLeastOneNight(input.checkIn, input.checkOut)) {
     return { ok: false, error: t("previewError") };
   }
-  const guestCount = partyGuestCount(input.numAdults, input.numChildren);
+  const party = parsePartyInput(input.party);
+  if (!party) return { ok: false, error: t("childAgesRequired") };
   try {
     const [rooms, pricingRules] = await Promise.all([
       loadAvailableRoomsForStay({
         checkIn: input.checkIn,
         checkOut: input.checkOut,
-        guestCount,
+        party,
       }),
       getStayPricingRules(),
     ]);
@@ -164,31 +162,24 @@ export async function createStaffStayAction(
       }
     }
 
-    const numAdults = Number.isFinite(input.numAdults)
-      ? Math.max(1, Math.floor(input.numAdults))
-      : 1;
-    const numChildren = Number.isFinite(input.numChildren)
-      ? Math.max(0, Math.floor(input.numChildren))
-      : 0;
-    const guestCount = partyGuestCount(numAdults, numChildren);
+    const party = parsePartyInput(input.party);
+    if (!party) return { ok: false, error: t("childAgesRequired") };
 
-    const [rooms, pricingRules] = await Promise.all([
-      getRoomsByIds(roomIds),
-      getStayPricingRules(),
-    ]);
+    const rooms = await getRoomsByIds(roomIds);
     if (rooms.length !== roomIds.length) {
       return { ok: false, error: t("roomNotFound") };
     }
-    if (!canRoomsHostGuests(guestCount, rooms)) {
+    let total: number;
+    try {
+      ({ total } = await quoteStayForRooms({
+        party,
+        roomIds,
+        checkIn: input.checkIn,
+        checkOut: input.checkOut,
+      }));
+    } catch {
       return { ok: false, error: t("roomsCannotHostGuests") };
     }
-
-    const total = computeStandardStayTotal(
-      rooms.map((room) => ({ price_per_night: Number(room.price_per_night) })),
-      input.checkIn,
-      input.checkOut,
-      pricingRules,
-    );
 
     const defaultNote =
       input.source === "reception"
@@ -206,10 +197,7 @@ export async function createStaffStayAction(
       guest_first_name: titular.first,
       guest_email: titular.email,
       guest_phone: titular.phone,
-      num_adults: numAdults,
-      num_children: numChildren,
-      has_minor: numChildren > 0,
-      minor_age: "",
+      party,
       notes,
       total_price: total,
       room_ids: roomIds,
@@ -245,8 +233,8 @@ export async function createStaffStayAction(
       roomIds,
       roomName: rooms[0]?.name,
       roomNames: rooms.map((room) => room.name),
-      numAdults,
-      numChildren,
+      numAdults: party.adults,
+      numChildren: party.childAges.length,
       totalPrice: total,
     });
     timer.finish({ bookingId });

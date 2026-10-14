@@ -1,3 +1,9 @@
+import {
+  DEFAULT_CHILD_POLICY,
+  parseChildPolicyRow,
+  type ChildPolicy,
+} from "@/domain/availability/party";
+
 export type CancellationPolicyType =
   | "flexible"
   | "moderate"
@@ -22,6 +28,10 @@ export type StayPricingRules = {
   weekendMode: WeekendPricingMode;
   weekendMultiplier: number;
   seasons: PricingSeason[];
+  /** Per extra bed, per night. 0 or missing = included in the room price. */
+  extraBedFee?: number;
+  /** Per baby cot, per night. 0 or missing = free. */
+  cotFee?: number;
 };
 
 export type BookingRulesSettings = {
@@ -32,6 +42,8 @@ export type BookingRulesSettings = {
   pricingWeekendMode: WeekendPricingMode;
   pricingWeekendMultiplier: number;
   pricingSeasons: PricingSeason[];
+  extraBedFeePerNight: number;
+  cotFeePerNight: number;
   invoiceSeries: string;
   invoiceNextNumber: number;
   proformaSeries: string;
@@ -40,6 +52,7 @@ export type BookingRulesSettings = {
   invoiceVatEnabled: boolean;
   invoiceVatRate: number | null;
   invoicePricesIncludeVat: boolean;
+  childPolicy: ChildPolicy;
 };
 
 export const DEFAULT_BOOKING_RULES: BookingRulesSettings = {
@@ -50,6 +63,8 @@ export const DEFAULT_BOOKING_RULES: BookingRulesSettings = {
   pricingWeekendMode: "fri_sat",
   pricingWeekendMultiplier: 1.2,
   pricingSeasons: [],
+  extraBedFeePerNight: 0,
+  cotFeePerNight: 0,
   invoiceSeries: "HSP",
   invoiceNextNumber: 1,
   proformaSeries: "PF",
@@ -58,6 +73,7 @@ export const DEFAULT_BOOKING_RULES: BookingRulesSettings = {
   invoiceVatEnabled: true,
   invoiceVatRate: null,
   invoicePricesIncludeVat: true,
+  childPolicy: DEFAULT_CHILD_POLICY,
 };
 
 function parsePolicyType(raw: unknown): CancellationPolicyType {
@@ -74,6 +90,13 @@ function parsePolicyType(raw: unknown): CancellationPolicyType {
 
 function parseWeekendMode(raw: unknown): WeekendPricingMode {
   return raw === "sat_only" ? "sat_only" : "fri_sat";
+}
+
+/** A per-night fee in RON: 0..10000, two decimals. */
+export function parseFee(raw: unknown): number {
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n <= 0) return 0;
+  return Math.min(10000, Math.round(n * 100) / 100);
 }
 
 function clampMultiplier(value: number): number {
@@ -155,6 +178,8 @@ export function parseBookingRulesRow(
         DEFAULT_BOOKING_RULES.pricingWeekendMultiplier
     ),
     pricingSeasons: parsePricingSeasons(row.pricing_seasons),
+    extraBedFeePerNight: parseFee(row.extra_bed_fee),
+    cotFeePerNight: parseFee(row.cot_fee),
     invoiceSeries:
       String(row.invoice_series ?? DEFAULT_BOOKING_RULES.invoiceSeries)
         .trim()
@@ -188,6 +213,7 @@ export function parseBookingRulesRow(
       row.invoice_prices_include_vat != null
         ? Boolean(row.invoice_prices_include_vat)
         : DEFAULT_BOOKING_RULES.invoicePricesIncludeVat,
+    childPolicy: parseChildPolicyRow(row),
   };
 }
 
@@ -199,6 +225,8 @@ export function toStayPricingRules(
     weekendMode: settings.pricingWeekendMode,
     weekendMultiplier: settings.pricingWeekendMultiplier,
     seasons: settings.pricingSeasons,
+    extraBedFee: settings.extraBedFeePerNight,
+    cotFee: settings.cotFeePerNight,
   };
 }
 
