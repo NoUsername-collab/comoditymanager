@@ -14,7 +14,7 @@ import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
 import type { BookingRow } from "@/services/bookings";
 import { GanttRequestsQueue } from "@/features/calendar/ui/GanttRequestsQueue";
 import { GanttToolbarOccForm } from "@/features/calendar/ui/GanttToolbarOccForm";
-import { GanttRadialController } from "@/features/calendar/ui/GanttRadialController";
+import { GanttTodayActions } from "@/features/calendar/ui/GanttTodayActions";
 import { useIsCompactViewport } from "@/hooks/useDisplayProfile";
 
 export type GanttViewMode = "all" | "building" | "room";
@@ -251,7 +251,7 @@ export function GanttToolbar({
       <div className="gantt-toolbar__panel">
         <div className="gantt-toolbar__row gantt-toolbar__row--radial">
           <div className="gantt-toolbar__center gantt-toolbar__center--compact">
-            <GanttRadialController
+            <GanttTodayActions
               onOpenRequest={() => setOccFormMode("request")}
               onOpenHold={() => setOccFormMode("hold")}
               onOpenMove={() => setOccFormMode("move")}

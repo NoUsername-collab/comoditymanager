@@ -453,19 +453,6 @@ html[data-layout-chrome="compact"] .gantt-action-strip {
   scroll-snap-type: x proximity;
 }
 
-html[data-layout-chrome="compact"] .gantt-action-strip__toggle-slot {
-  width: var(--ml-touch-min, 2.75rem);
-  min-width: var(--ml-touch-min, 2.75rem);
-  height: var(--ml-touch-min, 2.75rem);
-  flex-shrink: 0;
-  scroll-snap-align: start;
-}
-
-html[data-layout-chrome="compact"] .gantt-action-strip__track {
-  min-width: min-content;
-  flex: 1 1 auto;
-}
-
 html[data-layout-chrome="compact"] .gantt-action-strip__badge {
   padding: 0.35rem 0.55rem;
   font-size: 0.6875rem;
@@ -487,14 +474,6 @@ html[data-layout-chrome="compact"] .gantt-action-strip__btn {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
-}
-
-html[data-layout-chrome="compact"] .gantt-action-strip__reveal,
-html[data-layout-chrome="compact"] .gantt-action-strip__collapse {
-  width: var(--ml-touch-min, 2.75rem);
-  height: var(--ml-touch-min, 2.75rem);
-  min-width: var(--ml-touch-min, 2.75rem);
-  flex-shrink: 0;
 }
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__title {
@@ -1367,14 +1346,6 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__
   color: #134e4a;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__reveal,
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__collapse {
-  border: 1px solid var(--gantt-day-control-border);
-  background: var(--gantt-day-control-bg);
-  border-radius: 999px;
-  color: color-mix(in srgb, var(--admin-accent) 55%, var(--admin-text-muted));
-}
-
 /* Action strip badges — solid pills (no transparent-on-dark) */
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__badge {
   padding: 0.35rem 0.55rem !important;
@@ -1416,7 +1387,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__bad
   border: 1px solid var(--admin-tint-violet-border) !important;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__btn {
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__btn:not(.gantt-action-strip__btn--primary):not(.gantt-action-strip__btn--caret) {
   background: var(--gantt-day-control-bg) !important;
   border-color: var(--gantt-day-control-border) !important;
   color: #134e4a !important;

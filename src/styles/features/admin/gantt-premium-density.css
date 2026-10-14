@@ -79,19 +79,6 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip {
   gap: 0.16rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__toggle-slot {
-  width: 0.88rem;
-  height: 0.88rem;
-}
-
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__track {
-  min-width: 9.5rem;
-}
-
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__badges {
-  gap: 0.18rem;
-}
-
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__badge {
   gap: 0.12rem;
   padding: 0.1rem 0.34rem;
@@ -106,16 +93,6 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__btn
   padding: 0.14rem 0.38rem;
   border-radius: 0.42rem;
   font-size: 0.52rem;
-}
-
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__actions {
-  gap: 0.18rem;
-}
-
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__reveal svg,
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__collapse svg {
-  width: 10px;
-  height: 10px;
 }
 
 /* ── Date header + FREE row (−25%) ── */
@@ -289,19 +266,6 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-stri
   gap: 0.2rem;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__toggle-slot {
-  width: 1.75rem;
-  height: 1.75rem;
-}
-
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__track {
-  min-width: 15rem;
-}
-
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__badges {
-  gap: 0.375rem;
-}
-
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__badge {
   gap: 0.25rem;
   padding: 0.275rem 0.625rem;
@@ -316,12 +280,6 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-stri
   padding: 0.35rem 0.7rem;
   border-radius: 0.75rem;
   font-size: 0.75rem;
-}
-
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__reveal svg,
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__collapse svg {
-  width: 12.5px;
-  height: 12.5px;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -339,7 +297,6 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-stri
 
 html:not([data-layout-chrome="compact"]) .admin-shell:has(.gantt-calendar-page) {
   --gantt-top-chrome-pad-x: 0.5rem;
-  --gantt-top-chrome-side-w: minmax(4.75rem, auto);
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar {
@@ -347,7 +304,9 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-too
   top: 0;
   z-index: 25;
   display: grid;
-  grid-template-columns: var(--gantt-top-chrome-side-w) minmax(0, 1fr) var(--gantt-top-chrome-side-w);
+  /* Equal side tracks: the middle (period navigation) stays at the true center
+     whatever the side groups hold. */
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   column-gap: 0.32rem;
   padding-inline: var(--gantt-top-chrome-pad-x);
@@ -564,19 +523,6 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-stri
   gap: 0.14rem;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__toggle-slot {
-  width: 1.23rem;
-  height: 1.23rem;
-}
-
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__track {
-  min-width: 10.5rem;
-}
-
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__badges {
-  gap: 0.26rem;
-}
-
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__badge {
   gap: 0.18rem;
   padding: 0.19rem 0.44rem;
@@ -591,12 +537,6 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-stri
   padding: 0.25rem 0.49rem;
   border-radius: 0.53rem;
   font-size: 0.53rem;
-}
-
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__reveal svg,
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__collapse svg {
-  width: 8.75px;
-  height: 8.75px;
 }
 
 /* Date + FREE row −15% (desktop) */
@@ -853,19 +793,6 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-stri
   padding-left: 0;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__toggle-slot {
-  width: 1.48rem;
-  height: 1.48rem;
-}
-
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__track {
-  min-width: 12rem;
-}
-
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__badges {
-  gap: 0.28rem;
-}
-
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__badge {
   gap: 0.18rem;
   padding: 0.26rem 0.58rem;
@@ -880,12 +807,6 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-stri
   padding: 0.3rem 0.58rem;
   border-radius: 0.6rem;
   font-size: 0.68rem;
-}
-
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__reveal svg,
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__collapse svg {
-  width: 11px;
-  height: 11px;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-thead-sticky {

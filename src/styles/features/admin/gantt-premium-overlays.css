@@ -524,67 +524,63 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Gantt Action Strip — badges ↔ action buttons with push animation
+   Gantt today bar — counts open their work, one split button creates.
+   Fixed width: nothing reveals, so the toolbar center never moves.
    ═══════════════════════════════════════════════════════════════ */
 
 .gantt-action-strip {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.3rem;
   min-height: 2rem;
   position: relative;
-  padding-left: 2px;
-}
-
-.gantt-action-strip__toggle-slot {
-  position: relative;
-  flex-shrink: 0;
-  width: 1.4rem;
-  height: 1.4rem;
-}
-
-/* ── Track (contains both badges and action layers) ── */
-.gantt-action-strip__track {
-  position: relative;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  min-width: 12rem;
-}
-
-/* ── Badges (default, visible when collapsed) ── */
-.gantt-action-strip__badges {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  transition: transform 0.35s cubic-bezier(0.34, 1.15, 0.64, 1),
-              opacity 0.25s ease;
-  flex-shrink: 0;
-}
-
-.gantt-action-strip__badges--out {
-  transform: translateX(110%);
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
 }
 
 .gantt-action-strip__badge {
+  appearance: none;
   display: inline-flex;
   align-items: center;
   gap: 0.2rem;
   padding: 0.22rem 0.5rem;
   border-radius: 9999px;
+  font: inherit;
   font-size: 0.6rem;
   font-weight: 700;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
   box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset;
+  cursor: pointer;
+  transition: filter 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
 }
 
 .gantt-action-strip__badge strong {
   font-weight: 800;
   font-size: 0.64rem;
+}
+
+button.gantt-action-strip__badge:hover:not(:disabled) {
+  filter: brightness(0.95) saturate(1.1);
+}
+
+button.gantt-action-strip__badge:active:not(:disabled) {
+  filter: brightness(0.9);
+  transform: scale(0.97);
+}
+
+.gantt-action-strip__badge:focus-visible,
+.gantt-action-strip__btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button.gantt-action-strip__badge:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* Informative only (no screen to open yet) */
+span.gantt-action-strip__badge {
+  cursor: default;
 }
 
 .gantt-action-strip__badge--new {
@@ -595,6 +591,11 @@
 
 .gantt-action-strip__badge--pulse {
   animation: admin-requests-glow-pulse 2.2s ease-in-out infinite;
+}
+
+/* Requests layer on: the count reads as a pressed toggle */
+.gantt-action-strip__badge--active {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--status-pending-text) 55%, transparent);
 }
 
 .gantt-action-strip__badge--in {
@@ -615,31 +616,19 @@
   border: 1px solid var(--admin-tint-violet-border);
 }
 
-/* ── Action buttons (hidden by default, slide in on reveal) ── */
-.gantt-action-strip__actions {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  position: absolute;
-  left: 0;
-  transform: translateX(-110%);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.35s cubic-bezier(0.34, 1.15, 0.64, 1),
-              opacity 0.25s ease;
-}
-
-.gantt-action-strip__actions--in {
-  position: relative;
-  transform: translateX(0);
-  opacity: 1;
-  pointer-events: auto;
+/* ── Split button: + Cazare | ▾ more ── */
+.gantt-action-strip__split {
+  display: inline-flex;
+  align-items: stretch;
+  margin-left: 0.2rem;
+  flex-shrink: 0;
 }
 
 .gantt-action-strip__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.25rem;
   padding: 0.28rem 0.56rem;
   border-radius: 0.6rem;
   font-size: 0.6rem;
@@ -649,101 +638,100 @@
   background: color-mix(in srgb, var(--surface) 97%, transparent);
   color: var(--text);
   cursor: pointer;
-  opacity: 0;
-  transform: translateX(-0.5rem);
-  transition: opacity 0.2s ease,
-              transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1),
-              background 0.15s ease;
-}
-
-.gantt-action-strip__actions--in .gantt-action-strip__btn {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.gantt-action-strip__btn:hover {
-  background: var(--surface-2);
-  border-color: var(--accent);
+  transition: background 0.15s ease, filter 0.12s ease;
 }
 
 .gantt-action-strip__btn:active {
-  background: color-mix(in srgb, var(--surface-2) 88%, black);
   filter: brightness(0.92);
-  transform: scale(0.95);
+  transform: scale(0.97);
   transition-duration: 0.06s;
 }
 
-.gantt-action-strip__btn--manage {
-  border-color: color-mix(in srgb, var(--accent) 44%, var(--border));
-  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+.gantt-action-strip__btn--primary,
+.gantt-action-strip__btn--caret {
+  background: var(--admin-accent, var(--accent));
+  border-color: var(--admin-accent, var(--accent));
+  color: #fff;
 }
 
-/* ── Reveal arrow (left slot, visible when collapsed) ── */
-.gantt-action-strip__reveal {
-  position: absolute;
-  inset: 0;
+.gantt-action-strip__btn--primary {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.gantt-action-strip__btn--primary span {
+  font-size: 1.15em;
+  line-height: 1;
+}
+
+.gantt-action-strip__btn--caret {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left-color: color-mix(in srgb, #fff 35%, var(--admin-accent, var(--accent)));
+  padding-inline: 0.36rem;
+}
+
+.gantt-action-strip__btn--primary:hover,
+.gantt-action-strip__btn--caret:hover,
+.gantt-action-strip__btn--caret[aria-expanded="true"] {
+  filter: brightness(1.1);
+}
+
+/* ── Menu (portaled to body, fixed) ── */
+.gantt-action-strip__menu {
+  position: fixed;
+  z-index: 230;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
-  background: color-mix(in srgb, var(--surface) 95%, transparent);
-  color: var(--text);
+  flex-direction: column;
+  min-width: 11rem;
+  padding: 0.3rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--admin-panel-border, var(--border));
+  background: var(--admin-panel-bg, var(--surface));
+  color: var(--admin-text, var(--text));
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
+  animation: gantt-popover-in 0.14s ease-out;
+}
+
+.gantt-action-strip__menu-item {
+  appearance: none;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.45rem;
   cursor: pointer;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  min-height: 2.25rem;
 }
 
-.gantt-action-strip__reveal:hover {
-  background: var(--surface-2);
-  border-color: var(--accent);
+.gantt-action-strip__menu-item:hover,
+.gantt-action-strip__menu-item:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--admin-accent, var(--accent)) 10%, transparent);
 }
 
-.gantt-action-strip__reveal:active {
-  background: color-mix(in srgb, var(--surface-2) 88%, black);
-  filter: brightness(0.92);
-  transform: scale(0.95);
-  transition-duration: 0.06s;
+.gantt-action-strip__menu-item--separated {
+  margin-top: 0.3rem;
+  position: relative;
 }
 
-.gantt-action-strip__reveal--hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.8);
-}
-
-/* ── Collapse arrow (left slot, visible when expanded) ── */
-.gantt-action-strip__collapse {
+.gantt-action-strip__menu-item--separated::before {
+  content: "";
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
-  background: color-mix(in srgb, var(--surface) 95%, transparent);
-  color: var(--text);
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.8);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  left: 0.4rem;
+  right: 0.4rem;
+  top: -0.18rem;
+  height: 1px;
+  background: var(--admin-panel-border, var(--border));
 }
 
-.gantt-action-strip__collapse--visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: scale(1);
+@media (prefers-reduced-motion: reduce) {
+  .gantt-action-strip__menu,
+  .gantt-action-strip__badge--pulse {
+    animation: none;
+  }
 }
-
-.gantt-action-strip__collapse:hover {
-  background: var(--surface-2);
-  border-color: var(--accent);
-}
-
-.gantt-action-strip__collapse:active {
-  background: color-mix(in srgb, var(--surface-2) 88%, black);
-  filter: brightness(0.92);
-  transform: scale(0.95);
-  transition-duration: 0.06s;
-}
-

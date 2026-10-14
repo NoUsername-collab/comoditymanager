@@ -3980,9 +3980,16 @@
         "bookingTitle": "Директно настаняване",
         "block": "Блокиране",
         "blockTitle": "Блокирай стая",
-        "openController": "Отвори бързия контролер",
-        "closeController": "Затвори бързия контролер",
-        "home": "Дом"
+        "home": "Дом",
+        "todayAria": "Днес",
+        "requestsCount": "{count, plural, one {<b>#</b> заявка} other {<b>#</b> заявки}}",
+        "arrivalsCount": "{count, plural, one {<b>#</b> пристигане} other {<b>#</b> пристигания}}",
+        "departuresCount": "{count, plural, one {<b>#</b> заминаване} other {<b>#</b> заминавания}}",
+        "cleanCount": "{count, plural, one {<b>#</b> стая за почистване} other {<b>#</b> стаи за почистване}}",
+        "requestsHint": "Покажи само заявките в Гант",
+        "requestsHintActive": "Покажи отново всичко",
+        "cleanHint": "Стаи, освободени днес, за подготовка за следващите гости",
+        "moreActions": "Още действия"
       },
       "moveRoom": {
         "title": "Премести стая",

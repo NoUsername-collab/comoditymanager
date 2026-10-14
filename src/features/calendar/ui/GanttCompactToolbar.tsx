@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { GanttPeriodJumpControl } from "@/features/calendar/ui/GanttPeriodJumpControl";
-import { GanttRadialController } from "@/features/calendar/ui/GanttRadialController";
+import { GanttTodayActions } from "@/features/calendar/ui/GanttTodayActions";
 import { HudIconGrid, HudIconHome } from "@/components/admin/AdminHudIcons";
 import {
   ToolbarFilterIcon,
@@ -103,7 +103,7 @@ export function GanttCompactToolbar({
           <HudIconHome className="gantt-compact-toolbar__home-icon" aria-hidden />
         </Link>
 
-        <GanttRadialController
+        <GanttTodayActions
           onOpenRequest={onOpenRequest}
           onOpenHold={onOpenHold}
           onOpenMove={onOpenMove}
@@ -115,6 +115,10 @@ export function GanttCompactToolbar({
           arrivalsCount={arrivalsCount}
           departuresCount={departuresCount}
           cleanCount={cleanCount}
+          requestsLayerActive={layerFilter === "requests"}
+          onToggleRequestsLayer={() =>
+            onCalendarPatch({ layer: layerFilter === "requests" ? "all" : "requests" })
+          }
         />
       </div>
 

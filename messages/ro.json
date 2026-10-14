@@ -4008,9 +4008,16 @@
         "bookingTitle": "Cazare directă",
         "block": "Blocare",
         "blockTitle": "Blocare cameră",
-        "openController": "Deschide controllerul rapid",
-        "closeController": "Închide controllerul rapid",
-        "home": "Casa"
+        "home": "Casa",
+        "todayAria": "Azi",
+        "requestsCount": "{count, plural, one {<b>#</b> cerere} few {<b>#</b> cereri} other {<b>#</b> de cereri}}",
+        "arrivalsCount": "{count, plural, one {<b>#</b> sosire} few {<b>#</b> sosiri} other {<b>#</b> de sosiri}}",
+        "departuresCount": "{count, plural, one {<b>#</b> plecare} few {<b>#</b> plecări} other {<b>#</b> de plecări}}",
+        "cleanCount": "{count, plural, one {<b>#</b> cameră de pregătit} few {<b>#</b> camere de pregătit} other {<b>#</b> de camere de pregătit}}",
+        "requestsHint": "Arată doar cererile pe Gantt",
+        "requestsHintActive": "Arată din nou tot",
+        "cleanHint": "Camere eliberate azi, de pregătit pentru următorii oaspeți",
+        "moreActions": "Alte acțiuni"
       },
       "moveRoom": {
         "title": "Mută cameră",

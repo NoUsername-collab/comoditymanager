@@ -4025,9 +4025,16 @@
         "bookingTitle": "Direct stay",
         "block": "Block",
         "blockTitle": "Block room",
-        "openController": "Open quick controller",
-        "closeController": "Close quick controller",
-        "home": "Home"
+        "home": "Home",
+        "todayAria": "Today",
+        "requestsCount": "{count, plural, one {<b>#</b> request} other {<b>#</b> requests}}",
+        "arrivalsCount": "{count, plural, one {<b>#</b> arrival} other {<b>#</b> arrivals}}",
+        "departuresCount": "{count, plural, one {<b>#</b> departure} other {<b>#</b> departures}}",
+        "cleanCount": "{count, plural, one {<b>#</b> room to clean} other {<b>#</b> rooms to clean}}",
+        "requestsHint": "Show only requests on the Gantt",
+        "requestsHintActive": "Show everything again",
+        "cleanHint": "Rooms freed today, to prepare for the next guests",
+        "moreActions": "More actions"
       },
       "moveRoom": {
         "title": "Move room",
