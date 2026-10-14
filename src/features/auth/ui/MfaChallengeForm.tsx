@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
-import { readPwaInstallContext } from "@/lib/pwa/install";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 import { completeLoginAfterMfaAction } from "@/features/auth/login";
@@ -18,12 +17,6 @@ export function MfaChallengeForm({ next, onCancel }: Props) {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [showMobileHint, setShowMobileHint] = useState(false);
-
-  useEffect(() => {
-    const ctx = readPwaInstallContext();
-    setShowMobileHint(ctx.installed || ctx.isMobile);
-  }, []);
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent) => {
@@ -58,11 +51,7 @@ export function MfaChallengeForm({ next, onCancel }: Props) {
     <form className="admin-login-form mt-5 space-y-3" onSubmit={handleSubmit}>
       <fieldset disabled={busy} className="admin-login-form__fieldset">
         <p className="text-sm text-zinc-600">{t("challengeLead")}</p>
-        {showMobileHint ? (
-          <p className="mt-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-950">
-            {t("challengePwaLead")}
-          </p>
-        ) : null}
+        <p className="text-sm text-zinc-500">{t("challengeHint")}</p>
         <label className="block text-sm">
           {t("codeLabel")}
           <AdminInput

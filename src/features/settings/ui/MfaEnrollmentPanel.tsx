@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { readPwaInstallContext } from "@/lib/pwa/install";
 import { mapMfaEnrollError } from "@/lib/auth/mfa-enroll";
 import {
@@ -118,14 +118,13 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
       setQrDataUrl(null);
       setSecret(null);
       setCode("");
-      router.replace(next);
       router.refresh();
     } catch {
       setError(t("verifyFailed"));
     } finally {
       setBusy(false);
     }
-  }, [code, factorId, next, router, t]);
+  }, [code, factorId, router, t]);
 
   const handleUnenroll = useCallback(async () => {
     setBusy(true);
@@ -172,6 +171,11 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
             {t("enrolledSuccess")}
           </p>
         </div>
+        <p className="admin-settings-hint">{t("enrolledNext")}</p>
+        <p className="admin-settings-hint">{t("enrolledWarning")}</p>
+        <Link href={next} className="text-sm font-medium text-zinc-800 underline">
+          {t("continueAfterSetup")}
+        </Link>
         <AdminButton
           type="button"
           variant="danger"
@@ -187,41 +191,64 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
 
   return (
     <div className="settings-form-stack">
-      <div className="settings-alerts">
-        <p className="settings-alerts__item settings-alerts__item--info">{t("webPwaExplain")}</p>
-      </div>
-      <p className="admin-settings-hint">{t("optionalLead")}</p>
-
       {!factorId ? (
-        <AdminButton
-          type="button"
-          variant="primary"
-          size="lg"
-          onClick={() => void handleEnroll()}
-          disabled={busy}
-        >
-          {busy ? t("startingEnroll") : t("startEnroll")}
-        </AdminButton>
+        <>
+          <div>
+            <p className="text-sm font-medium text-zinc-900">{t("guideTitle")}</p>
+            <p className="admin-settings-hint">{t("guideBody")}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-zinc-900">{t("guideStepsTitle")}</p>
+            <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-zinc-700">
+              <li>{t("guideStep1")}</li>
+              <li>{t("guideStep2")}</li>
+              <li>{t("guideStep3")}</li>
+              <li>{t("guideStep4")}</li>
+            </ol>
+          </div>
+          <p className="admin-settings-hint">{t("guideAfter")}</p>
+          <p className="admin-settings-hint">{t("guideOptional")}</p>
+          <AdminButton
+            type="button"
+            variant="primary"
+            size="lg"
+            onClick={() => void handleEnroll()}
+            disabled={busy}
+          >
+            {busy ? t("startingEnroll") : t("startEnroll")}
+          </AdminButton>
+        </>
       ) : (
         <div className="settings-form-stack">
-          {preferManualSetup ? (
-            <div className="settings-alerts">
-              <div className="settings-alerts__item settings-alerts__item--info">
-                <p className="font-semibold">{t("mobileSetupTitle")}</p>
-                <ol className="mt-2 list-decimal space-y-1 pl-4">
+          <div>
+            <p className="text-sm font-medium text-zinc-900">
+              {preferManualSetup ? t("mobileSetupTitle") : t("setupNowTitle")}
+            </p>
+            <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-zinc-700">
+              {preferManualSetup ? (
+                <>
                   <li>{t("mobileSetupStep1")}</li>
                   <li>{t("mobileSetupStep2")}</li>
                   <li>{t("mobileSetupStep3")}</li>
-                </ol>
-              </div>
-            </div>
-          ) : null}
+                </>
+              ) : (
+                <>
+                  <li>{t("desktopStep1")}</li>
+                  <li>{t("desktopStep2")}</li>
+                  <li>{t("desktopStep3")}</li>
+                </>
+              )}
+            </ol>
+          </div>
 
           {secret ? (
             <div className="space-y-2">
               <p className="text-sm font-medium text-zinc-900">
                 {preferManualSetup ? t("manualKeyLead") : t("manualSecret")}
               </p>
+              {preferManualSetup ? null : (
+                <p className="text-xs text-zinc-500">{t("setupKeyHint")}</p>
+              )}
               <div className="flex flex-wrap items-start gap-2">
                 <code className="admin-settings-fields min-w-0 flex-1 break-all rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs">
                   {secret}
@@ -265,6 +292,7 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
           ) : null}
           <label className="admin-settings-fields">
             <span>{t("codeLabel")}</span>
+            <span className="mt-0.5 block text-xs font-normal text-zinc-500">{t("codeHint")}</span>
             <AdminInput
               type="text"
               inputMode="numeric"
