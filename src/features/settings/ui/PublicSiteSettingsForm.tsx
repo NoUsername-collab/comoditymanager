@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { PublicLocale, PublicSiteConfig } from "@/features/public-site/domain/types";
@@ -83,7 +83,15 @@ export function PublicSiteSettingsForm({
   );
   const copy = draft.copies[draft.editLocale];
 
-  const draftInput = useMemo(() => mergeStudioToInput({ config, draft }), [config, draft]);
+  // Typing updates `draft` at once; everything derived from the whole draft (the
+  // save payload, the preview, progress, the checklist) follows on this deferred
+  // copy, so React can render it in the background without slowing keystrokes.
+  const settledDraft = useDeferredValue(draft);
+  const draftInput = useMemo(
+    () => mergeStudioToInput({ config, draft: settledDraft }),
+    [config, settledDraft],
+  );
+  const draftInputJson = useMemo(() => JSON.stringify(draftInput), [draftInput]);
   const previewConfig = useMemo(
     () => buildPublicSiteConfigFromInput(config, draftInput, primaryContact),
     [config, draftInput, primaryContact],
@@ -92,15 +100,24 @@ export function PublicSiteSettingsForm({
   const studioPreviewConfig = useMemo(() => {
     if (!quickStartOpen || !quickStartAnswers) return previewConfig;
     let seq = 0;
-    const answered = applyQuickStart(draft, quickStartAnswers, () => `quick-preview-${++seq}`);
+    const answered = applyQuickStart(settledDraft, quickStartAnswers, () => `quick-preview-${++seq}`);
     const input = mergeStudioToInput({ config, draft: answered });
     return buildPublicSiteConfigFromInput(config, input, primaryContact);
-  }, [quickStartOpen, quickStartAnswers, previewConfig, draft, config, primaryContact]);
-  const progress = useMemo(() => studioLocaleProgress(draft), [draft]);
-  const readiness = useMemo(() => publicSiteReadiness(draft, previewConfig), [draft, previewConfig]);
+  }, [quickStartOpen, quickStartAnswers, previewConfig, settledDraft, config, primaryContact]);
+  const progress = useMemo(() => studioLocaleProgress(settledDraft), [settledDraft]);
+  const readiness = useMemo(
+    () => publicSiteReadiness(settledDraft, previewConfig),
+    [settledDraft, previewConfig],
+  );
+  const preview = useMemo(
+    () => <PublicSitePreview config={studioPreviewConfig} locale={settledDraft.editLocale} />,
+    [studioPreviewConfig, settledDraft.editLocale],
+  );
 
-  const initialSnapshot = useRef(JSON.stringify(draftInput));
-  const dirty = JSON.stringify(draftInput) !== initialSnapshot.current;
+  const initialSnapshot = useRef<string | null>(null);
+  initialSnapshot.current ??= draftInputJson;
+  // A keystroke the deferred copy has not caught up with yet still counts as unsaved.
+  const dirty = draft !== settledDraft || draftInputJson !== initialSnapshot.current;
   useSettingsUnsavedWarning(!readOnly && dirty);
 
   function fieldError(...paths: string[]): string | undefined {
@@ -168,14 +185,17 @@ export function PublicSiteSettingsForm({
     setDraftState((d) => switchStudioLocale(d, next));
   }
 
-  const copySource = PUBLIC_LOCALES.filter((loc) => loc !== draft.editLocale).sort(
+  const copySource = PUBLIC_LOCALES.filter((loc) => loc !== settledDraft.editLocale).sort(
     (a, b) => progress[b] - progress[a],
   )[0];
   // Offered while the best-filled language still has text for an empty field here.
-  const canCopy =
-    !readOnly &&
-    copySource !== undefined &&
-    fillStudioLocaleFrom(draft, copySource, draft.editLocale) !== draft;
+  const hasCopyGaps = useMemo(
+    () =>
+      copySource !== undefined &&
+      fillStudioLocaleFrom(settledDraft, copySource, settledDraft.editLocale) !== settledDraft,
+    [settledDraft, copySource],
+  );
+  const canCopy = !readOnly && hasCopyGaps;
 
   function save(next: PublicSiteStudioDraft, onFail?: () => void) {
     setError(null);
@@ -224,7 +244,7 @@ export function PublicSiteSettingsForm({
       dirty={dirty}
       onPreviewPick={quickStartOpen ? undefined : pickFromPreview}
       wideForm={quickStartOpen}
-      preview={<PublicSitePreview config={studioPreviewConfig} locale={draft.editLocale} />}
+      preview={preview}
       localeTabs={
         <PublicSiteLocaleTabs
           variant="chrome"

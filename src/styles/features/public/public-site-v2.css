@@ -163,73 +163,6 @@
   margin-top: 1.65rem;
 }
 
-.pub-hero--editorial .pub-hero__inner {
-  padding-block: clamp(3rem, 8vw, 6rem);
-}
-
-.pub-hero--editorial .pub-hero__title {
-  max-width: 16ch;
-  font-size: clamp(2.6rem, 8vw, 5rem);
-}
-
-@media (min-width: 900px) {
-  .pub-hero--editorial.pub-hero--has-media {
-    display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.95fr);
-    min-height: min(78vh, 44rem);
-    align-items: stretch;
-  }
-
-  .pub-hero--editorial.pub-hero--has-media .pub-hero__glow {
-    display: none;
-  }
-
-  .pub-hero--editorial.pub-hero--has-media .pub-hero__media {
-    position: relative;
-    grid-column: 2;
-    grid-row: 1;
-    min-height: 100%;
-  }
-
-  .pub-hero--editorial.pub-hero--has-media .pub-hero__veil {
-    display: none;
-  }
-
-  .pub-hero--editorial.pub-hero--has-media .pub-hero__inner {
-    grid-column: 1;
-    grid-row: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: clamp(3rem, 6vw, 5rem);
-  }
-}
-
-.pub-hero--immersive {
-  min-height: min(100svh, 52rem);
-  display: flex;
-  align-items: flex-end;
-}
-
-.pub-hero--immersive .pub-hero__inner {
-  padding-bottom: clamp(2.75rem, 8vw, 5.5rem);
-  width: min(80rem, 100%);
-}
-
-.pub-hero--immersive .pub-hero__title {
-  max-width: 18ch;
-  font-size: clamp(2.8rem, 9vw, 5.75rem);
-}
-
-.pub-hero--immersive.pub-hero--has-media .pub-hero__veil {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--pub-bg) 12%, transparent) 0%,
-    color-mix(in srgb, var(--pub-bg) 42%, transparent) 42%,
-    var(--pub-bg) 100%
-  );
-}
-
 /* Sections */
 .pub-section {
   padding: clamp(2rem, 5vw, 3.5rem) 0;
@@ -881,52 +814,29 @@
   color: var(--site-accent);
 }
 
-/* ── Theme hardening (bulletproof variants) ── */
+/* ── Per-palette touches (color-scheme comes from resolvePublicThemeStyle) ── */
 
-.pub-site {
-  color-scheme: light dark;
+/* Light palettes (alpine, pearl, slate, forest) — light surfaces need stronger separation */
+.pub-site--light .pub-benefit,
+.pub-site--light .pub-step,
+.pub-site--light .pub-booking-aside {
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--pub-fg) 6%, transparent);
 }
 
-.pub-site--theme-noir {
-  color-scheme: dark;
+.pub-site--light .pub-btn--ghost {
+  background: color-mix(in srgb, var(--pub-card) 94%, var(--pub-bg));
 }
 
-.pub-site--theme-alpine {
-  color-scheme: light;
+.pub-site--light .public-header__link--active {
+  background: color-mix(in srgb, var(--pub-accent) 14%, transparent);
 }
 
-.pub-site--theme-mediterranean {
-  color-scheme: dark;
-}
-
-/* Alpine — light surfaces need stronger separation */
-.pub-site--theme-alpine .pub-hero__media {
-  opacity: 0.18;
-}
-
+/* Alpine — a stronger hero glow */
 .pub-site--theme-alpine .pub-hero__glow {
   opacity: 0.85;
 }
 
-.pub-site--theme-alpine .pub-benefit,
-.pub-site--theme-alpine .pub-step,
-.pub-site--theme-alpine .pub-booking-aside {
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--pub-fg) 6%, transparent);
-}
-
-.pub-site--theme-alpine .pub-btn--ghost {
-  background: color-mix(in srgb, var(--pub-card) 94%, var(--pub-bg));
-}
-
-.pub-site--theme-alpine .public-header__link--active {
-  background: color-mix(in srgb, var(--pub-accent) 14%, transparent);
-}
-
 /* Mediterranean — warm depth on hero + cards */
-.pub-site--theme-mediterranean .pub-hero__media {
-  opacity: 0.32;
-}
-
 .pub-site--theme-mediterranean .pub-hero__glow {
   background: radial-gradient(
     circle,

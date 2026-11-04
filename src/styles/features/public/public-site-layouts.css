@@ -34,9 +34,7 @@
   align-items: center;
 }
 
-.pub-hero--classic .pub-hero__title,
-.pub-hero--classic .pub-hero__subtitle,
-.pub-hero--classic .pub-hero__tagline {
+.pub-hero--classic .pub-hero__title {
   max-width: 22ch;
 }
 
@@ -196,16 +194,6 @@
   );
 }
 
-/* Photos stay visible on light/warm themes (v2 dims media globally). */
-.pub-site--theme-alpine .pub-hero--classic .pub-hero__media,
-.pub-site--theme-alpine .pub-hero--editorial .pub-hero__media,
-.pub-site--theme-alpine .pub-hero--immersive .pub-hero__media,
-.pub-site--theme-mediterranean .pub-hero--classic .pub-hero__media,
-.pub-site--theme-mediterranean .pub-hero--editorial .pub-hero__media,
-.pub-site--theme-mediterranean .pub-hero--immersive .pub-hero__media {
-  opacity: 1;
-}
-
 /* ── Chrome: masthead / overlay / brochure bar ── */
 
 [data-pub-template="editorial"] .public-header {
@@ -276,7 +264,7 @@
   border-top: 0;
 }
 
-/* ── Immersive body: gallery first, intro as overlapping card ── */
+/* ── Immersive body: pulled up under the hero's fade ── */
 
 .pub-home--immersive .pub-home__immersive-body {
   margin-top: -3.5rem;
@@ -398,16 +386,6 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"] .public-heade
   text-decoration: none;
 }
 
-[data-pub-template="editorial"] .pub-stays {
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 900px) {
-  [data-pub-template="editorial"] .pub-stays {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 [data-pub-template="immersive"] .pub-stay {
   background: color-mix(in srgb, var(--pub-bg) 55%, transparent);
 }
@@ -507,4 +485,24 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"] .public-heade
 .pub-home--immersive .pub-section--gallery-bleed,
 .pub-home--immersive .pub-section--cta {
   padding-block: 0;
+}
+
+/* ── Phones ──
+ * The shared phone sizes in public-site-v2.css lose to the per-layout hero rules
+ * above (same specificity, later file), so editorial and immersive set their own.
+ */
+@media (max-width: 640px) {
+  .pub-hero--editorial .pub-hero__title {
+    max-width: 100%;
+    font-size: clamp(2rem, 11vw, 2.75rem);
+  }
+
+  .pub-hero--immersive .pub-hero__title {
+    max-width: 100%;
+    font-size: clamp(2.25rem, 12vw, 3rem);
+  }
+
+  .pub-hero--immersive .pub-hero__inner {
+    padding-inline: 1.1rem;
+  }
 }

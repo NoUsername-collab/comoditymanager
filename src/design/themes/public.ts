@@ -2,6 +2,18 @@ import type { CSSProperties } from "react";
 import { getDesignTheme, migrateDesignThemeId } from "./catalog";
 import type { DesignThemeId } from "./types";
 
+/**
+ * Light or dark, read from the background colour, so scrollbars and form
+ * controls match every palette, including ones added later.
+ */
+export function publicColorScheme(bg: string): "light" | "dark" {
+  const hex = /^#([0-9a-f]{6})$/i.exec(bg.trim())?.[1];
+  if (!hex) return "dark";
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const luminance = 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+  return luminance > 0.5 ? "light" : "dark";
+}
+
 export function resolvePublicThemeStyle(
   themeId: DesignThemeId | string
 ): CSSProperties & Record<string, string> {
@@ -39,10 +51,13 @@ export function resolvePublicThemeStyle(
     ...pub,
     backgroundColor: t.bg,
     color: t.fg,
+    colorScheme: publicColorScheme(t.bg),
   } as CSSProperties & Record<string, string>;
 }
 
+/** Theme class plus `pub-site--light` / `pub-site--dark`, for touches every light palette needs. */
 export function publicThemeClassName(themeId: DesignThemeId | string): string {
   const id = migrateDesignThemeId(themeId);
-  return `pub-site pub-site--theme-${id} site-themed`;
+  const scheme = publicColorScheme(getDesignTheme(id).public.bg);
+  return `pub-site pub-site--theme-${id} pub-site--${scheme} site-themed`;
 }
