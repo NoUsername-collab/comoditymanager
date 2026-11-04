@@ -38,45 +38,90 @@ export function linkPresetFor(href: string): PublicLinkPresetId {
   return PUBLIC_LINK_PRESETS.find((preset) => preset.href === value)?.id ?? "custom";
 }
 
+/** One piece of copy, addressed the same way in every language (`benefitItems.<id>.title`). */
+type CopyField = { path: string; value: string };
+
 /** Strings a visitor reads on the homepage, gated by what is visible. */
-function visibleCopyFields(draft: PublicSiteStudioDraft, copy: LocaleCopy): string[] {
-  const fields = [copy.heroTitle, copy.heroSubtitle, copy.heroCtaPrimary];
-  if (draft.introVisible) fields.push(copy.introTitle, copy.introLead);
+function visibleCopyFields(draft: PublicSiteStudioDraft, copy: LocaleCopy): CopyField[] {
+  const fields: CopyField[] = [];
+  const add = (path: string, value: string) => fields.push({ path, value });
+  add("heroTitle", copy.heroTitle);
+  add("heroSubtitle", copy.heroSubtitle);
+  add("heroCtaPrimary", copy.heroCtaPrimary);
+  if (draft.introVisible) {
+    add("introTitle", copy.introTitle);
+    add("introLead", copy.introLead);
+  }
   if (draft.benefitsVisible) {
-    fields.push(copy.benefitsTitle);
-    for (const item of copy.benefitItems) fields.push(item.title);
+    add("benefitsTitle", copy.benefitsTitle);
+    for (const item of copy.benefitItems) add(`benefitItems.${item.id}.title`, item.title);
   }
   if (draft.stepsVisible) {
-    fields.push(copy.stepsTitle);
-    for (const item of copy.stepItems) fields.push(item.title);
+    add("stepsTitle", copy.stepsTitle);
+    for (const item of copy.stepItems) add(`stepItems.${item.id}.title`, item.title);
   }
-  if (draft.ctaVisible) fields.push(copy.ctaTitle, copy.ctaLabel);
+  if (draft.ctaVisible) {
+    add("ctaTitle", copy.ctaTitle);
+    add("ctaLabel", copy.ctaLabel);
+  }
   for (const item of copy.textItems) {
-    if (draft.textVisible[item.id] !== false) fields.push(item.title, item.body);
+    if (draft.textVisible[item.id] === false) continue;
+    add(`textItems.${item.id}.title`, item.title);
+    add(`textItems.${item.id}.body`, item.body);
   }
   return fields;
 }
 
-/** 0–100: share of visible homepage copy filled in for each language. */
+/**
+ * 0–100: share of visible homepage copy written in each language. Text copied
+ * from another language counts only once the operator has changed it.
+ */
 export function studioLocaleProgress(
   draft: PublicSiteStudioDraft,
 ): Record<PublicLocale, number> {
   const progress = {} as Record<PublicLocale, number>;
   for (const locale of PUBLIC_LOCALES) {
+    const copied = draft.copiedText[locale] ?? {};
     const fields = visibleCopyFields(draft, draft.copies[locale]);
-    const filled = fields.filter((value) => value.trim().length > 0).length;
+    const filled = fields.filter(
+      (field) => field.value.trim().length > 0 && copied[field.path] !== field.value,
+    ).length;
     progress[locale] = fields.length === 0 ? 100 : Math.round((filled / fields.length) * 100);
   }
   return progress;
 }
 
-function fillString(target: string, source: string): string {
-  return target.trim() ? target : source;
-}
+/**
+ * Homepage strings the copy button may fill. Legal pages, SEO and menu labels
+ * stay out: copied there, they would show another language as finished text.
+ */
+const HOMEPAGE_COPY_KEYS = [
+  "heroTitle",
+  "heroSubtitle",
+  "heroTagline",
+  "heroBadge",
+  "heroCtaPrimary",
+  "heroCtaSecondary",
+  "introTitle",
+  "introLead",
+  "benefitsTitle",
+  "benefitsLead",
+  "stepsTitle",
+  "stepsLead",
+  "ctaTitle",
+  "ctaLead",
+  "ctaLabel",
+  "galleryTitle",
+  "galleryLead",
+  "headerSubtitle",
+  "footerTagline",
+] as const satisfies readonly (keyof LocaleCopy)[];
 
 /**
- * Fill only the empty fields of `to` with the text from `from`, so the operator
- * can translate in place instead of starting from a blank page.
+ * Fill only the empty homepage fields of `to` with the text from `from`, so the
+ * operator can translate in place instead of starting from a blank page. What
+ * was copied is remembered, so it keeps counting as untranslated. Returns
+ * `draft` itself when there is nothing to fill.
  */
 export function fillStudioLocaleFrom(
   draft: PublicSiteStudioDraft,
@@ -86,40 +131,56 @@ export function fillStudioLocaleFrom(
   if (from === to) return draft;
   const source = draft.copies[from];
   const target = draft.copies[to];
-  const next = { ...target } as LocaleCopy;
+  const copied = { ...draft.copiedText[to] };
+  let changed = false;
 
-  for (const key of Object.keys(source) as (keyof LocaleCopy)[]) {
-    const value = source[key];
-    if (typeof value === "string") {
-      (next as Record<string, unknown>)[key] = fillString(target[key] as string, value);
-    }
+  function fill(path: string, current: string, value: string): string {
+    if (current.trim() || !value.trim()) return current;
+    copied[path] = value;
+    changed = true;
+    return value;
   }
 
-  next.benefitItems = source.benefitItems.map((item, index) => ({
-    icon: item.icon,
-    title: fillString(target.benefitItems[index]?.title ?? "", item.title),
-    text: fillString(target.benefitItems[index]?.text ?? "", item.text),
-  }));
-  next.stepItems = source.stepItems.map((item, index) => ({
-    title: fillString(target.stepItems[index]?.title ?? "", item.title),
-    text: fillString(target.stepItems[index]?.text ?? "", item.text),
-  }));
-  next.textItems = source.textItems.map((item) => {
-    const match = target.textItems.find((row) => row.id === item.id);
+  const next: LocaleCopy = { ...target };
+  for (const key of HOMEPAGE_COPY_KEYS) next[key] = fill(key, target[key], source[key]);
+
+  next.benefitItems = target.benefitItems.map((item) => {
+    const match = source.benefitItems.find((row) => row.id === item.id);
     return {
-      id: item.id,
-      title: fillString(match?.title ?? "", item.title),
-      lead: fillString(match?.lead ?? "", item.lead),
-      body: fillString(match?.body ?? "", item.body),
+      ...item,
+      title: fill(`benefitItems.${item.id}.title`, item.title, match?.title ?? ""),
+      text: fill(`benefitItems.${item.id}.text`, item.text, match?.text ?? ""),
+    };
+  });
+  next.stepItems = target.stepItems.map((item) => {
+    const match = source.stepItems.find((row) => row.id === item.id);
+    return {
+      ...item,
+      title: fill(`stepItems.${item.id}.title`, item.title, match?.title ?? ""),
+      text: fill(`stepItems.${item.id}.text`, item.text, match?.text ?? ""),
+    };
+  });
+  next.textItems = target.textItems.map((item) => {
+    const match = source.textItems.find((row) => row.id === item.id);
+    return {
+      ...item,
+      title: fill(`textItems.${item.id}.title`, item.title, match?.title ?? ""),
+      lead: fill(`textItems.${item.id}.lead`, item.lead, match?.lead ?? ""),
+      body: fill(`textItems.${item.id}.body`, item.body, match?.body ?? ""),
     };
   });
   const captions = { ...target.galleryCaptions };
   for (const [id, caption] of Object.entries(source.galleryCaptions)) {
-    captions[id] = fillString(captions[id] ?? "", caption);
+    captions[id] = fill(`galleryCaptions.${id}`, captions[id] ?? "", caption);
   }
   next.galleryCaptions = captions;
 
-  return { ...draft, copies: { ...draft.copies, [to]: next } };
+  if (!changed) return draft;
+  return {
+    ...draft,
+    copies: { ...draft.copies, [to]: next },
+    copiedText: { ...draft.copiedText, [to]: copied },
+  };
 }
 
 type PublicSiteReadinessId =

@@ -1652,7 +1652,7 @@
           },
           "editingLocale": "Scrii în: {language}",
           "copyFrom": "Copiază din {locale} ce lipsește",
-          "copyFromHint": "Completează câmpurile goale cu textul din {locale}, ca să-l traduci apoi pe loc.",
+          "copyFromHint": "Completează câmpurile goale de pe prima pagină cu textul din {locale}, ca să-l traduci apoi pe loc. Se socotește tradus abia după ce îl schimbi.",
           "localeProgress": "{percent}% completat",
           "advanced": "Setări avansate",
           "advancedHint": "Opțional — site-ul arată bine și fără ele.",

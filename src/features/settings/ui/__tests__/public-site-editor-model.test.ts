@@ -97,6 +97,25 @@ describe("public site editor model", () => {
     expect(filled.copies.ro).toBe(draft.copies.ro);
   });
 
+  it("keeps copied text counted as untranslated until it is changed", () => {
+    let draft = buildPublicSiteStudioDraft(config, "en");
+    const before = studioLocaleProgress(draft).en;
+    draft = fillStudioLocaleFrom(draft, "ro", "en");
+    expect(studioLocaleProgress(draft).en).toBe(before);
+
+    draft = patchStudioCopy(draft, { heroSubtitle: "Quiet in the mountains" });
+    expect(studioLocaleProgress(draft).en).toBeGreaterThan(before);
+  });
+
+  it("copies homepage text only, never legal pages or SEO", () => {
+    let draft = buildPublicSiteStudioDraft(config, "ro");
+    draft = patchStudioCopy(draft, { termsBody: "Termeni RO", seoTitle: "SEO RO" });
+    draft = fillStudioLocaleFrom(draft, "ro", "en");
+    expect(draft.copies.en.termsBody).toBe("");
+    expect(draft.copies.en.seoTitle).toBe("");
+    expect(fillStudioLocaleFrom(draft, "ro", "en")).toBe(draft);
+  });
+
   it("lists what is missing before publishing", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
     const items = publicSiteReadiness(draft, { contact: { email: null, phone: null } });

@@ -168,7 +168,7 @@ export function BenefitsEditor() {
       </div>
       <ol className="pub-editor-items">
         {copy.benefitItems.map((item, index) => (
-          <li key={`benefit-${index}`} className="pub-editor-item">
+          <li key={item.id} className="pub-editor-item">
             <div className="pub-editor-item__head">
               <strong>{te("benefitNumber", { index: index + 1 })}</strong>
               <button
@@ -253,7 +253,7 @@ export function StepsEditor() {
       </div>
       <ol className="pub-editor-items">
         {copy.stepItems.map((item, index) => (
-          <li key={`step-${index}`} className="pub-editor-item">
+          <li key={item.id} className="pub-editor-item">
             <div className="pub-editor-item__head">
               <strong>{te("stepNumber", { index: index + 1 })}</strong>
               <button

@@ -13,6 +13,13 @@ type StudioPane = "edit" | "preview";
 const DEVICES: StudioDevice[] = ["desktop", "tablet", "phone"];
 const LEAVE_MS = 180;
 
+function isEditableTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable || target.closest("input, textarea, select, [role='dialog']") !== null)
+  );
+}
+
 export function PublicSiteStudio({
   form,
   preview,
@@ -74,7 +81,9 @@ export function PublicSiteStudio({
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
-      if (event.key !== "Escape") return;
+      if (event.key !== "Escape" || event.defaultPrevented || event.isComposing) return;
+      // Escape in a field closes its own popup or cancels typing; it never leaves the studio.
+      if (isEditableTarget(event.target)) return;
       if (window.matchMedia("(max-width: 1099px)").matches && pane === "preview") {
         setPane("edit");
         return;

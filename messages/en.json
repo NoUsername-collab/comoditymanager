@@ -1667,7 +1667,7 @@
           },
           "editingLocale": "Writing in: {language}",
           "copyFrom": "Copy missing text from {locale}",
-          "copyFromHint": "Fills empty fields with the {locale} text so you can translate it in place.",
+          "copyFromHint": "Fills empty homepage fields with the {locale} text so you can translate it in place. It counts as translated only once you change it.",
           "localeProgress": "{percent}% complete",
           "advanced": "Advanced settings",
           "advancedHint": "Optional — the site looks fine without them.",

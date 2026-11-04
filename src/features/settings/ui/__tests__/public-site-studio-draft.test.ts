@@ -5,6 +5,7 @@ import {
   buildPublicSiteStudioDraft,
   mergeStudioToInput,
   patchStudioCopy,
+  removeStudioBenefit,
   switchStudioLocale,
 } from "@/features/settings/ui/public-site-studio-draft";
 
@@ -67,6 +68,43 @@ describe("public site studio draft", () => {
       ro: "RO intro",
       en: "EN intro",
     });
+  });
+
+  it("keeps each language's text with its row when a row is removed", () => {
+    const withBenefits: PublicSiteConfig = {
+      ...config,
+      sections: [
+        ...config.sections,
+        {
+          id: "benefits-1",
+          sectionType: "benefits",
+          sortOrder: 20,
+          visible: true,
+          payload: {
+            title: {},
+            items: [
+              { icon: "wifi", title: { ro: "Wi-Fi", en: "Wi-Fi" }, text: {} },
+              { icon: "parking", title: { ro: "Parcare", en: "Parking" }, text: {} },
+              { icon: "breakfast", title: { ro: "Mic dejun", en: "Breakfast" }, text: {} },
+            ],
+          },
+        },
+      ],
+    };
+    let draft = buildPublicSiteStudioDraft(withBenefits, "ro");
+    draft = removeStudioBenefit(draft, 1);
+
+    expect(draft.copies.en.benefitItems.map((item) => item.title)).toEqual([
+      "Wi-Fi",
+      "Breakfast",
+    ]);
+    const input = mergeStudioToInput({ config: withBenefits, draft });
+    const items = input.sections.find((section) => section.sectionType === "benefits")?.payload
+      .items as { title: Record<string, string> }[];
+    expect(items.map((item) => item.title)).toEqual([
+      { ro: "Wi-Fi", en: "Wi-Fi" },
+      { ro: "Mic dejun", en: "Breakfast" },
+    ]);
   });
 
   it("round-trips extra jsonb keys through parse", () => {

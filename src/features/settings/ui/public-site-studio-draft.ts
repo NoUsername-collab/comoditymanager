@@ -20,8 +20,12 @@ import type {
 import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 
 type GalleryDraftItem = { id: string; url: string };
-export type CopyLineDraft = { icon: string; title: string; text: string };
-export type StepLineDraft = { title: string; text: string };
+/**
+ * Benefit and step rows carry an editor-only id, shared by the same row in every
+ * language, so removing a row in one language removes that row everywhere.
+ */
+export type CopyLineDraft = { id: string; icon: string; title: string; text: string };
+export type StepLineDraft = { id: string; title: string; text: string };
 
 export type TextLineDraft = { id: string; title: string; lead: string; body: string };
 
@@ -112,12 +116,20 @@ export type PublicSiteStudioDraft = {
   textVisible: Record<string, boolean>;
   sectionOrder: string[];
   copies: Record<PublicLocale, LocaleCopy>;
+  /** Per language: copy path → text pasted in from another language, not yet translated. */
+  copiedText: Partial<Record<PublicLocale, Record<string, string>>>;
 };
 
 let galleryDraftSeq = 0;
 export function nextGalleryDraftId(): string {
   galleryDraftSeq += 1;
   return `gallery-draft-${galleryDraftSeq}`;
+}
+
+let itemDraftSeq = 0;
+function nextItemDraftId(prefix: "benefit" | "step"): string {
+  itemDraftSeq += 1;
+  return `${prefix}-draft-${itemDraftSeq}`;
 }
 
 let textDraftSeq = 0;
@@ -130,16 +142,17 @@ export const MAX_BENEFIT_ITEMS = 12;
 export const MAX_STEP_ITEMS = 12;
 export const MAX_TEXT_SECTIONS = 8;
 
+// Loaded rows take their id from their saved position, identical in every language.
 const EMPTY_BENEFITS: CopyLineDraft[] = [
-  { icon: "bed", title: "", text: "" },
-  { icon: "spark", title: "", text: "" },
-  { icon: "handshake", title: "", text: "" },
+  { id: "benefit-0", icon: "bed", title: "", text: "" },
+  { id: "benefit-1", icon: "spark", title: "", text: "" },
+  { id: "benefit-2", icon: "handshake", title: "", text: "" },
 ];
 
 const EMPTY_STEPS: StepLineDraft[] = [
-  { title: "", text: "" },
-  { title: "", text: "" },
-  { title: "", text: "" },
+  { id: "step-0", title: "", text: "" },
+  { id: "step-1", title: "", text: "" },
+  { id: "step-2", title: "", text: "" },
 ];
 
 function buildLocaleCopy(
@@ -158,13 +171,15 @@ function buildLocaleCopy(
   const heroSubtitle = pickOwnLocalized(config.hero.subtitle, locale);
 
   const benefitItems = ((benefitsSection?.payload.items ?? []) as PublicBenefitItem[]).map(
-    (item) => ({
+    (item, index) => ({
+      id: `benefit-${index}`,
       icon: normalizeBenefitIcon(item.icon),
       title: pickOwnLocalized(item.title, locale),
       text: pickOwnLocalized(item.text, locale),
     }),
   );
-  const stepItems = ((stepsSection?.payload.items ?? []) as PublicStepItem[]).map((item) => ({
+  const stepItems = ((stepsSection?.payload.items ?? []) as PublicStepItem[]).map((item, index) => ({
+    id: `step-${index}`,
     title: pickOwnLocalized(item.title, locale),
     text: pickOwnLocalized(item.text, locale),
   }));
@@ -235,15 +250,14 @@ function buildLocaleCopy(
 function alignCopyStructure(source: LocaleCopy, target: LocaleCopy): LocaleCopy {
   return {
     ...target,
-    benefitItems: source.benefitItems.map((item, index) => ({
-      icon: item.icon,
-      title: target.benefitItems[index]?.title ?? "",
-      text: target.benefitItems[index]?.text ?? "",
-    })),
-    stepItems: source.stepItems.map((item, index) => ({
-      title: target.stepItems[index]?.title ?? "",
-      text: target.stepItems[index]?.text ?? "",
-    })),
+    benefitItems: source.benefitItems.map((item) => {
+      const match = target.benefitItems.find((row) => row.id === item.id);
+      return { id: item.id, icon: item.icon, title: match?.title ?? "", text: match?.text ?? "" };
+    }),
+    stepItems: source.stepItems.map((item) => {
+      const match = target.stepItems.find((row) => row.id === item.id);
+      return { id: item.id, title: match?.title ?? "", text: match?.text ?? "" };
+    }),
     galleryCaptions: { ...target.galleryCaptions },
     textItems: source.textItems.map((item) => {
       const match = target.textItems.find((row) => row.id === item.id);
@@ -333,6 +347,7 @@ export function buildPublicSiteStudioDraft(
     textVisible,
     sectionOrder: order,
     copies,
+    copiedText: {},
   };
 }
 
@@ -429,7 +444,6 @@ export function mergeStudioToInput(args: {
         };
       }
       if (section.sectionType === "benefits") {
-        const previous = (section.payload.items ?? []) as PublicBenefitItem[];
         const structure = copies[draft.editLocale].benefitItems;
         return {
           ...section,
@@ -438,18 +452,18 @@ export function mergeStudioToInput(args: {
             ...section.payload,
             title: write(section.payload.title, (copy) => copy.benefitsTitle),
             lead: write(section.payload.lead, (copy) => copy.benefitsLead),
-            items: structure.flatMap((item, index) => {
+            items: structure.flatMap((item) => {
+              const row = (copy: LocaleCopy) =>
+                copy.benefitItems.find((candidate) => candidate.id === item.id);
               const hasCopy = PUBLIC_LOCALES.some(
-                (locale) =>
-                  copies[locale].benefitItems[index]?.title.trim() ||
-                  copies[locale].benefitItems[index]?.text.trim(),
+                (locale) => row(copies[locale])?.title.trim() || row(copies[locale])?.text.trim(),
               );
               if (!hasCopy) return [];
               return [
                 {
                   icon: normalizeBenefitIcon(item.icon),
-                  title: write(previous[index]?.title, (copy) => copy.benefitItems[index]?.title ?? ""),
-                  text: write(previous[index]?.text, (copy) => copy.benefitItems[index]?.text ?? ""),
+                  title: write(undefined, (copy) => row(copy)?.title ?? ""),
+                  text: write(undefined, (copy) => row(copy)?.text ?? ""),
                 },
               ];
             }),
@@ -457,7 +471,6 @@ export function mergeStudioToInput(args: {
         };
       }
       if (section.sectionType === "steps") {
-        const previous = (section.payload.items ?? []) as PublicStepItem[];
         const structure = copies[draft.editLocale].stepItems;
         return {
           ...section,
@@ -466,17 +479,17 @@ export function mergeStudioToInput(args: {
             ...section.payload,
             title: write(section.payload.title, (copy) => copy.stepsTitle),
             lead: write(section.payload.lead, (copy) => copy.stepsLead),
-            items: structure.flatMap((_, index) => {
+            items: structure.flatMap((item) => {
+              const row = (copy: LocaleCopy) =>
+                copy.stepItems.find((candidate) => candidate.id === item.id);
               const hasCopy = PUBLIC_LOCALES.some(
-                (locale) =>
-                  copies[locale].stepItems[index]?.title.trim() ||
-                  copies[locale].stepItems[index]?.text.trim(),
+                (locale) => row(copies[locale])?.title.trim() || row(copies[locale])?.text.trim(),
               );
               if (!hasCopy) return [];
               return [
                 {
-                  title: write(previous[index]?.title, (copy) => copy.stepItems[index]?.title ?? ""),
-                  text: write(previous[index]?.text, (copy) => copy.stepItems[index]?.text ?? ""),
+                  title: write(undefined, (copy) => row(copy)?.title ?? ""),
+                  text: write(undefined, (copy) => row(copy)?.text ?? ""),
                 },
               ];
             }),
@@ -657,7 +670,10 @@ export function addStudioBenefit(draft: PublicSiteStudioDraft): PublicSiteStudio
   if (current.length >= MAX_BENEFIT_ITEMS) return draft;
   return syncStudioStructure(
     patchStudioCopy(draft, {
-      benefitItems: [...current, { icon: "spark", title: "", text: "" }],
+      benefitItems: [
+        ...current,
+        { id: nextItemDraftId("benefit"), icon: "spark", title: "", text: "" },
+      ],
     }),
   );
 }
@@ -678,7 +694,7 @@ export function addStudioStep(draft: PublicSiteStudioDraft): PublicSiteStudioDra
   if (current.length >= MAX_STEP_ITEMS) return draft;
   return syncStudioStructure(
     patchStudioCopy(draft, {
-      stepItems: [...current, { title: "", text: "" }],
+      stepItems: [...current, { id: nextItemDraftId("step"), title: "", text: "" }],
     }),
   );
 }

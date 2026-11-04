@@ -168,8 +168,11 @@ export function PublicSiteSettingsForm({
   const copySource = PUBLIC_LOCALES.filter((loc) => loc !== draft.editLocale).sort(
     (a, b) => progress[b] - progress[a],
   )[0];
+  // Offered while the best-filled language still has text for an empty field here.
   const canCopy =
-    !readOnly && copySource !== undefined && progress[draft.editLocale] < progress[copySource];
+    !readOnly &&
+    copySource !== undefined &&
+    fillStudioLocaleFrom(draft, copySource, draft.editLocale) !== draft;
 
   function save(next: PublicSiteStudioDraft, onFail?: () => void) {
     setError(null);
