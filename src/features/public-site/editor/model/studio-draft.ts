@@ -1,3 +1,4 @@
+import { PUBLIC_INTRO_HREF } from "@/features/public-site/domain/anchors";
 import { coercePublicLocale, pickOwnLocalized, writeLocalizedMap } from "@/features/public-site/domain/localized";
 import {
   alignNoticeDraft,
@@ -9,16 +10,28 @@ import {
   normalizeBenefitIcon,
 } from "@/features/public-site/domain/benefit-icons";
 import type {
-  PublicBenefitItem,
   PublicFontId,
-  PublicGalleryItem,
   PublicLocale,
   PublicSiteConfig,
   PublicSiteSettingsInput,
-  PublicStepItem,
 } from "@/features/public-site/domain/types";
 import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
-import { publicSectionKey, textSectionKey } from "@/features/public-site/domain/order-sections";
+import {
+  CHROME_COPY,
+  HERO_COPY,
+  PAGES_COPY,
+  readFlatCopy,
+  SECTION_COPY,
+  SEO_COPY,
+  SEO_FALLBACK,
+  writeCopyGroup,
+  type FlatCopy,
+} from "@/features/public-site/editor/model/copy-fields";
+import {
+  findSection,
+  publicSectionKey,
+  textSectionKey,
+} from "@/features/public-site/domain/order-sections";
 
 type GalleryDraftItem = { id: string; url: string };
 /**
@@ -30,51 +43,11 @@ export type StepLineDraft = { id: string; title: string; text: string };
 
 export type TextLineDraft = { id: string; title: string; lead: string; body: string };
 
-export type LocaleCopy = {
-  heroTitle: string;
-  heroSubtitle: string;
-  heroTagline: string;
-  heroBadge: string;
-  heroCtaPrimary: string;
-  heroCtaSecondary: string;
-  seoTitle: string;
-  seoDescription: string;
-  introTitle: string;
-  introLead: string;
-  benefitsTitle: string;
-  benefitsLead: string;
+/** One language's copy: single-line fields from copy-fields, plus rows with structure. */
+export type LocaleCopy = FlatCopy & {
   benefitItems: CopyLineDraft[];
-  stepsTitle: string;
-  stepsLead: string;
   stepItems: StepLineDraft[];
-  ctaTitle: string;
-  ctaLead: string;
-  ctaLabel: string;
-  galleryTitle: string;
-  galleryLead: string;
   galleryCaptions: Record<string, string>;
-  headerSubtitle: string;
-  footerTagline: string;
-  navHome: string;
-  navPrivacy: string;
-  navTerms: string;
-  navBook: string;
-  comingSoonTitle: string;
-  comingSoonLead: string;
-  termsTitle: string;
-  termsLead: string;
-  termsBody: string;
-  privacyTitle: string;
-  privacyLead: string;
-  privacyBody: string;
-  calendarTitle: string;
-  calendarLead: string;
-  seoCalendarTitle: string;
-  seoCalendarDescription: string;
-  seoTermsTitle: string;
-  seoTermsDescription: string;
-  seoPrivacyTitle: string;
-  seoPrivacyDescription: string;
   textItems: TextLineDraft[];
   noticeDraft: BookingNoticeDraft;
 };
@@ -162,17 +135,11 @@ function buildLocaleCopy(
   locale: PublicLocale,
   galleryItems: GalleryDraftItem[],
 ): LocaleCopy {
-  const introSection = config.sections.find((section) => section.sectionType === "intro");
-  const benefitsSection = config.sections.find((section) => section.sectionType === "benefits");
-  const stepsSection = config.sections.find((section) => section.sectionType === "steps");
-  const ctaSection = config.sections.find((section) => section.sectionType === "cta");
-  const gallerySection = config.sections.find((section) => section.sectionType === "gallery");
-  const galleryFromConfig = (gallerySection?.payload.items ?? []) as PublicGalleryItem[];
+  const benefitsSection = findSection(config.sections, "benefits");
+  const stepsSection = findSection(config.sections, "steps");
+  const galleryFromConfig = findSection(config.sections, "gallery")?.payload.items ?? [];
 
-  const heroTitle = pickOwnLocalized(config.hero.title, locale);
-  const heroSubtitle = pickOwnLocalized(config.hero.subtitle, locale);
-
-  const benefitItems = ((benefitsSection?.payload.items ?? []) as PublicBenefitItem[]).map(
+  const benefitItems = (benefitsSection?.payload.items ?? []).map(
     (item, index) => ({
       id: `benefit-${index}`,
       icon: normalizeBenefitIcon(item.icon),
@@ -180,7 +147,7 @@ function buildLocaleCopy(
       text: pickOwnLocalized(item.text, locale),
     }),
   );
-  const stepItems = ((stepsSection?.payload.items ?? []) as PublicStepItem[]).map((item, index) => ({
+  const stepItems = (stepsSection?.payload.items ?? []).map((item, index) => ({
     id: `step-${index}`,
     title: pickOwnLocalized(item.title, locale),
     text: pickOwnLocalized(item.text, locale),
@@ -193,50 +160,10 @@ function buildLocaleCopy(
   }
 
   return {
-    heroTitle,
-    heroSubtitle,
-    heroTagline: pickOwnLocalized(config.hero.tagline, locale),
-    heroBadge: pickOwnLocalized(config.hero.badge, locale),
-    heroCtaPrimary: pickOwnLocalized(config.hero.ctaPrimary, locale),
-    heroCtaSecondary: pickOwnLocalized(config.hero.ctaSecondary, locale),
-    seoTitle: pickOwnLocalized(config.seo.metaTitle, locale),
-    seoDescription: pickOwnLocalized(config.seo.metaDescription, locale),
-    introTitle: pickOwnLocalized(introSection?.payload.title, locale),
-    introLead: pickOwnLocalized(introSection?.payload.lead, locale),
-    benefitsTitle: pickOwnLocalized(benefitsSection?.payload.title, locale),
-    benefitsLead: pickOwnLocalized(benefitsSection?.payload.lead, locale),
+    ...readFlatCopy(config, locale),
     benefitItems: benefitItems.length > 0 ? benefitItems : EMPTY_BENEFITS.map((item) => ({ ...item })),
-    stepsTitle: pickOwnLocalized(stepsSection?.payload.title, locale),
-    stepsLead: pickOwnLocalized(stepsSection?.payload.lead, locale),
     stepItems: stepItems.length > 0 ? stepItems : EMPTY_STEPS.map((item) => ({ ...item })),
-    ctaTitle: pickOwnLocalized(ctaSection?.payload.title, locale),
-    ctaLead: pickOwnLocalized(ctaSection?.payload.lead, locale),
-    ctaLabel: pickOwnLocalized(ctaSection?.payload.ctaLabel, locale),
     galleryCaptions,
-    headerSubtitle: pickOwnLocalized(config.chrome?.headerSubtitle, locale),
-    footerTagline: pickOwnLocalized(config.chrome?.footerTagline, locale),
-    navHome: pickOwnLocalized(config.chrome?.navHome, locale),
-    navPrivacy: pickOwnLocalized(config.chrome?.navPrivacy, locale),
-    navTerms: pickOwnLocalized(config.chrome?.navTerms, locale),
-    navBook: pickOwnLocalized(config.chrome?.navBook, locale),
-    comingSoonTitle: pickOwnLocalized(config.pages?.comingSoonTitle, locale),
-    comingSoonLead: pickOwnLocalized(config.pages?.comingSoonLead, locale),
-    termsTitle: pickOwnLocalized(config.pages?.termsTitle, locale),
-    termsLead: pickOwnLocalized(config.pages?.termsLead, locale),
-    termsBody: pickOwnLocalized(config.pages?.termsBody, locale),
-    privacyTitle: pickOwnLocalized(config.pages?.privacyTitle, locale),
-    privacyLead: pickOwnLocalized(config.pages?.privacyLead, locale),
-    privacyBody: pickOwnLocalized(config.pages?.privacyBody, locale),
-    calendarTitle: pickOwnLocalized(config.pages?.calendarTitle, locale),
-    calendarLead: pickOwnLocalized(config.pages?.calendarLead, locale),
-    seoCalendarTitle: pickOwnLocalized(config.pages?.seoCalendarTitle, locale),
-    seoCalendarDescription: pickOwnLocalized(config.pages?.seoCalendarDescription, locale),
-    seoTermsTitle: pickOwnLocalized(config.pages?.seoTermsTitle, locale),
-    seoTermsDescription: pickOwnLocalized(config.pages?.seoTermsDescription, locale),
-    seoPrivacyTitle: pickOwnLocalized(config.pages?.seoPrivacyTitle, locale),
-    seoPrivacyDescription: pickOwnLocalized(config.pages?.seoPrivacyDescription, locale),
-    galleryTitle: pickOwnLocalized(gallerySection?.payload.title, locale),
-    galleryLead: pickOwnLocalized(gallerySection?.payload.lead, locale),
     textItems: config.sections
       .filter((section) => section.sectionType === "text")
       .map((section) => ({
@@ -279,11 +206,11 @@ export function buildPublicSiteStudioDraft(
   locale: string,
 ): PublicSiteStudioDraft {
   const editLocale = coercePublicLocale(locale);
-  const gallerySection = config.sections.find((section) => section.sectionType === "gallery");
+  const gallerySection = findSection(config.sections, "gallery");
   const visibility = new Map(
     config.sections.map((section) => [section.sectionType, section.visible]),
   );
-  const galleryFromConfig = (gallerySection?.payload.items ?? []) as PublicGalleryItem[];
+  const galleryFromConfig = gallerySection?.payload.items ?? [];
   const galleryItems = galleryFromConfig.map((item, index) => ({
     id: item.id || `gallery-${index}`,
     url: item.url,
@@ -328,9 +255,9 @@ export function buildPublicSiteStudioDraft(
     showNavTerms: config.chrome?.showNavTerms === true,
     showCheckTimes: config.hero.showCheckTimes !== false,
     heroCtaPrimaryHref: config.hero.ctaPrimaryHref ?? "/calendar",
-    heroCtaSecondaryHref: config.hero.ctaSecondaryHref ?? "#public-intro",
+    heroCtaSecondaryHref: config.hero.ctaSecondaryHref ?? PUBLIC_INTRO_HREF,
     ctaHref:
-      config.sections.find((section) => section.sectionType === "cta")?.payload.ctaHref ??
+      findSection(config.sections, "cta")?.payload.ctaHref ??
       "/calendar",
     contactEmail: config.contact.email ?? "",
     contactPhone: config.contact.phone ?? "",
@@ -416,8 +343,8 @@ export function mergeStudioToInput(args: {
     pick: (copy: LocaleCopy) => string,
   ) => writeLocalizedMap(previous, mapFromLocales(copies, pick));
 
-  const galleryFromConfig = config.sections.find((s) => s.sectionType === "gallery");
-  const previousGallery = (galleryFromConfig?.payload.items ?? []) as PublicGalleryItem[];
+  const galleryFromConfig = findSection(config.sections, "gallery");
+  const previousGallery = galleryFromConfig?.payload.items ?? [];
   const galleryItems = draft.galleryItems
     .filter((item) => item.url.trim().length > 0)
     .map((item, index) => {
@@ -438,8 +365,7 @@ export function mergeStudioToInput(args: {
           visible: draft.introVisible,
           payload: {
             ...section.payload,
-            title: write(section.payload.title, (copy) => copy.introTitle),
-            lead: write(section.payload.lead, (copy) => copy.introLead),
+            ...writeCopyGroup(SECTION_COPY.intro, section.payload, copies),
           },
         };
       }
@@ -450,8 +376,7 @@ export function mergeStudioToInput(args: {
           visible: draft.benefitsVisible,
           payload: {
             ...section.payload,
-            title: write(section.payload.title, (copy) => copy.benefitsTitle),
-            lead: write(section.payload.lead, (copy) => copy.benefitsLead),
+            ...writeCopyGroup(SECTION_COPY.benefits, section.payload, copies),
             items: structure.flatMap((item) => {
               const row = (copy: LocaleCopy) =>
                 copy.benefitItems.find((candidate) => candidate.id === item.id);
@@ -477,8 +402,7 @@ export function mergeStudioToInput(args: {
           visible: draft.stepsVisible,
           payload: {
             ...section.payload,
-            title: write(section.payload.title, (copy) => copy.stepsTitle),
-            lead: write(section.payload.lead, (copy) => copy.stepsLead),
+            ...writeCopyGroup(SECTION_COPY.steps, section.payload, copies),
             items: structure.flatMap((item) => {
               const row = (copy: LocaleCopy) =>
                 copy.stepItems.find((candidate) => candidate.id === item.id);
@@ -502,9 +426,7 @@ export function mergeStudioToInput(args: {
           visible: draft.ctaVisible,
           payload: {
             ...section.payload,
-            title: write(section.payload.title, (copy) => copy.ctaTitle),
-            lead: write(section.payload.lead, (copy) => copy.ctaLead),
-            ctaLabel: write(section.payload.ctaLabel, (copy) => copy.ctaLabel),
+            ...writeCopyGroup(SECTION_COPY.cta, section.payload, copies),
             ctaHref: draft.ctaHref.trim() || "/calendar",
           },
         };
@@ -558,8 +480,7 @@ export function mergeStudioToInput(args: {
       sortOrder: galleryFromConfig?.sortOrder ?? 30,
       visible: draft.galleryVisible && galleryItems.length > 0,
       payload: {
-        title: write(galleryFromConfig?.payload.title, (copy) => copy.galleryTitle),
-        lead: write(galleryFromConfig?.payload.lead, (copy) => copy.galleryLead),
+        ...writeCopyGroup(SECTION_COPY.gallery, galleryFromConfig?.payload, copies),
         items: galleryItems,
       },
     },
@@ -591,14 +512,9 @@ export function mergeStudioToInput(args: {
     usePrimaryContact: draft.usePrimaryContact,
     hero: {
       ...config.hero,
-      badge: write(config.hero.badge, (copy) => copy.heroBadge),
-      title: write(config.hero.title, (copy) => copy.heroTitle),
-      subtitle: write(config.hero.subtitle, (copy) => copy.heroSubtitle),
-      tagline: write(config.hero.tagline, (copy) => copy.heroTagline),
-      ctaPrimary: write(config.hero.ctaPrimary, (copy) => copy.heroCtaPrimary),
-      ctaSecondary: write(config.hero.ctaSecondary, (copy) => copy.heroCtaSecondary),
+      ...writeCopyGroup(HERO_COPY, config.hero, copies),
       ctaPrimaryHref: draft.heroCtaPrimaryHref.trim() || "/calendar",
-      ctaSecondaryHref: draft.heroCtaSecondaryHref.trim() || "#public-intro",
+      ctaSecondaryHref: draft.heroCtaSecondaryHref.trim() || PUBLIC_INTRO_HREF,
       imageUrl: draft.heroImageUrl.trim() || null,
       showCheckTimes: draft.showCheckTimes,
     },
@@ -610,13 +526,7 @@ export function mergeStudioToInput(args: {
       facebook: draft.contactFacebook.trim() || null,
       instagram: draft.contactInstagram.trim() || null,
     },
-    seo: {
-      metaTitle: write(config.seo.metaTitle, (copy) => copy.seoTitle || copy.heroTitle),
-      metaDescription: write(
-        config.seo.metaDescription,
-        (copy) => copy.seoDescription || copy.heroSubtitle,
-      ),
-    },
+    seo: writeCopyGroup(SEO_COPY, config.seo, copies, SEO_FALLBACK),
     bookingNotice: mergeBookingNoticeFromLocales(
       config.bookingNotice,
       noticeDrafts,
@@ -624,44 +534,18 @@ export function mergeStudioToInput(args: {
     ),
     chrome: {
       logoUrl: draft.logoUrl.trim() || null,
-      headerSubtitle: write(config.chrome?.headerSubtitle, (copy) => copy.headerSubtitle),
-      footerTagline: write(config.chrome?.footerTagline, (copy) => copy.footerTagline),
       showContactBar: draft.showContactBar,
       showStayOffers: draft.showStayOffers,
       showStayPrices: draft.showStayPrices,
       showPlace: draft.showPlace,
       fontId: draft.fontId,
-      navHome: write(config.chrome?.navHome, (copy) => copy.navHome),
-      navPrivacy: write(config.chrome?.navPrivacy, (copy) => copy.navPrivacy),
-      navTerms: write(config.chrome?.navTerms, (copy) => copy.navTerms),
-      navBook: write(config.chrome?.navBook, (copy) => copy.navBook),
+      ...writeCopyGroup(CHROME_COPY, config.chrome, copies),
       showNavHome: draft.showNavHome,
       showNavPrivacy: draft.showNavPrivacy,
       showNavTerms: draft.showNavTerms,
     },
     pages: {
-      comingSoonTitle: write(config.pages?.comingSoonTitle, (copy) => copy.comingSoonTitle),
-      comingSoonLead: write(config.pages?.comingSoonLead, (copy) => copy.comingSoonLead),
-      termsTitle: write(config.pages?.termsTitle, (copy) => copy.termsTitle),
-      termsLead: write(config.pages?.termsLead, (copy) => copy.termsLead),
-      termsBody: write(config.pages?.termsBody, (copy) => copy.termsBody),
-      privacyTitle: write(config.pages?.privacyTitle, (copy) => copy.privacyTitle),
-      privacyLead: write(config.pages?.privacyLead, (copy) => copy.privacyLead),
-      privacyBody: write(config.pages?.privacyBody, (copy) => copy.privacyBody),
-      calendarTitle: write(config.pages?.calendarTitle, (copy) => copy.calendarTitle),
-      calendarLead: write(config.pages?.calendarLead, (copy) => copy.calendarLead),
-      seoCalendarTitle: write(config.pages?.seoCalendarTitle, (copy) => copy.seoCalendarTitle),
-      seoCalendarDescription: write(
-        config.pages?.seoCalendarDescription,
-        (copy) => copy.seoCalendarDescription,
-      ),
-      seoTermsTitle: write(config.pages?.seoTermsTitle, (copy) => copy.seoTermsTitle),
-      seoTermsDescription: write(config.pages?.seoTermsDescription, (copy) => copy.seoTermsDescription),
-      seoPrivacyTitle: write(config.pages?.seoPrivacyTitle, (copy) => copy.seoPrivacyTitle),
-      seoPrivacyDescription: write(
-        config.pages?.seoPrivacyDescription,
-        (copy) => copy.seoPrivacyDescription,
-      ),
+      ...writeCopyGroup(PAGES_COPY, config.pages, copies),
       ogImageUrl: draft.ogImageUrl.trim() || null,
     },
     sections,
@@ -748,16 +632,25 @@ export function removeStudioTextSection(
   };
 }
 
+/** The closing booking band always renders last on the page, after rooms and map. */
+const PINNED_SECTION_KEYS = new Set(["cta"]);
+
+/** Sections the operator can reorder, in their current order. */
+export function movableSectionKeys(sectionOrder: string[]): string[] {
+  return sectionOrder.filter((key) => !PINNED_SECTION_KEYS.has(key));
+}
+
+/** Swap a section with its movable neighbour; pinned sections stay at the end. */
 export function moveStudioSection(
   draft: PublicSiteStudioDraft,
   key: string,
   direction: -1 | 1,
 ): PublicSiteStudioDraft {
-  const order = [...draft.sectionOrder];
-  const index = order.indexOf(key);
+  const movable = movableSectionKeys(draft.sectionOrder);
+  const index = movable.indexOf(key);
   const target = index + direction;
-  if (index === -1 || target < 0 || target >= order.length) return draft;
-  const [moved] = order.splice(index, 1);
-  order.splice(target, 0, moved!);
-  return { ...draft, sectionOrder: order };
+  if (index === -1 || target < 0 || target >= movable.length) return draft;
+  [movable[index], movable[target]] = [movable[target]!, movable[index]!];
+  const pinned = draft.sectionOrder.filter((row) => PINNED_SECTION_KEYS.has(row));
+  return { ...draft, sectionOrder: [...movable, ...pinned] };
 }

@@ -1,53 +1,31 @@
-import type { PublicSiteConfig, PublicTemplateId } from "@/features/public-site/domain/types";
+import type {
+  PublicSiteConfig,
+  PublicSiteSection,
+  PublicTemplateId,
+} from "@/features/public-site/domain/types";
 import { orderPublicSections } from "@/features/public-site/domain/order-sections";
-import {
-  PublicAmenityStrip,
-  PublicMobileBookingBar,
-} from "@/features/public-site/home/PublicHomeExtras";
+import { effectivePublicTemplate } from "@/features/public-site/domain/template";
+import { PublicMobileBookingBar } from "@/features/public-site/home/PublicMobileBookingBar";
 import { PublicPlace } from "@/features/public-site/home/PublicPlace";
 import { PublicStayOffers } from "@/features/public-site/home/PublicStayOffers";
 import { PublicHeroBlock } from "@/features/public-site/hero/PublicHeroBlock";
 import { renderPublicSection } from "@/features/public-site/sections/render-section";
 
-type TemplateProps = {
-  config: PublicSiteConfig;
-  locale: string;
-  checkTimesLabel: string;
-  preview?: boolean;
-};
-
-function LiveProperty({
-  config,
-  locale,
-  preview,
-}: {
-  config: PublicSiteConfig;
-  locale: string;
-  preview?: boolean;
-}) {
-  return (
-    <>
-      <PublicStayOffers config={config} locale={locale} preview={preview} />
-      <PublicPlace config={config} />
-    </>
-  );
-}
-
 function TemplateSections({
-  config,
+  sections,
   locale,
   template,
-  preview = false,
+  preview,
 }: {
-  config: PublicSiteConfig;
+  sections: PublicSiteSection[];
   locale: string;
   template: PublicTemplateId;
-  preview?: boolean;
+  preview: boolean;
 }) {
   const seen = new Map<string, number>();
   return (
     <>
-      {orderPublicSections(config.sections).map((section, index) => {
+      {sections.map((section, index) => {
         // Preview only: the settings studio maps a click back to its editor card.
         // Counted before skipping: the studio's section order includes hidden ones.
         const nth = seen.get(section.sectionType) ?? 0;
@@ -69,75 +47,12 @@ function TemplateSections({
   );
 }
 
-function ClassicPublicTemplate({
-  config,
-  locale,
-  checkTimesLabel,
-  preview = false,
-}: TemplateProps) {
-  return (
-    <main className="pub-home pub-home--classic">
-      <PublicHeroBlock
-        config={config}
-        locale={locale}
-        variant="classic"
-        checkTimesLabel={checkTimesLabel}
-        preview={preview}
-      />
-      <PublicAmenityStrip config={config} locale={locale} />
-      <TemplateSections config={config} locale={locale} template="classic" preview={preview} />
-      <LiveProperty config={config} locale={locale} preview={preview} />
-      <PublicMobileBookingBar config={config} locale={locale} preview={preview} />
-    </main>
-  );
-}
-
-function EditorialPublicTemplate({
-  config,
-  locale,
-  checkTimesLabel,
-  preview = false,
-}: TemplateProps) {
-  return (
-    <main className="pub-home pub-home--editorial">
-      <PublicHeroBlock
-        config={config}
-        locale={locale}
-        variant="editorial"
-        checkTimesLabel={checkTimesLabel}
-        preview={preview}
-      />
-      <TemplateSections config={config} locale={locale} template="editorial" preview={preview} />
-      <LiveProperty config={config} locale={locale} preview={preview} />
-      <PublicMobileBookingBar config={config} locale={locale} preview={preview} />
-    </main>
-  );
-}
-
-function ImmersivePublicTemplate({
-  config,
-  locale,
-  checkTimesLabel,
-  preview = false,
-}: TemplateProps) {
-  return (
-    <main className="pub-home pub-home--immersive">
-      <PublicHeroBlock
-        config={config}
-        locale={locale}
-        variant="immersive"
-        checkTimesLabel={checkTimesLabel}
-        preview={preview}
-      />
-      <div className="pub-home__immersive-body">
-        <TemplateSections config={config} locale={locale} template="immersive" preview={preview} />
-        <LiveProperty config={config} locale={locale} preview={preview} />
-      </div>
-      <PublicMobileBookingBar config={config} locale={locale} preview={preview} />
-    </main>
-  );
-}
-
+/**
+ * The homepage, top to bottom: hero, the operator's sections in their order,
+ * then rooms and the map, then the closing booking band, so the rooms come
+ * before the final "book now" instead of after it. The three layouts share this
+ * structure and differ in the hero and in CSS.
+ */
 export function PublicSiteBody({
   config,
   locale,
@@ -149,34 +64,38 @@ export function PublicSiteBody({
   checkTimesLabel: string;
   preview?: boolean;
 }) {
-  switch (config.templateId) {
-    case "editorial":
-      return (
-        <EditorialPublicTemplate
-          config={config}
-          locale={locale}
-          checkTimesLabel={checkTimesLabel}
-          preview={preview}
-        />
-      );
-    case "immersive":
-      return (
-        <ImmersivePublicTemplate
-          config={config}
-          locale={locale}
-          checkTimesLabel={checkTimesLabel}
-          preview={preview}
-        />
-      );
-    case "classic":
-    default:
-      return (
-        <ClassicPublicTemplate
-          config={config}
-          locale={locale}
-          checkTimesLabel={checkTimesLabel}
-          preview={preview}
-        />
-      );
-  }
+  const template = effectivePublicTemplate(config);
+  const ordered = orderPublicSections(config.sections);
+  const body = (
+    <>
+      <TemplateSections
+        sections={ordered.filter((section) => section.sectionType !== "cta")}
+        locale={locale}
+        template={template}
+        preview={preview}
+      />
+      <PublicStayOffers config={config} locale={locale} preview={preview} />
+      <PublicPlace config={config} />
+      <TemplateSections
+        sections={ordered.filter((section) => section.sectionType === "cta")}
+        locale={locale}
+        template={template}
+        preview={preview}
+      />
+    </>
+  );
+
+  return (
+    <main className={`pub-home pub-home--${template}`}>
+      <PublicHeroBlock
+        config={config}
+        locale={locale}
+        variant={template}
+        checkTimesLabel={checkTimesLabel}
+        preview={preview}
+      />
+      {template === "immersive" ? <div className="pub-home__immersive-body">{body}</div> : body}
+      <PublicMobileBookingBar config={config} locale={locale} preview={preview} />
+    </main>
+  );
 }

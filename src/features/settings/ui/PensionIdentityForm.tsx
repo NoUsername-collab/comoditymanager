@@ -12,7 +12,7 @@ import {
   SettingsPreviewLayout,
 } from "@/components/admin/settings/SettingsPreviewLayout";
 import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
-import { PublicSiteImageField } from "@/features/settings/ui/PublicSiteImageField";
+import { PublicSiteImageField } from "@/features/public-site/editor/ui/PublicSiteImageField";
 import {
   formatTouristSheetAddress,
   parseTouristSheetAddress,

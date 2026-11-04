@@ -4,8 +4,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { consumePublicSiteStudioEnter } from "@/features/settings/ui/public-site-studio-enter";
-import { StudioPreviewIframe } from "@/features/settings/ui/StudioPreviewIframe";
+import { consumePublicSiteStudioEnter } from "@/features/public-site/editor/model/studio-enter";
+import { StudioPreviewIframe } from "@/features/public-site/editor/ui/StudioPreviewIframe";
 import "@/styles/features/admin/admin-public-site-studio.css";
 
 type StudioDevice = "desktop" | "tablet" | "phone";

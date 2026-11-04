@@ -2,14 +2,23 @@ import { Link } from "@/i18n/navigation";
 import { buildPublicContactLinks } from "@/features/public-site/contact/PublicContactBar";
 import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
-import { getLocale, getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 
-export async function PublicFooter({ config }: { config: PublicSiteConfig }) {
-  const [t, tContact, locale] = await Promise.all([
-    getTranslations("public.footer"),
-    getTranslations("public.contact"),
-    getLocale(),
-  ]);
+/**
+ * The site footer, live and in the settings preview. `locale` picks the
+ * operator's copy; `preview` draws links as plain text so nothing navigates.
+ */
+export function PublicFooter({
+  config,
+  locale,
+  preview = false,
+}: {
+  config: PublicSiteConfig;
+  locale: string;
+  preview?: boolean;
+}) {
+  const t = useTranslations("public.footer");
+  const tContact = useTranslations("public.contact");
 
   const contactLinks = buildPublicContactLinks(config.contact, {
     email: tContact("email"),
@@ -44,11 +53,15 @@ export async function PublicFooter({ config }: { config: PublicSiteConfig }) {
             <div>
               <p className="public-footer__label">{t("links")}</p>
               <nav className="public-footer__links">
-                {footerLinks.map((link) => (
-                  <Link key={link.href} href={link.href}>
-                    {link.label}
-                  </Link>
-                ))}
+                {footerLinks.map((link) =>
+                  preview ? (
+                    <span key={link.href}>{link.label}</span>
+                  ) : (
+                    <Link key={link.href} href={link.href}>
+                      {link.label}
+                    </Link>
+                  ),
+                )}
               </nav>
             </div>
           ) : null}
@@ -58,17 +71,19 @@ export async function PublicFooter({ config }: { config: PublicSiteConfig }) {
             <div>
               <p className="public-footer__label">{t("contact")}</p>
               <div className="public-footer__contact-links">
-                {contactLinks.map((link) => (
-                  <a
-                    key={link.id}
-                    href={link.href}
-                    {...(link.external
-                      ? { target: "_blank", rel: "noopener noreferrer" }
-                      : {})}
-                  >
-                    {link.label}
-                  </a>
-                ))}
+                {contactLinks.map((link) =>
+                  preview ? (
+                    <span key={link.id}>{link.label}</span>
+                  ) : (
+                    <a
+                      key={link.id}
+                      href={link.href}
+                      {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    >
+                      {link.label}
+                    </a>
+                  ),
+                )}
               </div>
             </div>
           ) : null}

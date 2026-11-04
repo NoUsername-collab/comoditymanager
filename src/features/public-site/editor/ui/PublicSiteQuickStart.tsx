@@ -4,13 +4,13 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useTranslations } from "next-intl";
 import { resolvePublicThemeStyle } from "@/features/public-site/themes/loader";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
-import { PublicSiteImageField } from "@/features/settings/ui/PublicSiteImageField";
-import { EditorField } from "@/features/settings/ui/PublicSiteEditorKit";
+import { PublicSiteImageField } from "@/features/public-site/editor/ui/PublicSiteImageField";
+import { EditorField } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import { IdentityContactSummary } from "@/features/settings/ui/IdentityContactSummary";
 import {
   PUBLIC_STYLE_PRESETS,
   type QuickStartAnswers,
-} from "@/features/settings/ui/public-site-editor-model";
+} from "@/features/public-site/editor/model/editor-model";
 
 const STEPS = ["about", "photos", "style", "contact"] as const;
 const MAX_QUICK_PHOTOS = 8;

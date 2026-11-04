@@ -12,7 +12,7 @@ import {
   EditorAdvanced,
   EditorGroup,
   usePublicSiteEditor,
-} from "@/features/settings/ui/PublicSiteEditorKit";
+} from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 
 export function PublicSiteDesignPanel() {
   const t = useTranslations("admin.pages.publicSite");
@@ -43,6 +43,11 @@ export function PublicSiteDesignPanel() {
             </button>
           ))}
         </div>
+        {draft.templateId === "immersive" && !draft.heroImageUrl.trim() ? (
+          <p className="pub-editor-tabhint" role="status">
+            {te("immersiveNeedsPhoto")}
+          </p>
+        ) : null}
       </EditorGroup>
 
       <EditorGroup title={te("colorsTitle")} description={te("colorsDesc")}>

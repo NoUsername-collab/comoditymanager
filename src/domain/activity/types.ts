@@ -62,6 +62,8 @@ export type ActivityAction =
   | "settings.appearance_updated"
   | "settings.operational_updated"
   | "settings.public_site_updated"
+  | "settings.public_site_published"
+  | "settings.public_site_hidden"
   | "settings.guest_app_updated"
   | "settings.booking_rules_updated"
   | "settings.team_permissions_updated"

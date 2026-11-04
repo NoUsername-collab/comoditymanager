@@ -567,7 +567,6 @@
       "ctaBandText": "Takes a few minutes. If dates aren't free, we'll tell you right away — no account, no card.",
       "ctaBandButton": "Open calendar",
       "galleryTitle": "Gallery",
-      "extrasAria": "Quick info",
       "checkTimesLabel": "Stay schedule",
       "roomsTitle": "Rooms",
       "roomsLead": "What we have — live availability is on the calendar.",
@@ -1674,6 +1673,7 @@
           "advancedHint": "Optional — the site looks fine without them.",
           "layoutTitle": "Page layout",
           "layoutDesc": "How the main photo, text and gallery look. Your section order stays as you set it.",
+          "immersiveNeedsPhoto": "Panoramic needs a main photo. Until you add one, the page uses the Classic layout.",
           "colorsTitle": "Colours",
           "colorsDesc": "Pick the palette that suits your property.",
           "fontTitle": "Heading font",
@@ -1711,7 +1711,7 @@
             },
             "cta": {
               "name": "Booking call-out",
-              "desc": "A band with a button near the end of the page."
+              "desc": "A band with a button at the end of the page, after rooms and map."
             },
             "text": {
               "name": "Free text",
@@ -4316,7 +4316,9 @@
         "operational_updated": "Operational settings",
         "booking_rules_updated": "Booking rules / pricing",
         "guest_app_updated": "Guest app settings",
-        "public_site_updated": "Public site settings"
+        "public_site_updated": "Public site settings",
+        "public_site_published": "Public site published",
+        "public_site_hidden": "Public site hidden"
       },
       "location_admin": {
         "unlocked": "Location admin unlocked",

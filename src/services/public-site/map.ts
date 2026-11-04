@@ -8,7 +8,6 @@ import type {
   PublicBookingNavPosition,
   PublicContactConfig,
   PublicHeroConfig,
-  PublicSectionPayload,
   PublicSectionType,
   PublicSeoConfig,
   PublicSiteSection,
@@ -94,12 +93,14 @@ export function mapPublicSiteSectionRow(row: {
   visible: boolean;
   payload: unknown;
 }): PublicSiteSection {
+  // Trust boundary: payload is jsonb this app wrote through the per-type save
+  // schema, so it matches its section_type.
   return {
     id: row.id,
     sectionType: parseSectionType(row.section_type),
     sortOrder: row.sort_order ?? 0,
     visible: row.visible !== false,
-    payload: (row.payload ?? {}) as PublicSectionPayload,
-  };
+    payload: row.payload ?? {},
+  } as PublicSiteSection;
 }
 

@@ -567,7 +567,6 @@
       "ctaBandText": "Отнема няколко минути. Ако няма свободни дати, ще ви кажем веднага — без акаунт и карта.",
       "ctaBandButton": "Отвори календара",
       "galleryTitle": "Галерия",
-      "extrasAria": "Бърза информация",
       "checkTimesLabel": "График на престоя",
       "roomsTitle": "Стаи",
       "roomsLead": "Какво предлагаме — наличността е в календара.",
@@ -1633,6 +1632,7 @@
           "advancedHint": "По избор — сайтът изглежда добре и без тях.",
           "layoutTitle": "Подредба на страницата",
           "layoutDesc": "Как изглеждат основната снимка, текстовете и галерията. Редът на секциите остава вашият.",
+          "immersiveNeedsPhoto": "Панорамният изглед има нужда от основна снимка. Докато не добавите такава, страницата използва класическия изглед.",
           "colorsTitle": "Цветове",
           "colorsDesc": "Изберете палитра, която подхожда на мястото ви.",
           "fontTitle": "Шрифт за заглавия",
@@ -1670,7 +1670,7 @@
             },
             "cta": {
               "name": "Покана за резервация",
-              "desc": "Лента с бутон към края на страницата."
+              "desc": "Лента с бутон в края на страницата, след стаите и картата."
             },
             "text": {
               "name": "Свободен текст",
@@ -4278,7 +4278,9 @@
         "operational_updated": "Operational settings",
         "booking_rules_updated": "Booking rules / pricing",
         "guest_app_updated": "Guest app settings",
-        "public_site_updated": "Public site settings"
+        "public_site_updated": "Public site settings",
+        "public_site_published": "Публичният сайт е публикуван",
+        "public_site_hidden": "Публичният сайт е скрит"
       },
       "location_admin": {
         "unlocked": "Location admin unlocked",

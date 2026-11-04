@@ -142,24 +142,45 @@ export type PublicStepItem = {
   text: LocalizedText;
 };
 
-export type PublicSectionPayload = {
+type PublicSectionCopy = {
   title?: LocalizedText;
   lead?: LocalizedText;
-  body?: LocalizedText;
-  items?: PublicBenefitItem[] | PublicGalleryItem[] | PublicStepItem[];
-  ctaLabel?: LocalizedText;
-  ctaHref?: string;
-  ctaSecondaryLabel?: LocalizedText;
-  ctaSecondaryHref?: string;
 };
 
-export type PublicSiteSection = {
+/** What each kind of section stores; `sectionType` decides which one applies. */
+export type PublicSectionPayloadByType = {
+  intro: PublicSectionCopy & { body?: LocalizedText };
+  text: PublicSectionCopy & { body?: LocalizedText };
+  benefits: PublicSectionCopy & { items?: PublicBenefitItem[] };
+  gallery: PublicSectionCopy & { items?: PublicGalleryItem[] };
+  steps: PublicSectionCopy & { items?: PublicStepItem[] };
+  cta: PublicSectionCopy & {
+    ctaLabel?: LocalizedText;
+    ctaHref?: string;
+    ctaSecondaryLabel?: LocalizedText;
+    ctaSecondaryHref?: string;
+  };
+};
+
+export type PublicSectionPayload = PublicSectionPayloadByType[PublicSectionType];
+
+export type PublicSiteSectionOf<T extends PublicSectionType> = {
   id: string;
-  sectionType: PublicSectionType;
+  sectionType: T;
   sortOrder: number;
   visible: boolean;
-  payload: PublicSectionPayload;
+  payload: PublicSectionPayloadByType[T];
 };
+
+/** One homepage section; narrowing on `sectionType` types its payload. */
+export type PublicSiteSection = {
+  [T in PublicSectionType]: PublicSiteSectionOf<T>;
+}[PublicSectionType];
+
+/** A section as the editor sends it: saved ones keep their id, new built-in ones have none yet. */
+export type PublicSiteSectionInput = {
+  [T in PublicSectionType]: Omit<PublicSiteSectionOf<T>, "id"> & { id?: string };
+}[PublicSectionType];
 
 export type PublicSiteSettingsRow = {
   id: string;
@@ -217,5 +238,5 @@ export type PublicSiteSettingsInput = {
   chrome: PublicChromeConfig;
   pages: PublicPagesConfig;
   /** `id` is kept for saved sections and new text sections, so rows are updated in place. */
-  sections: (Omit<PublicSiteSection, "id"> & { id?: string })[];
+  sections: PublicSiteSectionInput[];
 };

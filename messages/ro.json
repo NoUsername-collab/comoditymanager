@@ -567,7 +567,6 @@
       "ctaBandText": "Durează câteva minute. Dacă perioada nu e liberă, îți spunem imediat — fără cont și fără card.",
       "ctaBandButton": "Deschide calendarul",
       "galleryTitle": "Galerie",
-      "extrasAria": "Informații rapide",
       "checkTimesLabel": "Program cazare",
       "roomsTitle": "Camere",
       "roomsLead": "Ce oferim — disponibilitatea live e pe calendar.",
@@ -1659,6 +1658,7 @@
           "advancedHint": "Opțional — site-ul arată bine și fără ele.",
           "layoutTitle": "Așezarea paginii",
           "layoutDesc": "Cum arată poza principală, textele și galeria. Ordinea secțiunilor rămâne cea pusă de tine.",
+          "immersiveNeedsPhoto": "Panoramic are nevoie de o poză principală. Până o adaugi, pagina folosește așezarea Clasic.",
           "colorsTitle": "Culori",
           "colorsDesc": "Alege paleta care se potrivește pensiunii.",
           "fontTitle": "Litere pentru titluri",
@@ -1696,7 +1696,7 @@
             },
             "cta": {
               "name": "Îndemn la rezervare",
-              "desc": "O bandă cu un buton, spre finalul paginii."
+              "desc": "O bandă cu un buton, la finalul paginii, după camere și hartă."
             },
             "text": {
               "name": "Text liber",
@@ -4299,7 +4299,9 @@
         "operational_updated": "Setări operaționale",
         "booking_rules_updated": "Reguli rezervare / prețuri",
         "guest_app_updated": "Setări aplicație oaspeți",
-        "public_site_updated": "Setări pagină publică"
+        "public_site_updated": "Setări pagină publică",
+        "public_site_published": "Pagina publică pusă online",
+        "public_site_hidden": "Pagina publică ascunsă"
       },
       "location_admin": {
         "unlocked": "Administrare locație deblocată",

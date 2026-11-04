@@ -5,6 +5,7 @@ import { PublicHeader } from "@/features/public-site/ui/PublicHeader";
 import { PublicLodgingJsonLd } from "@/features/public-site/ui/PublicLodgingJsonLd";
 import { PublicContactBar } from "@/features/public-site/contact/PublicContactBar";
 import { publicChromeFontStack } from "@/features/public-site/domain/chrome";
+import { effectivePublicTemplate } from "@/features/public-site/domain/template";
 import {
   publicThemeClassName,
   resolvePublicThemeStyle,
@@ -58,10 +59,10 @@ export default async function PublicLayout({
         surface="public"
         className={`site-themed ${publicThemeClassName(config.themeId)} flex min-h-screen flex-1 flex-col`}
         style={style}
-        data-pub-template={config.templateId}
+        data-pub-template={effectivePublicTemplate(config)}
       >
         <AdminCorner />
-        <PublicHeader config={config} />
+        <PublicHeader config={config} locale={locale} />
         <div className="ml-main ml-content flex-1">{children}</div>
         {config.chrome.showContactBar !== false ? (
           <PublicContactBar
@@ -76,7 +77,7 @@ export default async function PublicLayout({
             }}
           />
         ) : null}
-        <PublicFooter config={config} />
+        <PublicFooter config={config} locale={locale} />
       </MobileShell>
     </>
   );

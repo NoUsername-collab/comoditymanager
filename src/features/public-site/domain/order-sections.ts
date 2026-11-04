@@ -79,3 +79,18 @@ export function applyTemplateSectionKeys(
   }
   return result;
 }
+
+/**
+ * The first section of a type, with its payload typed for that type.
+ * `visibleOnly` skips sections the operator hid.
+ */
+export function findSection<T extends PublicSectionType>(
+  sections: readonly PublicSiteSection[] | undefined,
+  sectionType: T,
+  { visibleOnly = false }: { visibleOnly?: boolean } = {},
+): Extract<PublicSiteSection, { sectionType: T }> | undefined {
+  return sections?.find(
+    (section): section is Extract<PublicSiteSection, { sectionType: T }> =>
+      section.sectionType === sectionType && (!visibleOnly || section.visible),
+  );
+}

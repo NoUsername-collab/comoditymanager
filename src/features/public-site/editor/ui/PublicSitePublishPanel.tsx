@@ -3,17 +3,17 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
-import { PublicSiteImageField } from "@/features/settings/ui/PublicSiteImageField";
+import { PublicSiteImageField } from "@/features/public-site/editor/ui/PublicSiteImageField";
 import {
   EditorAdvanced,
   EditorField,
   EditorGroup,
   usePublicSiteEditor,
-} from "@/features/settings/ui/PublicSiteEditorKit";
+} from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import type {
   PublicSiteEditorTab,
   PublicSiteReadinessItem,
-} from "@/features/settings/ui/public-site-editor-model";
+} from "@/features/public-site/editor/model/editor-model";
 
 export function PublicSitePublishPanel({
   readiness,

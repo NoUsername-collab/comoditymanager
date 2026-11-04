@@ -6,14 +6,14 @@ import { PUBLIC_BENEFIT_ICON_IDS } from "@/features/public-site/domain/benefit-i
 import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { SettingsFieldHint } from "@/components/admin/settings/SettingsFieldHint";
-import { PublicSiteImageField } from "@/features/settings/ui/PublicSiteImageField";
+import { PublicSiteImageField } from "@/features/public-site/editor/ui/PublicSiteImageField";
 import {
   EditorAdvanced,
   EditorField,
   EditorLinkPicker,
   EditorToggle,
   usePublicSiteEditor,
-} from "@/features/settings/ui/PublicSiteEditorKit";
+} from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import {
   addStudioBenefit,
   addStudioStep,
@@ -28,7 +28,7 @@ import {
   type CopyLineDraft,
   type StepLineDraft,
   type TextLineDraft,
-} from "@/features/settings/ui/public-site-studio-draft";
+} from "@/features/public-site/editor/model/studio-draft";
 
 export function HeroEditor() {
   const t = useTranslations("admin.pages.publicSite");

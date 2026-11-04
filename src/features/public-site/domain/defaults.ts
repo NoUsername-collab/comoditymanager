@@ -1,3 +1,4 @@
+import { PUBLIC_INTRO_HREF } from "@/features/public-site/domain/anchors";
 import type {
   LocalizedText,
   PublicChromeConfig,
@@ -169,7 +170,7 @@ export function buildDefaultPublicSiteConfig(args: {
       ctaPrimary: loc(args.copy.ctaPrimary),
       ctaSecondary: loc(args.copy.ctaSecondary),
       ctaPrimaryHref: "/calendar",
-      ctaSecondaryHref: "#public-intro",
+      ctaSecondaryHref: PUBLIC_INTRO_HREF,
       showCheckTimes: true,
     },
     contact: {

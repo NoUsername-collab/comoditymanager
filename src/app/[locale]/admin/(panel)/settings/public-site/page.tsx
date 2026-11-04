@@ -1,6 +1,6 @@
 ﻿import { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
-import { PublicSiteSettingsForm } from "@/features/settings/ui/PublicSiteSettingsForm";
+import { PublicSiteSettingsForm } from "@/features/public-site/editor/ui/PublicSiteSettingsForm";
 import { loadPublicSiteAdminBundle } from "@/features/settings/loaders";
 import { getLocale, getTranslations } from "next-intl/server";
 import {

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { BookingNoticeDraft } from "@/features/public-site/domain/booking-notice";
 import type { PublicSiteSettingsInput } from "@/features/public-site/domain/types";
-import { BookingNoticeEditor } from "@/features/settings/ui/BookingNoticeEditor";
+import { BookingNoticeEditor } from "@/features/public-site/editor/ui/BookingNoticeEditor";
 import { IdentityContactSummary } from "@/features/settings/ui/IdentityContactSummary";
 import {
   EditorAdvanced,
@@ -11,11 +11,11 @@ import {
   EditorGroup,
   EditorToggle,
   usePublicSiteEditor,
-} from "@/features/settings/ui/PublicSiteEditorKit";
+} from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import {
   patchStudioCopy,
   syncStudioStructure,
-} from "@/features/settings/ui/public-site-studio-draft";
+} from "@/features/public-site/editor/model/studio-draft";
 
 export function PublicSiteContactPanel() {
   const t = useTranslations("admin.pages.publicSite");

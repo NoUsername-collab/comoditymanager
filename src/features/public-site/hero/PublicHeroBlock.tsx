@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { isOptimizablePublicImageUrl } from "@/domain/public-site/media";
 import { pickOwnLocalized, storedTitle } from "@/features/public-site/domain/localized";
 import { safeNavHref } from "@/lib/security/html-escape";
+import { PUBLIC_INTRO_HREF } from "@/features/public-site/domain/anchors";
 import type { PublicSiteConfig, PublicTemplateId } from "@/features/public-site/domain/types";
 import type { ReactNode } from "react";
 
@@ -82,7 +83,7 @@ export function PublicHeroBlock({
   const secondaryBtn = ctaSecondary ? (
     <PreviewOrLink
       preview={preview}
-      href={safeNavHref(hero.ctaSecondaryHref, "#public-intro")}
+      href={safeNavHref(hero.ctaSecondaryHref, PUBLIC_INTRO_HREF)}
       className={
         variant === "immersive" ? "pub-hero__text-link" : "pub-btn pub-btn--ghost"
       }

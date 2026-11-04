@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { markPublicSiteStudioEnter } from "@/features/settings/ui/public-site-studio-enter";
+import { markPublicSiteStudioEnter } from "@/features/public-site/editor/model/studio-enter";
 import "@/styles/features/admin/admin-public-site-studio.css";
 
 export function PublicSiteLaunchCard({

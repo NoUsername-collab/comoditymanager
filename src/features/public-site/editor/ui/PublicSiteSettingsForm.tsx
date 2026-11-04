@@ -11,18 +11,18 @@ import { savePublicSiteSettingsAction } from "@/features/settings/actions/public
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { SettingsAlerts, type SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
 import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
-import { PublicSitePreview } from "@/features/settings/ui/PublicSitePreview";
-import { PublicSiteStudio } from "@/features/settings/ui/PublicSiteStudio";
-import { PublicSiteLocaleTabs } from "@/features/settings/ui/PublicSiteLocaleTabs";
+import { PublicSitePreview } from "@/features/public-site/editor/ui/PublicSitePreview";
+import { PublicSiteStudio } from "@/features/public-site/editor/ui/PublicSiteStudio";
+import { PublicSiteLocaleTabs } from "@/features/public-site/editor/ui/PublicSiteLocaleTabs";
 import {
   PublicSiteEditorProvider,
   type PublicSiteEditorApi,
-} from "@/features/settings/ui/PublicSiteEditorKit";
-import { PublicSiteDesignPanel } from "@/features/settings/ui/PublicSiteDesignPanel";
-import { PublicSiteContentPanel } from "@/features/settings/ui/PublicSiteContentPanel";
-import { PublicSiteContactPanel } from "@/features/settings/ui/PublicSiteContactPanel";
-import { PublicSitePublishPanel } from "@/features/settings/ui/PublicSitePublishPanel";
-import { PublicSiteQuickStart } from "@/features/settings/ui/PublicSiteQuickStart";
+} from "@/features/public-site/editor/ui/PublicSiteEditorKit";
+import { PublicSiteDesignPanel } from "@/features/public-site/editor/ui/PublicSiteDesignPanel";
+import { PublicSiteContentPanel } from "@/features/public-site/editor/ui/PublicSiteContentPanel";
+import { PublicSiteContactPanel } from "@/features/public-site/editor/ui/PublicSiteContactPanel";
+import { PublicSitePublishPanel } from "@/features/public-site/editor/ui/PublicSitePublishPanel";
+import { PublicSiteQuickStart } from "@/features/public-site/editor/ui/PublicSiteQuickStart";
 import {
   applyQuickStart,
   editKeyFromPreviewTarget,
@@ -35,7 +35,7 @@ import {
   studioLocaleProgress,
   type PublicSiteEditorTab,
   type QuickStartAnswers,
-} from "@/features/settings/ui/public-site-editor-model";
+} from "@/features/public-site/editor/model/editor-model";
 import {
   buildPublicSiteStudioDraft,
   mergeStudioToInput,
@@ -44,7 +44,7 @@ import {
   switchStudioLocale,
   type LocaleCopy,
   type PublicSiteStudioDraft,
-} from "@/features/settings/ui/public-site-studio-draft";
+} from "@/features/public-site/editor/model/studio-draft";
 import "@/styles/features/admin/admin-public-site-editor.css";
 
 export function PublicSiteSettingsForm({

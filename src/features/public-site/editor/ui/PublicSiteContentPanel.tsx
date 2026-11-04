@@ -3,7 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
-import { PublicSiteSectionCard } from "@/features/settings/ui/PublicSiteSectionCard";
+import { PublicSiteSectionCard } from "@/features/public-site/editor/ui/PublicSiteSectionCard";
 import {
   BenefitsEditor,
   ChromeEditor,
@@ -16,15 +16,16 @@ import {
   StaysEditor,
   StepsEditor,
   TextBlockEditor,
-} from "@/features/settings/ui/PublicSiteSectionEditors";
-import { usePublicSiteEditor } from "@/features/settings/ui/PublicSiteEditorKit";
+} from "@/features/public-site/editor/ui/PublicSiteSectionEditors";
+import { usePublicSiteEditor } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import { textSectionIdFromKey } from "@/features/public-site/domain/order-sections";
 import {
   addStudioTextSection,
   MAX_TEXT_SECTIONS,
   moveStudioSection,
+  movableSectionKeys,
   type PublicSiteStudioDraft,
-} from "@/features/settings/ui/public-site-studio-draft";
+} from "@/features/public-site/editor/model/studio-draft";
 
 type OrderedKey = "intro" | "benefits" | "gallery" | "steps" | "cta";
 
@@ -99,7 +100,7 @@ export function PublicSiteContentPanel({
     return title.trim() ? `„${title.trim()}”` : undefined;
   }
 
-  const order = draft.sectionOrder;
+  const order = movableSectionKeys(draft.sectionOrder);
 
   return (
     <>
@@ -154,7 +155,7 @@ export function PublicSiteContentPanel({
             );
           }
 
-          if (!isOrderedKey(key)) return null;
+          if (!isOrderedKey(key) || key === "cta") return null;
           const field = VISIBILITY_FIELD[key];
           return (
             <PublicSiteSectionCard
@@ -218,6 +219,20 @@ export function PublicSiteContentPanel({
           onToggleOpen={() => toggle("place")}
         >
           <PlaceEditor />
+        </PublicSiteSectionCard>
+
+        <PublicSiteSectionCard
+          editKey="cta"
+          name={te("cards.cta.name")}
+          description={te("cards.cta.desc")}
+          summary={summaryFor("cta")}
+          pinned="bottom"
+          visible={draft.ctaVisible}
+          onToggleVisible={(ctaVisible) => patchDraft({ ctaVisible })}
+          open={openKey === "cta"}
+          onToggleOpen={() => toggle("cta")}
+        >
+          <CtaEditor />
         </PublicSiteSectionCard>
 
         <PublicSiteSectionCard

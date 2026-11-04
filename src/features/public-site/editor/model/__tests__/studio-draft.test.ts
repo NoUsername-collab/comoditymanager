@@ -6,10 +6,11 @@ import {
   addStudioTextSection,
   buildPublicSiteStudioDraft,
   mergeStudioToInput,
+  moveStudioSection,
   patchStudioCopy,
   removeStudioBenefit,
   switchStudioLocale,
-} from "@/features/settings/ui/public-site-studio-draft";
+} from "@/features/public-site/editor/model/studio-draft";
 
 const config: PublicSiteConfig = {
   id: "ps-1",
@@ -126,6 +127,12 @@ describe("public site studio draft", () => {
     // Built-in defaults have no database id yet; they are created on save.
     expect(input.sections.find((section) => section.sectionType === "gallery")?.id).toBeUndefined();
     expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
+  });
+
+  it("keeps the closing booking band last when sections move", () => {
+    const draft = { ...buildPublicSiteStudioDraft(config, "ro"), sectionOrder: ["intro", "cta", "gallery"] };
+    expect(moveStudioSection(draft, "gallery", -1).sectionOrder).toEqual(["gallery", "intro", "cta"]);
+    expect(moveStudioSection(draft, "gallery", 1)).toBe(draft);
   });
 
   it("round-trips extra jsonb keys through parse", () => {

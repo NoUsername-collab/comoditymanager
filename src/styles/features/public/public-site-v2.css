@@ -632,41 +632,6 @@
   min-width: 0;
 }
 
-/* Home extras strip */
-.pub-home-extras {
-  border-bottom: 1px solid var(--pub-border);
-  background: color-mix(in srgb, var(--pub-card-elevated) 65%, transparent);
-}
-
-.pub-home-extras__inner {
-  margin-inline: auto;
-  display: flex;
-  width: min(72rem, 100%);
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.85rem 1.25rem;
-  padding: 0.85rem 1.5rem;
-}
-
-.pub-home-extras__amenities {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.pub-home-extras__amenity {
-  border-radius: 999px;
-  border: 1px solid var(--pub-border);
-  padding: 0.28rem 0.65rem;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  color: var(--pub-fg);
-  background: color-mix(in srgb, var(--pub-card) 88%, transparent);
-}
-
 /* Mobile booking CTA bar */
 .pub-mobile-booking-bar {
   display: none;

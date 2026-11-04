@@ -14,14 +14,6 @@ import {
 const publicTemplateIdSchema = z.enum(["classic", "editorial", "immersive"]);
 const publicThemeIdSchema = z.enum(["noir", "alpine", "mediterranean", "pearl", "slate", "forest"]);
 const publicBookingNavPositionSchema = z.enum(["nav", "footer", "both", "hidden"]);
-const publicSectionTypeSchema = z.enum([
-  "intro",
-  "benefits",
-  "gallery",
-  "text",
-  "cta",
-  "steps",
-]);
 
 const publicHeroConfigSchema = z
   .object({
@@ -182,37 +174,74 @@ const publicStepItemSchema = z
   })
   .strict();
 
-const publicSectionPayloadSchema = z
-  .object({
-    title: localizedTextSchema.optional(),
-    lead: localizedTextSchema.optional(),
-    body: localizedTextSchema.optional(),
-    items: z
-      .array(
-        z.union([
-          publicBenefitItemSchema,
-          publicGalleryItemSchema,
-          publicStepItemSchema,
-        ]),
-      )
-      .max(100)
-      .optional(),
-    ctaLabel: localizedTextSchema.optional(),
-    ctaHref: optionalSafeNavHrefSchema.optional(),
-    ctaSecondaryLabel: localizedTextSchema.optional(),
-    ctaSecondaryHref: optionalSafeNavHrefSchema.optional(),
-  })
+const MAX_SECTION_ITEMS = 100;
+
+/** Title and lead every section has. Unknown keys are dropped, not refused. */
+const sectionCopyShape = {
+  title: localizedTextSchema.optional(),
+  lead: localizedTextSchema.optional(),
+};
+
+function sectionInputSchema<T extends string, P extends z.ZodTypeAny>(sectionType: T, payload: P) {
+  return z
+    .object({
+      id: z.string().uuid().optional(),
+      sectionType: z.literal(sectionType),
+      sortOrder: z.number().int().min(0).max(9999),
+      visible: z.boolean(),
+      payload,
+    })
+    .strict();
+}
+
+const bodyPayloadSchema = z
+  .object({ ...sectionCopyShape, body: localizedTextSchema.optional() })
   .strip();
 
-const publicSiteSectionInputSchema = z
-  .object({
-    id: z.string().uuid().optional(),
-    sectionType: publicSectionTypeSchema,
-    sortOrder: z.number().int().min(0).max(9999),
-    visible: z.boolean(),
-    payload: publicSectionPayloadSchema,
-  })
-  .strict();
+/** Each section type accepts only its own payload: highlights can't arrive as photos. */
+const publicSiteSectionInputSchema = z.discriminatedUnion("sectionType", [
+  sectionInputSchema("intro", bodyPayloadSchema),
+  sectionInputSchema("text", bodyPayloadSchema),
+  sectionInputSchema(
+    "benefits",
+    z
+      .object({
+        ...sectionCopyShape,
+        items: z.array(publicBenefitItemSchema).max(MAX_SECTION_ITEMS).optional(),
+      })
+      .strip(),
+  ),
+  sectionInputSchema(
+    "gallery",
+    z
+      .object({
+        ...sectionCopyShape,
+        items: z.array(publicGalleryItemSchema).max(MAX_SECTION_ITEMS).optional(),
+      })
+      .strip(),
+  ),
+  sectionInputSchema(
+    "steps",
+    z
+      .object({
+        ...sectionCopyShape,
+        items: z.array(publicStepItemSchema).max(MAX_SECTION_ITEMS).optional(),
+      })
+      .strip(),
+  ),
+  sectionInputSchema(
+    "cta",
+    z
+      .object({
+        ...sectionCopyShape,
+        ctaLabel: localizedTextSchema.optional(),
+        ctaHref: optionalSafeNavHrefSchema.optional(),
+        ctaSecondaryLabel: localizedTextSchema.optional(),
+        ctaSecondaryHref: optionalSafeNavHrefSchema.optional(),
+      })
+      .strip(),
+  ),
+]);
 
 const publicSiteSettingsInputSchema = z
   .object({

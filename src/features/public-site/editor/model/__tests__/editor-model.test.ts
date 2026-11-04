@@ -11,11 +11,11 @@ import {
   publicSiteReadiness,
   studioLocaleProgress,
   tabForFieldPath,
-} from "@/features/settings/ui/public-site-editor-model";
+} from "@/features/public-site/editor/model/editor-model";
 import {
   buildPublicSiteStudioDraft,
   patchStudioCopy,
-} from "@/features/settings/ui/public-site-studio-draft";
+} from "@/features/public-site/editor/model/studio-draft";
 
 const config: PublicSiteConfig = {
   id: "ps-1",

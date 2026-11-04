@@ -1,5 +1,7 @@
+import { PUBLIC_INTRO_HREF, PUBLIC_STEPS_HREF } from "@/features/public-site/domain/anchors";
 import type { PublicLocale, PublicSiteConfig } from "@/features/public-site/domain/types";
 import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
+import { HOMEPAGE_COPY_KEYS } from "@/features/public-site/editor/model/copy-fields";
 import {
   applyTemplateSectionKeys,
   textSectionIdFromKey,
@@ -7,7 +9,7 @@ import {
 import type {
   LocaleCopy,
   PublicSiteStudioDraft,
-} from "@/features/settings/ui/public-site-studio-draft";
+} from "@/features/public-site/editor/model/studio-draft";
 
 /** Editor tabs, in the order an operator works through them. */
 export const PUBLIC_SITE_EDITOR_TABS = ["design", "content", "contact", "publish"] as const;
@@ -31,8 +33,8 @@ export function firstErrorTab(fieldErrors: Record<string, string>): PublicSiteEd
 /** Destinations a button can point at without typing a URL. */
 export const PUBLIC_LINK_PRESETS = [
   { id: "calendar", href: "/calendar" },
-  { id: "intro", href: "#public-intro" },
-  { id: "steps", href: "#cum-functioneaza" },
+  { id: "intro", href: PUBLIC_INTRO_HREF },
+  { id: "steps", href: PUBLIC_STEPS_HREF },
 ] as const;
 type PublicLinkPresetId = (typeof PUBLIC_LINK_PRESETS)[number]["id"] | "custom";
 
@@ -94,31 +96,6 @@ export function studioLocaleProgress(
   return progress;
 }
 
-/**
- * Homepage strings the copy button may fill. Legal pages, SEO and menu labels
- * stay out: copied there, they would show another language as finished text.
- */
-const HOMEPAGE_COPY_KEYS = [
-  "heroTitle",
-  "heroSubtitle",
-  "heroTagline",
-  "heroBadge",
-  "heroCtaPrimary",
-  "heroCtaSecondary",
-  "introTitle",
-  "introLead",
-  "benefitsTitle",
-  "benefitsLead",
-  "stepsTitle",
-  "stepsLead",
-  "ctaTitle",
-  "ctaLead",
-  "ctaLabel",
-  "galleryTitle",
-  "galleryLead",
-  "headerSubtitle",
-  "footerTagline",
-] as const satisfies readonly (keyof LocaleCopy)[];
 
 /**
  * Fill only the empty homepage fields of `to` with the text from `from`, so the

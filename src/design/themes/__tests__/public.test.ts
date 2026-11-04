@@ -18,7 +18,7 @@ describe("publicColorScheme", () => {
       mediterranean: "dark",
       pearl: "light",
       slate: "light",
-      forest: "light",
+      forest: "dark",
     });
   });
 });

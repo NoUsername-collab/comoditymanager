@@ -10,6 +10,7 @@ import {
   PublicSiteVersionConflictError,
   upsertPublicSiteSettingsImpl,
 } from "@/services/public-site/mutations";
+import { getPublicSiteConfigForAdmin } from "@/services/public-site/queries";
 import { getTranslations } from "next-intl/server";
 import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 
@@ -40,6 +41,9 @@ export async function savePublicSiteSettingsAction(
       return { ok: false, error: parsed.error, fieldErrors: parsed.fieldErrors };
     }
 
+    // Visibility before this save, so going online or offline gets its own history entry.
+    const wasPublished = (await getPublicSiteConfigForAdmin()).published;
+
     const version = await upsertPublicSiteSettingsImpl(
       tenant.id,
       parsed.data,
@@ -53,8 +57,13 @@ export async function savePublicSiteSettingsAction(
     revalidatePath("/admin/settings/public-site");
     refresh();
 
+    const visibilityChanged = wasPublished !== parsed.data.published;
     await logAdminActivityFromSession({
-      action: "settings.public_site_updated",
+      action: !visibilityChanged
+        ? "settings.public_site_updated"
+        : parsed.data.published
+          ? "settings.public_site_published"
+          : "settings.public_site_hidden",
       entityType: "settings",
       summary: `Public site: ${parsed.data.templateId} / ${parsed.data.themeId}`,
       metadata: {

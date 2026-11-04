@@ -99,7 +99,7 @@ Services **re-export** these for backward compatibility; new code imports from `
 
 | Module | What is actually there |
 |--------|------------------------|
-| `features/public-site/` | Preview UI + calendar/confirm **actions** + `loaders.ts` + `ui/` (booking forms, tenant header/footer/staff) |
+| `features/public-site/` | Preview UI + calendar/confirm **actions** + `loaders.ts` + `ui/` (booking forms, tenant header/footer/staff) + `editor/` (the settings studio for the public site: `ui/` panels and preview, `model/` pure draft and editor logic; its save actions stay in `features/settings/actions`) |
 | `features/guest-app/` | Stay UI + `actions/` + `loaders.ts` |
 | `features/settings/` | Settings + catalog **actions** + `loaders.ts` + `ui/` (panels + statistics; chrome stays in `components/admin/settings`) |
 | `features/checkin/` | Check-in **actions** + `loaders.ts` + `ui/` (wizard + operative provider) |

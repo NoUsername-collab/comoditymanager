@@ -83,6 +83,25 @@ describe("settings schemas", () => {
     }
   });
 
+  it("accepts only a section's own kind of items", () => {
+    const withBenefits = (items: unknown[]) =>
+      parsePublicSiteSettingsInput({
+        templateId: "classic",
+        themeId: "noir",
+        published: true,
+        bookingEnabled: true,
+        bookingNavPosition: "nav",
+        usePrimaryContact: true,
+        hero: {},
+        contact: {},
+        seo: {},
+        bookingNotice: emptyBookingNotice,
+        sections: [{ sectionType: "benefits", sortOrder: 0, visible: true, payload: { items } }],
+      });
+    expect(withBenefits([{ icon: "wifi", title: { en: "Wi-Fi" }, text: {} }]).ok).toBe(true);
+    expect(withBenefits([{ id: "g1", url: "https://example.com/a.jpg" }]).ok).toBe(false);
+  });
+
   it("rejects javascript: URLs in public site hero", () => {
     const result = parsePublicSiteSettingsInput({
       templateId: "classic",

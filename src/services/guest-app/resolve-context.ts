@@ -1,4 +1,5 @@
 import { pickLocalized } from "@/features/public-site/domain/localized";
+import { findSection } from "@/features/public-site/domain/order-sections";
 import type {
   PublicBenefitItem,
   PublicGalleryItem,
@@ -72,9 +73,7 @@ function mergeHotel(
   publicConfig: PublicSiteConfig | null,
   locale: string,
 ): GuestAppHotelContent {
-  const intro = publicConfig?.sections.find(
-    (section) => section.sectionType === "intro" && section.visible,
-  );
+  const intro = findSection(publicConfig?.sections, "intro", { visibleOnly: true });
   const introBody = intro?.payload.body
     ? pickLocalized(intro.payload.body, locale)
     : undefined;
@@ -194,18 +193,12 @@ export async function resolveGuestAppContext(
       }
     : settings.content.hotel;
 
-  const benefitsSection = publicConfig?.sections.find(
-    (section) => section.sectionType === "benefits" && section.visible,
-  );
-  const benefits = benefitsSection
-    ? mapBenefits((benefitsSection.payload.items ?? []) as PublicBenefitItem[], locale)
-    : [];
+  const benefitsSection = findSection(publicConfig?.sections, "benefits", { visibleOnly: true });
+  const benefits = benefitsSection ? mapBenefits(benefitsSection.payload.items ?? [], locale) : [];
 
-  const gallerySection = publicConfig?.sections.find(
-    (section) => section.sectionType === "gallery" && section.visible,
-  );
+  const gallerySection = findSection(publicConfig?.sections, "gallery", { visibleOnly: true });
   const galleryFromSite = gallerySection
-    ? mapGallery((gallerySection.payload.items ?? []) as PublicGalleryItem[], locale)
+    ? mapGallery(gallerySection.payload.items ?? [], locale)
     : [];
 
   const roomGallery: GuestGalleryDisplayItem[] = booking.roomImageUrls.map(

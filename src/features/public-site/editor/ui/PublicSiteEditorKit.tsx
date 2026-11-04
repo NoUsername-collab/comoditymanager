@@ -9,11 +9,11 @@ import { SettingsFieldHint } from "@/components/admin/settings/SettingsFieldHint
 import {
   linkPresetFor,
   PUBLIC_LINK_PRESETS,
-} from "@/features/settings/ui/public-site-editor-model";
+} from "@/features/public-site/editor/model/editor-model";
 import type {
   LocaleCopy,
   PublicSiteStudioDraft,
-} from "@/features/settings/ui/public-site-studio-draft";
+} from "@/features/public-site/editor/model/studio-draft";
 
 export type PublicSiteEditorApi = {
   config: PublicSiteConfig;
