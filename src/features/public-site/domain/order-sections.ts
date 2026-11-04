@@ -4,6 +4,25 @@ import type {
   PublicTemplateId,
 } from "@/features/public-site/domain/types";
 
+const TEXT_KEY_PREFIX = "text:";
+
+/**
+ * Editor key of a homepage section: its type, since there is one of each, or
+ * `text:<id>` for free-text blocks, of which there can be several.
+ */
+export function publicSectionKey(section: { sectionType: string; id?: string }): string {
+  return section.sectionType === "text" ? textSectionKey(section.id ?? "") : section.sectionType;
+}
+
+export function textSectionKey(id: string): string {
+  return `${TEXT_KEY_PREFIX}${id}`;
+}
+
+/** The text section id inside a `text:<id>` key; null for any other key. */
+export function textSectionIdFromKey(key: string): string | null {
+  return key.startsWith(TEXT_KEY_PREFIX) ? key.slice(TEXT_KEY_PREFIX.length) : null;
+}
+
 /** Per-layout section rhythm. Leftover types keep their relative sortOrder. */
 export const PUBLIC_TEMPLATE_SECTION_ORDER: Record<
   PublicTemplateId,
@@ -44,7 +63,7 @@ export function applyTemplateSectionKeys(
   templateId: PublicTemplateId,
 ): string[] {
   const preferred = PUBLIC_TEMPLATE_SECTION_ORDER[templateId];
-  const texts = current.filter((key) => key.startsWith("text:"));
+  const texts = current.filter((key) => textSectionIdFromKey(key) !== null);
   const present = new Set(current);
   const result: string[] = [];
 

@@ -18,6 +18,7 @@ import {
   TextBlockEditor,
 } from "@/features/settings/ui/PublicSiteSectionEditors";
 import { usePublicSiteEditor } from "@/features/settings/ui/PublicSiteEditorKit";
+import { textSectionIdFromKey } from "@/features/public-site/domain/order-sections";
 import {
   addStudioTextSection,
   MAX_TEXT_SECTIONS,
@@ -129,8 +130,8 @@ export function PublicSiteContentPanel({
           const moveDown =
             index < order.length - 1 ? () => setDraft((d) => moveStudioSection(d, key, 1)) : undefined;
 
-          if (key.startsWith("text:")) {
-            const id = key.slice("text:".length);
+          const id = textSectionIdFromKey(key);
+          if (id !== null) {
             const item = copy.textItems.find((row) => row.id === id);
             if (!item) return null;
             return (

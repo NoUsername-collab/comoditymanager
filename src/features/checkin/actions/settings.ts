@@ -6,6 +6,7 @@ import { bustPensionSettingsCache } from "@/lib/cache/revalidate-settings";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
+import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 import {
   updateCheckinSettings,
   checkinSettingsCacheTag,
@@ -19,14 +20,12 @@ export async function updateCheckinSettingsAction(
   try {
     await requireStaffPermission("pension_settings");
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "auth.role_forbidden";
-    if (msg === "auth.login_required") {
-      return { ok: false, error: t("invalidUserOrPassword") };
-    }
-    if (msg === "auth.tenant_member_required" || msg === "auth.role_forbidden" || msg === "auth.permission_forbidden") {
-      return { ok: false, error: t("roleForbidden") };
-    }
-    return { ok: false, error: msg };
+    return {
+      ok: false,
+      error: settingsActionErrorMessage(e, t, {
+        "auth.login_required": t("invalidUserOrPassword"),
+      }),
+    };
   }
 
   try {

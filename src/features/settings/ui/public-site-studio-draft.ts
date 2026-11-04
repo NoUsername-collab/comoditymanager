@@ -18,6 +18,7 @@ import type {
   PublicStepItem,
 } from "@/features/public-site/domain/types";
 import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
+import { publicSectionKey, textSectionKey } from "@/features/public-site/domain/order-sections";
 
 type GalleryDraftItem = { id: string; url: string };
 /**
@@ -300,9 +301,7 @@ export function buildPublicSiteStudioDraft(
 
   const sectionOrder = [...config.sections]
     .sort((a, b) => a.sortOrder - b.sortOrder)
-    .map((section) =>
-      section.sectionType === "text" ? `text:${section.id}` : section.sectionType,
-    );
+    .map(publicSectionKey);
   const defaultOrder = ["intro", "benefits", "gallery", "steps", "cta"];
   const order = sectionOrder.length > 0 ? sectionOrder : defaultOrder;
   // Gallery is always saved, so the editor must be able to place it.
@@ -567,10 +566,8 @@ export function mergeStudioToInput(args: {
   ];
 
   const rank = new Map(draft.sectionOrder.map((key, index) => [key, index]));
-  const sectionKey = (section: { id?: string; sectionType: string }) =>
-    section.sectionType === "text" ? `text:${section.id}` : section.sectionType;
   const sections = withGallery
-    .sort((a, b) => (rank.get(sectionKey(a)) ?? 99) - (rank.get(sectionKey(b)) ?? 99))
+    .sort((a, b) => (rank.get(publicSectionKey(a)) ?? 99) - (rank.get(publicSectionKey(b)) ?? 99))
     .map((section, index) => {
       // Saved rows keep their id; built-in defaults (`default-intro`, …) are created fresh.
       const { id, ...rest } = section;
@@ -727,7 +724,7 @@ export function addStudioTextSection(draft: PublicSiteStudioDraft): PublicSiteSt
     ...draft,
     copies,
     textVisible: { ...draft.textVisible, [id]: true },
-    sectionOrder: [...draft.sectionOrder, `text:${id}`],
+    sectionOrder: [...draft.sectionOrder, textSectionKey(id)],
   };
 }
 
@@ -747,7 +744,7 @@ export function removeStudioTextSection(
     ...draft,
     copies,
     textVisible,
-    sectionOrder: draft.sectionOrder.filter((key) => key !== `text:${id}`),
+    sectionOrder: draft.sectionOrder.filter((key) => key !== textSectionKey(id)),
   };
 }
 

@@ -47,14 +47,6 @@ export async function saveGuestAppSettingsAction(
   } catch (error) {
     if (isRedirectError(error)) throw error;
     const t = await getTranslations("admin.serverActions");
-    const message = error instanceof Error ? error.message : "";
-    if (
-      message === "auth.permission_forbidden" ||
-      message === "auth.role_forbidden" ||
-      message === "auth.tenant_member_required"
-    ) {
-      return { ok: false, error: t("roleForbidden") };
-    }
     return { ok: false, error: settingsActionErrorMessage(error, t) };
   }
 }

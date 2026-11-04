@@ -1,6 +1,9 @@
 import type { PublicLocale, PublicSiteConfig } from "@/features/public-site/domain/types";
 import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
-import { applyTemplateSectionKeys } from "@/features/public-site/domain/order-sections";
+import {
+  applyTemplateSectionKeys,
+  textSectionIdFromKey,
+} from "@/features/public-site/domain/order-sections";
 import type {
   LocaleCopy,
   PublicSiteStudioDraft,
@@ -239,7 +242,7 @@ export function editKeyForSection(
   sectionOrder: string[],
 ): string | null {
   if (sectionType !== "text") return sectionOrder.includes(sectionType) ? sectionType : null;
-  return sectionOrder.filter((key) => key.startsWith("text:"))[nth] ?? null;
+  return sectionOrder.filter((key) => textSectionIdFromKey(key) !== null)[nth] ?? null;
 }
 
 /** Which editor card a click inside the live preview belongs to. */

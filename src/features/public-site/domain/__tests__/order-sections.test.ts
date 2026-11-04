@@ -4,6 +4,9 @@ import {
   assignTemplateSectionSort,
   orderPublicSections,
   PUBLIC_TEMPLATE_SECTION_ORDER,
+  publicSectionKey,
+  textSectionIdFromKey,
+  textSectionKey,
 } from "@/features/public-site/domain/order-sections";
 import type { PublicSiteSection } from "@/features/public-site/domain/types";
 
@@ -86,5 +89,14 @@ describe("orderPublicSections", () => {
     expect(
       applyTemplateSectionKeys(["intro", "benefits", "gallery", "cta"], "immersive"),
     ).toEqual(["gallery", "intro", "benefits", "cta"]);
+  });
+});
+
+describe("section keys", () => {
+  it("keys free-text blocks by id and every other section by type", () => {
+    expect(publicSectionKey({ sectionType: "gallery", id: "g1" })).toBe("gallery");
+    expect(publicSectionKey({ sectionType: "text", id: "t1" })).toBe(textSectionKey("t1"));
+    expect(textSectionIdFromKey(textSectionKey("t1"))).toBe("t1");
+    expect(textSectionIdFromKey("gallery")).toBeNull();
   });
 });

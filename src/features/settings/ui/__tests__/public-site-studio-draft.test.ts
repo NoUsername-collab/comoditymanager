@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parsePublicSiteSettingsInput } from "@/domain/settings/schemas/public-site";
+import { textSectionIdFromKey } from "@/features/public-site/domain/order-sections";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import {
   addStudioTextSection,
@@ -121,7 +122,7 @@ describe("public site studio draft", () => {
     expect(input.sections.find((section) => section.sectionType === "intro")?.id).toBe(savedId);
     const text = input.sections.find((section) => section.sectionType === "text");
     expect(text?.id).toMatch(/^[0-9a-f-]{36}$/);
-    expect(text?.id).toBe(draft.sectionOrder.at(-1)?.slice("text:".length));
+    expect(text?.id).toBe(textSectionIdFromKey(draft.sectionOrder.at(-1) ?? ""));
     // Built-in defaults have no database id yet; they are created on save.
     expect(input.sections.find((section) => section.sectionType === "gallery")?.id).toBeUndefined();
     expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
