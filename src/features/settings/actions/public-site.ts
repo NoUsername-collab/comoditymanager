@@ -6,15 +6,23 @@ import { requireStaffPermission } from "@/lib/auth/require-staff";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { logAdminActivityFromSession } from "@/services/activity-log";
-import { upsertPublicSiteSettingsImpl } from "@/services/public-site/mutations";
+import {
+  PublicSiteVersionConflictError,
+  upsertPublicSiteSettingsImpl,
+} from "@/services/public-site/mutations";
 import { getTranslations } from "next-intl/server";
 import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 
+/**
+ * `expectedVersion` is the version the editor loaded. When someone saved in the
+ * meantime the save is refused with `conflict`, instead of overwriting their work.
+ */
 export async function savePublicSiteSettingsAction(
   input: unknown,
+  expectedVersion: number | null,
 ): Promise<
-  | { ok: true; redirectTo: string }
-  | { ok: false; error: string; fieldErrors?: Record<string, string> }
+  | { ok: true; redirectTo: string; version: number }
+  | { ok: false; error: string; fieldErrors?: Record<string, string>; conflict?: true }
 > {
   try {
     const [t] = await Promise.all([
@@ -32,7 +40,11 @@ export async function savePublicSiteSettingsAction(
       return { ok: false, error: parsed.error, fieldErrors: parsed.fieldErrors };
     }
 
-    await upsertPublicSiteSettingsImpl(tenant.id, parsed.data);
+    const version = await upsertPublicSiteSettingsImpl(
+      tenant.id,
+      parsed.data,
+      Number.isInteger(expectedVersion) ? expectedVersion : null,
+    );
 
     updateTag(CACHE_TAGS.publicSite);
     updateTag(tenantTag(tenant.id, CACHE_TAGS.publicSite));
@@ -52,9 +64,12 @@ export async function savePublicSiteSettingsAction(
       },
     });
 
-    return { ok: true, redirectTo: "/admin/settings/public-site?saved=1" };
+    return { ok: true, redirectTo: "/admin/settings/public-site?saved=1", version };
   } catch (error) {
     const t = await getTranslations("admin.serverActions");
+    if (error instanceof PublicSiteVersionConflictError) {
+      return { ok: false, error: t("publicSiteVersionConflict"), conflict: true };
+    }
     const message = error instanceof Error ? error.message : "";
     if (
       message === "auth.permission_forbidden" ||

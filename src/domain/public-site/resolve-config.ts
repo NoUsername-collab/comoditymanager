@@ -75,6 +75,7 @@ export function buildPublicSiteConfigFromInput(
   const sections: PublicSiteSection[] = input.sections.map((section, index) => ({
     ...section,
     id:
+      section.id ??
       base.sections.find((row) => row.sectionType === section.sectionType)?.id ??
       `${section.sectionType}-${index}`,
   }));

@@ -19,6 +19,7 @@ import {
 
 const config: PublicSiteConfig = {
   id: "ps-1",
+  version: 3,
   templateId: "classic",
   themeId: "noir",
   published: false,

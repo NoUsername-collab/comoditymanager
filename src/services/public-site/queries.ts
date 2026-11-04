@@ -51,7 +51,7 @@ async function getPublicSiteConfigUncached(
     supabase
       .from("public_site_settings")
       .select(
-        "id, template_id, theme_id, published, booking_enabled, booking_nav_position, use_primary_contact, hero, contact, seo, booking_notice, chrome, pages",
+        "id, version, template_id, theme_id, published, booking_enabled, booking_nav_position, use_primary_contact, hero, contact, seo, booking_notice, chrome, pages",
       )
       .eq("tenant_id", tenantId)
       .maybeSingle(),

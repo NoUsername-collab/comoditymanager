@@ -206,6 +206,7 @@ const publicSectionPayloadSchema = z
 
 const publicSiteSectionInputSchema = z
   .object({
+    id: z.string().uuid().optional(),
     sectionType: publicSectionTypeSchema,
     sortOrder: z.number().int().min(0).max(9999),
     visible: z.boolean(),

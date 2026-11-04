@@ -163,6 +163,8 @@ export type PublicSiteSection = {
 
 export type PublicSiteSettingsRow = {
   id: string;
+  /** Bumped by every save; null while nothing has been saved yet. */
+  version: number | null;
   templateId: PublicTemplateId;
   themeId: PublicThemeId;
   published: boolean;
@@ -214,5 +216,6 @@ export type PublicSiteSettingsInput = {
   bookingNotice: PublicBookingNoticeConfig;
   chrome: PublicChromeConfig;
   pages: PublicPagesConfig;
-  sections: Omit<PublicSiteSection, "id">[];
+  /** `id` is kept for saved sections and new text sections, so rows are updated in place. */
+  sections: (Omit<PublicSiteSection, "id"> & { id?: string })[];
 };

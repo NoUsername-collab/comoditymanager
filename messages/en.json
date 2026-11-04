@@ -1582,6 +1582,7 @@
           "publishAnyway": "{count, plural, one {# thing still missing} other {# things still missing}} — you can publish now and finish later.",
           "publishSavesAll": "Your other unsaved changes are saved too.",
           "unsavedStudio": "You have unsaved changes — press “Save” at the top, next to the preview.",
+          "conflictReload": "Reload the page",
           "shareTitle": "Your site is online at:",
           "shareCopy": "Copy address",
           "shareCopied": "Address copied",
@@ -3571,6 +3572,7 @@
       "publicSiteMediaType": "Use a JPEG, PNG or WebP photo.",
       "publicSiteMediaEmpty": "Choose a photo to upload.",
       "publicSiteMediaFailed": "Could not upload the photo. Try again.",
+      "publicSiteVersionConflict": "Someone else saved the page in the meantime. Reload to see their version; your current changes were not saved.",
       "identityLogoInvalid": "The logo address is not valid. Upload it again or remove it, then save.",
       "identitySettingsMissing": "Property settings were not found. Reload the page and try again.",
       "genericError": "An error occurred. Please try again."

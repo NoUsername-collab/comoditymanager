@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { parsePublicSiteSettingsInput } from "@/domain/settings/schemas/public-site";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import {
+  addStudioTextSection,
   buildPublicSiteStudioDraft,
   mergeStudioToInput,
   patchStudioCopy,
@@ -11,6 +12,7 @@ import {
 
 const config: PublicSiteConfig = {
   id: "ps-1",
+  version: 3,
   templateId: "classic",
   themeId: "noir",
   published: true,
@@ -105,6 +107,24 @@ describe("public site studio draft", () => {
       { ro: "Wi-Fi", en: "Wi-Fi" },
       { ro: "Mic dejun", en: "Breakfast" },
     ]);
+  });
+
+  it("sends saved section ids back, and new text sections with their own id", () => {
+    const savedId = "3f2b8c1e-5d4a-4b6f-9a7e-2c1d0e9f8a7b";
+    const saved: PublicSiteConfig = {
+      ...config,
+      sections: [{ ...config.sections[0]!, id: savedId }],
+    };
+    const draft = addStudioTextSection(buildPublicSiteStudioDraft(saved, "ro"));
+    const input = mergeStudioToInput({ config: saved, draft });
+
+    expect(input.sections.find((section) => section.sectionType === "intro")?.id).toBe(savedId);
+    const text = input.sections.find((section) => section.sectionType === "text");
+    expect(text?.id).toMatch(/^[0-9a-f-]{36}$/);
+    expect(text?.id).toBe(draft.sectionOrder.at(-1)?.slice("text:".length));
+    // Built-in defaults have no database id yet; they are created on save.
+    expect(input.sections.find((section) => section.sectionType === "gallery")?.id).toBeUndefined();
+    expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
   });
 
   it("round-trips extra jsonb keys through parse", () => {

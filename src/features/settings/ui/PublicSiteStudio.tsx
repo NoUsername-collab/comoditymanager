@@ -5,6 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { consumePublicSiteStudioEnter } from "@/features/settings/ui/public-site-studio-enter";
+import { StudioPreviewIframe } from "@/features/settings/ui/StudioPreviewIframe";
 import "@/styles/features/admin/admin-public-site-studio.css";
 
 type StudioDevice = "desktop" | "tablet" | "phone";
@@ -202,14 +203,14 @@ export function PublicSiteStudio({
             <div
               className="pub-site-studio__frame"
               data-device={device}
-              data-pickable={onPreviewPick ? "1" : undefined}
-              tabIndex={0}
-              aria-label={t("studioCanvasAria")}
               onClick={(event) => {
+                // Clicks inside the iframe bubble here through the React portal.
                 if (onPreviewPick?.(event.target as Element)) setPane("edit");
               }}
             >
-              {preview}
+              <StudioPreviewIframe title={t("studioCanvasAria")} pickable={Boolean(onPreviewPick)}>
+                {preview}
+              </StudioPreviewIframe>
             </div>
           </div>
         </section>

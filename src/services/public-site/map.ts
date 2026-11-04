@@ -53,6 +53,7 @@ function parseSectionType(raw: unknown): PublicSectionType {
 
 export function mapPublicSiteSettingsRow(row: {
   id: string;
+  version?: number | null;
   template_id: string;
   theme_id: string;
   published: boolean;
@@ -68,6 +69,7 @@ export function mapPublicSiteSettingsRow(row: {
 }): PublicSiteSettingsRow {
   return {
     id: row.id,
+    version: row.version ?? 0,
     templateId: parseTemplateId(row.template_id),
     themeId: parseThemeId(row.theme_id),
     published: row.published !== false,

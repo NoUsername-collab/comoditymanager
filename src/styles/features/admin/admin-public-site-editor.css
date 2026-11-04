@@ -724,7 +724,7 @@
   color: var(--admin-text-muted, #a1a1aa);
 }
 
-.pub-site-studio__frame[data-pickable="1"] :is(
+.pub-site-studio__doc[data-pickable="1"] :is(
     [data-pub-section],
     .pub-hero,
     .pub-section--stays,
@@ -739,7 +739,7 @@
   outline-offset: -4px;
 }
 
-.pub-site-studio__frame[data-pickable="1"] :is(
+.pub-site-studio__doc[data-pickable="1"] :is(
     [data-pub-section],
     .pub-hero,
     .pub-section--stays,
@@ -752,7 +752,7 @@
 }
 
 /* Inner sections inside a hovered wrapper should not double-outline. */
-.pub-site-studio__frame[data-pickable="1"] [data-pub-section]:hover :is(.pub-section--stays, .pub-section--place) {
+.pub-site-studio__doc[data-pickable="1"] [data-pub-section]:hover :is(.pub-section--stays, .pub-section--place) {
   outline-color: transparent;
 }
 

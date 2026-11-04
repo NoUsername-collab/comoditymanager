@@ -132,11 +132,12 @@ function nextItemDraftId(prefix: "benefit" | "step"): string {
   return `${prefix}-draft-${itemDraftSeq}`;
 }
 
-let textDraftSeq = 0;
+/** A new text section gets its database id now, so it keeps it across saves. */
 function nextTextDraftId(): string {
-  textDraftSeq += 1;
-  return `text-draft-${textDraftSeq}`;
+  return crypto.randomUUID();
 }
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const MAX_BENEFIT_ITEMS = 12;
 export const MAX_STEP_ITEMS = 12;
@@ -571,8 +572,13 @@ export function mergeStudioToInput(args: {
   const sections = withGallery
     .sort((a, b) => (rank.get(sectionKey(a)) ?? 99) - (rank.get(sectionKey(b)) ?? 99))
     .map((section, index) => {
-      const { id: _id, ...rest } = section;
-      return { ...rest, sortOrder: index * 10 };
+      // Saved rows keep their id; built-in defaults (`default-intro`, …) are created fresh.
+      const { id, ...rest } = section;
+      return {
+        ...rest,
+        ...(id && UUID_PATTERN.test(id) ? { id } : {}),
+        sortOrder: index * 10,
+      };
     });
 
   const noticeDrafts = Object.fromEntries(

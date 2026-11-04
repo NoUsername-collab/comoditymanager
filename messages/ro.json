@@ -1567,6 +1567,7 @@
           "publishAnyway": "{count, plural, one {Mai ai # lucru de completat} few {Mai ai # lucruri de completat} other {Mai ai # de lucruri de completat}} — poți publica și acum, apoi completezi.",
           "publishSavesAll": "Se salvează și celelalte modificări nesalvate.",
           "unsavedStudio": "Ai modificări nesalvate — apasă „Salvează” sus, lângă previzualizare.",
+          "conflictReload": "Reîncarcă pagina",
           "shareTitle": "Site-ul tău e online la adresa:",
           "shareCopy": "Copiază adresa",
           "shareCopied": "Adresă copiată",
@@ -3555,6 +3556,7 @@
       "publicSiteMediaType": "Folosește o poză JPEG, PNG sau WebP.",
       "publicSiteMediaEmpty": "Alege o poză de încărcat.",
       "publicSiteMediaFailed": "Nu am putut încărca poza. Încearcă din nou.",
+      "publicSiteVersionConflict": "Altcineva a salvat pagina între timp. Reîncarcă pagina ca să vezi versiunea lor; modificările tale de acum nu au fost salvate.",
       "identityLogoInvalid": "Logo-ul nu are o adresă validă. Încarcă-l din nou sau scoate-l, apoi salvează.",
       "identitySettingsMissing": "Nu am găsit setările proprietății. Reîncarcă pagina și încearcă din nou.",
       "genericError": "Nu am putut salva. Verifică conexiunea și încearcă din nou; dacă se repetă, scrie-ne la suport."

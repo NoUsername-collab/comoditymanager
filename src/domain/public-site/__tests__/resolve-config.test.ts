@@ -7,6 +7,7 @@ import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 
 const baseRow = {
   id: "ps-1",
+  version: 3,
   templateId: "classic" as const,
   themeId: "noir" as const,
   published: true,

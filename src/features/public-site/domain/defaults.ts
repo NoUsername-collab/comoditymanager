@@ -151,6 +151,7 @@ export function buildDefaultPublicSiteConfig(args: {
 }): PublicSiteConfig {
   return {
     id: "",
+    version: null,
     templateId: args.templateId ?? "classic",
     themeId: args.themeId ?? "noir",
     published: true,

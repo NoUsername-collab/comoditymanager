@@ -16,20 +16,35 @@ type AtomicRpcArgs = {
   p_chrome: PublicSiteSettingsInputParsed["chrome"];
   p_pages: PublicSiteSettingsInputParsed["pages"];
   p_sections: Array<{
+    id: string | null;
     section_type: string;
     sort_order: number;
     visible: boolean;
     payload: PublicSiteSettingsInputParsed["sections"][number]["payload"];
   }>;
+  p_expected_version: number | null;
 };
 
+/** Thrown when the settings changed since the editor loaded them. */
+export class PublicSiteVersionConflictError extends Error {
+  constructor() {
+    super("public_site.version_conflict");
+  }
+}
+
+/**
+ * Saves the whole public site in one transaction. `expectedVersion` is the
+ * version the editor loaded (null when nothing was saved yet); returns the new one.
+ */
 export async function upsertPublicSiteSettingsImpl(
   tenantId: string,
   input: PublicSiteSettingsInputParsed,
-): Promise<void> {
+  expectedVersion: number | null,
+): Promise<number> {
   const { supabase } = await getTenantScope();
 
   const sectionsPayload = input.sections.map((section, index) => ({
+    id: section.id ?? null,
     section_type: section.sectionType,
     sort_order: section.sortOrder ?? index * 10,
     visible: section.visible,
@@ -51,9 +66,16 @@ export async function upsertPublicSiteSettingsImpl(
     p_chrome: input.chrome ?? {},
     p_pages: input.pages ?? {},
     p_sections: sectionsPayload,
+    p_expected_version: expectedVersion,
   };
 
-  const { error } = await supabase.rpc("upsert_public_site_settings_atomic", args);
+  const { data, error } = await supabase.rpc("upsert_public_site_settings_atomic", args);
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (error.message.includes("public_site.version_conflict")) {
+      throw new PublicSiteVersionConflictError();
+    }
+    throw new Error(error.message);
+  }
+  return data as number;
 }

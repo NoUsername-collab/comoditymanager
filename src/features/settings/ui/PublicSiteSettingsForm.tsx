@@ -67,6 +67,9 @@ export function PublicSiteSettingsForm({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [conflict, setConflict] = useState(false);
+  // Version this editor last loaded or saved; a save from an older one is refused.
+  const versionRef = useRef(config.version);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [tab, setTab] = useState<PublicSiteEditorTab>("content");
   const formRef = useRef<HTMLFormElement>(null);
@@ -176,19 +179,22 @@ export function PublicSiteSettingsForm({
 
   function save(next: PublicSiteStudioDraft, onFail?: () => void) {
     setError(null);
+    setConflict(false);
     setFieldErrors({});
     const payload = mergeStudioToInput({ config, draft: next });
     startTransition(async () => {
-      const result = await savePublicSiteSettingsAction(payload);
+      const result = await savePublicSiteSettingsAction(payload, versionRef.current);
       if (!result.ok) {
         onFail?.();
         setError(result.error);
+        setConflict(result.conflict === true);
         const errors = result.fieldErrors ?? {};
         setFieldErrors(errors);
         const errorTab = firstErrorTab(errors);
         if (errorTab) goTo(errorTab);
       } else {
         initialSnapshot.current = JSON.stringify(payload);
+        versionRef.current = result.version;
         router.push(result.redirectTo);
         router.refresh();
       }
@@ -253,6 +259,14 @@ export function PublicSiteSettingsForm({
             <div className="settings-alerts">
               <p className="settings-alerts__item settings-alerts__item--error" role="alert">
                 {error}
+                {conflict ? (
+                  <>
+                    {" "}
+                    <button type="button" onClick={() => window.location.reload()}>
+                      {te("conflictReload")}
+                    </button>
+                  </>
+                ) : null}
               </p>
             </div>
           ) : null}
