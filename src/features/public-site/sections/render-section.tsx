@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
+import { isOptimizablePublicImageUrl } from "@/domain/public-site/media";
 import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import { safeNavHref } from "@/lib/security/html-escape";
 import type {
@@ -120,6 +121,7 @@ export function renderPublicSection(
                     sizes="(max-width: 768px) 100vw, 50vw"
                     className="pub-gallery__img"
                     loading="lazy"
+                    unoptimized={!isOptimizablePublicImageUrl(item.url)}
                   />
                   {caption ? <figcaption>{caption}</figcaption> : null}
                 </figure>

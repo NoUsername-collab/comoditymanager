@@ -494,9 +494,9 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"] .public-heade
   text-align: center;
 }
 
-/* Immersive: full-width bands that alternate (gallery and booking band stay edge to edge). */
-.pub-home--immersive .pub-home__immersive-body > :nth-child(even):not(:has(.pub-section--gallery-bleed, .pub-section--cta)),
-.pub-home--immersive .pub-home__immersive-body > .pub-section:nth-child(even) {
+/* Immersive: full-width bands that alternate (gallery and booking band stay edge to edge).
+ * Children are section wrappers plus the rooms and map sections; hidden sections render nothing. */
+.pub-home--immersive .pub-home__immersive-body > :nth-child(even):not(:has(.pub-section--gallery-bleed, .pub-section--cta)) {
   background: color-mix(in srgb, var(--pub-card) 70%, var(--pub-bg));
 }
 

@@ -102,3 +102,21 @@ export function validatePublicSiteUpload(args: {
   }
   return { ok: true, kind: args.kind, mime: detected.mime, ext: detected.ext };
 }
+
+/**
+ * Whether next/image may resize this URL: only Supabase Storage public objects,
+ * the hosts `images.remotePatterns` in next.config allows. A pasted link from
+ * elsewhere is shown as is, so it never breaks the page.
+ */
+export function isOptimizablePublicImageUrl(url: string): boolean {
+  try {
+    const { protocol, hostname, pathname } = new URL(url);
+    return (
+      protocol === "https:" &&
+      (hostname.endsWith(".supabase.co") || hostname.endsWith(".supabase.in")) &&
+      pathname.startsWith("/storage/v1/object/public/")
+    );
+  } catch {
+    return false;
+  }
+}

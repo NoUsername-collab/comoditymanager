@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   detectPublicSiteImage,
+  isOptimizablePublicImageUrl,
   publicSiteObjectPath,
   validatePublicSiteUpload,
 } from "@/domain/public-site/media";
@@ -82,5 +83,18 @@ describe("publicSiteObjectPath", () => {
     expect(() =>
       publicSiteObjectPath("../x", "hero", "22222222-2222-4222-8222-222222222222", "jpg"),
     ).toThrow();
+  });
+});
+
+describe("isOptimizablePublicImageUrl", () => {
+  it("accepts only Supabase Storage public objects", () => {
+    expect(
+      isOptimizablePublicImageUrl(
+        "https://abc.supabase.co/storage/v1/object/public/public-site-media/t/hero.jpg",
+      ),
+    ).toBe(true);
+    expect(isOptimizablePublicImageUrl("https://example.com/hero.jpg")).toBe(false);
+    expect(isOptimizablePublicImageUrl("https://abc.supabase.co/storage/v1/object/sign/x.jpg")).toBe(false);
+    expect(isOptimizablePublicImageUrl("not a url")).toBe(false);
   });
 });

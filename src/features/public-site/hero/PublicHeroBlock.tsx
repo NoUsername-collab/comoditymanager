@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { isOptimizablePublicImageUrl } from "@/domain/public-site/media";
 import { pickOwnLocalized, storedTitle } from "@/features/public-site/domain/localized";
-import { safeCssUrl, safeNavHref } from "@/lib/security/html-escape";
+import { safeNavHref } from "@/lib/security/html-escape";
 import type { PublicSiteConfig, PublicTemplateId } from "@/features/public-site/domain/types";
 import type { ReactNode } from "react";
 
@@ -30,6 +32,25 @@ function PreviewOrLink({
     <Link href={href} className={className}>
       {children}
     </Link>
+  );
+}
+
+/**
+ * The hero photo is the page's largest image: served resized for the screen and
+ * fetched first. Decorative, since the title beside it says what it shows.
+ */
+function HeroMedia({ url, sizes }: { url: string; sizes: string }) {
+  return (
+    <Image
+      src={url}
+      alt=""
+      fill
+      sizes={sizes}
+      loading="eager"
+      fetchPriority="high"
+      unoptimized={!isOptimizablePublicImageUrl(url)}
+      className="pub-hero__media"
+    />
   );
 }
 
@@ -83,11 +104,7 @@ export function PublicHeroBlock({
         </div>
         <div className="pub-hero__portrait">
           {hero.imageUrl ? (
-            <div
-              className="pub-hero__media"
-              style={{ backgroundImage: `url(${safeCssUrl(hero.imageUrl)})` }}
-              aria-hidden
-            />
+            <HeroMedia url={hero.imageUrl} sizes="(min-width: 900px) 34vw, 100vw" />
           ) : (
             <div className="pub-hero__poster" aria-hidden>
               <span>{config.displayName}</span>
@@ -119,11 +136,7 @@ export function PublicHeroBlock({
           .join(" ")}
       >
         {hero.imageUrl ? (
-          <div
-            className="pub-hero__media"
-            style={{ backgroundImage: `url(${safeCssUrl(hero.imageUrl)})` }}
-            aria-hidden
-          />
+          <HeroMedia url={hero.imageUrl} sizes="100vw" />
         ) : (
           <div className="pub-hero__glow" aria-hidden />
         )}
@@ -132,6 +145,7 @@ export function PublicHeroBlock({
           {badge ? <p className="pub-hero__badge">{badge}</p> : null}
           <h1 className="pub-hero__title">{title}</h1>
           {subtitle ? <p className="pub-hero__subtitle">{subtitle}</p> : null}
+          {tagline ? <p className="pub-hero__tagline">{tagline}</p> : null}
           {showMeta ? <p className="pub-hero__meta">{checkTimesLabel}</p> : null}
           {primaryBtn || secondaryBtn ? (
             <div className="pub-hero__actions">
@@ -156,11 +170,7 @@ export function PublicHeroBlock({
     >
       {hero.imageUrl ? (
         <figure className="pub-hero__photo">
-          <div
-            className="pub-hero__media"
-            style={{ backgroundImage: `url(${safeCssUrl(hero.imageUrl)})` }}
-            aria-hidden
-          />
+          <HeroMedia url={hero.imageUrl} sizes="(max-width: 74rem) 100vw, 72rem" />
         </figure>
       ) : (
         <div className="pub-hero__glow" aria-hidden />

@@ -79,8 +79,8 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-size: cover;
-  background-position: center;
+  object-fit: cover;
+  object-position: center;
 }
 
 .pub-hero__veil {
@@ -261,6 +261,8 @@
   max-width: 46rem;
   line-height: 1.7;
   color: var(--pub-fg);
+  /* Operators write plain text: their line breaks and blank lines are the paragraphs. */
+  white-space: pre-line;
 }
 
 .pub-section--intro .pub-section__body {
