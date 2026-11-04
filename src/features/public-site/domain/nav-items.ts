@@ -1,7 +1,7 @@
 import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 
-type PublicNavItem = {
+export type PublicNavItem = {
   key: "home" | "privacy" | "terms" | "book";
   href: string;
   label: string;

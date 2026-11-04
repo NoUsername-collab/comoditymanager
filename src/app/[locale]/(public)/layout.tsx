@@ -4,7 +4,6 @@ import { PublicFooter } from "@/features/public-site/ui/PublicFooter";
 import { PublicHeader } from "@/features/public-site/ui/PublicHeader";
 import { PublicLodgingJsonLd } from "@/features/public-site/ui/PublicLodgingJsonLd";
 import { PublicContactBar } from "@/features/public-site/contact/PublicContactBar";
-import { PublicSiteConfigProvider } from "@/features/public-site/PublicSiteConfigProvider";
 import { publicChromeFontStack } from "@/features/public-site/domain/chrome";
 import {
   publicThemeClassName,
@@ -53,7 +52,7 @@ export default async function PublicLayout({
   ) as CSSProperties;
 
   return (
-    <PublicSiteConfigProvider config={config}>
+    <>
       <PublicLodgingJsonLd config={config} locale={locale} />
       <MobileShell
         surface="public"
@@ -79,6 +78,6 @@ export default async function PublicLayout({
         ) : null}
         <PublicFooter config={config} />
       </MobileShell>
-    </PublicSiteConfigProvider>
+    </>
   );
 }

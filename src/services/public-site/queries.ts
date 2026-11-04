@@ -6,12 +6,9 @@ import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
-import {
-  EMPTY_PENSION_CONTACT,
-  type PensionContact,
-} from "@/domain/settings/pension-identity";
-import { getPensionSettings } from "@/services/pension-settings";
-import { getPensionIdentity } from "@/services/pension-identity";
+import type { PensionContact } from "@/domain/settings/pension-identity";
+import { getPensionSettingsForTenant } from "@/services/pension-settings";
+import { getPensionIdentity, getPensionIdentityForTenant } from "@/services/pension-identity";
 import { resolvePensionStayTimes } from "@/lib/constants";
 import { finalizePublicSiteConfig } from "@/domain/public-site/resolve-config";
 import { loadPublicPlace } from "./place";
@@ -24,16 +21,18 @@ import {
 async function getPublicSiteConfigUncached(
   tenantId: string
 ): Promise<PublicSiteConfig> {
+  // Tenant passed explicitly: this runs inside unstable_cache, without request headers.
+  // Errors propagate: a failed read must not show another business's defaults.
   const [pension, identity, stayOffers, place] = await Promise.all([
-    getPensionSettings().catch(() => null),
-    getPensionIdentity().catch(() => null),
+    getPensionSettingsForTenant(tenantId),
+    getPensionIdentityForTenant(tenantId),
     loadPublicStayOffers(tenantId),
     loadPublicPlace(tenantId),
   ]);
   const copy = seedPublicHomeCopy();
 
-  const identityLogo = identity ? identity.logoUrl : undefined;
-  const displayName = identity?.displayName ?? pension?.display_name ?? "Casa Emil";
+  const identityLogo = identity.logoUrl;
+  const displayName = identity.displayName;
   const { checkIn: checkInTime, checkOut: checkOutTime } =
     resolvePensionStayTimes(pension);
   const fallback = buildDefaultPublicSiteConfig({
@@ -41,7 +40,7 @@ async function getPublicSiteConfigUncached(
     checkInTime,
     checkOutTime,
     copy,
-    contactEmail: identity?.contact.email ?? undefined,
+    contactEmail: identity.contact.email ?? undefined,
   });
   fallback.stayOffers = stayOffers;
   fallback.place = place;
@@ -72,14 +71,7 @@ async function getPublicSiteConfigUncached(
 
   const settings = mapPublicSiteSettingsRow(settingsResult.data);
   const sections = (sectionsResult.data ?? []).map(mapPublicSiteSectionRow);
-  const primaryContact = identity?.contact ?? {
-    email: null,
-    phone: null,
-    whatsapp: null,
-    telegram: null,
-    facebook: null,
-    instagram: null,
-  };
+  const primaryContact = identity.contact;
 
   return finalizePublicSiteConfig(settings, sections, {
     displayName,
@@ -120,6 +112,9 @@ const getCachedPublicSiteConfig = (tenantId: string) =>
         tenantTag(tenantId, CACHE_TAGS.rooms),
         CACHE_TAGS.roomCatalog,
         tenantTag(tenantId, CACHE_TAGS.roomCatalog),
+        // Name, logo, contact and check-in times come from the pension settings.
+        CACHE_TAGS.pensionSettings,
+        tenantTag(tenantId, CACHE_TAGS.pensionSettings),
       ],
       revalidate: 120,
     }
@@ -149,12 +144,9 @@ export const getPublicSiteAdminBundle = cache(
   async (): Promise<PublicSiteAdminBundle> => {
     const [config, identity] = await Promise.all([
       loadPublicSiteConfig(),
-      getPensionIdentity().catch(() => null),
+      getPensionIdentity(),
     ]);
 
-    return {
-      config,
-      primaryContact: identity?.contact ?? EMPTY_PENSION_CONTACT,
-    };
+    return { config, primaryContact: identity.contact };
   },
 );

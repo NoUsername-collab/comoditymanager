@@ -1,21 +1,18 @@
 "use client";
 
 import { Link, usePathname } from "@/i18n/navigation";
-import { useOptionalPublicSiteConfig } from "@/features/public-site/PublicSiteConfigProvider";
-import { resolvePublicNavItems } from "@/features/public-site/domain/nav-items";
-import { useLocale, useTranslations } from "next-intl";
+import type { PublicNavItem } from "@/features/public-site/domain/nav-items";
+import { useTranslations } from "next-intl";
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
   return pathname.startsWith(href);
 }
 
-export function PublicNav() {
+/** Links come resolved from the server, so the site config never reaches the browser. */
+export function PublicNav({ items }: { items: PublicNavItem[] }) {
   const pathname = usePathname();
-  const locale = useLocale();
   const t = useTranslations("public.nav");
-  const config = useOptionalPublicSiteConfig();
-  const items = resolvePublicNavItems(config, locale);
 
   return (
     <nav className="public-header__nav" aria-label={t("mainAria")}>

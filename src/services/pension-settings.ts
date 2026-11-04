@@ -93,6 +93,14 @@ const loadPensionSettings = cache((tenantId: string) =>
   getCachedPensionSettings(tenantId)()
 );
 
+/**
+ * For callers that already know the tenant, e.g. inside another `unstable_cache`,
+ * where the request headers that identify the tenant are not available.
+ */
+export function getPensionSettingsForTenant(tenantId: string): Promise<PensionSettings | null> {
+  return loadPensionSettings(tenantId);
+}
+
 /** Per-request dedupe + 5min cross-request cache (busted via pensionSettings tag). */
 export async function getPensionSettings(): Promise<PensionSettings | null> {
   const tenantId = await resolveTenantIdForData();

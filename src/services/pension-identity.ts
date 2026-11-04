@@ -72,6 +72,11 @@ const loadPensionIdentity = cache((tenantId: string) =>
   getCachedPensionIdentity(tenantId)(),
 );
 
+/** Tenant passed in: safe inside another `unstable_cache`, where headers are unavailable. */
+export function getPensionIdentityForTenant(tenantId: string): Promise<PensionIdentity> {
+  return loadPensionIdentity(tenantId);
+}
+
 export async function getPensionIdentity(): Promise<PensionIdentity> {
   const tenantId = await resolveTenantIdForData();
   return loadPensionIdentity(tenantId);

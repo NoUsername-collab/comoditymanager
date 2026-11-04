@@ -4,12 +4,14 @@ import { StaffLogoEntry } from "./StaffLogoEntry";
 import { PublicMobileMenu } from "@/layout/components/PublicMobileMenu";
 import { HeaderLocaleSwitch } from "@/layout/components/HeaderLocaleSwitch";
 import { pickOwnLocalized } from "@/features/public-site/domain/localized";
+import { resolvePublicNavItems } from "@/features/public-site/domain/nav-items";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import { getLocale } from "next-intl/server";
 
 export async function PublicHeader({ config }: { config: PublicSiteConfig }) {
   const locale = await getLocale();
   const subtitle = pickOwnLocalized(config.chrome.headerSubtitle, locale);
+  const navItems = resolvePublicNavItems(config, locale);
 
   return (
     <header className="public-header">
@@ -22,8 +24,8 @@ export async function PublicHeader({ config }: { config: PublicSiteConfig }) {
           </div>
         </StaffLogoEntry>
         <div className="flex items-center gap-2 sm:gap-3">
-          <PublicMobileMenu />
-          <PublicNav />
+          <PublicMobileMenu items={navItems} />
+          <PublicNav items={navItems} />
           <HeaderLocaleSwitch slot="nav" />
         </div>
       </div>
