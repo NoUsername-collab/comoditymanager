@@ -243,6 +243,12 @@ const publicSiteSectionInputSchema = z.discriminatedUnion("sectionType", [
   ),
 ]);
 
+const untranslatedTextsSchema = z.array(z.string().max(5000)).max(300).optional();
+
+const publicUntranslatedCopySchema = z
+  .object({ ro: untranslatedTextsSchema, en: untranslatedTextsSchema, bg: untranslatedTextsSchema })
+  .strip();
+
 const publicSiteSettingsInputSchema = z
   .object({
     templateId: publicTemplateIdSchema,
@@ -257,6 +263,7 @@ const publicSiteSettingsInputSchema = z
     bookingNotice: publicBookingNoticeSchema,
     chrome: publicChromeConfigSchema.default({}),
     pages: publicPagesConfigSchema.default({}),
+    untranslatedCopy: publicUntranslatedCopySchema.default({}),
     sections: z.array(publicSiteSectionInputSchema).max(50),
   })
   .strict();

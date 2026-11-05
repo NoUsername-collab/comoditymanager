@@ -14,8 +14,11 @@ import {
 } from "@/features/public-site/editor/model/editor-model";
 import {
   buildPublicSiteStudioDraft,
+  mergeStudioToInput,
   patchStudioCopy,
 } from "@/features/public-site/editor/model/studio-draft";
+import { buildPublicSiteConfigFromInput } from "@/domain/public-site/resolve-config";
+import { EMPTY_PENSION_CONTACT } from "@/domain/settings/pension-identity";
 
 const config: PublicSiteConfig = {
   id: "ps-1",
@@ -36,6 +39,7 @@ const config: PublicSiteConfig = {
   bookingNotice: { enabled: true, title: {}, items: [], footer: {} },
   chrome: {},
   pages: {},
+  untranslatedCopy: {},
   sections: [
     {
       id: "intro-1",
@@ -106,6 +110,26 @@ describe("public site editor model", () => {
 
     draft = patchStudioCopy(draft, { heroSubtitle: "Quiet in the mountains" });
     expect(studioLocaleProgress(draft).en).toBeGreaterThan(before);
+  });
+
+  it("still counts copied text as untranslated after a save and reload", () => {
+    let draft = buildPublicSiteStudioDraft(config, "en");
+    const before = studioLocaleProgress(draft).en;
+    draft = fillStudioLocaleFrom(draft, "ro", "en");
+    const input = mergeStudioToInput({ config, draft });
+    expect(input.untranslatedCopy.en).toContain("Text RO");
+
+    const reloaded = buildPublicSiteStudioDraft(
+      buildPublicSiteConfigFromInput(config, input, EMPTY_PENSION_CONTACT),
+      "en",
+    );
+    expect(studioLocaleProgress(reloaded).en).toBe(before);
+  });
+
+  it("forgets a copied text once it is translated", () => {
+    let draft = fillStudioLocaleFrom(buildPublicSiteStudioDraft(config, "en"), "ro", "en");
+    draft = patchStudioCopy(draft, { introLead: "Text EN" });
+    expect(mergeStudioToInput({ config, draft }).untranslatedCopy.en ?? []).not.toContain("Text RO");
   });
 
   it("copies homepage text only, never legal pages or SEO", () => {

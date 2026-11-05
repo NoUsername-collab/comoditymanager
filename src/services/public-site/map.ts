@@ -14,7 +14,9 @@ import type {
   PublicSiteSettingsRow,
   PublicTemplateId,
   PublicThemeId,
+  PublicUntranslatedCopy,
 } from "@/features/public-site/domain/types";
+import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 
 function parseTemplateId(raw: unknown): PublicTemplateId {
   if (raw === "editorial" || raw === "immersive" || raw === "classic") {
@@ -50,6 +52,18 @@ function parseSectionType(raw: unknown): PublicSectionType {
   return "text";
 }
 
+function parseUntranslatedCopy(raw: unknown): PublicUntranslatedCopy {
+  if (!raw || typeof raw !== "object") return {};
+  const out: PublicUntranslatedCopy = {};
+  for (const locale of PUBLIC_LOCALES) {
+    const texts = (raw as Record<string, unknown>)[locale];
+    if (Array.isArray(texts)) {
+      out[locale] = texts.filter((text): text is string => typeof text === "string");
+    }
+  }
+  return out;
+}
+
 export function mapPublicSiteSettingsRow(row: {
   id: string;
   version?: number | null;
@@ -65,6 +79,7 @@ export function mapPublicSiteSettingsRow(row: {
   booking_notice?: unknown;
   chrome?: unknown;
   pages?: unknown;
+  untranslated_copy?: unknown;
 }): PublicSiteSettingsRow {
   return {
     id: row.id,
@@ -83,6 +98,7 @@ export function mapPublicSiteSettingsRow(row: {
     ),
     chrome: normalizePublicChrome(row.chrome),
     pages: normalizePublicPages(row.pages),
+    untranslatedCopy: parseUntranslatedCopy(row.untranslated_copy),
   };
 }
 

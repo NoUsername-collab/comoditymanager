@@ -15,6 +15,7 @@ type AtomicRpcArgs = {
   p_booking_notice: PublicSiteSettingsInputParsed["bookingNotice"];
   p_chrome: PublicSiteSettingsInputParsed["chrome"];
   p_pages: PublicSiteSettingsInputParsed["pages"];
+  p_untranslated_copy: PublicSiteSettingsInputParsed["untranslatedCopy"];
   p_sections: Array<{
     id: string | null;
     section_type: string;
@@ -65,6 +66,7 @@ export async function upsertPublicSiteSettingsImpl(
     p_booking_notice: input.bookingNotice,
     p_chrome: input.chrome ?? {},
     p_pages: input.pages ?? {},
+    p_untranslated_copy: input.untranslatedCopy ?? {},
     p_sections: sectionsPayload,
     p_expected_version: expectedVersion,
   };

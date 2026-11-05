@@ -35,6 +35,7 @@ const config: PublicSiteConfig = {
   },
   chrome: {},
   pages: {},
+  untranslatedCopy: {},
   sections: [
     {
       id: "intro-1",

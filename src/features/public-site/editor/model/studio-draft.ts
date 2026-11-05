@@ -14,6 +14,7 @@ import type {
   PublicLocale,
   PublicSiteConfig,
   PublicSiteSettingsInput,
+  PublicUntranslatedCopy,
 } from "@/features/public-site/domain/types";
 import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 import {
@@ -24,6 +25,7 @@ import {
   SECTION_COPY,
   SEO_COPY,
   SEO_FALLBACK,
+  HOMEPAGE_COPY_KEYS,
   writeCopyGroup,
   type FlatCopy,
 } from "@/features/public-site/editor/model/copy-fields";
@@ -90,8 +92,12 @@ export type PublicSiteStudioDraft = {
   textVisible: Record<string, boolean>;
   sectionOrder: string[];
   copies: Record<PublicLocale, LocaleCopy>;
-  /** Per language: copy path → text pasted in from another language, not yet translated. */
-  copiedText: Partial<Record<PublicLocale, Record<string, string>>>;
+  /**
+   * Per language: texts pasted in from another language and not translated yet.
+   * Kept by value, not by field, because highlight and step rows are renumbered
+   * on save; saved with the site so it survives a reload.
+   */
+  copiedText: PublicUntranslatedCopy;
 };
 
 let galleryDraftSeq = 0;
@@ -274,7 +280,7 @@ export function buildPublicSiteStudioDraft(
     textVisible,
     sectionOrder: order,
     copies,
-    copiedText: {},
+    copiedText: config.untranslatedCopy,
   };
 }
 
@@ -330,6 +336,30 @@ function mapFromLocales(
     values[locale] = pick(copies[locale]);
   }
   return values;
+}
+
+/** Every text of one language's homepage copy, rows and captions included. */
+export function homepageTexts(copy: LocaleCopy): string[] {
+  return [
+    ...HOMEPAGE_COPY_KEYS.map((key) => copy[key]),
+    ...copy.benefitItems.flatMap((item) => [item.title, item.text]),
+    ...copy.stepItems.flatMap((item) => [item.title, item.text]),
+    ...copy.textItems.flatMap((item) => [item.title, item.lead, item.body]),
+    ...Object.values(copy.galleryCaptions),
+  ];
+}
+
+/** Copied texts still on the page as they were pasted; edited or removed ones drop out. */
+function stillUntranslated(draft: PublicSiteStudioDraft): PublicUntranslatedCopy {
+  const out: PublicUntranslatedCopy = {};
+  for (const locale of PUBLIC_LOCALES) {
+    const copied = draft.copiedText[locale];
+    if (!copied?.length) continue;
+    const present = new Set(homepageTexts(draft.copies[locale]));
+    const kept = copied.filter((text) => present.has(text));
+    if (kept.length > 0) out[locale] = kept;
+  }
+  return out;
 }
 
 export function mergeStudioToInput(args: {
@@ -504,6 +534,7 @@ export function mergeStudioToInput(args: {
   ) as Record<PublicLocale, BookingNoticeDraft>;
 
   return {
+    untranslatedCopy: stillUntranslated(draft),
     templateId: draft.templateId,
     themeId: draft.themeId,
     published: draft.published,
@@ -623,7 +654,9 @@ export function removeStudioTextSection(
       textItems: copies[locale].textItems.filter((item) => item.id !== id),
     };
   }
-  const { [id]: _removed, ...textVisible } = draft.textVisible;
+  const textVisible = Object.fromEntries(
+    Object.entries(draft.textVisible).filter(([key]) => key !== id),
+  );
   return {
     ...draft,
     copies,

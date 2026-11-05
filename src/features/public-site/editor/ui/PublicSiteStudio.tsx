@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useEffectEvent, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -80,20 +80,23 @@ export function PublicSiteStudio({
     }, reduceMotion ? 0 : LEAVE_MS);
   }
 
-  useEffect(() => {
-    function onKey(event: KeyboardEvent) {
-      if (event.key !== "Escape" || event.defaultPrevented || event.isComposing) return;
-      // Escape in a field closes its own popup or cancels typing; it never leaves the studio.
-      if (isEditableTarget(event.target)) return;
-      if (window.matchMedia("(max-width: 1099px)").matches && pane === "preview") {
-        setPane("edit");
-        return;
-      }
-      leaveStudio();
+  // Reads the current pane on every key without re-subscribing.
+  const onKey = useEffectEvent((event: KeyboardEvent) => {
+    if (event.key !== "Escape" || event.defaultPrevented || event.isComposing) return;
+    // Escape in a field closes its own popup or cancels typing; it never leaves the studio.
+    if (isEditableTarget(event.target)) return;
+    if (window.matchMedia("(max-width: 1099px)").matches && pane === "preview") {
+      setPane("edit");
+      return;
     }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [pane, tSettings, router]);
+    leaveStudio();
+  });
+
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => onKey(event);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   return (
     <div

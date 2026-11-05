@@ -25,6 +25,7 @@ const baseRow = {
   },
   chrome: {},
   pages: {},
+  untranslatedCopy: {},
 };
 
 const fallbackSections = [
@@ -183,6 +184,7 @@ describe("buildPublicSiteConfigFromInput", () => {
         },
         chrome: {},
         pages: {},
+        untranslatedCopy: {},
         sections: [{ sectionType: "intro", sortOrder: 10, visible: false, payload: {} }],
       },
       {

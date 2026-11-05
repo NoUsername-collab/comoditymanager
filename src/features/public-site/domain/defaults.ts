@@ -183,6 +183,7 @@ export function buildDefaultPublicSiteConfig(args: {
     bookingNotice: defaultBookingNotice(),
     chrome: { ...defaultPublicChrome(), ...args.chrome },
     pages: { ...defaultPublicPages(), ...args.pages },
+    untranslatedCopy: {},
     sections: assignTemplateSectionSort(
       buildDefaultPublicSections(args.copy),
       args.templateId ?? "classic",

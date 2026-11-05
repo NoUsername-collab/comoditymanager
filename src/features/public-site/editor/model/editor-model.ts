@@ -86,10 +86,10 @@ export function studioLocaleProgress(
 ): Record<PublicLocale, number> {
   const progress = {} as Record<PublicLocale, number>;
   for (const locale of PUBLIC_LOCALES) {
-    const copied = draft.copiedText[locale] ?? {};
+    const copied = new Set(draft.copiedText[locale] ?? []);
     const fields = visibleCopyFields(draft, draft.copies[locale]);
     const filled = fields.filter(
-      (field) => field.value.trim().length > 0 && copied[field.path] !== field.value,
+      (field) => field.value.trim().length > 0 && !copied.has(field.value),
     ).length;
     progress[locale] = fields.length === 0 ? 100 : Math.round((filled / fields.length) * 100);
   }
@@ -111,47 +111,47 @@ export function fillStudioLocaleFrom(
   if (from === to) return draft;
   const source = draft.copies[from];
   const target = draft.copies[to];
-  const copied = { ...draft.copiedText[to] };
+  const copied = new Set(draft.copiedText[to] ?? []);
   let changed = false;
 
-  function fill(path: string, current: string, value: string): string {
+  function fill(current: string, value: string): string {
     if (current.trim() || !value.trim()) return current;
-    copied[path] = value;
+    copied.add(value);
     changed = true;
     return value;
   }
 
   const next: LocaleCopy = { ...target };
-  for (const key of HOMEPAGE_COPY_KEYS) next[key] = fill(key, target[key], source[key]);
+  for (const key of HOMEPAGE_COPY_KEYS) next[key] = fill(target[key], source[key]);
 
   next.benefitItems = target.benefitItems.map((item) => {
     const match = source.benefitItems.find((row) => row.id === item.id);
     return {
       ...item,
-      title: fill(`benefitItems.${item.id}.title`, item.title, match?.title ?? ""),
-      text: fill(`benefitItems.${item.id}.text`, item.text, match?.text ?? ""),
+      title: fill(item.title, match?.title ?? ""),
+      text: fill(item.text, match?.text ?? ""),
     };
   });
   next.stepItems = target.stepItems.map((item) => {
     const match = source.stepItems.find((row) => row.id === item.id);
     return {
       ...item,
-      title: fill(`stepItems.${item.id}.title`, item.title, match?.title ?? ""),
-      text: fill(`stepItems.${item.id}.text`, item.text, match?.text ?? ""),
+      title: fill(item.title, match?.title ?? ""),
+      text: fill(item.text, match?.text ?? ""),
     };
   });
   next.textItems = target.textItems.map((item) => {
     const match = source.textItems.find((row) => row.id === item.id);
     return {
       ...item,
-      title: fill(`textItems.${item.id}.title`, item.title, match?.title ?? ""),
-      lead: fill(`textItems.${item.id}.lead`, item.lead, match?.lead ?? ""),
-      body: fill(`textItems.${item.id}.body`, item.body, match?.body ?? ""),
+      title: fill(item.title, match?.title ?? ""),
+      lead: fill(item.lead, match?.lead ?? ""),
+      body: fill(item.body, match?.body ?? ""),
     };
   });
   const captions = { ...target.galleryCaptions };
   for (const [id, caption] of Object.entries(source.galleryCaptions)) {
-    captions[id] = fill(`galleryCaptions.${id}`, captions[id] ?? "", caption);
+    captions[id] = fill(captions[id] ?? "", caption);
   }
   next.galleryCaptions = captions;
 
@@ -159,7 +159,7 @@ export function fillStudioLocaleFrom(
   return {
     ...draft,
     copies: { ...draft.copies, [to]: next },
-    copiedText: { ...draft.copiedText, [to]: copied },
+    copiedText: { ...draft.copiedText, [to]: [...copied] },
   };
 }
 

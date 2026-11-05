@@ -198,7 +198,14 @@ export type PublicSiteSettingsRow = {
   bookingNotice: PublicBookingNoticeConfig;
   chrome: PublicChromeConfig;
   pages: PublicPagesConfig;
+  untranslatedCopy: PublicUntranslatedCopy;
 };
+
+/**
+ * Per language: texts the editor copied in from another language that the
+ * operator has not translated yet. Editor bookkeeping only; visitors never see it.
+ */
+export type PublicUntranslatedCopy = Partial<Record<PublicLocale, string[]>>;
 
 export type PublicStayOffer = {
   id: string;
@@ -237,6 +244,7 @@ export type PublicSiteSettingsInput = {
   bookingNotice: PublicBookingNoticeConfig;
   chrome: PublicChromeConfig;
   pages: PublicPagesConfig;
+  untranslatedCopy: PublicUntranslatedCopy;
   /** `id` is kept for saved sections and new text sections, so rows are updated in place. */
   sections: PublicSiteSectionInput[];
 };

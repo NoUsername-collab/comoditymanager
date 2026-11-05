@@ -95,6 +95,7 @@ export function buildPublicSiteConfigFromInput(
       bookingNotice: input.bookingNotice,
       chrome: input.chrome,
       pages: input.pages,
+      untranslatedCopy: input.untranslatedCopy,
     },
     sections,
     {
