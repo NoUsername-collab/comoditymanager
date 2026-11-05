@@ -246,7 +246,8 @@
   position: relative;
 }
 
-[data-pub-template="immersive"] .public-header {
+/* Only over the homepage photo; the calendar and legal pages keep a normal header. */
+[data-pub-template="immersive"]:has(.pub-home--immersive) .public-header {
   position: absolute;
   inset: 0 0 auto;
   z-index: 40;
@@ -301,7 +302,7 @@
   color: var(--pub-fg);
 }
 
-html[data-layout-chrome="compact"] [data-pub-template="immersive"] .public-header {
+html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home--immersive) .public-header {
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--pub-bg) 70%, transparent) 0%,

@@ -4,6 +4,13 @@ import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import { useTranslations } from "next-intl";
 
+/** "WhatsApp 0730 …", the bare address for email, the label alone for social pages. */
+function footerContactText(link: { id: string; label: string; detail?: string | null }): string {
+  if (!link.detail || link.detail === link.label) return link.label;
+  if (link.id === "email") return link.detail;
+  return `${link.label} ${link.detail}`;
+}
+
 /**
  * The site footer, live and in the settings preview. `locale` picks the
  * operator's copy; `preview` draws links as plain text so nothing navigates.
@@ -71,19 +78,20 @@ export function PublicFooter({
             <div>
               <p className="public-footer__label">{t("contact")}</p>
               <div className="public-footer__contact-links">
-                {contactLinks.map((link) =>
-                  preview ? (
-                    <span key={link.id}>{link.label}</span>
+                {contactLinks.map((link) => {
+                  const text = footerContactText(link);
+                  return preview ? (
+                    <span key={link.id}>{text}</span>
                   ) : (
                     <a
                       key={link.id}
                       href={link.href}
                       {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                     >
-                      {link.label}
+                      {text}
                     </a>
-                  ),
-                )}
+                  );
+                })}
               </div>
             </div>
           ) : null}

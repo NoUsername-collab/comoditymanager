@@ -1741,6 +1741,8 @@
           "heroImageHint": "Your best photo of the property. JPEG, PNG or WebP, up to 5 MB.",
           "heroTitle": "Big title",
           "heroTitleHint": "Your property name or a short phrase. Also used in Google.",
+          "heroTitleNotName": "The header, the footer and the other pages' titles use the name “{name}”.",
+          "heroTitleNameLink": "Change the property name",
           "heroSubtitle": "Short description",
           "heroSubtitleHint": "One sentence about what makes you special.",
           "heroCtaPrimary": "Button text",

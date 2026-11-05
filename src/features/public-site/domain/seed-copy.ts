@@ -86,14 +86,20 @@ function privacyBody(m: PrivacyMessages): string {
   ].join("\n\n");
 }
 
+const UNPUBLISHED = { en: en.public.unpublished, ro: ro.public.unpublished, bg: bg.public.unpublished };
+
 /**
- * Legal pages a new site starts with. The terms body stays empty: the page then
- * shows the cancellation policy built from the booking rules.
+ * Page copy a new site starts with: the "coming soon" page and the legal pages.
+ * The terms body stays empty: the page then shows the cancellation policy built
+ * from the booking rules.
  */
-export function seedPublicLegalPages() {
+export function seedPublicPages() {
+  const soon = (build: (m: typeof en.public.unpublished) => string) => triadOf(UNPUBLISHED, build);
   const privacy = (build: (m: PrivacyMessages) => string) => triadOf(PRIVACY, build);
   const terms = (build: (m: TermsMessages) => string) => triadOf(TERMS, build);
   return {
+    comingSoonTitle: soon((m) => m.title),
+    comingSoonLead: soon((m) => m.lead),
     privacyTitle: privacy((m) => m.title),
     privacyLead: privacy((m) => m.lead),
     privacyBody: privacy(privacyBody),

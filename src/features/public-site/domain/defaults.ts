@@ -155,7 +155,8 @@ export function buildDefaultPublicSiteConfig(args: {
     version: null,
     templateId: args.templateId ?? "classic",
     themeId: args.themeId ?? "noir",
-    published: true,
+    // Not live until the operator publishes it (onboarding counts it as not set up).
+    published: false,
     bookingEnabled: true,
     bookingNavPosition: "nav",
     usePrimaryContact: true,

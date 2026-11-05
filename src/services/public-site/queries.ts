@@ -4,7 +4,7 @@ import { buildDefaultPublicSiteConfig } from "@/features/public-site/domain/defa
 import {
   seedPublicChromeCopy,
   seedPublicHomeCopy,
-  seedPublicLegalPages,
+  seedPublicPages,
 } from "@/features/public-site/domain/seed-copy";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
@@ -46,7 +46,7 @@ async function getPublicSiteConfigUncached(
     copy,
     contactEmail: identity.contact.email ?? undefined,
     chrome: seedPublicChromeCopy(),
-    pages: seedPublicLegalPages(),
+    pages: seedPublicPages(),
   });
   fallback.stayOffers = stayOffers;
   fallback.place = place;

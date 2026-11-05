@@ -58,6 +58,14 @@ export function HeroEditor() {
         hint={te("heroTitleHint")}
         error={fieldError("hero.title")}
       />
+      {copy.heroTitle.trim() && copy.heroTitle.trim() !== config.displayName ? (
+        <SettingsFieldHint className="admin-settings-fields__full block">
+          {te("heroTitleNotName", { name: config.displayName })}{" "}
+          <Link href="/admin/settings/identity" className="underline">
+            {te("heroTitleNameLink")}
+          </Link>
+        </SettingsFieldHint>
+      ) : null}
       <EditorField
         full
         rows={2}

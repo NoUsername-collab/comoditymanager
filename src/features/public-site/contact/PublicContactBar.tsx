@@ -38,18 +38,43 @@ export function buildPublicContactLinks(
       `https://t.me/${telegramRaw.replace(/^@/, "")}`
     : null;
 
+  // `detail` is what a visitor would copy: the address, number or handle.
   return [
     email
-      ? { id: "email", label: labels.email ?? "Email", href: `mailto:${email}`, external: false }
+      ? {
+          id: "email",
+          label: labels.email ?? "Email",
+          detail: email,
+          href: `mailto:${email}`,
+          external: false,
+        }
       : null,
     phone
-      ? { id: "phone", label: phone, href: `tel:${phone.replace(/\s/g, "")}`, external: false }
+      ? {
+          id: "phone",
+          label: phone,
+          detail: phone,
+          href: `tel:${phone.replace(/\s/g, "")}`,
+          external: false,
+        }
       : null,
     whatsapp
-      ? { id: "whatsapp", label: labels.whatsapp ?? "WhatsApp", href: whatsapp, external: true }
+      ? {
+          id: "whatsapp",
+          label: labels.whatsapp ?? "WhatsApp",
+          detail: whatsappRaw,
+          href: whatsapp,
+          external: true,
+        }
       : null,
     telegram
-      ? { id: "telegram", label: labels.telegram ?? "Telegram", href: telegram, external: true }
+      ? {
+          id: "telegram",
+          label: labels.telegram ?? "Telegram",
+          detail: /^https?:\/\//i.test(telegramRaw ?? "") ? null : telegramRaw,
+          href: telegram,
+          external: true,
+        }
       : null,
     facebook
       ? { id: "facebook", label: labels.facebook ?? "Facebook", href: facebook, external: true }
@@ -60,6 +85,7 @@ export function buildPublicContactLinks(
   ].filter(Boolean) as {
     id: string;
     label: string;
+    detail?: string | null;
     href: string;
     external: boolean;
   }[];

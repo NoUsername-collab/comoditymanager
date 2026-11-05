@@ -1726,6 +1726,8 @@
           "heroImageHint": "Cea mai frumoasă poză a pensiunii. JPEG, PNG sau WebP, maxim 5 MB.",
           "heroTitle": "Titlul mare",
           "heroTitleHint": "Numele pensiunii sau o frază scurtă. Apare și în Google.",
+          "heroTitleNotName": "Antetul, subsolul și titlul celorlalte pagini folosesc numele „{name}”.",
+          "heroTitleNameLink": "Schimbă numele pensiunii",
           "heroSubtitle": "Descriere scurtă",
           "heroSubtitleHint": "O propoziție despre ce vă face speciali.",
           "heroCtaPrimary": "Textul butonului",
