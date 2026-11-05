@@ -1,12 +1,20 @@
-import type { ReactNode } from "react";
-
-export function publicLegalEmailNode(email: string | null): ReactNode {
-  if (!email) return null;
-  return <a href={`mailto:${email}`}>{email}</a>;
+/** Fills `{name}` and `{email}` in operator legal text with the current contact. */
+export function fillLegalPlaceholders(
+  text: string,
+  values: { name: string; email: string | null | undefined },
+): string {
+  const email = values.email?.trim() || values.name;
+  return text.replaceAll("{name}", values.name).replaceAll("{email}", email);
 }
 
-export function PublicLegalCopy({ text }: { text: string }) {
-  const blocks = text
+export function PublicLegalCopy({
+  text,
+  values,
+}: {
+  text: string;
+  values: { name: string; email: string | null | undefined };
+}) {
+  const blocks = fillLegalPlaceholders(text, values)
     .split(/\n{2,}/)
     .map((block) => block.trim())
     .filter(Boolean);

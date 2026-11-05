@@ -76,6 +76,8 @@ const nextConfig: NextConfig = {
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in",
             "font-src 'self' data:",
+            // The public site's "where we are" map.
+            "frame-src https://www.openstreetmap.org",
             "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co https://*.sentry.io https://vercel.live",
             "frame-ancestors 'none'",
             "base-uri 'self'",

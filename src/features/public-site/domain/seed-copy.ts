@@ -45,3 +45,59 @@ export function seedPublicHomeCopy() {
     galleryTitle: triad((h) => h.galleryTitle),
   };
 }
+
+type NavMessages = typeof en.public.nav;
+type PrivacyMessages = typeof en.public.privacy;
+type TermsMessages = typeof en.public.terms;
+
+function triadOf<M>(sections: { en: M; ro: M; bg: M }, build: (section: M) => string): LocalizedText {
+  return localizedFromTriad({
+    en: build(sections.en),
+    ro: build(sections.ro),
+    bg: build(sections.bg),
+  });
+}
+
+const NAV = { en: en.public.nav, ro: ro.public.nav, bg: bg.public.nav };
+const PRIVACY = { en: en.public.privacy, ro: ro.public.privacy, bg: bg.public.privacy };
+const TERMS = { en: en.public.terms, ro: ro.public.terms, bg: bg.public.terms };
+
+const nav = (build: (m: NavMessages) => string) => triadOf(NAV, build);
+
+/** Menu labels a new site starts with; an empty label hides its link. */
+export function seedPublicChromeCopy() {
+  return {
+    navHome: nav((m) => m.home),
+    navPrivacy: nav((m) => m.gdpr),
+    navTerms: nav((m) => m.terms),
+    navBook: nav((m) => m.book),
+  };
+}
+
+/** Plain-text privacy policy; `{email}` and `{name}` are filled in when the page renders. */
+function privacyBody(m: PrivacyMessages): string {
+  return [
+    m.intro,
+    `${m.collectTitle}\n• ${m.collect1}\n• ${m.collect2}\n• ${m.collect3}`,
+    `${m.useTitle}\n${m.useBody}`,
+    `${m.legalTitle}\n${m.legalBody}`,
+    `${m.retentionTitle}\n${m.retentionBody}`,
+    `${m.rightsTitle}\n${m.rightsBody}`,
+  ].join("\n\n");
+}
+
+/**
+ * Legal pages a new site starts with. The terms body stays empty: the page then
+ * shows the cancellation policy built from the booking rules.
+ */
+export function seedPublicLegalPages() {
+  const privacy = (build: (m: PrivacyMessages) => string) => triadOf(PRIVACY, build);
+  const terms = (build: (m: TermsMessages) => string) => triadOf(TERMS, build);
+  return {
+    privacyTitle: privacy((m) => m.title),
+    privacyLead: privacy((m) => m.lead),
+    privacyBody: privacy(privacyBody),
+    termsTitle: terms((m) => m.title),
+    termsLead: terms((m) => m.lead),
+  };
+}

@@ -1,7 +1,11 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { buildDefaultPublicSiteConfig } from "@/features/public-site/domain/defaults";
-import { seedPublicHomeCopy } from "@/features/public-site/domain/seed-copy";
+import {
+  seedPublicChromeCopy,
+  seedPublicHomeCopy,
+  seedPublicLegalPages,
+} from "@/features/public-site/domain/seed-copy";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
@@ -41,6 +45,8 @@ async function getPublicSiteConfigUncached(
     checkOutTime,
     copy,
     contactEmail: identity.contact.email ?? undefined,
+    chrome: seedPublicChromeCopy(),
+    pages: seedPublicLegalPages(),
   });
   fallback.stayOffers = stayOffers;
   fallback.place = place;

@@ -48,7 +48,10 @@ export default async function PrivacyPage() {
     >
       {customBody ? (
         <div className="public-prose">
-          <PublicLegalCopy text={customBody} />
+          <PublicLegalCopy
+            text={customBody}
+            values={{ name: config.displayName, email: config.contact.email }}
+          />
         </div>
       ) : null}
     </PublicPageShell>
