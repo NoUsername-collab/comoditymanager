@@ -52,6 +52,8 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "8mb",
     },
   },
+  // Browsers ask for /favicon.ico on their own; answer per guesthouse.
+  rewrites: async () => [{ source: "/favicon.ico", destination: "/api/favicon" }],
   headers: async () => [
     {
       source: "/(.*)",

@@ -28,3 +28,12 @@ export async function resolveTenantPublicSiteUrl(
 
   return platformSiteUrl(host);
 }
+
+/** Scheme and host the visitor used, custom domains included (robots.txt, sitemap). */
+export async function requestOrigin(): Promise<string> {
+  const headerStore = await headers();
+  const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host") ?? "";
+  const local = /^(localhost|127\.0\.0\.1|\[::1\]|[^:]+\.localhost)(:\d+)?$/i.test(host);
+  const proto = headerStore.get("x-forwarded-proto") ?? (local ? "http" : "https");
+  return `${proto}://${host}`;
+}
