@@ -19,6 +19,12 @@ export function PublicSiteDesignPanel() {
   const te = useTranslations("admin.pages.publicSite.editor");
   const { draft, patchDraft } = usePublicSiteEditor();
 
+  // Thumbnails show the operator's own photo, laid out as each layout would.
+  const heroPhoto = draft.heroImageUrl.trim();
+  const layoutPhoto = heroPhoto
+    ? ({ "--thumb-photo": `url(${JSON.stringify(heroPhoto)})` } as CSSProperties)
+    : undefined;
+
   return (
     <>
       <EditorGroup title={te("layoutTitle")} description={te("layoutDesc")}>
@@ -33,10 +39,17 @@ export function PublicSiteDesignPanel() {
               // Switching layout restyles the page; the operator's section order stays.
               onClick={() => patchDraft({ templateId: option })}
             >
-              <span className={`pub-editor-layout pub-editor-layout--${option}`} aria-hidden>
-                <i />
-                <i />
-                <i />
+              <span
+                className={`pub-editor-layout pub-editor-layout--${option}`}
+                style={layoutPhoto}
+                aria-hidden
+              >
+                <i className="pub-editor-layout__photo" />
+                <span className="pub-editor-layout__copy">
+                  <i className="pub-editor-layout__title" />
+                  <i className="pub-editor-layout__line" />
+                  <i className="pub-editor-layout__btn" />
+                </span>
               </span>
               <span className="pub-editor-choice__title">{t(`templates.${option}.title`)}</span>
               <span className="pub-editor-choice__desc">{t(`templates.${option}.desc`)}</span>

@@ -42,7 +42,17 @@ export function PublicHeader({
           <StaffLogoEntry className="public-header__brand group cursor-pointer">{brand}</StaffLogoEntry>
         )}
         {preview ? (
-          <nav className="public-header__nav" aria-hidden>
+          <div className="flex items-center gap-2 sm:gap-3" aria-hidden>
+            <div className="ml-mobile-menu">
+              <span className="ml-mobile-menu__trigger">
+                <span className="ml-mobile-menu__bars">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+              </span>
+            </div>
+          <nav className="public-header__nav">
             {navItems.map((item) => (
               <span
                 key={item.key}
@@ -58,6 +68,7 @@ export function PublicHeader({
               </span>
             ))}
           </nav>
+          </div>
         ) : (
           <div className="flex items-center gap-2 sm:gap-3">
             <PublicMobileMenu items={navItems} />

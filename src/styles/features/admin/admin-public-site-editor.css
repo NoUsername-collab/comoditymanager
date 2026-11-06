@@ -311,50 +311,106 @@
   background: var(--pub-fg);
 }
 
-/* Tiny wireframes of each layout. */
+/*
+ * Small pictures of each layout: the operator's hero photo (or the accent when
+ * there is none), the title, a line of text and the booking button, placed as
+ * the layout places them.
+ */
 .pub-editor-layout {
+  position: relative;
   display: grid;
-  gap: 3px;
-  height: 2.6rem;
-  padding: 4px;
+  gap: 4px;
+  height: 4.25rem;
+  padding: 5px;
+  overflow: hidden;
   border-radius: 0.5rem;
   background: var(--admin-page-bg, #f4f4f5);
 }
 
 .pub-editor-layout i {
+  display: block;
+}
+
+.pub-editor-layout__photo {
+  border-radius: 3px;
+  background:
+    var(--thumb-photo, none) center / cover no-repeat,
+    color-mix(in srgb, var(--admin-accent, #059669) 55%, transparent);
+}
+
+.pub-editor-layout__copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pub-editor-layout__title {
+  width: 70%;
+  height: 6px;
   border-radius: 2px;
-  background: color-mix(in srgb, var(--admin-text-muted, #52525b) 35%, transparent);
+  background: color-mix(in srgb, var(--admin-text, #18181b) 70%, transparent);
 }
 
+.pub-editor-layout__line {
+  width: 50%;
+  height: 3px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--admin-text-muted, #52525b) 45%, transparent);
+}
+
+.pub-editor-layout__btn {
+  width: 34%;
+  height: 6px;
+  margin-top: 1px;
+  border-radius: 999px;
+  background: var(--admin-accent, #059669);
+}
+
+/* Classic: framed photo on top, centred words under it. */
 .pub-editor-layout--classic {
-  grid-template-rows: 3fr 1fr 1fr;
+  grid-template-rows: minmax(0, 1fr) auto;
 }
 
-.pub-editor-layout--classic i:first-child {
-  background: color-mix(in srgb, var(--admin-accent, #059669) 55%, transparent);
+.pub-editor-layout--classic .pub-editor-layout__copy {
+  align-items: center;
 }
 
+/* Magazine: words on the left, a landscape photo on the right. */
 .pub-editor-layout--editorial {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 2fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  align-items: center;
 }
 
-.pub-editor-layout--editorial i:nth-child(2) {
-  background: color-mix(in srgb, var(--admin-accent, #059669) 55%, transparent);
+.pub-editor-layout--editorial .pub-editor-layout__copy {
+  order: -1;
 }
 
-.pub-editor-layout--editorial i:nth-child(3) {
-  grid-column: 1 / -1;
+.pub-editor-layout--editorial .pub-editor-layout__photo {
+  aspect-ratio: 4 / 3;
+  max-height: 100%;
 }
 
+/* Panoramic: the photo fills everything, words over its lower left corner. */
 .pub-editor-layout--immersive {
-  grid-template-rows: 1fr;
-  position: relative;
-  background: color-mix(in srgb, var(--admin-accent, #059669) 55%, transparent);
+  align-content: end;
+  padding: 7px;
 }
 
-.pub-editor-layout--immersive i {
-  display: none;
+.pub-editor-layout--immersive .pub-editor-layout__photo {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+}
+
+.pub-editor-layout--immersive .pub-editor-layout__copy {
+  position: relative;
+}
+
+.pub-editor-layout--immersive .pub-editor-layout__title,
+.pub-editor-layout--immersive .pub-editor-layout__line {
+  background: rgb(255 255 255 / 0.9);
 }
 
 /* Section cards */

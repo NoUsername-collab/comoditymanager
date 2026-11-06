@@ -44,6 +44,25 @@ export function StudioPreviewIframe({
     if (iframeRef.current?.contentDocument?.readyState === "complete") attach();
   }, []);
 
+  // The site switches its header to the phone menu by `data-layout-chrome` on
+  // <html>, set from the window size; the frame gets it from its own width.
+  // Phone and tablet frames are compact; the desktop frame (about 1000px in the
+  // studio, a little under the site's own 1024px switch) keeps the full menu.
+  useEffect(() => {
+    const frame = iframeRef.current;
+    if (!body || !frame) return;
+    const update = () => {
+      frame.contentDocument?.documentElement.setAttribute(
+        "data-layout-chrome",
+        frame.clientWidth < 900 ? "compact" : "wide",
+      );
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(frame);
+    return () => observer.disconnect();
+  }, [body]);
+
   useEffect(() => {
     if (!body) return;
     const head = body.ownerDocument.head;

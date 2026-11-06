@@ -105,25 +105,27 @@ export function PublicHeroBlock({
           <h1 className="pub-hero__title">{title}</h1>
           {subtitle ? <p className="pub-hero__subtitle">{subtitle}</p> : null}
           {tagline ? <p className="pub-hero__dek">{tagline}</p> : null}
+          {showMeta || primaryBtn || secondaryBtn ? (
+            <div className="pub-hero__rail">
+              {showMeta ? <p className="pub-hero__meta">{checkTimesLabel}</p> : null}
+              {primaryBtn || secondaryBtn ? (
+                <div className="pub-hero__actions">
+                  {primaryBtn}
+                  {secondaryBtn}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
         <div className="pub-hero__portrait">
           {hero.imageUrl ? (
-            <HeroMedia url={hero.imageUrl} sizes="(min-width: 900px) 34vw, 100vw" />
+            <HeroMedia url={hero.imageUrl} sizes="(min-width: 900px) 50vw, 100vw" />
           ) : (
             <div className="pub-hero__poster" aria-hidden>
               <span>{config.displayName}</span>
             </div>
           )}
         </div>
-        <aside className="pub-hero__rail">
-          {showMeta ? <p className="pub-hero__meta">{checkTimesLabel}</p> : null}
-          {primaryBtn || secondaryBtn ? (
-            <div className="pub-hero__actions pub-hero__actions--stack">
-              {primaryBtn}
-              {secondaryBtn}
-            </div>
-          ) : null}
-        </aside>
       </section>
     );
   }
