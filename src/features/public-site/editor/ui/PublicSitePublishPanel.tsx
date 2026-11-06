@@ -111,6 +111,49 @@ export function PublicSitePublishPanel({
         <SiteShare siteUrl={siteUrl} name={config.displayName} />
       ) : null}
 
+      <EditorGroup title={te("legalTitle")} description={te("legalDesc")}>
+        <div className="admin-settings-fields">
+          <h4 className="pub-editor-subhead">{te("privacyPage")}</h4>
+          <EditorField
+            label={te("pageTitle")}
+            value={copy.privacyTitle}
+            onChange={(privacyTitle) => patchCopy({ privacyTitle })}
+          />
+          <EditorField
+            label={te("pageIntro")}
+            value={copy.privacyLead}
+            onChange={(privacyLead) => patchCopy({ privacyLead })}
+          />
+          <EditorField
+            rows={8}
+            label={te("pageBody")}
+            value={copy.privacyBody}
+            onChange={(privacyBody) => patchCopy({ privacyBody })}
+            hint={t("legalBodyHint")}
+            error={copy.privacyBody.trim() ? undefined : te("privacyRequired")}
+          />
+
+          <h4 className="pub-editor-subhead">{te("termsPage")}</h4>
+          <EditorField
+            label={te("pageTitle")}
+            value={copy.termsTitle}
+            onChange={(termsTitle) => patchCopy({ termsTitle })}
+          />
+          <EditorField
+            label={te("pageIntro")}
+            value={copy.termsLead}
+            onChange={(termsLead) => patchCopy({ termsLead })}
+          />
+          <EditorField
+            rows={8}
+            label={te("pageBody")}
+            value={copy.termsBody}
+            onChange={(termsBody) => patchCopy({ termsBody })}
+            hint={te("termsBodyHint")}
+          />
+        </div>
+      </EditorGroup>
+
       <EditorAdvanced label={te("googleTitle")}>
         <p className="pub-editor-lead">{te("googleDesc")}</p>
         <div className="pub-editor-serp" aria-label={te("googlePreviewLabel")}>
@@ -174,44 +217,6 @@ export function PublicSitePublishPanel({
             label={te("pageText")}
             value={copy.calendarLead}
             onChange={(calendarLead) => patchCopy({ calendarLead })}
-          />
-
-          <h4 className="pub-editor-subhead">{te("termsPage")}</h4>
-          <EditorField
-            label={te("pageTitle")}
-            value={copy.termsTitle}
-            onChange={(termsTitle) => patchCopy({ termsTitle })}
-          />
-          <EditorField
-            label={te("pageIntro")}
-            value={copy.termsLead}
-            onChange={(termsLead) => patchCopy({ termsLead })}
-          />
-          <EditorField
-            rows={8}
-            label={te("pageBody")}
-            value={copy.termsBody}
-            onChange={(termsBody) => patchCopy({ termsBody })}
-            hint={t("legalBodyHint")}
-          />
-
-          <h4 className="pub-editor-subhead">{te("privacyPage")}</h4>
-          <EditorField
-            label={te("pageTitle")}
-            value={copy.privacyTitle}
-            onChange={(privacyTitle) => patchCopy({ privacyTitle })}
-          />
-          <EditorField
-            label={te("pageIntro")}
-            value={copy.privacyLead}
-            onChange={(privacyLead) => patchCopy({ privacyLead })}
-          />
-          <EditorField
-            rows={8}
-            label={te("pageBody")}
-            value={copy.privacyBody}
-            onChange={(privacyBody) => patchCopy({ privacyBody })}
-            hint={t("legalBodyHint")}
           />
 
           <h4 className="pub-editor-subhead">{te("otherSeo")}</h4>

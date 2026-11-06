@@ -226,6 +226,8 @@ export function PublicSiteSettingsForm({
     [settledDraft, copySource],
   );
   const canCopy = !readOnly && hasCopyGaps;
+  // The guide is for setting a site up; once it is online it is only noise.
+  const quickStartOffered = !readOnly && !config.published;
 
   function save(next: PublicSiteStudioDraft, onFail?: () => void) {
     setError(null);
@@ -302,11 +304,6 @@ export function PublicSiteSettingsForm({
       banner={
         <>
           <SettingsAlerts alerts={alerts} />
-          {!readOnly && dirty ? (
-            <p className="settings-unsaved-banner pub-site-studio__unsaved" role="status">
-              {te("unsavedStudio")}
-            </p>
-          ) : null}
           {mergedAfterConflict ? (
             <p className="settings-unsaved-banner" role="status">
               {te("conflictMerged")}
@@ -375,6 +372,7 @@ export function PublicSiteSettingsForm({
             ))}
           </nav>
 
+          {tab !== "design" ? (
           <div className="pub-editor-locale" role="status">
             <span>
               {te("editingLocale", { language: t(`localeTab_${draft.editLocale}`) })}
@@ -391,6 +389,7 @@ export function PublicSiteSettingsForm({
               </button>
             ) : null}
           </div>
+          ) : null}
 
           <fieldset
             disabled={readOnly}
@@ -410,7 +409,7 @@ export function PublicSiteSettingsForm({
                   onOpenKeyChange={setOpenKey}
                   scrollSeq={scrollSeq}
                   onOpenContact={() => goTo("contact")}
-                  onQuickStart={readOnly ? undefined : () => setQuickStartOpen(true)}
+                  onQuickStart={quickStartOffered ? () => setQuickStartOpen(true) : undefined}
                 />
               ) : null}
               {tab === "contact" ? <PublicSiteContactPanel /> : null}
@@ -422,7 +421,7 @@ export function PublicSiteSettingsForm({
                   pending={pending}
                   dirty={dirty}
                   siteUrl={siteUrl}
-                  onQuickStart={readOnly ? undefined : () => setQuickStartOpen(true)}
+                  onQuickStart={quickStartOffered ? () => setQuickStartOpen(true) : undefined}
                 />
               ) : null}
             </PublicSiteEditorProvider>

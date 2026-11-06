@@ -176,6 +176,7 @@ type PublicSiteReadinessId =
   | "heroButton"
   | "heroLinks"
   | "rooms"
+  | "privacy"
   | "contact"
   | "gallery"
   | "locales";
@@ -227,6 +228,8 @@ export function publicSiteReadiness(
       tab: "content",
     },
     { id: "rooms", done: !draft.bookingEnabled || config.stayOffers.length > 0, tab: "contact" },
+    // The booking form collects personal data; the policy is not optional.
+    { id: "privacy", done: copy.privacyBody.trim().length > 0, tab: "publish" },
     {
       id: "contact",
       done: Boolean(contact.phone || contact.email || contact.whatsapp),

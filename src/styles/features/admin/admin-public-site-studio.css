@@ -571,7 +571,33 @@
 }
 
 .pub-site-studio__save {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   margin-left: auto;
+}
+
+/* A short mark beside Save instead of a full-width banner. */
+.pub-site-studio__dirty {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--admin-warning, #d97706);
+}
+
+.pub-site-studio__dirty::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* The editor column is narrow: pairs of fields stack, so selects are not cut off. */
+.pub-site-studio__form .admin-settings-fields--2col {
+  grid-template-columns: 1fr;
 }
 
 .pub-site-studio__unsaved {
@@ -727,8 +753,9 @@ html:has(.pub-site-studio--immersive) .ml-bottom-nav--admin {
     grid-template-columns: none;
   }
 
+  /* Wide enough to write in, while the desktop preview stays desktop-wide. */
   .pub-site-studio--immersive .pub-site-studio__workspace {
-    grid-template-columns: minmax(22.5rem, 26rem) minmax(0, 1fr);
+    grid-template-columns: minmax(24rem, 28rem) minmax(0, 1fr);
   }
 
   .pub-site-studio--immersive .pub-site-studio__form {
@@ -748,6 +775,12 @@ html:has(.pub-site-studio--immersive) .ml-bottom-nav--admin {
 
   .pub-site-studio--immersive .pub-site-studio__chrome .pub-site-studio__devices {
     display: inline-flex;
+  }
+}
+
+@media (min-width: 1600px) {
+  .pub-site-studio--immersive .pub-site-studio__workspace {
+    grid-template-columns: minmax(26rem, 32rem) minmax(0, 1fr);
   }
 }
 

@@ -211,6 +211,15 @@ describe("public site editor model", () => {
     expect(studioLocaleProgress(draft, stock).en).toBeLessThan(before);
   });
 
+  it("asks for a privacy policy before publishing", () => {
+    const draft = buildPublicSiteStudioDraft(config, "ro");
+    const contact = { contact: { email: "a@b.ro", phone: null }, stayOffers: [] };
+    const privacy = (d: PublicSiteStudioDraft) =>
+      publicSiteReadiness(d, contact).find((item) => item.id === "privacy");
+    expect(privacy(draft)).toMatchObject({ done: false, tab: "publish" });
+    expect(privacy(patchStudioCopy(draft, { privacyBody: "Datele voastre…" }))?.done).toBe(true);
+  });
+
   it("checks the gallery only when it is shown", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
     const contact = { contact: { email: "a@b.ro", phone: null }, stayOffers: [] };

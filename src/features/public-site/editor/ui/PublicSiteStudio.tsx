@@ -118,11 +118,6 @@ export function PublicSiteStudio({
 
         {localeTabs}
 
-        <p className="pub-site-studio__live">
-          <span className="pub-site-studio__live-dot" aria-hidden />
-          <span>{t("studioLiveHint")}</span>
-        </p>
-
         {!published ? (
           <p className="pub-site-studio__unpublished" role="status">
             {t("studioUnpublished")}
@@ -165,7 +160,16 @@ export function PublicSiteStudio({
           <span aria-hidden>↗</span>
         </Link>
 
-        {saveControl ? <div className="pub-site-studio__save">{saveControl}</div> : null}
+        {saveControl ? (
+          <div className="pub-site-studio__save">
+            {dirty ? (
+              <span className="pub-site-studio__dirty" role="status">
+                {t("studioUnsaved")}
+              </span>
+            ) : null}
+            {saveControl}
+          </div>
+        ) : null}
       </header>
 
       {banner}
