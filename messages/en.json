@@ -1595,7 +1595,7 @@
             "progress": "Step {step} of {total}",
             "steps": {
               "about": {
-                "title": "What is your property called?",
+                "title": "What goes big at the top of the page?",
                 "lead": "Write it as if you were telling a friend. You can change it any time."
               },
               "photos": {
@@ -1611,7 +1611,8 @@
                 "lead": "They come from Property identity and show at the bottom of the site."
               }
             },
-            "nameLabel": "Property name",
+            "nameLabel": "Big title",
+            "nameHint": "Usually the property name. The name in the header and footer is changed in Property identity.",
             "contactFromIdentity": "Guests reach you with the details from Property identity:",
             "subtitleLabel": "One sentence about you",
             "subtitlePlaceholder": "E.g.: A quiet guesthouse at the foot of the mountains, with home-made breakfast.",
@@ -1816,7 +1817,7 @@
             "rooms": "The booking page has rooms to choose from",
             "contact": "Guests have a phone or email",
             "gallery": "The gallery has at least one photo",
-            "locales": "Translations into the other languages (optional — until then visitors see your main language)"
+            "locales": "Translations into the other languages (optional — until then, pages in those languages show only what is translated)"
           },
           "checkFix": "Fill in",
           "publishedOn": "The site is online",

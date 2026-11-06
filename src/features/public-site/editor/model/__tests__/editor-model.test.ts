@@ -211,6 +211,16 @@ describe("public site editor model", () => {
     expect(studioLocaleProgress(draft, stock).en).toBeLessThan(before);
   });
 
+  it("checks the gallery only when it is shown", () => {
+    const draft = buildPublicSiteStudioDraft(config, "ro");
+    const contact = { contact: { email: "a@b.ro", phone: null }, stayOffers: [] };
+    const ids = (d: PublicSiteStudioDraft) => publicSiteReadiness(d, contact).map((item) => item.id);
+    expect(ids(draft)).not.toContain("gallery");
+    const gallery = findSectionDraft(draft.sections, "gallery")!.key;
+    const shown = patchStudioSection(draft, gallery, (section) => ({ ...section, visible: true }));
+    expect(publicSiteReadiness(shown, contact).find((item) => item.id === "gallery")?.done).toBe(false);
+  });
+
   it("maps a rendered section back to its editor card", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
     const rendered = (type: string, nth: number) => {

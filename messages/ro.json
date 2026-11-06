@@ -1580,7 +1580,7 @@
             "progress": "Pasul {step} din {total}",
             "steps": {
               "about": {
-                "title": "Cum se numește pensiunea?",
+                "title": "Ce scrie mare, sus pe pagină?",
                 "lead": "Scrie ca și cum i-ai povesti unui prieten. Poți schimba oricând."
               },
               "photos": {
@@ -1596,7 +1596,8 @@
                 "lead": "Vin din Identitate pensiune și apar în josul site-ului."
               }
             },
-            "nameLabel": "Numele pensiunii",
+            "nameLabel": "Titlul mare",
+            "nameHint": "De obicei numele pensiunii. Numele din antet și subsol se schimbă în Identitate pensiune.",
             "contactFromIdentity": "Oaspeții te contactează la datele din Identitate pensiune:",
             "subtitleLabel": "O propoziție despre voi",
             "subtitlePlaceholder": "Ex.: Pensiune liniștită la poalele munților, cu mic dejun de casă.",
@@ -1801,7 +1802,7 @@
             "rooms": "Pagina de rezervare are camere de ales",
             "contact": "Oaspeții au un telefon sau e-mail",
             "gallery": "Galeria are cel puțin o poză",
-            "locales": "Traducerile în engleză și bulgară (opțional — până atunci vizitatorii văd textul în română)"
+            "locales": "Traducerile în engleză și bulgară (opțional — până atunci, în acele limbi pagina arată doar ce e tradus)"
           },
           "checkFix": "Completează",
           "publishedOn": "Site-ul e online",

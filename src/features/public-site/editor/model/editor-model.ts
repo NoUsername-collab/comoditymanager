@@ -232,7 +232,8 @@ export function publicSiteReadiness(
       done: Boolean(contact.phone || contact.email || contact.whatsapp),
       tab: "contact",
     },
-    { id: "gallery", done: !gallery?.visible || hasPhoto, tab: "content" },
+    // A hidden gallery has nothing to check; "done" would read as "has a photo".
+    ...(gallery?.visible ? [{ id: "gallery" as const, done: hasPhoto, tab: "content" as const }] : []),
     {
       id: "locales",
       done: PUBLIC_LOCALES.every((locale) => progress[locale] === 100),

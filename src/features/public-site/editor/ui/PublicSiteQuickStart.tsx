@@ -110,6 +110,7 @@ export function PublicSiteQuickStart({
                 value={answers.heroTitle}
                 placeholder={displayName}
                 onChange={(heroTitle) => patch({ heroTitle })}
+                hint={t("nameHint")}
               />
               <EditorField
                 rows={2}
