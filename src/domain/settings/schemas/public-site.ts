@@ -65,9 +65,6 @@ const publicChromeConfigSchema = z
     showNavHome: z.boolean().optional(),
     showNavPrivacy: z.boolean().optional(),
     showNavTerms: z.boolean().optional(),
-    showStayOffers: z.boolean().optional(),
-    showStayPrices: z.boolean().optional(),
-    showPlace: z.boolean().optional(),
   })
   .strip();
 
@@ -241,6 +238,8 @@ const publicSiteSectionInputSchema = z.discriminatedUnion("sectionType", [
       })
       .strip(),
   ),
+  sectionInputSchema("stays", z.object({ showPrices: z.boolean().optional() }).strip()),
+  sectionInputSchema("place", z.object({}).strip()),
 ]);
 
 const untranslatedTextsSchema = z.array(z.string().max(5000)).max(300).optional();

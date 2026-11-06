@@ -50,9 +50,6 @@ export type PublicSiteStudioDraft = {
   ogImageUrl: string;
   fontId: PublicFontId;
   showContactBar: boolean;
-  showStayOffers: boolean;
-  showStayPrices: boolean;
-  showPlace: boolean;
   showNavHome: boolean;
   showNavPrivacy: boolean;
   showNavTerms: boolean;
@@ -104,9 +101,6 @@ export function buildPublicSiteStudioDraft(
     ogImageUrl: config.pages?.ogImageUrl ?? "",
     fontId: config.chrome?.fontId ?? "theme",
     showContactBar: config.chrome?.showContactBar !== false,
-    showStayOffers: config.chrome?.showStayOffers !== false,
-    showStayPrices: config.chrome?.showStayPrices !== false,
-    showPlace: config.chrome?.showPlace !== false,
     showNavHome: config.chrome?.showNavHome !== false,
     showNavPrivacy: config.chrome?.showNavPrivacy !== false,
     showNavTerms: config.chrome?.showNavTerms === true,
@@ -253,9 +247,6 @@ export function mergeStudioToInput(args: {
     chrome: {
       logoUrl: draft.logoUrl.trim() || null,
       showContactBar: draft.showContactBar,
-      showStayOffers: draft.showStayOffers,
-      showStayPrices: draft.showStayPrices,
-      showPlace: draft.showPlace,
       fontId: draft.fontId,
       ...writeCopyGroup(CHROME_COPY, config.chrome, copies),
       showNavHome: draft.showNavHome,

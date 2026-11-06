@@ -3,7 +3,6 @@ import type {
   PublicSectionType,
   PublicSiteSection,
   PublicSiteSectionOf,
-  PublicTemplateId,
 } from "@/features/public-site/domain/types";
 import type { SectionEditorProps } from "@/features/public-site/editor/ui/section-editing";
 import { BenefitsEditor } from "@/features/public-site/sections/benefits/Editor";
@@ -18,11 +17,15 @@ import { StepsEditor } from "@/features/public-site/sections/steps/Editor";
 import { renderSteps } from "@/features/public-site/sections/steps/render";
 import { TextEditor } from "@/features/public-site/sections/text/Editor";
 import { renderText } from "@/features/public-site/sections/text/render";
+import { PlaceEditor } from "@/features/public-site/sections/place/Editor";
+import { renderPlace } from "@/features/public-site/sections/place/render";
+import { StaysEditor } from "@/features/public-site/sections/stays/Editor";
+import { renderStays } from "@/features/public-site/sections/stays/render";
+import type { SectionRenderContext } from "@/features/public-site/sections/render-context";
 
 type Renderer<T extends PublicSectionType> = (
   section: PublicSiteSectionOf<T>,
-  locale: string,
-  template: PublicTemplateId,
+  ctx: SectionRenderContext,
 ) => ReactNode;
 
 /** What the page and the editor show for each kind of section. */
@@ -32,12 +35,14 @@ type SectionView<T extends PublicSectionType> = {
 };
 
 const SECTION_VIEWS: { [T in PublicSectionType]: SectionView<T> } = {
-  intro: { render: renderIntro, Editor: IntroEditor },
-  benefits: { render: renderBenefits, Editor: BenefitsEditor },
-  gallery: { render: renderGallery, Editor: GalleryEditor },
-  steps: { render: renderSteps, Editor: StepsEditor },
-  text: { render: renderText, Editor: TextEditor },
-  cta: { render: renderCta, Editor: CtaEditor },
+  intro: { render: (s, ctx) => renderIntro(s, ctx.locale, ctx.template), Editor: IntroEditor },
+  benefits: { render: (s, ctx) => renderBenefits(s, ctx.locale, ctx.template), Editor: BenefitsEditor },
+  gallery: { render: (s, ctx) => renderGallery(s, ctx.locale, ctx.template), Editor: GalleryEditor },
+  steps: { render: (s, ctx) => renderSteps(s, ctx.locale, ctx.template), Editor: StepsEditor },
+  text: { render: (s, ctx) => renderText(s, ctx.locale), Editor: TextEditor },
+  stays: { render: renderStays, Editor: StaysEditor },
+  place: { render: renderPlace, Editor: PlaceEditor },
+  cta: { render: (s, ctx) => renderCta(s, ctx.locale), Editor: CtaEditor },
 };
 
 /** The editor for a kind of section. */
@@ -46,16 +51,11 @@ export function sectionEditor(type: PublicSectionType): ComponentType<SectionEdi
 }
 
 /** A section's markup, or null when it is hidden or has nothing to show. */
-export function renderPublicSection(
-  section: PublicSiteSection,
-  locale: string,
-  template: PublicTemplateId,
-): ReactNode {
+export function renderPublicSection(section: PublicSiteSection, ctx: SectionRenderContext): ReactNode {
   if (!section.visible) return null;
-  const render = SECTION_VIEWS[section.sectionType].render as Renderer<typeof section.sectionType>;
-  return (render as (s: PublicSiteSection, l: string, t: PublicTemplateId) => ReactNode)(
-    section,
-    locale,
-    template,
-  );
+  const render = SECTION_VIEWS[section.sectionType].render as (
+    s: PublicSiteSection,
+    c: SectionRenderContext,
+  ) => ReactNode;
+  return render(section, ctx);
 }

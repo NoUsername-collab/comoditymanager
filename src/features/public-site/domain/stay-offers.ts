@@ -1,4 +1,4 @@
-import type { PublicChromeConfig, PublicPlace, PublicStayOffer } from "./types";
+import type { PublicPlace, PublicStayOffer } from "./types";
 
 export function emptyPublicPlace(): PublicPlace {
   return { address: null, lat: null, lng: null };
@@ -74,18 +74,14 @@ export function publicMapEmbedSrc(place: PublicPlace): string | null {
   return `https://www.openstreetmap.org/export/embed.html?bbox=${lng - pad}%2C${lat - pad}%2C${lng + pad}%2C${lat + pad}&layer=mapnik&marker=${lat}%2C${lng}`;
 }
 
-export function shouldShowStayOffers(
-  chrome: PublicChromeConfig | undefined,
-  offers: PublicStayOffer[],
-): boolean {
-  return chrome?.showStayOffers !== false && offers.length > 0;
+/** The rooms section has something to list. Whether it is shown is the section's own switch. */
+export function shouldShowStayOffers(offers: PublicStayOffer[]): boolean {
+  return offers.length > 0;
 }
 
-export function shouldShowPlace(
-  chrome: PublicChromeConfig | undefined,
-  place: PublicPlace | undefined,
-): boolean {
-  if (chrome?.showPlace === false || !place) return false;
+/** The map section has an address or coordinates to show. */
+export function shouldShowPlace(place: PublicPlace | undefined): boolean {
+  if (!place) return false;
   return Boolean(place.address?.trim()) || (place.lat != null && place.lng != null);
 }
 

@@ -1,3 +1,4 @@
+import type { PublicDefaultCopy } from "@/features/public-site/domain/defaults";
 import type { PublicSectionType } from "@/features/public-site/domain/types";
 
 /** A saved payload or item, read field by field without knowing its type. */
@@ -51,10 +52,12 @@ export type SectionKind = {
   };
   /** Several of this kind may exist; the editor offers to add more. */
   repeatable?: { max: number };
-  /** Rendered after rooms and map, and kept last in the editor. */
+  /** Always the last section, on the page and in the editor. */
   pinnedLast?: boolean;
-  /** The editor always has one to place, even before anything is saved. */
-  alwaysPresent?: boolean;
+  /** The editor always has one to place, even before anything is saved; `visible` is how it starts. */
+  alwaysPresent?: { visible: boolean };
+  /** How a new site starts with this kind; kinds without it are added by the operator. */
+  seed?: (copy: PublicDefaultCopy) => { visible: boolean; payload: StoredFields };
   /** Shown on the page only with something in it (a gallery needs a photo). */
   shownOnlyWithItems?: boolean;
 };

@@ -14,7 +14,7 @@ import {
 
 /*
  * Editors for the parts of the page that are not movable sections: the hero,
- * rooms, map, contact band and header/footer. Sections have their own editor in
+ * the contact band and the header/footer. Sections have their own editor in
  * `sections/<kind>/Editor.tsx`.
  */
 
@@ -107,38 +107,6 @@ export function HeroEditor() {
         </EditorAdvanced>
       </div>
     </div>
-  );
-}
-
-export function StaysEditor() {
-  const te = useTranslations("admin.pages.publicSite.editor");
-  const { draft, patchDraft } = usePublicSiteEditor();
-  return (
-    <>
-      <EditorToggle
-        label={te("stayPrices")}
-        checked={draft.showStayPrices}
-        onChange={(showStayPrices) => patchDraft({ showStayPrices })}
-      />
-      <SettingsFieldHint className="mt-2 block">
-        {te("staysHint")}{" "}
-        <Link href="/admin/rooms" className="underline">
-          {te("openRooms")}
-        </Link>
-      </SettingsFieldHint>
-    </>
-  );
-}
-
-export function PlaceEditor() {
-  const te = useTranslations("admin.pages.publicSite.editor");
-  return (
-    <SettingsFieldHint className="block">
-      {te("placeHint")}{" "}
-      <Link href="/admin/settings/identity" className="underline">
-        {te("openLocation")}
-      </Link>
-    </SettingsFieldHint>
   );
 }
 

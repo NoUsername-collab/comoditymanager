@@ -8,7 +8,7 @@ import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 
 export function PublicPlace({ config }: { config: PublicSiteConfig }) {
   const t = useTranslations("public.home");
-  if (!shouldShowPlace(config.chrome, config.place)) return null;
+  if (!shouldShowPlace(config.place)) return null;
 
   const href = publicMapHref(config.place);
   const embed = publicMapEmbedSrc(config.place);

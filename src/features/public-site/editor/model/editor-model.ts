@@ -256,8 +256,6 @@ export function editKeyFromPreviewTarget(
     );
   }
   if (target.closest(".pub-hero")) return "hero";
-  if (target.closest(".pub-section--stays")) return "stays";
-  if (target.closest(".pub-section--place")) return "place";
   if (target.closest(".pub-contact-bar")) return "contactBar";
   if (target.closest(".public-header, .public-footer")) return "chrome";
   return null;

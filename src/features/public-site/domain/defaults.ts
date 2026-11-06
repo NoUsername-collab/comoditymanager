@@ -12,9 +12,11 @@ import { defaultBookingNotice } from "./booking-notice";
 import { defaultPublicChrome, defaultPublicPages } from "./chrome";
 import { localizedFromString } from "./localized";
 import { assignTemplateSectionSort } from "./order-sections";
+import { SECTION_KINDS } from "@/features/public-site/sections/kinds";
 import { emptyPublicPlace } from "./stay-offers";
 
-type DefaultCopy = {
+/** The default texts a new site's sections start with (see `seedPublicHomeCopy`). */
+export type PublicDefaultCopy = {
   heroBadge: LocalizedText | string;
   heroSubtitle: LocalizedText | string;
   heroTagline: LocalizedText | string;
@@ -50,100 +52,28 @@ function loc(value: LocalizedText | string | undefined): LocalizedText {
   return value;
 }
 
-function buildDefaultPublicSections(copy: DefaultCopy): PublicSiteSection[] {
-  return [
-    {
-      id: "default-intro",
-      sectionType: "intro",
-      sortOrder: 10,
-      visible: true,
-      payload: {
-        title: loc(copy.introTitle),
-        lead: loc(copy.introLead),
-      },
-    },
-    {
-      id: "default-benefits",
-      sectionType: "benefits",
-      sortOrder: 20,
-      visible: true,
-      payload: {
-        title: loc(copy.benefitsTitle),
-        lead: loc(copy.benefitsLead),
-        items: [
-          {
-            icon: "bed",
-            title: loc(copy.benefit1Title),
-            text: loc(copy.benefit1Text),
-          },
-          {
-            icon: "spark",
-            title: loc(copy.benefit2Title),
-            text: loc(copy.benefit2Text),
-          },
-          {
-            icon: "handshake",
-            title: loc(copy.benefit3Title),
-            text: loc(copy.benefit3Text),
-          },
-        ],
-      },
-    },
-    {
-      id: "default-gallery",
-      sectionType: "gallery",
-      sortOrder: 30,
-      visible: false,
-      payload: {
-        title: loc(copy.galleryTitle ?? ""),
-        lead: loc(""),
-        items: [],
-      },
-    },
-    {
-      id: "default-steps",
-      sectionType: "steps",
-      sortOrder: 40,
-      visible: true,
-      payload: {
-        title: loc(copy.stepsTitle),
-        lead: loc(copy.stepsLead),
-        items: [
-          {
-            title: loc(copy.step1Title),
-            text: loc(copy.step1Text),
-          },
-          {
-            title: loc(copy.step2Title),
-            text: loc(copy.step2Text),
-          },
-          {
-            title: loc(copy.step3Title),
-            text: loc(copy.step3Text),
-          },
-        ],
-      },
-    },
-    {
-      id: "default-cta",
-      sectionType: "cta",
-      sortOrder: 50,
-      visible: true,
-      payload: {
-        title: loc(copy.ctaBandTitle),
-        lead: loc(copy.ctaBandText),
-        ctaLabel: loc(copy.ctaBandButton),
-        ctaHref: "/calendar",
-      },
-    },
-  ];
+/** One section of each kind that seeds itself, in the kinds' order. */
+function buildDefaultPublicSections(copy: PublicDefaultCopy): PublicSiteSection[] {
+  return Object.values(SECTION_KINDS).flatMap((kind, index) => {
+    const seeded = kind.seed?.(copy);
+    if (!seeded) return [];
+    return [
+      {
+        id: `default-${kind.type}`,
+        sectionType: kind.type,
+        sortOrder: index * 10,
+        visible: seeded.visible,
+        payload: seeded.payload,
+      } as PublicSiteSection,
+    ];
+  });
 }
 
 export function buildDefaultPublicSiteConfig(args: {
   displayName: string;
   checkInTime: string;
   checkOutTime: string;
-  copy: DefaultCopy;
+  copy: PublicDefaultCopy;
   contactEmail?: string;
   templateId?: PublicTemplateId;
   themeId?: PublicThemeId;

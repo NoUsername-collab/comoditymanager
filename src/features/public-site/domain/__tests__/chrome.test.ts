@@ -13,8 +13,6 @@ describe("normalizePublicChrome", () => {
     expect(chrome.showContactBar).toBe(true);
     expect(chrome.showNavTerms).toBe(false);
     expect(chrome.fontId).toBe("theme");
-    expect(chrome.showStayOffers).toBe(true);
-    expect(chrome.showPlace).toBe(true);
   });
 
   it("keeps a tenant logo url", () => {

@@ -8,13 +8,18 @@ export type PublicTemplateId = "classic" | "editorial" | "immersive";
 export type PublicThemeId = "noir" | "alpine" | "mediterranean" | "pearl" | "slate" | "forest";
 export type PublicBookingNavPosition = "nav" | "footer" | "both" | "hidden";
 
-export type PublicSectionType =
-  | "intro"
-  | "benefits"
-  | "gallery"
-  | "text"
-  | "cta"
-  | "steps";
+export const PUBLIC_SECTION_TYPES = [
+  "intro",
+  "benefits",
+  "gallery",
+  "text",
+  "cta",
+  "steps",
+  "stays",
+  "place",
+] as const;
+
+export type PublicSectionType = (typeof PUBLIC_SECTION_TYPES)[number];
 
 export type PublicHeroConfig = {
   badge?: LocalizedText;
@@ -58,9 +63,6 @@ export type PublicChromeConfig = {
   showNavHome?: boolean;
   showNavPrivacy?: boolean;
   showNavTerms?: boolean;
-  showStayOffers?: boolean;
-  showStayPrices?: boolean;
-  showPlace?: boolean;
 };
 
 export type PublicPagesConfig = {
@@ -160,6 +162,10 @@ export type PublicSectionPayloadByType = {
     ctaSecondaryLabel?: LocalizedText;
     ctaSecondaryHref?: string;
   };
+  /** Room types, listed from the room settings. */
+  stays: { showPrices?: boolean };
+  /** Address and map, from the property's details. */
+  place: Record<string, never>;
 };
 
 export type PublicSectionPayload = PublicSectionPayloadByType[PublicSectionType];

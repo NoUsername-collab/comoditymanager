@@ -8,8 +8,6 @@ import {
   ChromeEditor,
   ContactBarEditor,
   HeroEditor,
-  PlaceEditor,
-  StaysEditor,
 } from "@/features/public-site/editor/ui/PublicSiteFixedBlockEditors";
 import { usePublicSiteEditor } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import {
@@ -162,32 +160,6 @@ export function PublicSiteContentPanel({
             </li>
           );
         })}
-
-        <PublicSiteSectionCard
-          editKey="stays"
-          name={te("cards.stays.name")}
-          description={te("cards.stays.desc")}
-          pinned="bottom"
-          visible={draft.showStayOffers}
-          onToggleVisible={(showStayOffers) => patchDraft({ showStayOffers })}
-          open={openKey === "stays"}
-          onToggleOpen={() => toggle("stays")}
-        >
-          <StaysEditor />
-        </PublicSiteSectionCard>
-
-        <PublicSiteSectionCard
-          editKey="place"
-          name={te("cards.place.name")}
-          description={te("cards.place.desc")}
-          pinned="bottom"
-          visible={draft.showPlace}
-          onToggleVisible={(showPlace) => patchDraft({ showPlace })}
-          open={openKey === "place"}
-          onToggleOpen={() => toggle("place")}
-        >
-          <PlaceEditor />
-        </PublicSiteSectionCard>
 
         {pinned.map((section) => sectionCard(section))}
 

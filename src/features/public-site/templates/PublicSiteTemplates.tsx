@@ -6,19 +6,19 @@ import type {
 import { orderPublicSections } from "@/features/public-site/domain/order-sections";
 import { effectivePublicTemplate } from "@/features/public-site/domain/template";
 import { PublicMobileBookingBar } from "@/features/public-site/home/PublicMobileBookingBar";
-import { PublicPlace } from "@/features/public-site/home/PublicPlace";
-import { PublicStayOffers } from "@/features/public-site/home/PublicStayOffers";
 import { PublicHeroBlock } from "@/features/public-site/hero/PublicHeroBlock";
 import { sectionKind } from "@/features/public-site/sections/kinds";
 import { renderPublicSection } from "@/features/public-site/sections/registry";
 
 function TemplateSections({
   sections,
+  config,
   locale,
   template,
   preview,
 }: {
   sections: PublicSiteSection[];
+  config: PublicSiteConfig;
   locale: string;
   template: PublicTemplateId;
   preview: boolean;
@@ -31,7 +31,7 @@ function TemplateSections({
         // Counted before skipping: the studio's section order includes hidden ones.
         const nth = seen.get(section.sectionType) ?? 0;
         seen.set(section.sectionType, nth + 1);
-        const content = renderPublicSection(section, locale, template);
+        const content = renderPublicSection(section, { locale, template, config, preview });
         // No empty wrapper for a hidden or empty section: layouts style by position.
         if (!content) return null;
         return (
@@ -49,10 +49,9 @@ function TemplateSections({
 }
 
 /**
- * The homepage, top to bottom: hero, the operator's sections in their order,
- * then rooms and the map, then the closing booking band, so the rooms come
- * before the final "book now" instead of after it. The three layouts share this
- * structure and differ in the hero and in CSS.
+ * The homepage, top to bottom: hero, the operator's sections in their order
+ * (rooms and map among them), then the closing booking band. The three layouts
+ * share this structure and differ in the hero and in CSS.
  */
 export function PublicSiteBody({
   config,
@@ -71,15 +70,8 @@ export function PublicSiteBody({
   const body = (
     <>
       <TemplateSections
-        sections={ordered.filter((section) => !pinnedLast(section))}
-        locale={locale}
-        template={template}
-        preview={preview}
-      />
-      <PublicStayOffers config={config} locale={locale} preview={preview} />
-      <PublicPlace config={config} />
-      <TemplateSections
-        sections={ordered.filter(pinnedLast)}
+        sections={[...ordered.filter((section) => !pinnedLast(section)), ...ordered.filter(pinnedLast)]}
+        config={config}
         locale={locale}
         template={template}
         preview={preview}

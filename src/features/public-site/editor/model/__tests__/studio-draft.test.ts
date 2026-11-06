@@ -62,6 +62,8 @@ const config: PublicSiteConfig = {
 };
 
 const ALL_TYPES = Object.keys(SECTION_KINDS) as PublicSectionType[];
+/** Kinds with a title of their own (rooms and map take theirs from the site). */
+const TITLED_TYPES = ALL_TYPES.filter((type) => SECTION_KINDS[type].copyFields.includes("title"));
 
 /** Edit the first section of a type in the language being edited. */
 function editSection(
@@ -87,8 +89,13 @@ describe("public site studio draft", () => {
     expect(input.hero.title).toEqual({ ro: "RO casa", en: "EN home", bg: "BG hero" });
     expect(input.hero.showCheckTimes).toBe(true);
     expect(input.chrome.showContactBar).toBe(true);
-    expect(input.chrome.showStayOffers).toBe(true);
-    expect(input.chrome.showPlace).toBe(true);
+    // Rooms and map are sections: a site saved before them gets both, shown.
+    expect(
+      input.sections.filter((s) => s.sectionType === "stays" || s.sectionType === "place"),
+    ).toMatchObject([
+      { sectionType: "stays", visible: true, payload: { showPrices: true } },
+      { sectionType: "place", visible: true },
+    ]);
     expect(input.sections.find((section) => section.sectionType === "intro")?.payload.title).toEqual({
       ro: "RO intro",
       en: "EN intro",
@@ -158,14 +165,23 @@ describe("public site studio draft", () => {
       ],
     };
     const sections = buildPublicSiteStudioDraft(withCta, "ro").sections;
-    expect(sections.map((section) => section.type)).toEqual(["intro", "gallery", "cta"]);
-    const gallery = findSectionDraft(sections, "gallery")!;
-    expect(moveSectionDraft(sections, gallery.key, -1).map((section) => section.type)).toEqual([
-      "gallery",
+    expect(sections.map((section) => section.type)).toEqual([
       "intro",
+      "gallery",
+      "stays",
+      "place",
       "cta",
     ]);
-    expect(moveSectionDraft(sections, gallery.key, 1)).toBe(sections);
+    const place = findSectionDraft(sections, "place")!;
+    // Rooms and map move like any other section; the closing band stays last.
+    expect(moveSectionDraft(sections, place.key, -1).map((section) => section.type)).toEqual([
+      "intro",
+      "gallery",
+      "place",
+      "stays",
+      "cta",
+    ]);
+    expect(moveSectionDraft(sections, place.key, 1)).toBe(sections);
   });
 
   it("follows a layout's rhythm", () => {
@@ -173,6 +189,8 @@ describe("public site studio draft", () => {
     expect(orderSectionsForTemplate(sections, "immersive").map((section) => section.type)).toEqual([
       "gallery",
       "intro",
+      "stays",
+      "place",
     ]);
   });
 
@@ -191,14 +209,14 @@ describe("public site studio draft", () => {
       ),
     };
     let draft = buildPublicSiteStudioDraft(allKinds, "ro");
-    for (const type of ALL_TYPES) draft = editSection(draft, type, "title", `RO ${type}`);
+    for (const type of TITLED_TYPES) draft = editSection(draft, type, "title", `RO ${type}`);
 
     const saved = mergeStudioToInput({ config: allKinds, draft }).sections.map((section, index) => ({
       ...section,
       id: `saved-${index}`,
     })) as PublicSiteConfig["sections"];
     const reloaded = buildPublicSiteStudioDraft({ ...allKinds, sections: saved }, "ro");
-    for (const type of ALL_TYPES) {
+    for (const type of TITLED_TYPES) {
       expect(sectionField(findSectionDraft(reloaded.sections, type), "ro", "title")).toBe(`RO ${type}`);
     }
   });

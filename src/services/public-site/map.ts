@@ -16,7 +16,7 @@ import type {
   PublicThemeId,
   PublicUntranslatedCopy,
 } from "@/features/public-site/domain/types";
-import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
+import { PUBLIC_LOCALES, PUBLIC_SECTION_TYPES } from "@/features/public-site/domain/types";
 
 function parseTemplateId(raw: unknown): PublicTemplateId {
   if (raw === "editorial" || raw === "immersive" || raw === "classic") {
@@ -39,17 +39,9 @@ function parseBookingNav(raw: unknown): PublicBookingNavPosition {
 }
 
 function parseSectionType(raw: unknown): PublicSectionType {
-  if (
-    raw === "intro" ||
-    raw === "benefits" ||
-    raw === "gallery" ||
-    raw === "text" ||
-    raw === "cta" ||
-    raw === "steps"
-  ) {
-    return raw;
-  }
-  return "text";
+  return (PUBLIC_SECTION_TYPES as readonly unknown[]).includes(raw)
+    ? (raw as PublicSectionType)
+    : "text";
 }
 
 function parseUntranslatedCopy(raw: unknown): PublicUntranslatedCopy {

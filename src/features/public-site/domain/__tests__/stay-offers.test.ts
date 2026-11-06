@@ -59,8 +59,8 @@ describe("place helpers", () => {
       "search?query=",
     );
     expect(publicMapEmbedSrc({ address: "Strada 1", lat: null, lng: null })).toBeNull();
-    expect(shouldShowPlace({ showPlace: true }, { address: "X", lat: null, lng: null })).toBe(true);
-    expect(shouldShowPlace({ showPlace: false }, { address: "X", lat: null, lng: null })).toBe(
+    expect(shouldShowPlace({ address: "X", lat: null, lng: null })).toBe(true);
+    expect(shouldShowPlace({ address: " ", lat: null, lng: null })).toBe(
       false,
     );
   });
@@ -68,7 +68,7 @@ describe("place helpers", () => {
 
 describe("shouldShowStayOffers", () => {
   it("hides when the catalog is empty", () => {
-    expect(shouldShowStayOffers({ showStayOffers: true }, [])).toBe(false);
+    expect(shouldShowStayOffers([])).toBe(false);
   });
 });
 

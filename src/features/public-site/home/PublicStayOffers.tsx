@@ -9,16 +9,16 @@ import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 export function PublicStayOffers({
   config,
   locale,
+  showPrices,
   preview = false,
 }: {
   config: PublicSiteConfig;
   locale: string;
+  showPrices: boolean;
   preview?: boolean;
 }) {
   const t = useTranslations("public.home");
-  if (!shouldShowStayOffers(config.chrome, config.stayOffers)) return null;
-
-  const showPrices = config.chrome.showStayPrices !== false;
+  if (!shouldShowStayOffers(config.stayOffers)) return null;
 
   return (
     <section className="pub-section pub-section--stays" aria-labelledby="pub-stays-title">

@@ -120,7 +120,10 @@ export function readSectionDrafts(config: PublicSiteConfig): SectionDraft[] {
   // Kinds the editor must always be able to place (the gallery) get an empty one.
   for (const kind of Object.values(SECTION_KINDS)) {
     if (kind.alwaysPresent && !drafts.some((draft) => draft.type === kind.type)) {
-      drafts.push({ ...newSectionDraft(kind.type, `new-${kind.type}`), visible: false });
+      drafts.push({
+        ...newSectionDraft(kind.type, `new-${kind.type}`),
+        visible: kind.alwaysPresent.visible,
+      });
     }
   }
   return keepPinnedLast(drafts);

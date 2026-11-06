@@ -1,4 +1,5 @@
 import type { SectionKind } from "@/features/public-site/sections/kind";
+import { seedText } from "@/features/public-site/sections/seed";
 
 /** Photos with optional captions; shown only once it has a photo. */
 export const galleryKind: SectionKind = {
@@ -15,6 +16,10 @@ export const galleryKind: SectionKind = {
     keep: (structure) => Boolean(structure.url?.trim()),
     writeStructure: (id, structure) => ({ id, url: (structure.url ?? "").trim() }),
   },
-  alwaysPresent: true,
+  alwaysPresent: { visible: false },
   shownOnlyWithItems: true,
+  seed: (copy) => ({
+    visible: false,
+    payload: { title: seedText(copy.galleryTitle), lead: {}, items: [] },
+  }),
 };

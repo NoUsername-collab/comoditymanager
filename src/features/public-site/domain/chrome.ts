@@ -18,9 +18,6 @@ export function defaultPublicChrome(): PublicChromeConfig {
     showNavHome: true,
     showNavPrivacy: true,
     showNavTerms: false,
-    showStayOffers: true,
-    showStayPrices: true,
-    showPlace: true,
   };
 }
 
@@ -65,9 +62,6 @@ export function normalizePublicChrome(raw: unknown): PublicChromeConfig {
     showNavHome: asBool(row.showNavHome, true),
     showNavPrivacy: asBool(row.showNavPrivacy, true),
     showNavTerms: asBool(row.showNavTerms, false),
-    showStayOffers: asBool(row.showStayOffers, true),
-    showStayPrices: asBool(row.showStayPrices, true),
-    showPlace: asBool(row.showPlace, true),
   };
 }
 
