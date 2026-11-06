@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import {
   applyQuickStart,
-  editKeyForSection,
+  editKeyFromPreviewTarget,
   fillStudioLocaleFrom,
   isFreshPublicSite,
   quickStartAnswersFrom,
@@ -16,7 +16,23 @@ import {
   buildPublicSiteStudioDraft,
   mergeStudioToInput,
   patchStudioCopy,
+  patchStudioSection,
+  type PublicSiteStudioDraft,
 } from "@/features/public-site/editor/model/studio-draft";
+import {
+  findSectionDraft,
+  sectionField,
+  setSectionField,
+} from "@/features/public-site/editor/model/section-draft";
+
+/** Show or hide the first section of a type. */
+function showSection(draft: PublicSiteStudioDraft, type: "steps" | "intro", visible: boolean) {
+  const key = findSectionDraft(draft.sections, type)!.key;
+  return patchStudioSection(draft, key, (section) => ({ ...section, visible }));
+}
+
+const introLead = (draft: PublicSiteStudioDraft, locale: "ro" | "en" | "bg") =>
+  sectionField(findSectionDraft(draft.sections, "intro"), locale, "lead");
 import { buildPublicSiteConfigFromInput } from "@/domain/public-site/resolve-config";
 import { EMPTY_PENSION_CONTACT } from "@/domain/settings/pension-identity";
 
@@ -78,9 +94,9 @@ describe("public site editor model", () => {
     expect(linkPresetFor("https://example.com")).toBe("custom");
   });
 
-  it("always places the gallery in the section order", () => {
+  it("always has a gallery to place", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
-    expect(draft.sectionOrder).toContain("gallery");
+    expect(findSectionDraft(draft.sections, "gallery")).toBeDefined();
   });
 
   it("measures copy per language and ignores hidden sections", () => {
@@ -89,7 +105,7 @@ describe("public site editor model", () => {
     expect(progress.ro).toBeGreaterThan(progress.en);
     expect(progress.bg).toBe(0);
 
-    const withSteps = { ...draft, stepsVisible: true };
+    const withSteps = showSection(draft, "steps", true);
     expect(studioLocaleProgress(withSteps).ro).toBeLessThan(progress.ro);
   });
 
@@ -98,7 +114,7 @@ describe("public site editor model", () => {
     const filled = fillStudioLocaleFrom(draft, "ro", "en");
     expect(filled.copies.en.heroTitle).toBe("House");
     expect(filled.copies.en.heroSubtitle).toBe("Liniște la munte");
-    expect(filled.copies.en.introLead).toBe("Text RO");
+    expect(introLead(filled, "en")).toBe("Text RO");
     expect(filled.copies.ro).toBe(draft.copies.ro);
   });
 
@@ -128,7 +144,8 @@ describe("public site editor model", () => {
 
   it("forgets a copied text once it is translated", () => {
     let draft = fillStudioLocaleFrom(buildPublicSiteStudioDraft(config, "en"), "ro", "en");
-    draft = patchStudioCopy(draft, { introLead: "Text EN" });
+    const intro = findSectionDraft(draft.sections, "intro")!.key;
+    draft = patchStudioSection(draft, intro, (section) => setSectionField(section, "en", "lead", "Text EN"));
     expect(mergeStudioToInput({ config, draft }).untranslatedCopy.en ?? []).not.toContain("Text RO");
   });
 
@@ -162,10 +179,10 @@ describe("public site editor model", () => {
       ...buildPublicSiteStudioDraft(config, "ro"),
       bookingEnabled: true,
       heroCtaSecondaryHref: "#public-intro",
-      introVisible: false,
     };
+    const hiddenIntro = showSection(draft, "intro", false);
     const items = publicSiteReadiness(
-      patchStudioCopy(draft, { heroCtaPrimary: "Rezervă" }),
+      patchStudioCopy(hiddenIntro, { heroCtaPrimary: "Rezervă" }),
       { contact: { email: "a@b.ro", phone: null }, stayOffers: [] },
     );
     const byId = Object.fromEntries(items.map((item) => [item.id, item.done]));
@@ -174,7 +191,7 @@ describe("public site editor model", () => {
     expect(byId.rooms).toBe(false);
 
     const fixed = publicSiteReadiness(
-      { ...draft, introVisible: true, bookingEnabled: false },
+      { ...showSection(draft, "intro", true), bookingEnabled: false },
       { contact: { email: "a@b.ro", phone: null }, stayOffers: [] },
     );
     const fixedById = Object.fromEntries(fixed.map((item) => [item.id, item.done]));
@@ -195,11 +212,16 @@ describe("public site editor model", () => {
   });
 
   it("maps a rendered section back to its editor card", () => {
-    const order = ["intro", "text:a", "gallery", "text:b"];
-    expect(editKeyForSection("intro", 0, order)).toBe("intro");
-    expect(editKeyForSection("text", 1, order)).toBe("text:b");
-    expect(editKeyForSection("text", 2, order)).toBeNull();
-    expect(editKeyForSection("cta", 0, order)).toBeNull();
+    const draft = buildPublicSiteStudioDraft(config, "ro");
+    const rendered = (type: string, nth: number) => {
+      const element = { closest: (selector: string) =>
+        selector === "[data-pub-section]" ? { dataset: { pubSection: type, pubNth: String(nth) } } : null,
+      } as unknown as Element;
+      return editKeyFromPreviewTarget(element, draft);
+    };
+    expect(rendered("intro", 0)).toBe("intro-1");
+    expect(rendered("text", 0)).toBeNull();
+    expect(rendered("cta", 0)).toBeNull();
   });
 
   it("applies quick start answers to the current language only", () => {
@@ -219,11 +241,12 @@ describe("public site editor model", () => {
     );
     expect(next.copies.ro.heroSubtitle).toBe("Nou");
     expect(next.copies.en.heroSubtitle).toBe(draft.copies.en.heroSubtitle);
-    expect(next.galleryItems).toEqual([{ id: "g1", url: "a.jpg" }]);
-    expect(next.galleryVisible).toBe(true);
+    const gallery = findSectionDraft(next.sections, "gallery")!;
+    expect(gallery.items).toEqual([{ id: "g1", structure: { url: "a.jpg" } }]);
+    expect(gallery.visible).toBe(true);
     expect(next.templateId).toBe("immersive");
     expect(next.themeId).toBe("mediterranean");
-    expect(next.sectionOrder[0]).toBe("gallery");
+    expect(next.sections[0]?.type).toBe("gallery");
     // Contact belongs to Property identity; the quick start leaves the site's own fields alone.
     expect(next.contactPhone).toBe(draft.contactPhone);
     expect(isFreshPublicSite(next)).toBe(false);

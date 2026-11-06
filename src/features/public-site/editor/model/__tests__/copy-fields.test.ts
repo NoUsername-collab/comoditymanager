@@ -9,7 +9,6 @@ import {
   HERO_COPY,
   PAGES_COPY,
   readFlatCopy,
-  SECTION_COPY,
   SEO_COPY,
   type FlatCopyKey,
 } from "@/features/public-site/editor/model/copy-fields";
@@ -23,7 +22,6 @@ const ALL_KEYS = [
   ...Object.keys(SEO_COPY),
   ...Object.keys(CHROME_COPY),
   ...Object.keys(PAGES_COPY),
-  ...Object.values(SECTION_COPY).flatMap((map) => Object.keys(map)),
 ] as FlatCopyKey[];
 
 describe("copy fields", () => {

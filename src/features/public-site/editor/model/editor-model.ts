@@ -11,9 +11,16 @@ import type {
 import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 import { HOMEPAGE_COPY_KEYS } from "@/features/public-site/editor/model/copy-fields";
 import {
-  applyTemplateSectionKeys,
-  textSectionIdFromKey,
-} from "@/features/public-site/domain/order-sections";
+  addSectionItem,
+  findSectionDraft,
+  orderSectionsForTemplate,
+  sectionField,
+  sectionKeyForRendered,
+  sectionProgressSlots,
+  sectionTextSlots,
+  setSectionField,
+  setSectionSlot,
+} from "@/features/public-site/editor/model/section-draft";
 import type {
   LocaleCopy,
   PublicSiteStudioDraft,
@@ -51,38 +58,23 @@ export function linkPresetFor(href: string): PublicLinkPresetId {
   return PUBLIC_LINK_PRESETS.find((preset) => preset.href === value)?.id ?? "custom";
 }
 
-/** One piece of copy, addressed the same way in every language (`benefitItems.<id>.title`). */
+/** One piece of copy, addressed the same way in every language (`<section>.items.<row>.title`). */
 type CopyField = { path: string; value: string };
 
 /** Strings a visitor reads on the homepage, gated by what is visible. */
-function visibleCopyFields(draft: PublicSiteStudioDraft, copy: LocaleCopy): CopyField[] {
-  const fields: CopyField[] = [];
-  const add = (path: string, value: string) => fields.push({ path, value });
-  add("heroTitle", copy.heroTitle);
-  add("heroSubtitle", copy.heroSubtitle);
-  add("heroCtaPrimary", copy.heroCtaPrimary);
-  if (draft.introVisible) {
-    add("introTitle", copy.introTitle);
-    add("introLead", copy.introLead);
-  }
-  if (draft.benefitsVisible) {
-    add("benefitsTitle", copy.benefitsTitle);
-    for (const item of copy.benefitItems) add(`benefitItems.${item.id}.title`, item.title);
-  }
-  if (draft.stepsVisible) {
-    add("stepsTitle", copy.stepsTitle);
-    for (const item of copy.stepItems) add(`stepItems.${item.id}.title`, item.title);
-  }
-  if (draft.ctaVisible) {
-    add("ctaTitle", copy.ctaTitle);
-    add("ctaLabel", copy.ctaLabel);
-  }
-  for (const item of copy.textItems) {
-    if (draft.textVisible[item.id] === false) continue;
-    add(`textItems.${item.id}.title`, item.title);
-    add(`textItems.${item.id}.body`, item.body);
-  }
-  return fields;
+function visibleCopyFields(
+  draft: PublicSiteStudioDraft,
+  copy: LocaleCopy,
+  locale: PublicLocale,
+): CopyField[] {
+  return [
+    { path: "heroTitle", value: copy.heroTitle },
+    { path: "heroSubtitle", value: copy.heroSubtitle },
+    { path: "heroCtaPrimary", value: copy.heroCtaPrimary },
+    ...draft.sections
+      .filter((section) => section.visible)
+      .flatMap((section) => sectionProgressSlots(section, locale)),
+  ];
 }
 
 /**
@@ -99,7 +91,10 @@ export function studioLocaleProgress(
     PUBLIC_LOCALES.map((locale) => [
       locale,
       new Map(
-        visibleCopyFields(draft, draft.copies[locale]).map((field) => [field.path, field.value.trim()]),
+        visibleCopyFields(draft, draft.copies[locale], locale).map((field) => [
+          field.path,
+          field.value.trim(),
+        ]),
       ),
     ]),
   ) as Record<PublicLocale, Map<string, string>>;
@@ -116,7 +111,7 @@ export function studioLocaleProgress(
   const progress = {} as Record<PublicLocale, number>;
   for (const locale of PUBLIC_LOCALES) {
     const copied = new Set(draft.copiedText[locale] ?? []);
-    const fields = visibleCopyFields(draft, draft.copies[locale]);
+    const fields = visibleCopyFields(draft, draft.copies[locale], locale);
     const filled = fields.filter((field) => {
       const value = field.value.trim();
       if (!value || copied.has(field.value)) return false;
@@ -155,41 +150,21 @@ export function fillStudioLocaleFrom(
   const next: LocaleCopy = { ...target };
   for (const key of HOMEPAGE_COPY_KEYS) next[key] = fill(target[key], source[key]);
 
-  next.benefitItems = target.benefitItems.map((item) => {
-    const match = source.benefitItems.find((row) => row.id === item.id);
-    return {
-      ...item,
-      title: fill(item.title, match?.title ?? ""),
-      text: fill(item.text, match?.text ?? ""),
-    };
+  const sections = draft.sections.map((section) => {
+    const sourceSlots = new Map(sectionTextSlots(section, from).map((slot) => [slot.path, slot.value]));
+    let updated = section;
+    for (const slot of sectionTextSlots(section, to)) {
+      const value = fill(slot.value, sourceSlots.get(slot.path) ?? "");
+      if (value !== slot.value) updated = setSectionSlot(updated, to, slot.path, value);
+    }
+    return updated;
   });
-  next.stepItems = target.stepItems.map((item) => {
-    const match = source.stepItems.find((row) => row.id === item.id);
-    return {
-      ...item,
-      title: fill(item.title, match?.title ?? ""),
-      text: fill(item.text, match?.text ?? ""),
-    };
-  });
-  next.textItems = target.textItems.map((item) => {
-    const match = source.textItems.find((row) => row.id === item.id);
-    return {
-      ...item,
-      title: fill(item.title, match?.title ?? ""),
-      lead: fill(item.lead, match?.lead ?? ""),
-      body: fill(item.body, match?.body ?? ""),
-    };
-  });
-  const captions = { ...target.galleryCaptions };
-  for (const [id, caption] of Object.entries(source.galleryCaptions)) {
-    captions[id] = fill(captions[id] ?? "", caption);
-  }
-  next.galleryCaptions = captions;
 
   if (!changed) return draft;
   return {
     ...draft,
     copies: { ...draft.copies, [to]: next },
+    sections,
     copiedText: { ...draft.copiedText, [to]: [...copied] },
   };
 }
@@ -220,13 +195,13 @@ export function publicSiteReadiness(
   stock?: PublicStockCopy,
 ): PublicSiteReadinessItem[] {
   const copy = draft.copies[draft.editLocale];
-  const hasPhoto = draft.galleryItems.some((item) => item.url.trim().length > 0);
+  const gallery = findSectionDraft(draft.sections, "gallery");
+  const hasPhoto = Boolean(gallery?.items.some((item) => item.structure.url?.trim()));
   const contact = config.contact;
   const progress = studioLocaleProgress(draft, stock);
-  const sectionShown = { intro: draft.introVisible, steps: draft.stepsVisible };
   const lands = (href: string) => {
     const target = anchoredSectionType(href);
-    return !target || sectionShown[target];
+    return !target || Boolean(findSectionDraft(draft.sections, target)?.visible);
   };
 
   return [
@@ -234,7 +209,10 @@ export function publicSiteReadiness(
     { id: "heroTitle", done: copy.heroTitle.trim().length > 0, tab: "content" },
     {
       id: "description",
-      done: copy.heroSubtitle.trim().length > 0 || copy.introLead.trim().length > 0,
+      done:
+        copy.heroSubtitle.trim().length > 0 ||
+        sectionField(findSectionDraft(draft.sections, "intro"), draft.editLocale, "lead").trim()
+          .length > 0,
       tab: "content",
     },
     // Every language: a page without it has no booking button at the top.
@@ -254,7 +232,7 @@ export function publicSiteReadiness(
       done: Boolean(contact.phone || contact.email || contact.whatsapp),
       tab: "contact",
     },
-    { id: "gallery", done: !draft.galleryVisible || hasPhoto, tab: "content" },
+    { id: "gallery", done: !gallery?.visible || hasPhoto, tab: "content" },
     {
       id: "locales",
       done: PUBLIC_LOCALES.every((locale) => progress[locale] === 100),
@@ -264,27 +242,17 @@ export function publicSiteReadiness(
   ];
 }
 
-/** Editor card key for the n-th rendered section of a type (`text` → `text:<id>`). */
-export function editKeyForSection(
-  sectionType: string,
-  nth: number,
-  sectionOrder: string[],
-): string | null {
-  if (sectionType !== "text") return sectionOrder.includes(sectionType) ? sectionType : null;
-  return sectionOrder.filter((key) => textSectionIdFromKey(key) !== null)[nth] ?? null;
-}
-
 /** Which editor card a click inside the live preview belongs to. */
 export function editKeyFromPreviewTarget(
   target: Element,
-  sectionOrder: string[],
+  draft: Pick<PublicSiteStudioDraft, "sections">,
 ): string | null {
   const section = target.closest<HTMLElement>("[data-pub-section]");
   if (section) {
-    return editKeyForSection(
+    return sectionKeyForRendered(
+      draft.sections,
       section.dataset.pubSection ?? "",
       Number(section.dataset.pubNth ?? 0),
-      sectionOrder,
     );
   }
   if (target.closest(".pub-hero")) return "hero";
@@ -327,9 +295,11 @@ export function quickStartAnswersFrom(draft: PublicSiteStudioDraft): QuickStartA
   return {
     heroTitle: copy.heroTitle,
     heroSubtitle: copy.heroSubtitle,
-    introLead: copy.introLead,
+    introLead: sectionField(findSectionDraft(draft.sections, "intro"), draft.editLocale, "lead"),
     heroImageUrl: draft.heroImageUrl,
-    galleryUrls: draft.galleryItems.map((item) => item.url).filter((url) => url.trim()),
+    galleryUrls: (findSectionDraft(draft.sections, "gallery")?.items ?? [])
+      .map((item) => item.structure.url ?? "")
+      .filter((url) => url.trim()),
     styleId: preset?.id ?? null,
   };
 }
@@ -341,46 +311,43 @@ export function quickStartAnswersFrom(draft: PublicSiteStudioDraft): QuickStartA
 export function applyQuickStart(
   draft: PublicSiteStudioDraft,
   answers: QuickStartAnswers,
-  newGalleryId: () => string,
+  newItemId: () => string,
 ): PublicSiteStudioDraft {
   const locale = draft.editLocale;
   const preset = PUBLIC_STYLE_PRESETS.find((row) => row.id === answers.styleId);
-  const known = new Set(draft.galleryItems.map((item) => item.url));
-  const added = answers.galleryUrls
-    .map((url) => url.trim())
-    .filter((url) => {
-      if (!url || known.has(url)) return false;
+  const intro = answers.introLead.trim();
+
+  let sections = draft.sections.map((section) => {
+    if (section.type === "intro" && intro) return setSectionField(section, locale, "lead", intro);
+    if (section.type !== "gallery") return section;
+    const known = new Set(section.items.map((item) => item.structure.url));
+    let gallery = section;
+    for (const raw of answers.galleryUrls) {
+      const url = raw.trim();
+      if (!url || known.has(url)) continue;
       known.add(url);
-      return true;
-    })
-    .map((url) => ({ id: newGalleryId(), url }));
+      gallery = addSectionItem(gallery, { url }, newItemId());
+    }
+    return gallery.items.length > section.items.length ? { ...gallery, visible: true } : gallery;
+  });
+  if (preset && preset.templateId !== draft.templateId) {
+    sections = orderSectionsForTemplate(sections, preset.templateId);
+  }
 
   const copies = { ...draft.copies };
-  for (const loc of PUBLIC_LOCALES) {
-    const captions = { ...copies[loc].galleryCaptions };
-    for (const item of added) captions[item.id] = "";
-    copies[loc] = { ...copies[loc], galleryCaptions: captions };
-  }
   copies[locale] = {
     ...copies[locale],
     heroTitle: answers.heroTitle.trim() || copies[locale].heroTitle,
     heroSubtitle: answers.heroSubtitle.trim() || copies[locale].heroSubtitle,
-    introLead: answers.introLead.trim() || copies[locale].introLead,
   };
 
-  const galleryItems = [...draft.galleryItems, ...added];
   return {
     ...draft,
     copies,
+    sections,
     templateId: preset?.templateId ?? draft.templateId,
-    sectionOrder:
-      preset && preset.templateId !== draft.templateId
-        ? applyTemplateSectionKeys(draft.sectionOrder, preset.templateId)
-        : draft.sectionOrder,
     themeId: preset?.themeId ?? draft.themeId,
     heroImageUrl: answers.heroImageUrl.trim() || draft.heroImageUrl,
-    galleryItems,
-    galleryVisible: draft.galleryVisible || added.length > 0,
   };
 }
 
@@ -389,6 +356,6 @@ export function isFreshPublicSite(draft: PublicSiteStudioDraft): boolean {
   return (
     !draft.published &&
     !draft.heroImageUrl.trim() &&
-    !draft.galleryItems.some((item) => item.url.trim())
+    !findSectionDraft(draft.sections, "gallery")?.items.some((item) => item.structure.url?.trim())
   );
 }

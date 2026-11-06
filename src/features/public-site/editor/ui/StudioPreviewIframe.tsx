@@ -30,12 +30,19 @@ export function StudioPreviewIframe({
 
   function attach() {
     const doc = iframeRef.current?.contentDocument;
-    if (!doc?.body) return;
+    // Only our shell, not the about:blank document an iframe starts with.
+    if (!doc?.body || !doc.head.querySelector("meta[charset]")) return;
     // next/font exposes its font variables through classes on <html>.
     doc.documentElement.className = document.documentElement.className;
     doc.body.style.margin = "0";
     setBody(doc.body);
   }
+
+  // A srcDoc frame can finish loading before hydration attaches onLoad; then
+  // the load event is gone and the preview would stay blank.
+  useEffect(() => {
+    if (iframeRef.current?.contentDocument?.readyState === "complete") attach();
+  }, []);
 
   useEffect(() => {
     if (!body) return;

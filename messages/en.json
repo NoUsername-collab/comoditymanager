@@ -1716,7 +1716,8 @@
             },
             "text": {
               "name": "Free text",
-              "desc": "Your own text: house rules, history, activities."
+              "desc": "Your own text: house rules, history, activities.",
+              "add": "Add a free text"
             },
             "stays": {
               "name": "Rooms",
@@ -1737,7 +1738,6 @@
           },
           "photoCount": "{count, plural, one {# photo} other {# photos}}",
           "noPhotos": "No photos yet",
-          "addText": "Add a free text",
           "heroImage": "Main photo",
           "heroImageHint": "Your best photo of the property. JPEG, PNG or WebP, up to 5 MB.",
           "heroTitle": "Big title",

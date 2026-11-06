@@ -1,14 +1,11 @@
 import { PUBLIC_STEPS_HREF } from "@/features/public-site/domain/anchors";
-import { coercePublicLocale, pickOwnLocalized, writeLocalizedMap } from "@/features/public-site/domain/localized";
+import { coercePublicLocale } from "@/features/public-site/domain/localized";
 import {
   alignNoticeDraft,
   bookingNoticeToDraft,
   mergeBookingNoticeFromLocales,
   type BookingNoticeDraft,
 } from "@/features/public-site/domain/booking-notice";
-import {
-  normalizeBenefitIcon,
-} from "@/features/public-site/domain/benefit-icons";
 import type {
   PublicFontId,
   PublicLocale,
@@ -20,37 +17,23 @@ import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 import {
   CHROME_COPY,
   HERO_COPY,
+  HOMEPAGE_COPY_KEYS,
   PAGES_COPY,
   readFlatCopy,
-  SECTION_COPY,
   SEO_COPY,
   SEO_FALLBACK,
-  HOMEPAGE_COPY_KEYS,
   writeCopyGroup,
   type FlatCopy,
 } from "@/features/public-site/editor/model/copy-fields";
 import {
-  findSection,
-  publicSectionKey,
-  textSectionKey,
-} from "@/features/public-site/domain/order-sections";
+  readSectionDrafts,
+  sectionTextSlots,
+  writeSectionDrafts,
+  type SectionDraft,
+} from "@/features/public-site/editor/model/section-draft";
 
-type GalleryDraftItem = { id: string; url: string };
-/**
- * Benefit and step rows carry an editor-only id, shared by the same row in every
- * language, so removing a row in one language removes that row everywhere.
- */
-export type CopyLineDraft = { id: string; icon: string; title: string; text: string };
-export type StepLineDraft = { id: string; title: string; text: string };
-
-export type TextLineDraft = { id: string; title: string; lead: string; body: string };
-
-/** One language's copy: single-line fields from copy-fields, plus rows with structure. */
+/** One language's copy outside the homepage sections: single-line fields and the booking notice. */
 export type LocaleCopy = FlatCopy & {
-  benefitItems: CopyLineDraft[];
-  stepItems: StepLineDraft[];
-  galleryCaptions: Record<string, string>;
-  textItems: TextLineDraft[];
   noticeDraft: BookingNoticeDraft;
 };
 
@@ -76,134 +59,27 @@ export type PublicSiteStudioDraft = {
   showCheckTimes: boolean;
   heroCtaPrimaryHref: string;
   heroCtaSecondaryHref: string;
-  ctaHref: string;
   contactEmail: string;
   contactPhone: string;
   contactWhatsapp: string;
   contactTelegram: string;
   contactFacebook: string;
   contactInstagram: string;
-  galleryItems: GalleryDraftItem[];
-  galleryVisible: boolean;
-  introVisible: boolean;
-  benefitsVisible: boolean;
-  stepsVisible: boolean;
-  ctaVisible: boolean;
-  textVisible: Record<string, boolean>;
-  sectionOrder: string[];
+  /** Homepage sections in page order; each kind is described in `sections/<kind>/kind.ts`. */
+  sections: SectionDraft[];
   copies: Record<PublicLocale, LocaleCopy>;
   /**
    * Per language: texts pasted in from another language and not translated yet.
-   * Kept by value, not by field, because highlight and step rows are renumbered
-   * on save; saved with the site so it survives a reload.
+   * Kept by value, not by field, because rows are renumbered on save; saved with
+   * the site so it survives a reload.
    */
   copiedText: PublicUntranslatedCopy;
 };
 
-let galleryDraftSeq = 0;
-export function nextGalleryDraftId(): string {
-  galleryDraftSeq += 1;
-  return `gallery-draft-${galleryDraftSeq}`;
-}
-
-let itemDraftSeq = 0;
-function nextItemDraftId(prefix: "benefit" | "step"): string {
-  itemDraftSeq += 1;
-  return `${prefix}-draft-${itemDraftSeq}`;
-}
-
-/** A new text section gets its database id now, so it keeps it across saves. */
-function nextTextDraftId(): string {
-  return crypto.randomUUID();
-}
-
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-export const MAX_BENEFIT_ITEMS = 12;
-export const MAX_STEP_ITEMS = 12;
-export const MAX_TEXT_SECTIONS = 8;
-
-// Loaded rows take their id from their saved position, identical in every language.
-const EMPTY_BENEFITS: CopyLineDraft[] = [
-  { id: "benefit-0", icon: "bed", title: "", text: "" },
-  { id: "benefit-1", icon: "spark", title: "", text: "" },
-  { id: "benefit-2", icon: "handshake", title: "", text: "" },
-];
-
-const EMPTY_STEPS: StepLineDraft[] = [
-  { id: "step-0", title: "", text: "" },
-  { id: "step-1", title: "", text: "" },
-  { id: "step-2", title: "", text: "" },
-];
-
-function buildLocaleCopy(
-  config: PublicSiteConfig,
-  locale: PublicLocale,
-  galleryItems: GalleryDraftItem[],
-): LocaleCopy {
-  const benefitsSection = findSection(config.sections, "benefits");
-  const stepsSection = findSection(config.sections, "steps");
-  const galleryFromConfig = findSection(config.sections, "gallery")?.payload.items ?? [];
-
-  const benefitItems = (benefitsSection?.payload.items ?? []).map(
-    (item, index) => ({
-      id: `benefit-${index}`,
-      icon: normalizeBenefitIcon(item.icon),
-      title: pickOwnLocalized(item.title, locale),
-      text: pickOwnLocalized(item.text, locale),
-    }),
-  );
-  const stepItems = (stepsSection?.payload.items ?? []).map((item, index) => ({
-    id: `step-${index}`,
-    title: pickOwnLocalized(item.title, locale),
-    text: pickOwnLocalized(item.text, locale),
-  }));
-
-  const galleryCaptions: Record<string, string> = {};
-  for (const item of galleryItems) {
-    const prev = galleryFromConfig.find((row) => row.id === item.id);
-    galleryCaptions[item.id] = pickOwnLocalized(prev?.caption, locale);
-  }
-
+function buildLocaleCopy(config: PublicSiteConfig, locale: PublicLocale): LocaleCopy {
   return {
     ...readFlatCopy(config, locale),
-    benefitItems: benefitItems.length > 0 ? benefitItems : EMPTY_BENEFITS.map((item) => ({ ...item })),
-    stepItems: stepItems.length > 0 ? stepItems : EMPTY_STEPS.map((item) => ({ ...item })),
-    galleryCaptions,
-    textItems: config.sections
-      .filter((section) => section.sectionType === "text")
-      .map((section) => ({
-        id: section.id,
-        title: pickOwnLocalized(section.payload.title, locale),
-        lead: pickOwnLocalized(section.payload.lead, locale),
-        body: pickOwnLocalized(section.payload.body, locale),
-      })),
     noticeDraft: bookingNoticeToDraft(config.bookingNotice, locale),
-  };
-}
-
-function alignCopyStructure(source: LocaleCopy, target: LocaleCopy): LocaleCopy {
-  return {
-    ...target,
-    benefitItems: source.benefitItems.map((item) => {
-      const match = target.benefitItems.find((row) => row.id === item.id);
-      return { id: item.id, icon: item.icon, title: match?.title ?? "", text: match?.text ?? "" };
-    }),
-    stepItems: source.stepItems.map((item) => {
-      const match = target.stepItems.find((row) => row.id === item.id);
-      return { id: item.id, title: match?.title ?? "", text: match?.text ?? "" };
-    }),
-    galleryCaptions: { ...target.galleryCaptions },
-    textItems: source.textItems.map((item) => {
-      const match = target.textItems.find((row) => row.id === item.id);
-      return {
-        id: item.id,
-        title: match?.title ?? "",
-        lead: match?.lead ?? "",
-        body: match?.body ?? "",
-      };
-    }),
-    noticeDraft: alignNoticeDraft(target.noticeDraft, source.noticeDraft),
   };
 }
 
@@ -211,37 +87,12 @@ export function buildPublicSiteStudioDraft(
   config: PublicSiteConfig,
   locale: string,
 ): PublicSiteStudioDraft {
-  const editLocale = coercePublicLocale(locale);
-  const gallerySection = findSection(config.sections, "gallery");
-  const visibility = new Map(
-    config.sections.map((section) => [section.sectionType, section.visible]),
-  );
-  const galleryFromConfig = gallerySection?.payload.items ?? [];
-  const galleryItems = galleryFromConfig.map((item, index) => ({
-    id: item.id || `gallery-${index}`,
-    url: item.url,
-  }));
-
   const copies = Object.fromEntries(
-    PUBLIC_LOCALES.map((loc) => [loc, buildLocaleCopy(config, loc, galleryItems)]),
+    PUBLIC_LOCALES.map((loc) => [loc, buildLocaleCopy(config, loc)]),
   ) as Record<PublicLocale, LocaleCopy>;
 
-  const textSections = config.sections.filter((section) => section.sectionType === "text");
-  const textVisible: Record<string, boolean> = {};
-  for (const section of textSections) {
-    textVisible[section.id] = section.visible;
-  }
-
-  const sectionOrder = [...config.sections]
-    .sort((a, b) => a.sortOrder - b.sortOrder)
-    .map(publicSectionKey);
-  const defaultOrder = ["intro", "benefits", "gallery", "steps", "cta"];
-  const order = sectionOrder.length > 0 ? sectionOrder : defaultOrder;
-  // Gallery is always saved, so the editor must be able to place it.
-  if (!order.includes("gallery")) order.push("gallery");
-
   return {
-    editLocale,
+    editLocale: coercePublicLocale(locale),
     templateId: config.templateId,
     themeId: config.themeId,
     published: config.published,
@@ -262,44 +113,19 @@ export function buildPublicSiteStudioDraft(
     showCheckTimes: config.hero.showCheckTimes !== false,
     heroCtaPrimaryHref: config.hero.ctaPrimaryHref ?? "/calendar",
     heroCtaSecondaryHref: config.hero.ctaSecondaryHref ?? PUBLIC_STEPS_HREF,
-    ctaHref:
-      findSection(config.sections, "cta")?.payload.ctaHref ??
-      "/calendar",
     contactEmail: config.contact.email ?? "",
     contactPhone: config.contact.phone ?? "",
     contactWhatsapp: config.contact.whatsapp ?? "",
     contactTelegram: config.contact.telegram ?? "",
     contactFacebook: config.contact.facebook ?? "",
     contactInstagram: config.contact.instagram ?? "",
-    galleryItems,
-    galleryVisible: gallerySection?.visible ?? false,
-    introVisible: visibility.get("intro") ?? true,
-    benefitsVisible: visibility.get("benefits") ?? true,
-    stepsVisible: visibility.get("steps") ?? true,
-    ctaVisible: visibility.get("cta") ?? true,
-    textVisible,
-    sectionOrder: order,
+    sections: readSectionDrafts(config),
     copies,
     copiedText: config.untranslatedCopy,
   };
 }
 
-export function switchStudioLocale(
-  draft: PublicSiteStudioDraft,
-  nextLocale: PublicLocale,
-): PublicSiteStudioDraft {
-  if (draft.editLocale === nextLocale) return draft;
-  const source = draft.copies[draft.editLocale];
-  return {
-    ...draft,
-    editLocale: nextLocale,
-    copies: {
-      ...draft.copies,
-      [nextLocale]: alignCopyStructure(source, draft.copies[nextLocale]),
-    },
-  };
-}
-
+/** The booking notice's rows are shared by every language; keep the others in step. */
 export function syncStudioStructure(
   draft: PublicSiteStudioDraft,
   fromLocale: PublicLocale = draft.editLocale,
@@ -308,9 +134,29 @@ export function syncStudioStructure(
   const copies = { ...draft.copies };
   for (const locale of PUBLIC_LOCALES) {
     if (locale === fromLocale) continue;
-    copies[locale] = alignCopyStructure(source, copies[locale]);
+    copies[locale] = {
+      ...copies[locale],
+      noticeDraft: alignNoticeDraft(copies[locale].noticeDraft, source.noticeDraft),
+    };
   }
   return { ...draft, copies };
+}
+
+export function switchStudioLocale(
+  draft: PublicSiteStudioDraft,
+  nextLocale: PublicLocale,
+): PublicSiteStudioDraft {
+  if (draft.editLocale === nextLocale) return draft;
+  const source = draft.copies[draft.editLocale];
+  const target = draft.copies[nextLocale];
+  return {
+    ...draft,
+    editLocale: nextLocale,
+    copies: {
+      ...draft.copies,
+      [nextLocale]: { ...target, noticeDraft: alignNoticeDraft(target.noticeDraft, source.noticeDraft) },
+    },
+  };
 }
 
 export function patchStudioCopy(
@@ -327,25 +173,26 @@ export function patchStudioCopy(
   };
 }
 
-function mapFromLocales(
-  copies: Record<PublicLocale, LocaleCopy>,
-  pick: (copy: LocaleCopy) => string,
-): Partial<Record<PublicLocale, string>> {
-  const values: Partial<Record<PublicLocale, string>> = {};
-  for (const locale of PUBLIC_LOCALES) {
-    values[locale] = pick(copies[locale]);
-  }
-  return values;
+/** Change one section; the rest of the draft is left as it is. */
+export function patchStudioSection(
+  draft: PublicSiteStudioDraft,
+  key: string,
+  update: (section: SectionDraft) => SectionDraft,
+): PublicSiteStudioDraft {
+  return {
+    ...draft,
+    sections: draft.sections.map((section) => (section.key === key ? update(section) : section)),
+  };
 }
 
-/** Every text of one language's homepage copy, rows and captions included. */
-export function homepageTexts(copy: LocaleCopy): string[] {
+/** Every text of one language's homepage, sections and their rows included. */
+export function homepageTexts(draft: PublicSiteStudioDraft, locale: PublicLocale): string[] {
+  const copy = draft.copies[locale];
   return [
     ...HOMEPAGE_COPY_KEYS.map((key) => copy[key]),
-    ...copy.benefitItems.flatMap((item) => [item.title, item.text]),
-    ...copy.stepItems.flatMap((item) => [item.title, item.text]),
-    ...copy.textItems.flatMap((item) => [item.title, item.lead, item.body]),
-    ...Object.values(copy.galleryCaptions),
+    ...draft.sections.flatMap((section) =>
+      sectionTextSlots(section, locale).map((slot) => slot.value),
+    ),
   ];
 }
 
@@ -355,7 +202,7 @@ function stillUntranslated(draft: PublicSiteStudioDraft): PublicUntranslatedCopy
   for (const locale of PUBLIC_LOCALES) {
     const copied = draft.copiedText[locale];
     if (!copied?.length) continue;
-    const present = new Set(homepageTexts(draft.copies[locale]));
+    const present = new Set(homepageTexts(draft, locale));
     const kept = copied.filter((text) => present.has(text));
     if (kept.length > 0) out[locale] = kept;
   }
@@ -368,166 +215,6 @@ export function mergeStudioToInput(args: {
 }): PublicSiteSettingsInput {
   const { config, draft } = args;
   const copies = draft.copies;
-  const write = (
-    previous: Parameters<typeof writeLocalizedMap>[0],
-    pick: (copy: LocaleCopy) => string,
-  ) => writeLocalizedMap(previous, mapFromLocales(copies, pick));
-
-  const galleryFromConfig = findSection(config.sections, "gallery");
-  const previousGallery = galleryFromConfig?.payload.items ?? [];
-  const galleryItems = draft.galleryItems
-    .filter((item) => item.url.trim().length > 0)
-    .map((item, index) => {
-      const prev = previousGallery.find((row) => row.id === item.id) ?? previousGallery[index];
-      return {
-        id: item.id || `gallery-${index}`,
-        url: item.url.trim(),
-        caption: write(prev?.caption, (copy) => copy.galleryCaptions[item.id] ?? ""),
-      };
-    });
-
-  const baseSections = config.sections.filter((section) => section.sectionType !== "gallery");
-
-  const baseMapped = baseSections.map((section) => {
-      if (section.sectionType === "intro") {
-        return {
-          ...section,
-          visible: draft.introVisible,
-          payload: {
-            ...section.payload,
-            ...writeCopyGroup(SECTION_COPY.intro, section.payload, copies),
-          },
-        };
-      }
-      if (section.sectionType === "benefits") {
-        const structure = copies[draft.editLocale].benefitItems;
-        return {
-          ...section,
-          visible: draft.benefitsVisible,
-          payload: {
-            ...section.payload,
-            ...writeCopyGroup(SECTION_COPY.benefits, section.payload, copies),
-            items: structure.flatMap((item) => {
-              const row = (copy: LocaleCopy) =>
-                copy.benefitItems.find((candidate) => candidate.id === item.id);
-              const hasCopy = PUBLIC_LOCALES.some(
-                (locale) => row(copies[locale])?.title.trim() || row(copies[locale])?.text.trim(),
-              );
-              if (!hasCopy) return [];
-              return [
-                {
-                  icon: normalizeBenefitIcon(item.icon),
-                  title: write(undefined, (copy) => row(copy)?.title ?? ""),
-                  text: write(undefined, (copy) => row(copy)?.text ?? ""),
-                },
-              ];
-            }),
-          },
-        };
-      }
-      if (section.sectionType === "steps") {
-        const structure = copies[draft.editLocale].stepItems;
-        return {
-          ...section,
-          visible: draft.stepsVisible,
-          payload: {
-            ...section.payload,
-            ...writeCopyGroup(SECTION_COPY.steps, section.payload, copies),
-            items: structure.flatMap((item) => {
-              const row = (copy: LocaleCopy) =>
-                copy.stepItems.find((candidate) => candidate.id === item.id);
-              const hasCopy = PUBLIC_LOCALES.some(
-                (locale) => row(copies[locale])?.title.trim() || row(copies[locale])?.text.trim(),
-              );
-              if (!hasCopy) return [];
-              return [
-                {
-                  title: write(undefined, (copy) => row(copy)?.title ?? ""),
-                  text: write(undefined, (copy) => row(copy)?.text ?? ""),
-                },
-              ];
-            }),
-          },
-        };
-      }
-      if (section.sectionType === "cta") {
-        return {
-          ...section,
-          visible: draft.ctaVisible,
-          payload: {
-            ...section.payload,
-            ...writeCopyGroup(SECTION_COPY.cta, section.payload, copies),
-            ctaHref: draft.ctaHref.trim() || "/calendar",
-          },
-        };
-      }
-      if (section.sectionType === "text") {
-        const exists = copies[draft.editLocale].textItems.some((row) => row.id === section.id);
-        if (!exists) return null;
-        return {
-          ...section,
-          visible: draft.textVisible[section.id] !== false,
-          payload: {
-            title: write(section.payload.title, (copy) =>
-              copy.textItems.find((row) => row.id === section.id)?.title ?? "",
-            ),
-            lead: write(section.payload.lead, (copy) =>
-              copy.textItems.find((row) => row.id === section.id)?.lead ?? "",
-            ),
-            body: write(section.payload.body, (copy) =>
-              copy.textItems.find((row) => row.id === section.id)?.body ?? "",
-            ),
-          },
-        };
-      }
-      return section;
-    })
-    .filter((section): section is NonNullable<typeof section> => Boolean(section));
-
-  const knownTextIds = new Set(
-    config.sections.filter((section) => section.sectionType === "text").map((section) => section.id),
-  );
-  const extraText = copies[draft.editLocale].textItems
-    .filter((item) => !knownTextIds.has(item.id))
-    .map((item, index) => ({
-      id: item.id,
-      sectionType: "text" as const,
-      sortOrder: 60 + index * 10,
-      visible: draft.textVisible[item.id] !== false,
-      payload: {
-        title: write({}, (copy) => copy.textItems.find((row) => row.id === item.id)?.title ?? ""),
-        lead: write({}, (copy) => copy.textItems.find((row) => row.id === item.id)?.lead ?? ""),
-        body: write({}, (copy) => copy.textItems.find((row) => row.id === item.id)?.body ?? ""),
-      },
-    }));
-
-  const withGallery = [
-    ...baseMapped,
-    ...extraText,
-    {
-      id: galleryFromConfig?.id ?? "gallery",
-      sectionType: "gallery" as const,
-      sortOrder: galleryFromConfig?.sortOrder ?? 30,
-      visible: draft.galleryVisible && galleryItems.length > 0,
-      payload: {
-        ...writeCopyGroup(SECTION_COPY.gallery, galleryFromConfig?.payload, copies),
-        items: galleryItems,
-      },
-    },
-  ];
-
-  const rank = new Map(draft.sectionOrder.map((key, index) => [key, index]));
-  const sections = withGallery
-    .sort((a, b) => (rank.get(publicSectionKey(a)) ?? 99) - (rank.get(publicSectionKey(b)) ?? 99))
-    .map((section, index) => {
-      // Saved rows keep their id; built-in defaults (`default-intro`, …) are created fresh.
-      const { id, ...rest } = section;
-      return {
-        ...rest,
-        ...(id && UUID_PATTERN.test(id) ? { id } : {}),
-        sortOrder: index * 10,
-      };
-    });
 
   const noticeDrafts = Object.fromEntries(
     PUBLIC_LOCALES.map((locale) => [locale, copies[locale].noticeDraft]),
@@ -579,117 +266,40 @@ export function mergeStudioToInput(args: {
       ...writeCopyGroup(PAGES_COPY, config.pages, copies),
       ogImageUrl: draft.ogImageUrl.trim() || null,
     },
-    sections,
+    sections: writeSectionDrafts(config, draft.sections),
   };
-}
-
-export function addStudioBenefit(draft: PublicSiteStudioDraft): PublicSiteStudioDraft {
-  const current = draft.copies[draft.editLocale].benefitItems;
-  if (current.length >= MAX_BENEFIT_ITEMS) return draft;
-  return syncStudioStructure(
-    patchStudioCopy(draft, {
-      benefitItems: [
-        ...current,
-        { id: nextItemDraftId("benefit"), icon: "spark", title: "", text: "" },
-      ],
-    }),
-  );
-}
-
-export function removeStudioBenefit(
-  draft: PublicSiteStudioDraft,
-  index: number,
-): PublicSiteStudioDraft {
-  return syncStudioStructure(
-    patchStudioCopy(draft, {
-      benefitItems: draft.copies[draft.editLocale].benefitItems.filter((_, i) => i !== index),
-    }),
-  );
-}
-
-export function addStudioStep(draft: PublicSiteStudioDraft): PublicSiteStudioDraft {
-  const current = draft.copies[draft.editLocale].stepItems;
-  if (current.length >= MAX_STEP_ITEMS) return draft;
-  return syncStudioStructure(
-    patchStudioCopy(draft, {
-      stepItems: [...current, { id: nextItemDraftId("step"), title: "", text: "" }],
-    }),
-  );
-}
-
-export function removeStudioStep(draft: PublicSiteStudioDraft, index: number): PublicSiteStudioDraft {
-  return syncStudioStructure(
-    patchStudioCopy(draft, {
-      stepItems: draft.copies[draft.editLocale].stepItems.filter((_, i) => i !== index),
-    }),
-  );
-}
-
-export function addStudioTextSection(draft: PublicSiteStudioDraft): PublicSiteStudioDraft {
-  if (draft.copies[draft.editLocale].textItems.length >= MAX_TEXT_SECTIONS) return draft;
-  const id = nextTextDraftId();
-  const copies = { ...draft.copies };
-  for (const locale of PUBLIC_LOCALES) {
-    copies[locale] = {
-      ...copies[locale],
-      textItems: [...copies[locale].textItems, { id, title: "", lead: "", body: "" }],
-    };
-  }
-  return {
-    ...draft,
-    copies,
-    textVisible: { ...draft.textVisible, [id]: true },
-    sectionOrder: [...draft.sectionOrder, textSectionKey(id)],
-  };
-}
-
-export function removeStudioTextSection(
-  draft: PublicSiteStudioDraft,
-  id: string,
-): PublicSiteStudioDraft {
-  const copies = { ...draft.copies };
-  for (const locale of PUBLIC_LOCALES) {
-    copies[locale] = {
-      ...copies[locale],
-      textItems: copies[locale].textItems.filter((item) => item.id !== id),
-    };
-  }
-  const textVisible = Object.fromEntries(
-    Object.entries(draft.textVisible).filter(([key]) => key !== id),
-  );
-  return {
-    ...draft,
-    copies,
-    textVisible,
-    sectionOrder: draft.sectionOrder.filter((key) => key !== textSectionKey(id)),
-  };
-}
-
-/** The closing booking band always renders last on the page, after rooms and map. */
-const PINNED_SECTION_KEYS = new Set(["cta"]);
-
-/** Sections the operator can reorder, in their current order. */
-export function movableSectionKeys(sectionOrder: string[]): string[] {
-  return sectionOrder.filter((key) => !PINNED_SECTION_KEYS.has(key));
-}
-
-/** Swap a section with its movable neighbour; pinned sections stay at the end. */
-export function moveStudioSection(
-  draft: PublicSiteStudioDraft,
-  key: string,
-  direction: -1 | 1,
-): PublicSiteStudioDraft {
-  const movable = movableSectionKeys(draft.sectionOrder);
-  const index = movable.indexOf(key);
-  const target = index + direction;
-  if (index === -1 || target < 0 || target >= movable.length) return draft;
-  [movable[index], movable[target]] = [movable[target]!, movable[index]!];
-  const pinned = draft.sectionOrder.filter((row) => PINNED_SECTION_KEYS.has(row));
-  return { ...draft, sectionOrder: [...movable, ...pinned] };
 }
 
 function sameValue(a: unknown, b: unknown): boolean {
   return a === b || JSON.stringify(a) === JSON.stringify(b);
+}
+
+/** Sections after a conflict: changed ones are the operator's, the rest the colleague's. */
+function mergeSections(
+  base: SectionDraft[],
+  mine: SectionDraft[],
+  theirs: SectionDraft[],
+): SectionDraft[] {
+  const byKey = (list: SectionDraft[]) => new Map(list.map((section) => [section.key, section]));
+  const baseByKey = byKey(base);
+  const mineByKey = byKey(mine);
+  const removedByMe = new Set(base.filter((s) => !mineByKey.has(s.key)).map((s) => s.key));
+
+  const merged = theirs
+    .filter((section) => !removedByMe.has(section.key))
+    .map((section) => {
+      const own = mineByKey.get(section.key);
+      const start = baseByKey.get(section.key);
+      return own && start && !sameValue(own, start) ? own : section;
+    });
+  const addedByMe = mine.filter((section) => !baseByKey.has(section.key));
+  const all = [...merged, ...addedByMe.filter((s) => !merged.some((m) => m.key === s.key))];
+
+  // The operator reordered: keep their order, with the colleague's new sections after.
+  const order = (list: SectionDraft[]) => list.map((section) => section.key).join("|");
+  if (order(mine) === order(base)) return all;
+  const rank = new Map(mine.map((section, index) => [section.key, index]));
+  return [...all].sort((a, b) => (rank.get(a.key) ?? 999) - (rank.get(b.key) ?? 999));
 }
 
 /**
@@ -704,7 +314,7 @@ export function mergeStudioDrafts(
 ): PublicSiteStudioDraft {
   const merged: Record<string, unknown> = { ...theirs };
   for (const key of Object.keys(mine) as (keyof PublicSiteStudioDraft)[]) {
-    if (key === "copies") continue;
+    if (key === "copies" || key === "sections") continue;
     if (!sameValue(mine[key], base[key])) merged[key] = mine[key];
   }
 
@@ -719,5 +329,10 @@ export function mergeStudioDrafts(
     copies[locale] = next as LocaleCopy;
   }
 
-  return { ...(merged as PublicSiteStudioDraft), copies, editLocale: mine.editLocale };
+  return {
+    ...(merged as PublicSiteStudioDraft),
+    copies,
+    sections: mergeSections(base.sections, mine.sections, theirs.sections),
+    editLocale: mine.editLocale,
+  };
 }

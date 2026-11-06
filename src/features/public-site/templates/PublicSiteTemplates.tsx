@@ -9,7 +9,8 @@ import { PublicMobileBookingBar } from "@/features/public-site/home/PublicMobile
 import { PublicPlace } from "@/features/public-site/home/PublicPlace";
 import { PublicStayOffers } from "@/features/public-site/home/PublicStayOffers";
 import { PublicHeroBlock } from "@/features/public-site/hero/PublicHeroBlock";
-import { renderPublicSection } from "@/features/public-site/sections/render-section";
+import { sectionKind } from "@/features/public-site/sections/kinds";
+import { renderPublicSection } from "@/features/public-site/sections/registry";
 
 function TemplateSections({
   sections,
@@ -66,10 +67,11 @@ export function PublicSiteBody({
 }) {
   const template = effectivePublicTemplate(config);
   const ordered = orderPublicSections(config.sections);
+  const pinnedLast = (section: PublicSiteSection) => Boolean(sectionKind(section.sectionType).pinnedLast);
   const body = (
     <>
       <TemplateSections
-        sections={ordered.filter((section) => section.sectionType !== "cta")}
+        sections={ordered.filter((section) => !pinnedLast(section))}
         locale={locale}
         template={template}
         preview={preview}
@@ -77,7 +79,7 @@ export function PublicSiteBody({
       <PublicStayOffers config={config} locale={locale} preview={preview} />
       <PublicPlace config={config} />
       <TemplateSections
-        sections={ordered.filter((section) => section.sectionType === "cta")}
+        sections={ordered.filter(pinnedLast)}
         locale={locale}
         template={template}
         preview={preview}

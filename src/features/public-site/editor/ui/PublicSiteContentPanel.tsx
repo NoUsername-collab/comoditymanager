@@ -1,53 +1,27 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { PublicSiteSectionCard } from "@/features/public-site/editor/ui/PublicSiteSectionCard";
 import {
-  BenefitsEditor,
   ChromeEditor,
   ContactBarEditor,
-  CtaEditor,
-  GalleryEditor,
   HeroEditor,
-  IntroEditor,
   PlaceEditor,
   StaysEditor,
-  StepsEditor,
-  TextBlockEditor,
-} from "@/features/public-site/editor/ui/PublicSiteSectionEditors";
+} from "@/features/public-site/editor/ui/PublicSiteFixedBlockEditors";
 import { usePublicSiteEditor } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
-import { textSectionIdFromKey } from "@/features/public-site/domain/order-sections";
 import {
-  addStudioTextSection,
-  MAX_TEXT_SECTIONS,
-  moveStudioSection,
-  movableSectionKeys,
-  type PublicSiteStudioDraft,
-} from "@/features/public-site/editor/model/studio-draft";
-
-type OrderedKey = "intro" | "benefits" | "gallery" | "steps" | "cta";
-
-const VISIBILITY_FIELD: Record<OrderedKey, keyof PublicSiteStudioDraft> = {
-  intro: "introVisible",
-  benefits: "benefitsVisible",
-  gallery: "galleryVisible",
-  steps: "stepsVisible",
-  cta: "ctaVisible",
-};
-
-const ORDERED_EDITORS: Record<OrderedKey, () => ReactNode> = {
-  intro: () => <IntroEditor />,
-  benefits: () => <BenefitsEditor />,
-  gallery: () => <GalleryEditor />,
-  steps: () => <StepsEditor />,
-  cta: () => <CtaEditor />,
-};
-
-function isOrderedKey(key: string): key is OrderedKey {
-  return key in VISIBILITY_FIELD;
-}
+  addSectionDraft,
+  moveSectionDraft,
+  movableSections,
+  sectionField,
+  type SectionDraft,
+} from "@/features/public-site/editor/model/section-draft";
+import { patchStudioSection } from "@/features/public-site/editor/model/studio-draft";
+import { SECTION_KINDS, sectionKind } from "@/features/public-site/sections/kinds";
+import { sectionEditor } from "@/features/public-site/sections/registry";
 
 export function PublicSiteContentPanel({
   openKey,
@@ -86,21 +60,48 @@ export function PublicSiteContentPanel({
     setOpenKey(openKey === key ? null : key);
   }
 
-  function summaryFor(key: OrderedKey): string | undefined {
-    if (key === "gallery") {
-      const count = draft.galleryItems.filter((item) => item.url.trim()).length;
+  /** Collapsed card line: the section's title, or how many photos it has. */
+  function summaryFor(section: SectionDraft): string | undefined {
+    const kind = sectionKind(section.type);
+    if (kind.shownOnlyWithItems) {
+      const count = section.items.filter((item) => item.structure.url?.trim()).length;
       return count > 0 ? te("photoCount", { count }) : te("noPhotos");
     }
-    const title = {
-      intro: copy.introTitle,
-      benefits: copy.benefitsTitle,
-      steps: copy.stepsTitle,
-      cta: copy.ctaTitle,
-    }[key];
-    return title.trim() ? `„${title.trim()}”` : undefined;
+    if (!kind.summaryField) return undefined;
+    const title = sectionField(section, draft.editLocale, kind.summaryField).trim();
+    return title ? `„${title}”` : undefined;
   }
 
-  const order = movableSectionKeys(draft.sectionOrder);
+  function sectionCard(section: SectionDraft, move?: { up?: () => void; down?: () => void }) {
+    const kind = sectionKind(section.type);
+    const Editor = sectionEditor(section.type);
+    // Repeatable kinds are told apart by their own title.
+    const ownName = kind.repeatable ? sectionField(section, draft.editLocale, "title").trim() : "";
+    return (
+      <PublicSiteSectionCard
+        key={section.key}
+        editKey={section.key}
+        name={ownName || te(`cards.${section.type}.name`)}
+        description={te(`cards.${section.type}.desc`)}
+        summary={kind.repeatable ? undefined : summaryFor(section)}
+        pinned={kind.pinnedLast ? "bottom" : undefined}
+        visible={section.visible}
+        onToggleVisible={(visible) =>
+          setDraft((d) => patchStudioSection(d, section.key, (current) => ({ ...current, visible })))
+        }
+        onMoveUp={move?.up}
+        onMoveDown={move?.down}
+        open={openKey === section.key}
+        onToggleOpen={() => toggle(section.key)}
+      >
+        <Editor section={section} />
+      </PublicSiteSectionCard>
+    );
+  }
+
+  const movable = movableSections(draft.sections);
+  const pinned = draft.sections.filter((section) => sectionKind(section.type).pinnedLast);
+  const repeatable = Object.values(SECTION_KINDS).filter((kind) => kind.repeatable);
 
   return (
     <>
@@ -126,74 +127,41 @@ export function PublicSiteContentPanel({
           <HeroEditor />
         </PublicSiteSectionCard>
 
-        {order.map((key, index) => {
-          const moveUp = index > 0 ? () => setDraft((d) => moveStudioSection(d, key, -1)) : undefined;
-          const moveDown =
-            index < order.length - 1 ? () => setDraft((d) => moveStudioSection(d, key, 1)) : undefined;
+        {movable.map((section, index) =>
+          sectionCard(section, {
+            up:
+              index > 0
+                ? () => setDraft((d) => ({ ...d, sections: moveSectionDraft(d.sections, section.key, -1) }))
+                : undefined,
+            down:
+              index < movable.length - 1
+                ? () => setDraft((d) => ({ ...d, sections: moveSectionDraft(d.sections, section.key, 1) }))
+                : undefined,
+          }),
+        )}
 
-          const id = textSectionIdFromKey(key);
-          if (id !== null) {
-            const item = copy.textItems.find((row) => row.id === id);
-            if (!item) return null;
-            return (
-              <PublicSiteSectionCard
-                key={key}
-                editKey={key}
-                name={item.title.trim() || te("cards.text.name")}
-                description={te("cards.text.desc")}
-                visible={draft.textVisible[id] !== false}
-                onToggleVisible={(visible) =>
-                  patchDraft({ textVisible: { ...draft.textVisible, [id]: visible } })
-                }
-                onMoveUp={moveUp}
-                onMoveDown={moveDown}
-                open={openKey === key}
-                onToggleOpen={() => toggle(key)}
-              >
-                <TextBlockEditor item={item} />
-              </PublicSiteSectionCard>
-            );
-          }
-
-          if (!isOrderedKey(key) || key === "cta") return null;
-          const field = VISIBILITY_FIELD[key];
+        {repeatable.map((kind) => {
+          const count = draft.sections.filter((section) => section.type === kind.type).length;
           return (
-            <PublicSiteSectionCard
-              key={key}
-              editKey={key}
-              name={te(`cards.${key}.name`)}
-              description={te(`cards.${key}.desc`)}
-              summary={summaryFor(key)}
-              visible={draft[field] as boolean}
-              onToggleVisible={(visible) =>
-                patchDraft({ [field]: visible } as Partial<PublicSiteStudioDraft>)
-              }
-              onMoveUp={moveUp}
-              onMoveDown={moveDown}
-              open={openKey === key}
-              onToggleOpen={() => toggle(key)}
-            >
-              {ORDERED_EDITORS[key]()}
-            </PublicSiteSectionCard>
+            <li key={kind.type} className="pub-editor-cards__add">
+              <AdminButton
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={count >= (kind.repeatable?.max ?? 0)}
+                onClick={() => {
+                  const key = crypto.randomUUID();
+                  const sections = addSectionDraft(draft.sections, kind.type, key);
+                  if (!sections) return;
+                  setDraft((d) => ({ ...d, sections }));
+                  setOpenKey(key);
+                }}
+              >
+                + {te(`cards.${kind.type}.add`)}
+              </AdminButton>
+            </li>
           );
         })}
-
-        <li className="pub-editor-cards__add">
-          <AdminButton
-            type="button"
-            variant="secondary"
-            size="sm"
-            disabled={copy.textItems.length >= MAX_TEXT_SECTIONS}
-            onClick={() => {
-              const next = addStudioTextSection(draft);
-              if (next === draft) return;
-              setDraft(() => next);
-              setOpenKey(next.sectionOrder[next.sectionOrder.length - 1] ?? null);
-            }}
-          >
-            + {te("addText")}
-          </AdminButton>
-        </li>
 
         <PublicSiteSectionCard
           editKey="stays"
@@ -221,19 +189,7 @@ export function PublicSiteContentPanel({
           <PlaceEditor />
         </PublicSiteSectionCard>
 
-        <PublicSiteSectionCard
-          editKey="cta"
-          name={te("cards.cta.name")}
-          description={te("cards.cta.desc")}
-          summary={summaryFor("cta")}
-          pinned="bottom"
-          visible={draft.ctaVisible}
-          onToggleVisible={(ctaVisible) => patchDraft({ ctaVisible })}
-          open={openKey === "cta"}
-          onToggleOpen={() => toggle("cta")}
-        >
-          <CtaEditor />
-        </PublicSiteSectionCard>
+        {pinned.map((section) => sectionCard(section))}
 
         <PublicSiteSectionCard
           editKey="contactBar"

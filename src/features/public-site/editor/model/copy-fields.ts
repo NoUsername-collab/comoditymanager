@@ -1,5 +1,4 @@
 import { pickOwnLocalized, writeLocalizedMap } from "@/features/public-site/domain/localized";
-import { findSection } from "@/features/public-site/domain/order-sections";
 import type {
   LocalizedText,
   PublicLocale,
@@ -10,8 +9,8 @@ import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 /*
  * Where every single-line piece of editor copy is stored. Adding a field means
  * one entry here: the draft reads it, the save writes it, and `LocaleCopy` gets
- * the key from these tables. Rows with structure (highlights, steps, free texts,
- * photo captions, the booking notice) are handled in studio-draft.
+ * the key from these tables. Homepage sections describe their own text in
+ * `sections/<kind>/kind.ts`; the booking notice is handled in studio-draft.
  */
 
 /** Draft key → field of `config.hero`. */
@@ -66,33 +65,21 @@ export const PAGES_COPY = {
   seoPrivacyDescription: "seoPrivacyDescription",
 } as const;
 
-/** Per section type: draft key → field of that section's payload. */
-export const SECTION_COPY = {
-  intro: { introTitle: "title", introLead: "lead" },
-  benefits: { benefitsTitle: "title", benefitsLead: "lead" },
-  steps: { stepsTitle: "title", stepsLead: "lead" },
-  gallery: { galleryTitle: "title", galleryLead: "lead" },
-  cta: { ctaTitle: "title", ctaLead: "lead", ctaLabel: "ctaLabel" },
-} as const;
-
-type SectionCopyKey = {
-  [T in keyof typeof SECTION_COPY]: keyof (typeof SECTION_COPY)[T];
-}[keyof typeof SECTION_COPY];
-
 export type FlatCopyKey =
   | keyof typeof HERO_COPY
   | keyof typeof SEO_COPY
   | keyof typeof CHROME_COPY
-  | keyof typeof PAGES_COPY
-  | SectionCopyKey;
+  | keyof typeof PAGES_COPY;
 
 /** All single-line copy of one language, keyed as the editor fields are. */
 export type FlatCopy = Record<FlatCopyKey, string>;
 
-/** Strings visitors read on the homepage; legal pages, SEO and menu labels are not among them. */
+/**
+ * Strings visitors read on the homepage outside its sections (those come from
+ * each section kind); legal pages, SEO and menu labels are not among them.
+ */
 export const HOMEPAGE_COPY_KEYS: readonly FlatCopyKey[] = [
   ...(Object.keys(HERO_COPY) as (keyof typeof HERO_COPY)[]),
-  ...Object.values(SECTION_COPY).flatMap((map) => Object.keys(map) as SectionCopyKey[]),
   "headerSubtitle",
   "footerTagline",
 ];
@@ -122,9 +109,6 @@ export function readFlatCopy(config: PublicSiteConfig, locale: PublicLocale): Fl
   readGroup(SEO_COPY, config.seo, locale, copy);
   readGroup(CHROME_COPY, config.chrome, locale, copy);
   readGroup(PAGES_COPY, config.pages, locale, copy);
-  for (const type of Object.keys(SECTION_COPY) as (keyof typeof SECTION_COPY)[]) {
-    readGroup(SECTION_COPY[type], findSection(config.sections, type)?.payload, locale, copy);
-  }
   return copy as FlatCopy;
 }
 

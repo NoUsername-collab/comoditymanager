@@ -99,7 +99,7 @@ Services **re-export** these for backward compatibility; new code imports from `
 
 | Module | What is actually there |
 |--------|------------------------|
-| `features/public-site/` | Preview UI + calendar/confirm **actions** + `loaders.ts` + `ui/` (booking forms, tenant header/footer/staff) + `editor/` (the settings studio for the public site: `ui/` panels and preview, `model/` pure draft and editor logic; its save actions stay in `features/settings/actions`) |
+| `features/public-site/` | Preview UI + calendar/confirm **actions** + `loaders.ts` + `ui/` (booking forms, tenant header/footer/staff) + `editor/` (the settings studio for the public site: `ui/` panels and preview, `model/` pure draft and editor logic; its save actions stay in `features/settings/actions`) + `sections/` (one folder per homepage section kind: `kind.ts` describes its text, rows and settings, `Editor.tsx` edits it, `render.tsx` shows it; `kinds.ts` and `registry.tsx` list them. A new kind is a folder, a line in each list, and its payload type and save schema in the domain) |
 | `features/guest-app/` | Stay UI + `actions/` + `loaders.ts` |
 | `features/settings/` | Settings + catalog **actions** + `loaders.ts` + `ui/` (panels + statistics; chrome stays in `components/admin/settings`) |
 | `features/checkin/` | Check-in **actions** + `loaders.ts` + `ui/` (wizard + operative provider) |

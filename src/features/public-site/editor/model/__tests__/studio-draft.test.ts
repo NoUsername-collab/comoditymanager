@@ -1,17 +1,25 @@
 import { describe, expect, it } from "vitest";
 import { parsePublicSiteSettingsInput } from "@/domain/settings/schemas/public-site";
-import { textSectionIdFromKey } from "@/features/public-site/domain/order-sections";
-import type { PublicSiteConfig } from "@/features/public-site/domain/types";
+import type { PublicSectionType, PublicSiteConfig } from "@/features/public-site/domain/types";
 import {
-  addStudioTextSection,
+  addSectionDraft,
+  findSectionDraft,
+  moveSectionDraft,
+  orderSectionsForTemplate,
+  removeSectionItem,
+  sectionField,
+  setSectionField,
+} from "@/features/public-site/editor/model/section-draft";
+import {
   buildPublicSiteStudioDraft,
   mergeStudioDrafts,
   mergeStudioToInput,
-  moveStudioSection,
   patchStudioCopy,
-  removeStudioBenefit,
+  patchStudioSection,
   switchStudioLocale,
+  type PublicSiteStudioDraft,
 } from "@/features/public-site/editor/model/studio-draft";
+import { SECTION_KINDS } from "@/features/public-site/sections/kinds";
 
 const config: PublicSiteConfig = {
   id: "ps-1",
@@ -53,6 +61,21 @@ const config: PublicSiteConfig = {
   place: { address: null, lat: null, lng: null },
 };
 
+const ALL_TYPES = Object.keys(SECTION_KINDS) as PublicSectionType[];
+
+/** Edit the first section of a type in the language being edited. */
+function editSection(
+  draft: PublicSiteStudioDraft,
+  type: PublicSectionType,
+  field: string,
+  value: string,
+): PublicSiteStudioDraft {
+  const section = findSectionDraft(draft.sections, type)!;
+  return patchStudioSection(draft, section.key, (current) =>
+    setSectionField(current, draft.editLocale, field, value),
+  );
+}
+
 describe("public site studio draft", () => {
   it("saves one language without wiping the others", () => {
     let draft = buildPublicSiteStudioDraft(config, "en");
@@ -61,11 +84,7 @@ describe("public site studio draft", () => {
     draft = patchStudioCopy(draft, { heroTitle: "RO casa" });
 
     const input = mergeStudioToInput({ config, draft });
-    expect(input.hero.title).toEqual({
-      ro: "RO casa",
-      en: "EN home",
-      bg: "BG hero",
-    });
+    expect(input.hero.title).toEqual({ ro: "RO casa", en: "EN home", bg: "BG hero" });
     expect(input.hero.showCheckTimes).toBe(true);
     expect(input.chrome.showContactBar).toBe(true);
     expect(input.chrome.showStayOffers).toBe(true);
@@ -98,12 +117,11 @@ describe("public site studio draft", () => {
       ],
     };
     let draft = buildPublicSiteStudioDraft(withBenefits, "ro");
-    draft = removeStudioBenefit(draft, 1);
+    const benefits = findSectionDraft(draft.sections, "benefits")!;
+    draft = patchStudioSection(draft, benefits.key, (current) =>
+      removeSectionItem(current, current.items[1]!.id),
+    );
 
-    expect(draft.copies.en.benefitItems.map((item) => item.title)).toEqual([
-      "Wi-Fi",
-      "Breakfast",
-    ]);
     const input = mergeStudioToInput({ config: withBenefits, draft });
     const items = input.sections.find((section) => section.sectionType === "benefits")?.payload
       .items as { title: Record<string, string> }[];
@@ -113,28 +131,76 @@ describe("public site studio draft", () => {
     ]);
   });
 
-  it("sends saved section ids back, and new text sections with their own id", () => {
+  it("sends saved section ids back, and new sections with the id made for them", () => {
     const savedId = "3f2b8c1e-5d4a-4b6f-9a7e-2c1d0e9f8a7b";
+    const newId = "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d";
     const saved: PublicSiteConfig = {
       ...config,
       sections: [{ ...config.sections[0]!, id: savedId }],
     };
-    const draft = addStudioTextSection(buildPublicSiteStudioDraft(saved, "ro"));
+    const base = buildPublicSiteStudioDraft(saved, "ro");
+    const draft = { ...base, sections: addSectionDraft(base.sections, "text", newId)! };
     const input = mergeStudioToInput({ config: saved, draft });
 
     expect(input.sections.find((section) => section.sectionType === "intro")?.id).toBe(savedId);
-    const text = input.sections.find((section) => section.sectionType === "text");
-    expect(text?.id).toMatch(/^[0-9a-f-]{36}$/);
-    expect(text?.id).toBe(textSectionIdFromKey(draft.sectionOrder.at(-1) ?? ""));
-    // Built-in defaults have no database id yet; they are created on save.
+    expect(input.sections.find((section) => section.sectionType === "text")?.id).toBe(newId);
+    // A section that was never saved has no database id yet; it is created on save.
     expect(input.sections.find((section) => section.sectionType === "gallery")?.id).toBeUndefined();
     expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
   });
 
   it("keeps the closing booking band last when sections move", () => {
-    const draft = { ...buildPublicSiteStudioDraft(config, "ro"), sectionOrder: ["intro", "cta", "gallery"] };
-    expect(moveStudioSection(draft, "gallery", -1).sectionOrder).toEqual(["gallery", "intro", "cta"]);
-    expect(moveStudioSection(draft, "gallery", 1)).toBe(draft);
+    const withCta: PublicSiteConfig = {
+      ...config,
+      sections: [
+        ...config.sections,
+        { id: "cta-1", sectionType: "cta", sortOrder: 20, visible: true, payload: {} },
+      ],
+    };
+    const sections = buildPublicSiteStudioDraft(withCta, "ro").sections;
+    expect(sections.map((section) => section.type)).toEqual(["intro", "gallery", "cta"]);
+    const gallery = findSectionDraft(sections, "gallery")!;
+    expect(moveSectionDraft(sections, gallery.key, -1).map((section) => section.type)).toEqual([
+      "gallery",
+      "intro",
+      "cta",
+    ]);
+    expect(moveSectionDraft(sections, gallery.key, 1)).toBe(sections);
+  });
+
+  it("follows a layout's rhythm", () => {
+    const sections = buildPublicSiteStudioDraft(config, "ro").sections;
+    expect(orderSectionsForTemplate(sections, "immersive").map((section) => section.type)).toEqual([
+      "gallery",
+      "intro",
+    ]);
+  });
+
+  it("saves and reads back every kind's own text", () => {
+    const allKinds: PublicSiteConfig = {
+      ...config,
+      sections: ALL_TYPES.map(
+        (sectionType, index) =>
+          ({
+            id: `s-${sectionType}`,
+            sectionType,
+            sortOrder: index * 10,
+            visible: true,
+            payload: {},
+          }) as PublicSiteConfig["sections"][number],
+      ),
+    };
+    let draft = buildPublicSiteStudioDraft(allKinds, "ro");
+    for (const type of ALL_TYPES) draft = editSection(draft, type, "title", `RO ${type}`);
+
+    const saved = mergeStudioToInput({ config: allKinds, draft }).sections.map((section, index) => ({
+      ...section,
+      id: `saved-${index}`,
+    })) as PublicSiteConfig["sections"];
+    const reloaded = buildPublicSiteStudioDraft({ ...allKinds, sections: saved }, "ro");
+    for (const type of ALL_TYPES) {
+      expect(sectionField(findSectionDraft(reloaded.sections, type), "ro", "title")).toBe(`RO ${type}`);
+    }
   });
 
   it("round-trips extra jsonb keys through parse", () => {
@@ -146,8 +212,7 @@ describe("public site studio draft", () => {
       heroTitle: "EN home",
     });
     const input = mergeStudioToInput({ config: messy, draft });
-    const parsed = parsePublicSiteSettingsInput(input);
-    expect(parsed.ok).toBe(true);
+    expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
   });
 });
 
@@ -157,12 +222,23 @@ describe("merging after a version conflict", () => {
     const mine = patchStudioCopy({ ...base, showCheckTimes: !base.showCheckTimes }, {
       heroSubtitle: "Al meu",
     });
-    const theirs = patchStudioCopy({ ...base, themeId: "forest" }, { introLead: "Al colegului" });
+    const theirs = editSection({ ...base, themeId: "forest" }, "intro", "lead", "Al colegului");
 
     const merged = mergeStudioDrafts(base, mine, theirs);
     expect(merged.copies.ro.heroSubtitle).toBe("Al meu");
-    expect(merged.copies.ro.introLead).toBe("Al colegului");
+    expect(sectionField(findSectionDraft(merged.sections, "intro"), "ro", "lead")).toBe(
+      "Al colegului",
+    );
     expect(merged.showCheckTimes).toBe(mine.showCheckTimes);
     expect(merged.themeId).toBe("forest");
+  });
+
+  it("keeps a section the operator added and one the colleague added", () => {
+    const base = buildPublicSiteStudioDraft(config, "ro");
+    const mine = { ...base, sections: addSectionDraft(base.sections, "text", "mine")! };
+    const theirs = { ...base, sections: addSectionDraft(base.sections, "text", "theirs")! };
+    const keys = mergeStudioDrafts(base, mine, theirs).sections.map((section) => section.key);
+    expect(keys).toContain("mine");
+    expect(keys).toContain("theirs");
   });
 });

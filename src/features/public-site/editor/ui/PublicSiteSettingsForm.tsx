@@ -44,12 +44,12 @@ import {
   buildPublicSiteStudioDraft,
   mergeStudioDrafts,
   mergeStudioToInput,
-  nextGalleryDraftId,
   patchStudioCopy,
   switchStudioLocale,
   type LocaleCopy,
   type PublicSiteStudioDraft,
 } from "@/features/public-site/editor/model/studio-draft";
+import { nextItemDraftId } from "@/features/public-site/editor/model/section-draft";
 import "@/styles/features/admin/admin-public-site-editor.css";
 
 export function PublicSiteSettingsForm({
@@ -191,7 +191,7 @@ export function PublicSiteSettingsForm({
   }
 
   function finishQuickStart(answers: QuickStartAnswers) {
-    setDraftState((d) => applyQuickStart(d, answers, nextGalleryDraftId));
+    setDraftState((d) => applyQuickStart(d, answers, nextItemDraftId));
     closeQuickStart();
     goTo("publish");
   }
@@ -203,7 +203,7 @@ export function PublicSiteSettingsForm({
   }
 
   function pickFromPreview(target: Element): boolean {
-    const key = editKeyFromPreviewTarget(target, draft.sectionOrder);
+    const key = editKeyFromPreviewTarget(target, draft);
     if (!key) return false;
     setTab("content");
     setOpenKey(key);

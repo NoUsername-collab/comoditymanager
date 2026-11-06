@@ -1701,7 +1701,8 @@
             },
             "text": {
               "name": "Text liber",
-              "desc": "Un text al tău: reguli, istoric, activități."
+              "desc": "Un text al tău: reguli, istoric, activități.",
+              "add": "Adaugă un text liber"
             },
             "stays": {
               "name": "Camere",
@@ -1722,7 +1723,6 @@
           },
           "photoCount": "{count, plural, one {# poză} few {# poze} other {# de poze}}",
           "noPhotos": "Nicio poză încă",
-          "addText": "Adaugă un text liber",
           "heroImage": "Poza principală",
           "heroImageHint": "Cea mai frumoasă poză a pensiunii. JPEG, PNG sau WebP, maxim 5 MB.",
           "heroTitle": "Titlul mare",
