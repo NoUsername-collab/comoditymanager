@@ -1,5 +1,13 @@
-import { PUBLIC_INTRO_HREF, PUBLIC_STEPS_HREF } from "@/features/public-site/domain/anchors";
-import type { PublicLocale, PublicSiteConfig } from "@/features/public-site/domain/types";
+import {
+  anchoredSectionType,
+  PUBLIC_INTRO_HREF,
+  PUBLIC_STEPS_HREF,
+} from "@/features/public-site/domain/anchors";
+import type {
+  PublicLocale,
+  PublicSiteConfig,
+  PublicStockCopy,
+} from "@/features/public-site/domain/types";
 import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 import { HOMEPAGE_COPY_KEYS } from "@/features/public-site/editor/model/copy-fields";
 import {
@@ -79,18 +87,41 @@ function visibleCopyFields(draft: PublicSiteStudioDraft, copy: LocaleCopy): Copy
 
 /**
  * 0–100: share of visible homepage copy written in each language. Text copied
- * from another language counts only once the operator has changed it.
+ * from another language counts only once the operator has changed it. So does a
+ * default text (from `stock`) when the same field says something of the
+ * operator's own in another language: it no longer describes the same place.
  */
 export function studioLocaleProgress(
   draft: PublicSiteStudioDraft,
+  stock?: PublicStockCopy,
 ): Record<PublicLocale, number> {
+  const fieldsByLocale = Object.fromEntries(
+    PUBLIC_LOCALES.map((locale) => [
+      locale,
+      new Map(
+        visibleCopyFields(draft, draft.copies[locale]).map((field) => [field.path, field.value.trim()]),
+      ),
+    ]),
+  ) as Record<PublicLocale, Map<string, string>>;
+  const stockSets = Object.fromEntries(
+    PUBLIC_LOCALES.map((locale) => [locale, new Set(stock?.[locale] ?? [])]),
+  ) as Record<PublicLocale, Set<string>>;
+  const ownTextElsewhere = (locale: PublicLocale, path: string) =>
+    PUBLIC_LOCALES.some((other) => {
+      if (other === locale) return false;
+      const value = fieldsByLocale[other].get(path) ?? "";
+      return value.length > 0 && !stockSets[other].has(value);
+    });
+
   const progress = {} as Record<PublicLocale, number>;
   for (const locale of PUBLIC_LOCALES) {
     const copied = new Set(draft.copiedText[locale] ?? []);
     const fields = visibleCopyFields(draft, draft.copies[locale]);
-    const filled = fields.filter(
-      (field) => field.value.trim().length > 0 && !copied.has(field.value),
-    ).length;
+    const filled = fields.filter((field) => {
+      const value = field.value.trim();
+      if (!value || copied.has(field.value)) return false;
+      return !(stockSets[locale].has(value) && ownTextElsewhere(locale, field.path));
+    }).length;
     progress[locale] = fields.length === 0 ? 100 : Math.round((filled / fields.length) * 100);
   }
   return progress;
@@ -167,6 +198,9 @@ type PublicSiteReadinessId =
   | "heroImage"
   | "heroTitle"
   | "description"
+  | "heroButton"
+  | "heroLinks"
+  | "rooms"
   | "contact"
   | "gallery"
   | "locales";
@@ -182,12 +216,18 @@ export type PublicSiteReadinessItem = {
 /** Checklist shown before publishing. `config` is the resolved preview config. */
 export function publicSiteReadiness(
   draft: PublicSiteStudioDraft,
-  config: Pick<PublicSiteConfig, "contact">,
+  config: Pick<PublicSiteConfig, "contact" | "stayOffers">,
+  stock?: PublicStockCopy,
 ): PublicSiteReadinessItem[] {
   const copy = draft.copies[draft.editLocale];
   const hasPhoto = draft.galleryItems.some((item) => item.url.trim().length > 0);
   const contact = config.contact;
-  const progress = studioLocaleProgress(draft);
+  const progress = studioLocaleProgress(draft, stock);
+  const sectionShown = { intro: draft.introVisible, steps: draft.stepsVisible };
+  const lands = (href: string) => {
+    const target = anchoredSectionType(href);
+    return !target || sectionShown[target];
+  };
 
   return [
     { id: "heroImage", done: draft.heroImageUrl.trim().length > 0, tab: "content" },
@@ -197,6 +237,18 @@ export function publicSiteReadiness(
       done: copy.heroSubtitle.trim().length > 0 || copy.introLead.trim().length > 0,
       tab: "content",
     },
+    // Every language: a page without it has no booking button at the top.
+    {
+      id: "heroButton",
+      done: !draft.bookingEnabled || PUBLIC_LOCALES.every((locale) => draft.copies[locale].heroCtaPrimary.trim()),
+      tab: "content",
+    },
+    {
+      id: "heroLinks",
+      done: lands(draft.heroCtaPrimaryHref) && lands(draft.heroCtaSecondaryHref),
+      tab: "content",
+    },
+    { id: "rooms", done: !draft.bookingEnabled || config.stayOffers.length > 0, tab: "contact" },
     {
       id: "contact",
       done: Boolean(contact.phone || contact.email || contact.whatsapp),

@@ -3,7 +3,11 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import type { PublicLocale, PublicSiteConfig } from "@/features/public-site/domain/types";
+import type {
+  PublicLocale,
+  PublicSiteConfig,
+  PublicStockCopy,
+} from "@/features/public-site/domain/types";
 import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 import type { PensionContact } from "@/domain/settings/pension-identity";
 import { buildPublicSiteConfigFromInput } from "@/domain/public-site/resolve-config";
@@ -38,6 +42,7 @@ import {
 } from "@/features/public-site/editor/model/editor-model";
 import {
   buildPublicSiteStudioDraft,
+  mergeStudioDrafts,
   mergeStudioToInput,
   nextGalleryDraftId,
   patchStudioCopy,
@@ -54,7 +59,10 @@ export function PublicSiteSettingsForm({
   readOnly = false,
   alerts = [],
   siteUrl,
+  stockCopy,
 }: {
+  /** Default texts per language, so progress can tell them from the operator's own. */
+  stockCopy: PublicStockCopy;
   config: PublicSiteConfig;
   locale: string;
   primaryContact: PensionContact;
@@ -81,6 +89,11 @@ export function PublicSiteSettingsForm({
   const [draft, setDraftState] = useState<PublicSiteStudioDraft>(() =>
     buildPublicSiteStudioDraft(config, locale),
   );
+  // The saved version this draft started from; a conflict merges against it.
+  const baseDraftRef = useRef(draft);
+  const [mergedAfterConflict, setMergedAfterConflict] = useState(false);
+  const [reloadingWithEdits, setReloadingWithEdits] = useState(false);
+  const conflictKey = `${CONFLICT_DRAFT_KEY}:${config.id || "new"}`;
   const copy = draft.copies[draft.editLocale];
 
   // Typing updates `draft` at once; everything derived from the whole draft (the
@@ -104,10 +117,13 @@ export function PublicSiteSettingsForm({
     const input = mergeStudioToInput({ config, draft: answered });
     return buildPublicSiteConfigFromInput(config, input, primaryContact);
   }, [quickStartOpen, quickStartAnswers, previewConfig, settledDraft, config, primaryContact]);
-  const progress = useMemo(() => studioLocaleProgress(settledDraft), [settledDraft]);
+  const progress = useMemo(
+    () => studioLocaleProgress(settledDraft, stockCopy),
+    [settledDraft, stockCopy],
+  );
   const readiness = useMemo(
-    () => publicSiteReadiness(settledDraft, previewConfig),
-    [settledDraft, previewConfig],
+    () => publicSiteReadiness(settledDraft, previewConfig, stockCopy),
+    [settledDraft, previewConfig, stockCopy],
   );
   const preview = useMemo(
     () => <PublicSitePreview config={studioPreviewConfig} locale={settledDraft.editLocale} />,
@@ -118,7 +134,11 @@ export function PublicSiteSettingsForm({
   initialSnapshot.current ??= draftInputJson;
   // A keystroke the deferred copy has not caught up with yet still counts as unsaved.
   const dirty = draft !== settledDraft || draftInputJson !== initialSnapshot.current;
-  useSettingsUnsavedWarning(!readOnly && dirty);
+  // Not while reloading to keep the edits: they come back after the reload.
+  useSettingsUnsavedWarning(!readOnly && dirty && !reloadingWithEdits);
+  useEffect(() => {
+    if (reloadingWithEdits) window.location.reload();
+  }, [reloadingWithEdits]);
 
   function fieldError(...paths: string[]): string | undefined {
     for (const path of paths) {
@@ -146,6 +166,16 @@ export function PublicSiteSettingsForm({
     setTab(next);
     formRef.current?.closest(".pub-site-studio__form")?.scrollTo({ top: 0 });
   }
+
+  // Back from "reload and keep my changes": lay them over the colleague's version.
+  useEffect(() => {
+    const kept = takeConflictDraft(conflictKey);
+    if (!kept || readOnly) return;
+    setDraftState((theirs) => mergeStudioDrafts(kept.base, kept.mine, theirs));
+    setMergedAfterConflict(true);
+    // Once, on the load that follows the reload.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (readOnly || !isFreshPublicSite(draft) || quickStartDismissed()) return;
@@ -214,6 +244,8 @@ export function PublicSiteSettingsForm({
         if (errorTab) goTo(errorTab);
       } else {
         initialSnapshot.current = JSON.stringify(payload);
+        baseDraftRef.current = next;
+        setMergedAfterConflict(false);
         versionRef.current = result.version;
         router.push(result.redirectTo);
         router.refresh();
@@ -275,6 +307,11 @@ export function PublicSiteSettingsForm({
               {te("unsavedStudio")}
             </p>
           ) : null}
+          {mergedAfterConflict ? (
+            <p className="settings-unsaved-banner" role="status">
+              {te("conflictMerged")}
+            </p>
+          ) : null}
           {error ? (
             <div className="settings-alerts">
               <p className="settings-alerts__item settings-alerts__item--error" role="alert">
@@ -282,7 +319,13 @@ export function PublicSiteSettingsForm({
                 {conflict ? (
                   <>
                     {" "}
-                    <button type="button" onClick={() => window.location.reload()}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        keepConflictDraft(conflictKey, baseDraftRef.current, draft);
+                        setReloadingWithEdits(true);
+                      }}
+                    >
                       {te("conflictReload")}
                     </button>
                   </>
@@ -389,6 +432,34 @@ export function PublicSiteSettingsForm({
       }
     />
   );
+}
+
+const CONFLICT_DRAFT_KEY = "pub-site-conflict-draft";
+
+/** Carries the operator's edits across the reload that fetches a colleague's version. */
+function keepConflictDraft(
+  key: string,
+  base: PublicSiteStudioDraft,
+  mine: PublicSiteStudioDraft,
+): void {
+  try {
+    sessionStorage.setItem(key, JSON.stringify({ base, mine }));
+  } catch {
+    /* storage blocked: the reload then shows their version only */
+  }
+}
+
+function takeConflictDraft(
+  key: string,
+): { base: PublicSiteStudioDraft; mine: PublicSiteStudioDraft } | null {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    sessionStorage.removeItem(key);
+    return JSON.parse(raw) as { base: PublicSiteStudioDraft; mine: PublicSiteStudioDraft };
+  } catch {
+    return null;
+  }
 }
 
 const QUICK_START_DISMISSED_KEY = "pub-site-quickstart-dismissed";

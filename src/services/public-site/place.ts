@@ -3,6 +3,8 @@ import { emptyPublicPlace } from "@/features/public-site/domain/stay-offers";
 import type { PublicPlace } from "@/features/public-site/domain/types";
 
 function asCoord(raw: unknown): number | null {
+  // Number(null) and Number("") are 0: a pension without coordinates would get a map of 0,0.
+  if (raw === null || raw === undefined || (typeof raw === "string" && !raw.trim())) return null;
   const n = typeof raw === "number" ? raw : Number(raw);
   return Number.isFinite(n) ? n : null;
 }

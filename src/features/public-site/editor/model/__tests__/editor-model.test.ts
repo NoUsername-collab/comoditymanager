@@ -143,7 +143,7 @@ describe("public site editor model", () => {
 
   it("lists what is missing before publishing", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
-    const items = publicSiteReadiness(draft, { contact: { email: null, phone: null } });
+    const items = publicSiteReadiness(draft, { contact: { email: null, phone: null }, stayOffers: [] });
     const byId = Object.fromEntries(items.map((item) => [item.id, item]));
     expect(byId.heroImage).toMatchObject({ done: false, tab: "content" });
     expect(byId.heroTitle?.done).toBe(true);
@@ -151,9 +151,47 @@ describe("public site editor model", () => {
 
     const ready = publicSiteReadiness(patchStudioCopy({ ...draft, heroImageUrl: "x.jpg" }, {}), {
       contact: { email: "a@b.ro", phone: null },
+      stayOffers: [],
     });
     expect(ready.find((item) => item.id === "heroImage")?.done).toBe(true);
     expect(ready.find((item) => item.id === "contact")?.done).toBe(true);
+  });
+
+  it("flags what loses bookings: a missing top button, a link to a hidden section, no rooms", () => {
+    const draft = {
+      ...buildPublicSiteStudioDraft(config, "ro"),
+      bookingEnabled: true,
+      heroCtaSecondaryHref: "#public-intro",
+      introVisible: false,
+    };
+    const items = publicSiteReadiness(
+      patchStudioCopy(draft, { heroCtaPrimary: "Rezervă" }),
+      { contact: { email: "a@b.ro", phone: null }, stayOffers: [] },
+    );
+    const byId = Object.fromEntries(items.map((item) => [item.id, item.done]));
+    expect(byId.heroButton).toBe(false);
+    expect(byId.heroLinks).toBe(false);
+    expect(byId.rooms).toBe(false);
+
+    const fixed = publicSiteReadiness(
+      { ...draft, introVisible: true, bookingEnabled: false },
+      { contact: { email: "a@b.ro", phone: null }, stayOffers: [] },
+    );
+    const fixedById = Object.fromEntries(fixed.map((item) => [item.id, item.done]));
+    expect(fixedById.heroButton).toBe(true);
+    expect(fixedById.heroLinks).toBe(true);
+    expect(fixedById.rooms).toBe(true);
+  });
+
+  it("stops counting a default text once another language says something of its own", () => {
+    const stock = { ro: ["Liniște"], en: ["Quiet"], bg: ["Тишина"] };
+    let draft = buildPublicSiteStudioDraft(config, "ro");
+    for (const [locale, text] of Object.entries(stock)) {
+      draft = patchStudioCopy({ ...draft, editLocale: locale as "ro" | "en" | "bg" }, { heroSubtitle: text[0] });
+    }
+    const before = studioLocaleProgress(draft, stock).en;
+    draft = patchStudioCopy({ ...draft, editLocale: "ro" }, { heroSubtitle: "Cabană lângă lac" });
+    expect(studioLocaleProgress(draft, stock).en).toBeLessThan(before);
   });
 
   it("maps a rendered section back to its editor card", () => {

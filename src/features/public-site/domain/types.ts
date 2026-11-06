@@ -207,6 +207,9 @@ export type PublicSiteSettingsRow = {
  */
 export type PublicUntranslatedCopy = Partial<Record<PublicLocale, string[]>>;
 
+/** Per language, the default texts a new site starts with (not written by the operator). */
+export type PublicStockCopy = Record<PublicLocale, readonly string[]>;
+
 export type PublicStayOffer = {
   id: string;
   name: string;

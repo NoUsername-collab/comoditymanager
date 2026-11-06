@@ -1581,7 +1581,8 @@
           "publishAnyway": "{count, plural, one {# thing still missing} other {# things still missing}} — you can publish now and finish later.",
           "publishSavesAll": "Your other unsaved changes are saved too.",
           "unsavedStudio": "You have unsaved changes — press “Save” at the top, next to the preview.",
-          "conflictReload": "Reload the page",
+          "conflictReload": "Reload and keep my changes",
+          "conflictMerged": "We loaded the version your colleague saved and put your changes on top. Check the page, then save.",
           "shareTitle": "Your site is online at:",
           "shareCopy": "Copy address",
           "shareCopied": "Address copied",
@@ -1810,6 +1811,9 @@
             "heroImage": "You added a main photo",
             "heroTitle": "You wrote the big title",
             "description": "You wrote a short description",
+            "heroButton": "The booking button at the top has a label in every language",
+            "heroLinks": "The buttons at the top lead to sections that are shown",
+            "rooms": "The booking page has rooms to choose from",
             "contact": "Guests have a phone or email",
             "gallery": "The gallery has at least one photo",
             "locales": "Translations into the other languages (optional — until then visitors see your main language)"
@@ -3574,7 +3578,7 @@
       "publicSiteMediaType": "Use a JPEG, PNG or WebP photo.",
       "publicSiteMediaEmpty": "Choose a photo to upload.",
       "publicSiteMediaFailed": "Could not upload the photo. Try again.",
-      "publicSiteVersionConflict": "Someone else saved the page in the meantime. Reload to see their version; your current changes were not saved.",
+      "publicSiteVersionConflict": "Someone else saved the page in the meantime. Reload: we keep your changes on top of their version, then you can save.",
       "identityLogoInvalid": "The logo address is not valid. Upload it again or remove it, then save.",
       "identitySettingsMissing": "Property settings were not found. Reload the page and try again.",
       "genericError": "An error occurred. Please try again."

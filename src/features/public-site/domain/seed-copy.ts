@@ -2,7 +2,11 @@ import en from "../../../../messages/en.json";
 import ro from "../../../../messages/ro.json";
 import bg from "../../../../messages/bg.json";
 import { localizedFromTriad } from "@/features/public-site/domain/localized";
-import type { LocalizedText } from "@/features/public-site/domain/types";
+import {
+  PUBLIC_LOCALES,
+  type LocalizedText,
+  type PublicStockCopy,
+} from "@/features/public-site/domain/types";
 
 type HomeMessages = typeof en.public.home;
 
@@ -106,4 +110,20 @@ export function seedPublicPages() {
     termsTitle: terms((m) => m.title),
     termsLead: terms((m) => m.lead),
   };
+}
+
+/** Every default text, per language: the editor tells them from the operator's own. */
+export function publicStockCopy(): PublicStockCopy {
+  const triads: LocalizedText[] = [
+    ...Object.values(seedPublicHomeCopy()),
+    ...Object.values(seedPublicChromeCopy()),
+    ...Object.values(seedPublicPages()),
+  ];
+  const stock = {} as Record<(typeof PUBLIC_LOCALES)[number], string[]>;
+  for (const locale of PUBLIC_LOCALES) {
+    stock[locale] = triads
+      .map((triad) => triad[locale]?.trim() ?? "")
+      .filter((text) => text.length > 0);
+  }
+  return stock;
 }

@@ -3,12 +3,13 @@ import { Link } from "@/i18n/navigation";
 import { isOptimizablePublicImageUrl } from "@/domain/public-site/media";
 import { pickOwnLocalized, storedTitle } from "@/features/public-site/domain/localized";
 import { safeNavHref } from "@/lib/security/html-escape";
-import { PUBLIC_INTRO_HREF } from "@/features/public-site/domain/anchors";
+import { anchoredSectionType, PUBLIC_STEPS_HREF } from "@/features/public-site/domain/anchors";
+import { findSection } from "@/features/public-site/domain/order-sections";
 import type { PublicSiteConfig, PublicTemplateId } from "@/features/public-site/domain/types";
 import type { ReactNode } from "react";
 
 type HeroProps = {
-  config: Pick<PublicSiteConfig, "hero" | "displayName" | "bookingEnabled">;
+  config: Pick<PublicSiteConfig, "hero" | "displayName" | "bookingEnabled" | "sections">;
   locale: string;
   variant: PublicTemplateId;
   checkTimesLabel?: string;
@@ -67,6 +68,10 @@ export function PublicHeroBlock({
   const badge = pickOwnLocalized(hero.badge, locale);
   const ctaPrimary = pickOwnLocalized(hero.ctaPrimary, locale);
   const ctaSecondary = pickOwnLocalized(hero.ctaSecondary, locale);
+  const secondaryHref = safeNavHref(hero.ctaSecondaryHref, PUBLIC_STEPS_HREF);
+  const secondaryTarget = anchoredSectionType(secondaryHref);
+  const secondaryLands =
+    !secondaryTarget || Boolean(findSection(config.sections, secondaryTarget, { visibleOnly: true }));
   const showMeta = Boolean(checkTimesLabel) && hero.showCheckTimes !== false;
 
   const primaryBtn =
@@ -80,10 +85,10 @@ export function PublicHeroBlock({
       </PreviewOrLink>
     ) : null;
 
-  const secondaryBtn = ctaSecondary ? (
+  const secondaryBtn = ctaSecondary && secondaryLands ? (
     <PreviewOrLink
       preview={preview}
-      href={safeNavHref(hero.ctaSecondaryHref, PUBLIC_INTRO_HREF)}
+      href={secondaryHref}
       className={
         variant === "immersive" ? "pub-hero__text-link" : "pub-btn pub-btn--ghost"
       }

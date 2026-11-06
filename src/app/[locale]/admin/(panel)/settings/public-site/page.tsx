@@ -1,6 +1,7 @@
 ﻿import { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import { PublicSiteSettingsForm } from "@/features/public-site/editor/ui/PublicSiteSettingsForm";
+import { publicStockCopy } from "@/features/public-site/domain/seed-copy";
 import { loadPublicSiteAdminBundle } from "@/features/settings/loaders";
 import { getLocale, getTranslations } from "next-intl/server";
 import {
@@ -50,6 +51,7 @@ export default async function PublicSiteSettingsPage({
         readOnly={readOnly}
         alerts={alerts}
         siteUrl={siteUrl}
+        stockCopy={publicStockCopy()}
       />
     </Suspense>
   );

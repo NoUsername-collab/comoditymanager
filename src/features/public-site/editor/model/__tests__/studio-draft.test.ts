@@ -5,6 +5,7 @@ import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import {
   addStudioTextSection,
   buildPublicSiteStudioDraft,
+  mergeStudioDrafts,
   mergeStudioToInput,
   moveStudioSection,
   patchStudioCopy,
@@ -147,5 +148,21 @@ describe("public site studio draft", () => {
     const input = mergeStudioToInput({ config: messy, draft });
     const parsed = parsePublicSiteSettingsInput(input);
     expect(parsed.ok).toBe(true);
+  });
+});
+
+describe("merging after a version conflict", () => {
+  it("keeps the operator's edits and takes the colleague's everywhere else", () => {
+    const base = buildPublicSiteStudioDraft(config, "ro");
+    const mine = patchStudioCopy({ ...base, showCheckTimes: !base.showCheckTimes }, {
+      heroSubtitle: "Al meu",
+    });
+    const theirs = patchStudioCopy({ ...base, themeId: "forest" }, { introLead: "Al colegului" });
+
+    const merged = mergeStudioDrafts(base, mine, theirs);
+    expect(merged.copies.ro.heroSubtitle).toBe("Al meu");
+    expect(merged.copies.ro.introLead).toBe("Al colegului");
+    expect(merged.showCheckTimes).toBe(mine.showCheckTimes);
+    expect(merged.themeId).toBe("forest");
   });
 });

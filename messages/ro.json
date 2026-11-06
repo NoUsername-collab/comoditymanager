@@ -1566,7 +1566,8 @@
           "publishAnyway": "{count, plural, one {Mai ai # lucru de completat} few {Mai ai # lucruri de completat} other {Mai ai # de lucruri de completat}} — poți publica și acum, apoi completezi.",
           "publishSavesAll": "Se salvează și celelalte modificări nesalvate.",
           "unsavedStudio": "Ai modificări nesalvate — apasă „Salvează” sus, lângă previzualizare.",
-          "conflictReload": "Reîncarcă pagina",
+          "conflictReload": "Reîncarcă și păstrează modificările mele",
+          "conflictMerged": "Am încărcat versiunea salvată de coleg și am pus peste ea modificările tale. Verifică pagina, apoi salvează.",
           "shareTitle": "Site-ul tău e online la adresa:",
           "shareCopy": "Copiază adresa",
           "shareCopied": "Adresă copiată",
@@ -1795,6 +1796,9 @@
             "heroImage": "Ai pus o poză principală",
             "heroTitle": "Ai scris titlul mare",
             "description": "Ai scris o descriere scurtă",
+            "heroButton": "Butonul de rezervare din partea de sus are text în fiecare limbă",
+            "heroLinks": "Butoanele de sus duc spre secțiuni afișate",
+            "rooms": "Pagina de rezervare are camere de ales",
             "contact": "Oaspeții au un telefon sau e-mail",
             "gallery": "Galeria are cel puțin o poză",
             "locales": "Traducerile în engleză și bulgară (opțional — până atunci vizitatorii văd textul în română)"
@@ -3558,7 +3562,7 @@
       "publicSiteMediaType": "Folosește o poză JPEG, PNG sau WebP.",
       "publicSiteMediaEmpty": "Alege o poză de încărcat.",
       "publicSiteMediaFailed": "Nu am putut încărca poza. Încearcă din nou.",
-      "publicSiteVersionConflict": "Altcineva a salvat pagina între timp. Reîncarcă pagina ca să vezi versiunea lor; modificările tale de acum nu au fost salvate.",
+      "publicSiteVersionConflict": "Altcineva a salvat pagina între timp. Reîncarcă: îți păstrăm modificările peste versiunea lor, apoi poți salva.",
       "identityLogoInvalid": "Logo-ul nu are o adresă validă. Încarcă-l din nou sau scoate-l, apoi salvează.",
       "identitySettingsMissing": "Nu am găsit setările proprietății. Reîncarcă pagina și încearcă din nou.",
       "genericError": "Nu am putut salva. Verifică conexiunea și încearcă din nou; dacă se repetă, scrie-ne la suport."

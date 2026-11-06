@@ -1,4 +1,4 @@
-import { PUBLIC_INTRO_HREF } from "@/features/public-site/domain/anchors";
+import { PUBLIC_STEPS_HREF } from "@/features/public-site/domain/anchors";
 import { coercePublicLocale, pickOwnLocalized, writeLocalizedMap } from "@/features/public-site/domain/localized";
 import {
   alignNoticeDraft,
@@ -261,7 +261,7 @@ export function buildPublicSiteStudioDraft(
     showNavTerms: config.chrome?.showNavTerms === true,
     showCheckTimes: config.hero.showCheckTimes !== false,
     heroCtaPrimaryHref: config.hero.ctaPrimaryHref ?? "/calendar",
-    heroCtaSecondaryHref: config.hero.ctaSecondaryHref ?? PUBLIC_INTRO_HREF,
+    heroCtaSecondaryHref: config.hero.ctaSecondaryHref ?? PUBLIC_STEPS_HREF,
     ctaHref:
       findSection(config.sections, "cta")?.payload.ctaHref ??
       "/calendar",
@@ -545,7 +545,7 @@ export function mergeStudioToInput(args: {
       ...config.hero,
       ...writeCopyGroup(HERO_COPY, config.hero, copies),
       ctaPrimaryHref: draft.heroCtaPrimaryHref.trim() || "/calendar",
-      ctaSecondaryHref: draft.heroCtaSecondaryHref.trim() || PUBLIC_INTRO_HREF,
+      ctaSecondaryHref: draft.heroCtaSecondaryHref.trim() || PUBLIC_STEPS_HREF,
       imageUrl: draft.heroImageUrl.trim() || null,
       showCheckTimes: draft.showCheckTimes,
     },
@@ -686,4 +686,38 @@ export function moveStudioSection(
   [movable[index], movable[target]] = [movable[target]!, movable[index]!];
   const pinned = draft.sectionOrder.filter((row) => PINNED_SECTION_KEYS.has(row));
   return { ...draft, sectionOrder: [...movable, ...pinned] };
+}
+
+function sameValue(a: unknown, b: unknown): boolean {
+  return a === b || JSON.stringify(a) === JSON.stringify(b);
+}
+
+/**
+ * After a colleague saved first: every field the operator changed since `base`
+ * (the version they started from) keeps their value; every other field takes the
+ * colleague's (`theirs`). When both changed the same field, the operator's wins.
+ */
+export function mergeStudioDrafts(
+  base: PublicSiteStudioDraft,
+  mine: PublicSiteStudioDraft,
+  theirs: PublicSiteStudioDraft,
+): PublicSiteStudioDraft {
+  const merged: Record<string, unknown> = { ...theirs };
+  for (const key of Object.keys(mine) as (keyof PublicSiteStudioDraft)[]) {
+    if (key === "copies") continue;
+    if (!sameValue(mine[key], base[key])) merged[key] = mine[key];
+  }
+
+  const copies = { ...theirs.copies };
+  for (const locale of PUBLIC_LOCALES) {
+    const own = mine.copies[locale];
+    const start = base.copies[locale];
+    const next: Record<string, unknown> = { ...theirs.copies[locale] };
+    for (const key of Object.keys(own) as (keyof LocaleCopy)[]) {
+      if (!sameValue(own[key], start[key])) next[key] = own[key];
+    }
+    copies[locale] = next as LocaleCopy;
+  }
+
+  return { ...(merged as PublicSiteStudioDraft), copies, editLocale: mine.editLocale };
 }
