@@ -19,6 +19,7 @@ import { PublicSiteLaunchCard } from "@/features/settings/ui/PublicSiteLaunchCar
 import type { ReactNode } from "react";
 
 import type { TeamPermissions } from "@/domain/settings/team-permissions";
+import { versionLabel } from "@/lib/platform/version";
 
 type Props = {
   role: "admin" | "operator";
@@ -211,6 +212,8 @@ export function SettingsOverview({
       {quickItems.length === 0 ? (
         <p className="settings-overview__empty">{t("overviewEmpty")}</p>
       ) : null}
+
+      <p className="settings-overview__version">Zalmox {versionLabel()}</p>
     </div>
   );
 }

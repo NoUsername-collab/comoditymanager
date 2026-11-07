@@ -10,6 +10,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { APP_VERSION, BUILD_SHA } from "@/lib/platform/version";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -19,7 +20,10 @@ type HealthStatus = "ok" | "degraded" | "down";
 interface HealthCheck {
   status: HealthStatus;
   timestamp: string;
+  /** Release from package.json, e.g. "0.9.0". */
   version: string;
+  /** Commit the build was made from. */
+  build: string;
   checks: {
     database: { status: HealthStatus; latencyMs: number };
     environment: { status: HealthStatus };
@@ -28,7 +32,6 @@ interface HealthCheck {
 
 export async function GET(): Promise<NextResponse<HealthCheck>> {
   const start = Date.now();
-  const version = process.env.NEXT_PUBLIC_BUILD_SHA ?? "dev";
 
   // ── Database check ──────────────────────────────────────────────
   let dbStatus: HealthStatus = "down";
@@ -76,7 +79,8 @@ export async function GET(): Promise<NextResponse<HealthCheck>> {
   const body: HealthCheck = {
     status: overall,
     timestamp: new Date().toISOString(),
-    version,
+    version: APP_VERSION,
+    build: BUILD_SHA,
     checks: {
       database: { status: dbStatus, latencyMs: dbLatency },
       environment: { status: envStatus },

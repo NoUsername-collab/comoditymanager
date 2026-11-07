@@ -2560,3 +2560,12 @@ html[data-layout-chrome="compact"] .settings-shell__main {
   color: var(--admin-text, #18181b);
   cursor: pointer;
 }
+
+/* Running version at the foot of the settings overview, for support conversations. */
+.settings-overview__version {
+  margin: 1.5rem 0 0;
+  font-size: 0.75rem;
+  color: var(--admin-text-muted, #71717a);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}

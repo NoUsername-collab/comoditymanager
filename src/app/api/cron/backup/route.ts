@@ -17,6 +17,7 @@
  * Retention: 30 files per tenant (rolling), ~1 month of daily backups
  */
 
+import { APP_VERSION, BUILD_SHA } from "@/lib/platform/version";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -137,7 +138,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             tenant_id: tenant.id,
             tenant_slug: tenant.slug,
             created_at: new Date().toISOString(),
-            build: process.env.NEXT_PUBLIC_BUILD_SHA ?? "dev",
+            app_version: APP_VERSION,
+            build: BUILD_SHA,
             tables: [...DATA_TABLES, "admin_activity_log"],
           },
           data: tenantData,

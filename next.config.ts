@@ -1,3 +1,5 @@
+import { execSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import type { NextConfig } from "next";
 import bundleAnalyzer from "@next/bundle-analyzer";
 import { withSentryConfig } from "@sentry/nextjs";
@@ -9,14 +11,32 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
+// Release version (bumped by `npm run release`) and the commit being built.
+// Vercel gives the commit; elsewhere (local, staging builds) git does.
+const appVersion = (JSON.parse(readFileSync("./package.json", "utf8")) as { version: string })
+  .version;
+function buildSha(): string {
+  if (process.env.VERCEL_GIT_COMMIT_SHA) return process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7);
+  try {
+    return execSync("git rev-parse --short=7 HEAD", { stdio: ["ignore", "pipe", "ignore"] })
+      .toString()
+      .trim();
+  } catch {
+    return "dev";
+  }
+}
+const sha = buildSha();
+const sentryRelease = `zalmox@${appVersion}+${sha}`;
+
 // React needs eval() in development only (server error stacks in the browser).
 // Production never uses it, so the live CSP stays without 'unsafe-eval'.
 const devEval = process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : "";
 
 const nextConfig: NextConfig = {
   env: {
-    NEXT_PUBLIC_BUILD_SHA:
-      process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "dev",
+    NEXT_PUBLIC_APP_VERSION: appVersion,
+    NEXT_PUBLIC_BUILD_SHA: sha,
+    NEXT_PUBLIC_SENTRY_RELEASE: sentryRelease,
   },
   images: {
     remotePatterns: [
@@ -94,6 +114,9 @@ const nextConfig: NextConfig = {
 export default withSentryConfig(withNextIntl(withBundleAnalyzer(nextConfig)), {
   // Suppresses source map upload logs during build
   silent: true,
+
+  // Source maps and errors are grouped under the same release as the running build.
+  release: { name: sentryRelease },
 
   // Upload source maps for better stack traces (requires SENTRY_AUTH_TOKEN)
   sourcemaps: {

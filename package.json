@@ -1,6 +1,6 @@
 {
   "name": "zalmox",
-  "version": "0.2.0",
+  "version": "0.9.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:security": "vitest run src/lib/security/ src/lib/auth/__tests__/ src/lib/__tests__/rate-limit.test.ts",
     "typecheck": "tsc --noEmit",
+    "release": "node scripts/release.mjs",
     "audit:tenant-queries": "vitest run src/lib/security/__tests__/tenant-query-audit.test.ts",
     "test:mobile": "vitest run src/layout/mobile/__tests__/",
     "test:watch": "vitest",
