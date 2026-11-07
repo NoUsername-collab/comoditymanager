@@ -87,12 +87,6 @@ html[data-admin-palette] .admin-hud__title {
   text-shadow: none !important;
 }
 
-html[data-admin-palette] .admin-hud__badge--stable {
-  background: var(--admin-chip-bg) !important;
-  color: var(--admin-chip-text) !important;
-  border: 1px solid var(--admin-chip-border) !important;
-}
-
 html[data-admin-palette] .admin-nav-tab {
   color: var(--admin-nav-tab-text) !important;
   background: var(--admin-nav-tab-bg) !important;

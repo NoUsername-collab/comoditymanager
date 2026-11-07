@@ -238,20 +238,6 @@
   text-transform: uppercase;
 }
 
-.admin-hud__badge--stable {
-  background: var(--admin-chip-bg, var(--admin-surface-bg, #ffffff));
-  color: var(--admin-chip-text, var(--admin-text, #18181b));
-  border: 1px solid var(--admin-chip-border, var(--admin-surface-border, #e4e4e7));
-  backdrop-filter: none;
-  box-shadow: none;
-}
-
-.admin-hud__badge--alpha {
-  background: #7c3aed;
-  color: #faf5ff;
-  box-shadow: none;
-}
-
 @keyframes admin-hud-pulse {
   0%,
   100% {
@@ -811,4 +797,14 @@
 .admin-hud__chip--logout:hover {
     transform: none;
   }
+}
+
+/* Running version at the foot of the account menu: quiet, for support. */
+.admin-gear__version {
+  margin: 0.55rem 0 0;
+  font-size: 0.6875rem;
+  color: var(--admin-text-muted, #71717a);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  user-select: all;
 }

@@ -205,12 +205,6 @@
   font-style: italic;
 }
 
-.gantt-toolbar__legend-item--build {
-  margin-left: auto;
-  font-family: ui-monospace, monospace;
-  opacity: 0.75;
-}
-
 .gantt-toolbar__legend-swatch--block {
   background: repeating-linear-gradient(
     135deg,

@@ -1,6 +1,5 @@
 "use client";
 
-import { versionLabel } from "@/lib/platform/version";
 import { Link } from "@/i18n/navigation";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation"
@@ -508,12 +507,6 @@ export function GanttToolbar({
           </span>
           <span className="gantt-toolbar__legend-item gantt-toolbar__legend-item--hint">
             {tCommon("dragEmptyCell")}
-          </span>
-          <span
-            className="gantt-toolbar__legend-item gantt-toolbar__legend-item--build"
-            title={tCommon("vercelHashTitle")}
-          >
-            {versionLabel()}
           </span>
         </div>
       </div>

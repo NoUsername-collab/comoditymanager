@@ -1,6 +1,5 @@
 import { Link } from "@/i18n/navigation";
 import { AdminDayNightSwitch } from "@/components/admin/AdminDayNightSwitch";
-import { AdminVersionBadge } from "@/components/admin/AdminVersionBadge";
 import { AdminPlanBadge } from "@/components/admin/AdminPlanBadge";
 import { HudIconGear, HudIconGlobe } from "@/components/admin/AdminHudIcons";
 import { LogoutButton } from "@/features/auth/ui/LogoutButton";
@@ -10,6 +9,7 @@ import { AdminGearMenu } from "@/components/admin/AdminGearMenu";
 import { PwaInstallAction } from "@/components/pwa/PwaInstallAction";
 import { getTranslations } from "next-intl/server";
 import { getTenantContext } from "@/core/tenant/context";
+import { versionLabel } from "@/lib/platform/version";
 
 export async function AdminTopBar({
   requestCount,
@@ -44,11 +44,10 @@ export async function AdminTopBar({
         <AdminNav requestCount={requestCount} locationUnlocked={locationUnlocked} />
       </div>
 
-      {/* ── Right: theme, version, gear ── */}
+      {/* ── Right: theme, gear ── */}
       <div className="admin-hud__right">
         <div className="admin-hud__tools">
           <AdminDayNightSwitch />
-          <AdminVersionBadge />
           <AdminGearMenu>
             <Link
               href="/admin/settings"
@@ -78,6 +77,8 @@ export async function AdminTopBar({
                   <LanguageSwitcher compact variant="inline" />
                 </div>
               </div>
+              {/* Which build is running, for support; out of the way. */}
+              <p className="admin-gear__version">Zalmox {versionLabel()}</p>
             </div>
           </AdminGearMenu>
         </div>
