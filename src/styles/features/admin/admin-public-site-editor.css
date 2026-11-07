@@ -1,4 +1,4 @@
-/* Public site editor: step tabs, section cards, checklist (form column of the studio). */
+/* Public site editor: tabs, the page outline, a part's own screen, the publish panel. */
 
 .pub-editor {
   display: flex;
@@ -17,7 +17,7 @@
   border: 0;
 }
 
-/* Step tabs */
+/* Tabs */
 
 .pub-editor-tabs {
   position: sticky;
@@ -59,22 +59,6 @@
   color: var(--admin-text, #18181b);
   border-color: color-mix(in srgb, var(--admin-accent, #059669) 50%, transparent);
   background: color-mix(in srgb, var(--admin-accent, #059669) 8%, var(--admin-panel-bg, #fff));
-}
-
-.pub-editor-tabs__step {
-  display: inline-grid;
-  place-items: center;
-  width: 1.3rem;
-  height: 1.3rem;
-  border-radius: 999px;
-  background: var(--admin-page-bg, #f4f4f5);
-  font-size: 0.6875rem;
-  font-weight: 800;
-}
-
-.pub-editor-tabs__tab[aria-selected="true"] .pub-editor-tabs__step {
-  background: var(--admin-accent, #059669);
-  color: var(--admin-btn-primary-text, #fff);
 }
 
 .pub-editor-tabs__tab[data-error="1"] .pub-editor-tabs__step {
@@ -413,73 +397,113 @@
   background: rgb(255 255 255 / 0.9);
 }
 
-/* Section cards */
+/* Page outline: one compact row per part, grouped as "the page" and "across the site". */
 
-.pub-editor-cards {
+.pub-outline {
+  margin-top: 0.85rem;
+}
+
+.pub-outline__title {
+  margin: 0 0 0.4rem;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--admin-text-muted, #52525b);
+}
+
+.pub-outline__list {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.3rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.pub-editor-cards__add {
+.pub-outline__row {
   display: flex;
-  justify-content: center;
-  padding: 0.15rem 0 0.35rem;
-}
-
-.pub-editor-card {
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.3rem 0.15rem 0.15rem;
   border: 1px solid var(--admin-panel-border, #e4e4e7);
-  border-radius: 0.8rem;
+  border-radius: 0.7rem;
   background: var(--admin-panel-bg, #fff);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.pub-editor-card[data-open="1"] {
-  border-color: color-mix(in srgb, var(--admin-accent, #059669) 50%, transparent);
-  box-shadow: 0 1px 6px color-mix(in srgb, var(--admin-accent, #059669) 12%, transparent);
-}
-
-.pub-editor-card[data-hidden="1"]:not([data-open="1"]) {
+.pub-outline__row[data-hidden="1"] {
   background: var(--admin-page-bg, #f4f4f5);
 }
 
-.pub-editor-card[data-hidden="1"] .pub-editor-card__name {
+.pub-outline__row[data-hidden="1"] .pub-outline__name {
   color: var(--admin-text-muted, #52525b);
 }
 
-.pub-editor-card__row {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.4rem 0.25rem 0.25rem;
+.pub-outline__row[data-dragging="1"] {
+  opacity: 0.45;
 }
 
-.pub-editor-card__main {
+/* Where a dragged row will land. */
+.pub-outline__row[data-over="1"] {
+  border-color: var(--admin-accent, #059669);
+  box-shadow: 0 -3px 0 var(--admin-accent, #059669);
+}
+
+.pub-outline__handle,
+.pub-outline__pin {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 1.6rem;
+  height: 2.2rem;
+}
+
+.pub-outline__handle {
+  border: 0;
+  border-radius: 0.45rem;
+  background: transparent;
+  color: var(--admin-text-muted, #52525b);
+  font-size: 0.85rem;
+  letter-spacing: -0.2em;
+  cursor: grab;
+  touch-action: none;
+}
+
+.pub-outline__handle:hover,
+.pub-outline__handle:focus-visible {
+  background: var(--admin-page-bg, #f4f4f5);
+  color: var(--admin-text, #18181b);
+}
+
+.pub-outline__handle:active {
+  cursor: grabbing;
+}
+
+.pub-outline__open {
   display: flex;
   flex: 1;
   flex-direction: column;
   min-width: 0;
-  padding: 0.45rem 0.5rem;
+  padding: 0.45rem 0.4rem;
   border: 0;
-  border-radius: 0.6rem;
+  border-radius: 0.5rem;
   background: transparent;
   text-align: left;
   cursor: pointer;
 }
 
-.pub-editor-card__main:hover {
+.pub-outline__open:hover {
   background: var(--admin-page-bg, #f4f4f5);
 }
 
-.pub-editor-card__name {
+.pub-outline__name {
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--admin-text, #18181b);
 }
 
-.pub-editor-card__desc {
+.pub-outline__summary {
   overflow: hidden;
   font-size: 0.75rem;
   color: var(--admin-text-muted, #52525b);
@@ -487,71 +511,80 @@
   white-space: nowrap;
 }
 
-.pub-editor-card__tools {
-  display: flex;
+.pub-outline__eye {
+  display: inline-flex;
   flex-shrink: 0;
   align-items: center;
-  gap: 0.2rem;
-}
-
-.pub-editor-card__pin {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: var(--admin-text-muted, #52525b);
-}
-
-.pub-editor-card__icon {
-  width: 1.75rem;
-  height: 1.75rem;
-  border: 1px solid var(--admin-panel-border, #e4e4e7);
-  border-radius: 0.45rem;
-  background: var(--admin-panel-bg, #fff);
-  color: var(--admin-text, #18181b);
-  cursor: pointer;
-}
-
-.pub-editor-card__icon:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.pub-editor-card__eye {
-  min-width: 4.6rem;
-  height: 1.75rem;
-  padding: 0 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--admin-accent, #059669) 45%, transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--admin-accent, #059669) 10%, var(--admin-panel-bg, #fff));
-  color: var(--admin-accent, #059669);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.pub-editor-card__eye[aria-pressed="false"] {
-  border-color: var(--admin-panel-border, #d4d4d8);
-  background: var(--admin-panel-bg, #fff);
-  color: var(--admin-text-muted, #52525b);
-}
-
-.pub-editor-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-  padding: 0.35rem 0.85rem 0.85rem;
-  border-top: 1px solid var(--admin-panel-border, #e4e4e7);
-}
-
-.pub-editor-card__done {
-  align-self: flex-end;
-  padding: 0.35rem 0.9rem;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 2rem;
+  height: 2rem;
   border: 0;
-  border-radius: 999px;
-  background: var(--admin-accent, #059669);
-  color: var(--admin-btn-primary-text, #fff);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--admin-accent, #059669);
+  cursor: pointer;
+}
+
+.pub-outline__eye[aria-pressed="false"] {
+  color: var(--admin-text-muted, #52525b);
+}
+
+.pub-outline__eye:hover {
+  background: var(--admin-page-bg, #f4f4f5);
+}
+
+.pub-outline__eye--labelled {
+  width: auto;
+  padding: 0 0.6rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.pub-outline__add {
+  display: flex;
+  justify-content: center;
+  padding: 0.2rem 0;
+}
+
+/* A part opened on its own screen. */
+.pub-outline-detail__back {
+  margin-bottom: 0.6rem;
+  padding: 0.3rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--admin-accent, #059669);
   font-size: 0.8125rem;
   font-weight: 700;
   cursor: pointer;
+}
+
+.pub-outline-detail__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.pub-outline-detail__head h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--admin-text, #18181b);
+}
+
+.pub-outline-detail__head p {
+  margin: 0.2rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--admin-text-muted, #52525b);
+}
+
+.pub-outline-detail__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
 }
 
 /* Repeated items (highlights, steps, photos) */
@@ -812,20 +845,6 @@
   outline-color: transparent;
 }
 
-.pub-editor-card[data-flash="1"] {
-  animation: pub-editor-flash 1.2s ease-out;
-}
-
-@keyframes pub-editor-flash {
-  0%,
-  35% {
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--admin-accent, #059669) 45%, transparent);
-  }
-  100% {
-    box-shadow: none;
-  }
-}
-
 /* Quick start */
 
 .pub-editor-quickstart-btn {
@@ -974,11 +993,6 @@
   margin-left: auto;
 }
 
-/* Keep a revealed card clear of the sticky step tabs. */
-.pub-editor-card {
-  scroll-margin-top: 4.75rem;
-}
-
 .pub-editor-publish__btn {
   width: 100%;
   justify-content: center;
@@ -994,4 +1008,81 @@
   bottom: 0;
   border-radius: 0 0 1.1rem 1.1rem;
   background: var(--admin-panel-bg, #fff);
+}
+
+/* "Publish" in the studio's top bar: what is missing, the switch, the address. */
+.pub-publish {
+  position: relative;
+}
+
+.pub-publish__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 2rem;
+  padding: 0 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pub-publish__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--admin-text-muted, #a1a1aa);
+}
+
+.pub-publish__trigger[data-on="1"] .pub-publish__dot {
+  background: #22c55e;
+}
+
+.pub-publish__badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--admin-warning, #d97706);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 800;
+}
+
+.pub-publish__panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: min(24rem, calc(100vw - 2rem));
+  max-height: min(80vh, 40rem);
+  overflow: auto;
+  padding: 1rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  border-radius: 0.9rem;
+  background: var(--admin-panel-bg, #fff);
+  color: var(--admin-text, #18181b);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+}
+
+.pub-publish__heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+.pub-publish__heading small {
+  font-weight: 600;
+  color: var(--admin-text-muted, #52525b);
 }

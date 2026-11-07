@@ -5,6 +5,7 @@ import {
   addSectionDraft,
   findSectionDraft,
   moveSectionDraft,
+  moveSectionDraftTo,
   orderSectionsForTemplate,
   removeSectionItem,
   sectionField,
@@ -182,6 +183,20 @@ describe("public site studio draft", () => {
       "cta",
     ]);
     expect(moveSectionDraft(sections, place.key, 1)).toBe(sections);
+  });
+
+  it("drops a dragged section on another one's place, closing band still last", () => {
+    const withCta: PublicSiteConfig = {
+      ...config,
+      sections: [...config.sections, { id: "cta-1", sectionType: "cta", sortOrder: 20, visible: true, payload: {} }],
+    };
+    const sections = buildPublicSiteStudioDraft(withCta, "ro").sections;
+    const place = findSectionDraft(sections, "place")!;
+    const intro = findSectionDraft(sections, "intro")!;
+    expect(moveSectionDraftTo(sections, place.key, intro.key).map((s) => s.type)).toEqual([
+      "place", "intro", "gallery", "stays", "cta",
+    ]);
+    expect(moveSectionDraftTo(sections, place.key, "cta-1")).toBe(sections);
   });
 
   it("follows a layout's rhythm", () => {

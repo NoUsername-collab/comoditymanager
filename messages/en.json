@@ -1655,16 +1655,14 @@
           },
           "tabsAria": "Editor steps",
           "tabs": {
+            "content": "Page",
             "design": "Look",
-            "content": "Content",
-            "contact": "Contact & bookings",
-            "publish": "Publish"
+            "settings": "Settings"
           },
           "tabHints": {
-            "design": "How the site looks: photo layout and colours. You can change it any time.",
             "content": "What the page says, top to bottom. Tap a section to fill it in.",
-            "contact": "How guests reach you and send a booking request.",
-            "publish": "Check what is missing, then put the site online."
+            "design": "How the site looks: photo layout and colours. You can change it any time.",
+            "settings": "Contact, bookings and the pages around the homepage: legal, Google, coming soon."
           },
           "editingLocale": "Writing in: {language}",
           "copyFrom": "Copy missing text from {locale}",
@@ -1678,17 +1676,21 @@
           "colorsTitle": "Colours",
           "colorsDesc": "Pick the palette that suits your property.",
           "fontTitle": "Heading font",
-          "contentLead": "This is your page, top to bottom. Tap a section to write it. The “Shown” button hides it, the arrows move it.",
+          "contentLead": "Your page, top to bottom. Tap a part to write it, drag ⋮⋮ to move it, and the eye hides it.",
+          "dragHandle": "Drag to move “{name}” (or use the up/down arrows)",
+          "backToPage": "Back to the page",
+          "outlinePage": "Page",
+          "outlineSite": "Across the site",
+          "publishedOnShort": "Online",
+          "publishedOffShort": "Publish",
+          "missingCount": "{count, plural, one {# thing to fix} other {# things to fix}}",
           "hiddenOnSite": "Hidden — visitors don’t see it",
           "pinnedTop": "Always on top",
           "pinnedBottom": "Always at the bottom",
-          "moveUp": "Move “{name}” up",
-          "moveDown": "Move “{name}” down",
           "showAria": "Show the “{name}” section on the site",
           "hideAria": "Hide the “{name}” section from the site",
           "shown": "Shown",
           "hidden": "Hidden",
-          "done": "Done",
           "cards": {
             "hero": {
               "name": "Top of the page",

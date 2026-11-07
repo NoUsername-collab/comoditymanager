@@ -24,7 +24,7 @@ function isEditableTarget(target: EventTarget | null): boolean {
 export function PublicSiteStudio({
   form,
   preview,
-  published,
+  publishControl,
   editLocale,
   localeTabs,
   saveControl,
@@ -35,7 +35,8 @@ export function PublicSiteStudio({
 }: {
   form: ReactNode;
   preview: ReactNode;
-  published: boolean;
+  /** "Publish" with what is still missing; sits beside Save. */
+  publishControl?: ReactNode;
   editLocale?: "ro" | "en" | "bg";
   localeTabs?: ReactNode;
   saveControl?: ReactNode;
@@ -118,12 +119,6 @@ export function PublicSiteStudio({
 
         {localeTabs}
 
-        {!published ? (
-          <p className="pub-site-studio__unpublished" role="status">
-            {t("studioUnpublished")}
-          </p>
-        ) : null}
-
         <div className="pub-site-studio__devices" role="radiogroup" aria-label={t("studioCanvasAria")}>
           {DEVICES.map((option) => (
             <button
@@ -159,6 +154,8 @@ export function PublicSiteStudio({
           {t("studioOpenLive")}
           <span aria-hidden>↗</span>
         </Link>
+
+        {publishControl}
 
         {saveControl ? (
           <div className="pub-site-studio__save">

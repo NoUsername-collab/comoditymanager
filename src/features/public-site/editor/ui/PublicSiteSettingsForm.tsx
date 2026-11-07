@@ -25,7 +25,8 @@ import {
 import { PublicSiteDesignPanel } from "@/features/public-site/editor/ui/PublicSiteDesignPanel";
 import { PublicSiteContentPanel } from "@/features/public-site/editor/ui/PublicSiteContentPanel";
 import { PublicSiteContactPanel } from "@/features/public-site/editor/ui/PublicSiteContactPanel";
-import { PublicSitePublishPanel } from "@/features/public-site/editor/ui/PublicSitePublishPanel";
+import { PublicSitePagesPanel } from "@/features/public-site/editor/ui/PublicSitePagesPanel";
+import { PublicSitePublishControl } from "@/features/public-site/editor/ui/PublicSitePublishControl";
 import { PublicSiteQuickStart } from "@/features/public-site/editor/ui/PublicSiteQuickStart";
 import {
   applyQuickStart,
@@ -81,7 +82,8 @@ export function PublicSiteSettingsForm({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [tab, setTab] = useState<PublicSiteEditorTab>("content");
   const formRef = useRef<HTMLFormElement>(null);
-  const [openKey, setOpenKey] = useState<string | null>("hero");
+  // Null shows the page outline; a key opens that part on its own screen.
+  const [openKey, setOpenKey] = useState<string | null>(null);
   const [scrollSeq, setScrollSeq] = useState(0);
   const [quickStartOpen, setQuickStartOpen] = useState(false);
   const [quickStartAnswers, setQuickStartAnswers] = useState<QuickStartAnswers | null>(null);
@@ -193,7 +195,7 @@ export function PublicSiteSettingsForm({
   function finishQuickStart(answers: QuickStartAnswers) {
     setDraftState((d) => applyQuickStart(d, answers, nextItemDraftId));
     closeQuickStart();
-    goTo("publish");
+    setTab("content");
   }
 
   /** Language names mid-sentence: lower-case except in English („în română”). */
@@ -273,7 +275,6 @@ export function PublicSiteSettingsForm({
 
   return (
     <PublicSiteStudio
-      published={draft.published}
       editLocale={draft.editLocale}
       dirty={dirty}
       onPreviewPick={quickStartOpen ? undefined : pickFromPreview}
@@ -287,6 +288,22 @@ export function PublicSiteSettingsForm({
           disabled={readOnly}
           progress={progress}
         />
+      }
+      publishControl={
+        quickStartOpen ? null : (
+          <PublicSitePublishControl
+            readiness={readiness}
+            onGoTo={goTo}
+            onPublish={setPublished}
+            pending={pending}
+            dirty={dirty}
+            published={draft.published}
+            live={config.published}
+            readOnly={readOnly}
+            siteUrl={siteUrl}
+            siteName={config.displayName}
+          />
+        )
       }
       saveControl={
         readOnly || quickStartOpen ? null : (
@@ -354,7 +371,7 @@ export function PublicSiteSettingsForm({
           className="pub-editor"
         >
           <nav className="pub-editor-tabs" role="tablist" aria-label={te("tabsAria")}>
-            {PUBLIC_SITE_EDITOR_TABS.map((key, index) => (
+            {PUBLIC_SITE_EDITOR_TABS.map((key) => (
               <button
                 key={key}
                 type="button"
@@ -366,7 +383,6 @@ export function PublicSiteSettingsForm({
                 data-error={errorTabs.has(key) ? "1" : undefined}
                 onClick={() => goTo(key)}
               >
-                <span className="pub-editor-tabs__step">{index + 1}</span>
                 <span className="pub-editor-tabs__label">{te(`tabs.${key}`)}</span>
               </button>
             ))}
@@ -408,21 +424,15 @@ export function PublicSiteSettingsForm({
                   openKey={openKey}
                   onOpenKeyChange={setOpenKey}
                   scrollSeq={scrollSeq}
-                  onOpenContact={() => goTo("contact")}
+                  onOpenContact={() => goTo("settings")}
                   onQuickStart={quickStartOffered ? () => setQuickStartOpen(true) : undefined}
                 />
               ) : null}
-              {tab === "contact" ? <PublicSiteContactPanel /> : null}
-              {tab === "publish" ? (
-                <PublicSitePublishPanel
-                  readiness={readiness}
-                  onGoTo={goTo}
-                  onPublish={setPublished}
-                  pending={pending}
-                  dirty={dirty}
-                  siteUrl={siteUrl}
-                  onQuickStart={quickStartOffered ? () => setQuickStartOpen(true) : undefined}
-                />
+              {tab === "settings" ? (
+                <>
+                  <PublicSiteContactPanel />
+                  <PublicSitePagesPanel />
+                </>
               ) : null}
             </PublicSiteEditorProvider>
           </fieldset>

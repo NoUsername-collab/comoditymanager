@@ -1640,16 +1640,14 @@
           },
           "tabsAria": "Pașii editorului",
           "tabs": {
+            "content": "Pagina",
             "design": "Aspect",
-            "content": "Conținut",
-            "contact": "Contact și rezervări",
-            "publish": "Publicare"
+            "settings": "Setări"
           },
           "tabHints": {
-            "design": "Cum arată site-ul: așezarea pozelor și culorile. Poți schimba oricând.",
             "content": "Ce scrie pe pagină, de sus în jos. Apasă pe o secțiune ca s-o completezi.",
-            "contact": "Cum te contactează oaspeții și cum trimit o cerere de rezervare.",
-            "publish": "Verifică ce mai lipsește, apoi pune site-ul online."
+            "design": "Cum arată site-ul: așezarea pozelor și culorile. Poți schimba oricând.",
+            "settings": "Contact, rezervări și paginile din jurul paginii principale: legale, Google, „în curând”."
           },
           "editingLocale": "Scrii în: {language}",
           "copyFrom": "Copiază din {locale} ce lipsește",
@@ -1663,17 +1661,21 @@
           "colorsTitle": "Culori",
           "colorsDesc": "Alege paleta care se potrivește pensiunii.",
           "fontTitle": "Litere pentru titluri",
-          "contentLead": "Așa arată pagina ta, de sus în jos. Apasă pe o secțiune ca s-o scrii. Butonul „Afișată” o ascunde, iar săgețile o mută.",
+          "contentLead": "Pagina ta, de sus în jos. Apasă pe o parte ca s-o scrii, trage de ⋮⋮ ca s-o muți, iar ochiul o ascunde.",
+          "dragHandle": "Trage ca să muți „{name}” (sau săgețile sus/jos)",
+          "backToPage": "Înapoi la pagină",
+          "outlinePage": "Pagina",
+          "outlineSite": "Pe tot site-ul",
+          "publishedOnShort": "Online",
+          "publishedOffShort": "Publică",
+          "missingCount": "{count, plural, one {# lucru de rezolvat} few {# lucruri de rezolvat} other {# de lucruri de rezolvat}}",
           "hiddenOnSite": "Ascunsă — vizitatorii nu o văd",
           "pinnedTop": "Mereu sus",
           "pinnedBottom": "Mereu jos",
-          "moveUp": "Mută „{name}” mai sus",
-          "moveDown": "Mută „{name}” mai jos",
           "showAria": "Arată secțiunea „{name}” pe site",
           "hideAria": "Ascunde secțiunea „{name}” de pe site",
           "shown": "Afișată",
           "hidden": "Ascunsă",
-          "done": "Gata",
           "cards": {
             "hero": {
               "name": "Partea de sus",

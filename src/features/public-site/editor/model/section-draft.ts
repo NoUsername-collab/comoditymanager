@@ -391,3 +391,18 @@ export function sectionKeyForRendered(
 ): string | null {
   return sections.filter((section) => section.type === type)[nth]?.key ?? null;
 }
+
+/** Drag and drop: put a section where another one is; pinned sections stay at the end. */
+export function moveSectionDraftTo(
+  sections: SectionDraft[],
+  key: string,
+  targetKey: string,
+): SectionDraft[] {
+  const movable = movableSections(sections);
+  const from = movable.findIndex((section) => section.key === key);
+  const to = movable.findIndex((section) => section.key === targetKey);
+  if (from === -1 || to === -1 || from === to) return sections;
+  const [moved] = movable.splice(from, 1);
+  movable.splice(to, 0, moved!);
+  return [...movable, ...sections.filter((section) => sectionKind(section.type).pinnedLast)];
+}

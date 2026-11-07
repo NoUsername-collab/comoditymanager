@@ -26,14 +26,20 @@ import type {
   PublicSiteStudioDraft,
 } from "@/features/public-site/editor/model/studio-draft";
 
-/** Editor tabs, in the order an operator works through them. */
-export const PUBLIC_SITE_EDITOR_TABS = ["design", "content", "contact", "publish"] as const;
+/** Editor tabs: the page itself, how it looks, and everything around it. */
+export const PUBLIC_SITE_EDITOR_TABS = ["content", "design", "settings"] as const;
 export type PublicSiteEditorTab = (typeof PUBLIC_SITE_EDITOR_TABS)[number];
 
 /** Which tab owns a server field error path (`hero.title`, `contact.email`, …). */
 export function tabForFieldPath(path: string): PublicSiteEditorTab {
-  if (path.startsWith("contact") || path.startsWith("bookingNotice")) return "contact";
-  if (path.startsWith("seo") || path.startsWith("pages")) return "publish";
+  if (
+    path.startsWith("contact") ||
+    path.startsWith("bookingNotice") ||
+    path.startsWith("seo") ||
+    path.startsWith("pages")
+  ) {
+    return "settings";
+  }
   if (path.startsWith("templateId") || path.startsWith("themeId") || path.startsWith("chrome.fontId")) {
     return "design";
   }
@@ -227,13 +233,13 @@ export function publicSiteReadiness(
       done: lands(draft.heroCtaPrimaryHref) && lands(draft.heroCtaSecondaryHref),
       tab: "content",
     },
-    { id: "rooms", done: !draft.bookingEnabled || config.stayOffers.length > 0, tab: "contact" },
+    { id: "rooms", done: !draft.bookingEnabled || config.stayOffers.length > 0, tab: "settings" },
     // The booking form collects personal data; the policy is not optional.
-    { id: "privacy", done: copy.privacyBody.trim().length > 0, tab: "publish" },
+    { id: "privacy", done: copy.privacyBody.trim().length > 0, tab: "settings" },
     {
       id: "contact",
       done: Boolean(contact.phone || contact.email || contact.whatsapp),
-      tab: "contact",
+      tab: "settings",
     },
     // A hidden gallery has nothing to check; "done" would read as "has a photo".
     ...(gallery?.visible ? [{ id: "gallery" as const, done: hasPhoto, tab: "content" as const }] : []),

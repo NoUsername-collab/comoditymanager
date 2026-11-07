@@ -81,11 +81,11 @@ const config: PublicSiteConfig = {
 
 describe("public site editor model", () => {
   it("routes server field errors to the tab that owns them", () => {
-    expect(tabForFieldPath("contact.email")).toBe("contact");
-    expect(tabForFieldPath("pages.ogImageUrl")).toBe("publish");
+    expect(tabForFieldPath("contact.email")).toBe("settings");
+    expect(tabForFieldPath("pages.ogImageUrl")).toBe("settings");
     expect(tabForFieldPath("hero.title")).toBe("content");
     expect(firstErrorTab({})).toBeNull();
-    expect(firstErrorTab({ "seo.metaTitle": "x" })).toBe("publish");
+    expect(firstErrorTab({ "seo.metaTitle": "x" })).toBe("settings");
   });
 
   it("maps known hrefs to presets and everything else to custom", () => {
@@ -164,7 +164,7 @@ describe("public site editor model", () => {
     const byId = Object.fromEntries(items.map((item) => [item.id, item]));
     expect(byId.heroImage).toMatchObject({ done: false, tab: "content" });
     expect(byId.heroTitle?.done).toBe(true);
-    expect(byId.contact).toMatchObject({ done: false, tab: "contact" });
+    expect(byId.contact).toMatchObject({ done: false, tab: "settings" });
 
     const ready = publicSiteReadiness(patchStudioCopy({ ...draft, heroImageUrl: "x.jpg" }, {}), {
       contact: { email: "a@b.ro", phone: null },
@@ -216,7 +216,7 @@ describe("public site editor model", () => {
     const contact = { contact: { email: "a@b.ro", phone: null }, stayOffers: [] };
     const privacy = (d: PublicSiteStudioDraft) =>
       publicSiteReadiness(d, contact).find((item) => item.id === "privacy");
-    expect(privacy(draft)).toMatchObject({ done: false, tab: "publish" });
+    expect(privacy(draft)).toMatchObject({ done: false, tab: "settings" });
     expect(privacy(patchStudioCopy(draft, { privacyBody: "Datele voastre…" }))?.done).toBe(true);
   });
 

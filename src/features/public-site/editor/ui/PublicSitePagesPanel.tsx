@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { PublicSiteImageField } from "@/features/public-site/editor/ui/PublicSiteImageField";
 import {
   EditorAdvanced,
@@ -10,107 +8,22 @@ import {
   EditorGroup,
   usePublicSiteEditor,
 } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
-import type {
-  PublicSiteEditorTab,
-  PublicSiteReadinessItem,
-} from "@/features/public-site/editor/model/editor-model";
 
-export function PublicSitePublishPanel({
-  readiness,
-  onGoTo,
-  onPublish,
-  pending,
-  dirty,
-  siteUrl,
-  onQuickStart,
-}: {
-  readiness: PublicSiteReadinessItem[];
-  onGoTo: (tab: PublicSiteEditorTab) => void;
-  /** Flip visibility and save in one go. */
-  onPublish: (published: boolean) => void;
-  pending: boolean;
-  dirty: boolean;
-  /** Address of the live site, to copy or send once it is online. */
-  siteUrl: string;
-  /** Opens the 4-question quick start; offered until the site is online. */
-  onQuickStart?: () => void;
-}) {
+/**
+ * The pages around the homepage: legal pages (the privacy policy is required),
+ * how the site shows in Google, and the coming-soon, calendar and per-page
+ * search texts. Part of the Settings tab.
+ */
+export function PublicSitePagesPanel() {
   const t = useTranslations("admin.pages.publicSite");
   const te = useTranslations("admin.pages.publicSite.editor");
   const { config, draft, copy, patchDraft, patchCopy, fieldError, readOnly } =
     usePublicSiteEditor();
-  const required = readiness.filter((item) => !item.optional);
-  const done = required.filter((item) => item.done).length;
-  const missing = required.length - done;
-
   const googleTitle = copy.seoTitle.trim() || copy.heroTitle.trim() || config.displayName;
   const googleDesc = copy.seoDescription.trim() || copy.heroSubtitle.trim();
 
   return (
     <>
-      <EditorGroup
-        title={te("checklistTitle")}
-        description={te("checklistDone", { done, total: required.length })}
-      >
-        <ul className="pub-editor-checklist">
-          {readiness.map((item) => (
-            <li
-              key={item.id}
-              data-done={item.done ? "1" : undefined}
-              data-optional={item.optional ? "1" : undefined}
-            >
-              <span className="pub-editor-checklist__mark" aria-hidden>
-                {item.done ? "✓" : item.optional ? "○" : "!"}
-              </span>
-              <span className="pub-editor-checklist__label">{te(`checks.${item.id}`)}</span>
-              {!item.done ? (
-                <button type="button" onClick={() => onGoTo(item.tab)}>
-                  {te("checkFix")}
-                </button>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-      </EditorGroup>
-
-      <div className="pub-editor-publish" data-on={draft.published ? "1" : undefined}>
-        <p className="pub-editor-publish__text" role="status">
-          <strong>{te(draft.published ? "publishedOn" : "publishedOff")}</strong>
-          <small>{te(draft.published ? "publishedOnDesc" : "publishedOffDesc")}</small>
-        </p>
-        {!readOnly ? (
-          <>
-            <AdminButton
-              type="button"
-              variant={draft.published ? "secondary" : "primary"}
-              className="pub-editor-publish__btn"
-              disabled={pending}
-              onClick={() => onPublish(!draft.published)}
-            >
-              {pending
-                ? te("publishing")
-                : te(draft.published ? "unpublishButton" : "publishButton")}
-            </AdminButton>
-            {!draft.published && missing > 0 ? (
-              <p className="pub-editor-publish__note">
-                {te("publishAnyway", { count: missing })}
-              </p>
-            ) : null}
-            {!draft.published && onQuickStart ? (
-              <button type="button" className="pub-editor-quickstart-btn" onClick={onQuickStart}>
-                <strong>{te("quickStart.open")}</strong>
-                <span>{te("quickStart.openHint")}</span>
-              </button>
-            ) : null}
-            {dirty ? <p className="pub-editor-publish__note">{te("publishSavesAll")}</p> : null}
-          </>
-        ) : null}
-      </div>
-
-      {config.published && draft.published ? (
-        <SiteShare siteUrl={siteUrl} name={config.displayName} />
-      ) : null}
-
       <EditorGroup title={te("legalTitle")} description={te("legalDesc")}>
         <div className="admin-settings-fields">
           <h4 className="pub-editor-subhead">{te("privacyPage")}</h4>
@@ -256,49 +169,5 @@ export function PublicSitePublishPanel({
         </div>
       </EditorAdvanced>
     </>
-  );
-}
-
-/** Right after publishing: the address in plain sight, ready to copy or send. */
-function SiteShare({ siteUrl, name }: { siteUrl: string; name: string }) {
-  const te = useTranslations("admin.pages.publicSite.editor");
-  const [copied, setCopied] = useState(false);
-  const shown = siteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "");
-  const whatsappHref = `https://wa.me/?text=${encodeURIComponent(
-    te("shareMessage", { name, url: siteUrl }),
-  )}`;
-
-  function copy() {
-    void navigator.clipboard
-      .writeText(siteUrl)
-      .then(() => setCopied(true))
-      .catch(() => setCopied(false));
-  }
-
-  return (
-    <div className="pub-editor-share">
-      <p className="pub-editor-share__label">{te("shareTitle")}</p>
-      <a
-        href={siteUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="pub-editor-share__url"
-      >
-        {shown}
-      </a>
-      <div className="pub-editor-share__actions">
-        <AdminButton type="button" variant="secondary" size="sm" onClick={copy}>
-          {copied ? te("shareCopied") : te("shareCopy")}
-        </AdminButton>
-        <a
-          href={whatsappHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="pub-editor-share__whatsapp"
-        >
-          {te("shareWhatsapp")}
-        </a>
-      </div>
-    </div>
   );
 }
