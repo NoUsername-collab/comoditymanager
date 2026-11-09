@@ -18,6 +18,7 @@ import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
 import { PublicSitePreview } from "@/features/public-site/editor/ui/PublicSitePreview";
 import { PublicSiteStudio } from "@/features/public-site/editor/ui/PublicSiteStudio";
 import { PublicSiteLocaleTabs } from "@/features/public-site/editor/ui/PublicSiteLocaleTabs";
+import { useDraftHistory } from "@/features/public-site/editor/ui/use-draft-history";
 import {
   PublicSiteEditorProvider,
   type PublicSiteEditorApi,
@@ -92,9 +93,14 @@ export function PublicSiteSettingsForm({
   const [quickStartOpen, setQuickStartOpen] = useState(false);
   const [quickStartAnswers, setQuickStartAnswers] = useState<QuickStartAnswers | null>(null);
 
-  const [draft, setDraftState] = useState<PublicSiteStudioDraft>(() =>
-    buildPublicSiteStudioDraft(config, locale),
-  );
+  const {
+    draft,
+    setDraft: setDraftState,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = useDraftHistory(() => buildPublicSiteStudioDraft(config, locale), keepEditLocale);
   // The saved version this draft started from; a conflict merges against it.
   const baseDraftRef = useRef(draft);
   const [mergedAfterConflict, setMergedAfterConflict] = useState(false);
@@ -247,14 +253,64 @@ export function PublicSiteSettingsForm({
   }, [previewFocus, preview, te]);
 
   // Back from "reload and keep my changes": lay them over the colleague's version.
+  const conflictMergedRef = useRef(false);
   useEffect(() => {
     const kept = takeConflictDraft(conflictKey);
     if (!kept || readOnly) return;
-    setDraftState((theirs) => mergeStudioDrafts(kept.base, kept.mine, theirs));
+    conflictMergedRef.current = true;
+    setDraftState((theirs) => mergeStudioDrafts(kept.base, kept.mine, theirs), { record: false });
     setMergedAfterConflict(true);
     // Once, on the load that follows the reload.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Unsaved work is kept in this browser, so a reload or a closed tab loses
+  // nothing; the next visit offers it back.
+  const localDraftKey = `${LOCAL_DRAFT_KEY}:${config.id || "new"}`;
+  const [restorable, setRestorable] = useState<LocalDraft | null>(null);
+  useEffect(() => {
+    if (readOnly || conflictMergedRef.current) return;
+    const stored = readLocalDraft(localDraftKey);
+    if (!stored) return;
+    if (sameContent(stored.mine, draft)) {
+      removeLocalDraft(localDraftKey);
+      return;
+    }
+    setRestorable(stored);
+    // Once, when the studio opens.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // While the old draft is on offer, the fresh one must not overwrite it.
+    if (readOnly || restorable || !dirty) return;
+    const timer = window.setTimeout(() => {
+      writeLocalDraft(localDraftKey, {
+        version: versionRef.current,
+        base: baseDraftRef.current,
+        mine: draft,
+        savedAt: Date.now(),
+      });
+    }, 800);
+    return () => window.clearTimeout(timer);
+  }, [draft, dirty, readOnly, restorable, localDraftKey]);
+
+  function restoreLocalDraft() {
+    const stored = restorable;
+    if (!stored) return;
+    setRestorable(null);
+    // Same version: take it as it was. A colleague saved since: lay it over theirs.
+    setDraftState((current) =>
+      stored.version === config.version
+        ? keepEditLocale(current, stored.mine)
+        : mergeStudioDrafts(stored.base, stored.mine, current),
+    );
+  }
+
+  function discardLocalDraft() {
+    setRestorable(null);
+    removeLocalDraft(localDraftKey);
+  }
 
   useEffect(() => {
     if (readOnly || !isFreshPublicSite(draft) || quickStartDismissed()) return;
@@ -291,7 +347,7 @@ export function PublicSiteSettingsForm({
   }
 
   function setEditLocale(next: PublicLocale) {
-    setDraftState((d) => switchStudioLocale(d, next));
+    setDraftState((d) => switchStudioLocale(d, next), { record: false });
   }
 
   const copySource = PUBLIC_LOCALES.filter((loc) => loc !== settledDraft.editLocale).sort(
@@ -325,6 +381,7 @@ export function PublicSiteSettingsForm({
         if (errorTab) goTo(errorTab);
       } else {
         initialSnapshot.current = JSON.stringify(payload);
+        removeLocalDraft(localDraftKey);
         baseDraftRef.current = next;
         setMergedAfterConflict(false);
         versionRef.current = result.version;
@@ -338,6 +395,23 @@ export function PublicSiteSettingsForm({
     event.preventDefault();
     save(draft);
   }
+
+  useEffect(() => {
+    if (readOnly) return;
+    function onKey(event: KeyboardEvent) {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey || event.isComposing) return;
+      const key = event.key.toLowerCase();
+      if (key === "z" && !event.shiftKey) {
+        event.preventDefault();
+        undo();
+      } else if ((key === "z" && event.shiftKey) || key === "y") {
+        event.preventDefault();
+        redo();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [readOnly, undo, redo]);
 
   /** Publish or hide in one gesture: flips the switch and saves everything. */
   function setPublished(published: boolean) {
@@ -384,6 +458,29 @@ export function PublicSiteSettingsForm({
       }
       saveControl={
         readOnly || quickStartOpen ? null : (
+          <>
+          <span className="pub-site-studio__history">
+            <button
+              type="button"
+              className="pub-site-studio__history-btn"
+              onClick={undo}
+              disabled={!canUndo}
+              aria-label={te("undo")}
+              title={te("undoShortcut")}
+            >
+              ↶
+            </button>
+            <button
+              type="button"
+              className="pub-site-studio__history-btn"
+              onClick={redo}
+              disabled={!canRedo}
+              aria-label={te("redo")}
+              title={te("redoShortcut")}
+            >
+              ↷
+            </button>
+          </span>
           <AdminSubmitButton
             form="public-site-studio-form"
             type="submit"
@@ -393,11 +490,30 @@ export function PublicSiteSettingsForm({
           >
             {pending ? t("saving") : t("save")}
           </AdminSubmitButton>
+          </>
         )
       }
       banner={
         <>
           <SettingsAlerts alerts={alerts} />
+          {restorable ? (
+            <div className="settings-unsaved-banner pub-site-studio__restore" role="status">
+              <span>
+                {te("localDraftFound", {
+                  when: new Date(restorable.savedAt).toLocaleString(locale, {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  }),
+                })}
+              </span>
+              <button type="button" onClick={restoreLocalDraft}>
+                {te("localDraftRestore")}
+              </button>
+              <button type="button" onClick={discardLocalDraft}>
+                {te("localDraftDiscard")}
+              </button>
+            </div>
+          ) : null}
           {mergedAfterConflict ? (
             <p className="settings-unsaved-banner" role="status">
               {te("conflictMerged")}
@@ -515,6 +631,57 @@ export function PublicSiteSettingsForm({
       }
     />
   );
+}
+
+/** Undo and redo step through the content; the language being edited stays put. */
+function keepEditLocale(
+  from: PublicSiteStudioDraft,
+  to: PublicSiteStudioDraft,
+): PublicSiteStudioDraft {
+  return to.editLocale === from.editLocale ? to : switchStudioLocale(to, from.editLocale);
+}
+
+const LOCAL_DRAFT_KEY = "pub-site-local-draft";
+
+/** Unsaved editor work kept in this browser. */
+type LocalDraft = {
+  /** The saved version the work started from. */
+  version: number | null;
+  base: PublicSiteStudioDraft;
+  mine: PublicSiteStudioDraft;
+  savedAt: number;
+};
+
+function readLocalDraft(key: string): LocalDraft | null {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const value = JSON.parse(raw) as LocalDraft;
+    return value?.mine && value.base ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeLocalDraft(key: string, value: LocalDraft): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* storage full or blocked: the unsaved-changes warning still guards a reload */
+  }
+}
+
+function removeLocalDraft(key: string): void {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    /* blocked storage */
+  }
+}
+
+/** Same work, whatever language each was being edited in. */
+function sameContent(a: PublicSiteStudioDraft, b: PublicSiteStudioDraft): boolean {
+  return JSON.stringify({ ...a, editLocale: "" }) === JSON.stringify({ ...b, editLocale: "" });
 }
 
 const CONFLICT_DRAFT_KEY = "pub-site-conflict-draft";

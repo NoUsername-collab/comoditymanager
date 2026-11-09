@@ -7,7 +7,7 @@ export const galleryKind: SectionKind = {
   copyFields: ["title", "lead"],
   progressFields: [],
   items: {
-    copyFields: ["caption"],
+    copyFields: ["caption", "alt"],
     progressFields: [],
     max: 40,
     readStructure: (saved) => ({ url: typeof saved.url === "string" ? saved.url : "" }),

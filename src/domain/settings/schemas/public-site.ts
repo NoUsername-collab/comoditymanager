@@ -160,6 +160,7 @@ const publicGalleryItemSchema = z
       .max(2048)
       .refine((v) => isSafeHttpUrl(v), { message: "invalid_url" }),
     caption: localizedTextSchema.optional(),
+    alt: localizedTextSchema.optional(),
     category: z.string().max(64).optional(),
   })
   .strict();

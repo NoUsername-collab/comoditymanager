@@ -327,6 +327,17 @@ export function moveSectionItem(section: SectionDraft, itemId: string, direction
   return { ...section, items };
 }
 
+/** Drag and drop: put a row where another one is. */
+export function moveSectionItemTo(section: SectionDraft, itemId: string, targetId: string): SectionDraft {
+  const items = [...section.items];
+  const from = items.findIndex((item) => item.id === itemId);
+  const to = items.findIndex((item) => item.id === targetId);
+  if (from === -1 || to === -1 || from === to) return section;
+  const [moved] = items.splice(from, 1);
+  items.splice(to, 0, moved!);
+  return { ...section, items };
+}
+
 /** Pinned kinds (the closing band) stay after every other section. */
 export function keepPinnedLast(sections: SectionDraft[]): SectionDraft[] {
   const pinned = (section: SectionDraft) => Boolean(sectionKind(section.type).pinnedLast);

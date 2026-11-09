@@ -24,11 +24,12 @@ export function renderGallery(
       <div className={`pub-gallery pub-gallery--${template}`}>
         {items.map((item) => {
           const caption = copy(item.caption, locale);
+          const alt = copy(item.alt, locale) || caption;
           return (
             <figure key={item.id} className="pub-gallery__item">
               <Image
                 src={item.url}
-                alt={caption}
+                alt={alt}
                 width={800}
                 height={600}
                 sizes="(max-width: 768px) 100vw, 50vw"

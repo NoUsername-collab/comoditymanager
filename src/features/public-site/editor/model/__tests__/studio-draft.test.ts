@@ -6,6 +6,9 @@ import {
   findSectionDraft,
   moveSectionDraft,
   moveSectionDraftTo,
+  moveSectionItemTo,
+  addSectionItem,
+  setItemField,
   orderSectionsForTemplate,
   removeSectionItem,
   sectionField,
@@ -234,6 +237,20 @@ describe("public site studio draft", () => {
     for (const type of TITLED_TYPES) {
       expect(sectionField(findSectionDraft(reloaded.sections, type), "ro", "title")).toBe(`RO ${type}`);
     }
+  });
+
+  it("orders photos by drag and keeps each one's description", () => {
+    const base = buildPublicSiteStudioDraft(config, "ro");
+    const gallery = findSectionDraft(base.sections, "gallery")!;
+    let photos = addSectionItem(addSectionItem(gallery, { url: "https://x.supabase.co/a.jpg" }, "a"), { url: "https://x.supabase.co/b.jpg" }, "b");
+    photos = setItemField(photos, "ro", "a", "alt", "Camera dublă cu balcon");
+    photos = moveSectionItemTo(photos, "b", "a");
+    expect(photos.items.map((item) => item.id)).toEqual(["b", "a"]);
+    const draft = patchStudioSection(base, gallery.key, () => ({ ...photos, visible: true }));
+    const saved = mergeStudioToInput({ config, draft }).sections.find((s) => s.sectionType === "gallery");
+    const items = saved?.payload.items as { id: string; alt?: Record<string, string> }[];
+    expect(items.map((item) => item.id)).toEqual(["b", "a"]);
+    expect(items[1]?.alt).toEqual({ ro: "Camera dublă cu balcon" });
   });
 
   it("round-trips extra jsonb keys through parse", () => {

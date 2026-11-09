@@ -136,6 +136,8 @@ export type PublicGalleryItem = {
   id: string;
   url: string;
   caption?: LocalizedText;
+  /** What the photo shows, for screen readers; the caption stands in when empty. */
+  alt?: LocalizedText;
   category?: string;
 };
 

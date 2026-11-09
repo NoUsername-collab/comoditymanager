@@ -1,10 +1,14 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { PublicSiteMediaKind } from "@/domain/public-site/media";
-import { PUBLIC_SITE_MEDIA_MAX_BYTES } from "@/domain/public-site/media";
-import { uploadPublicSiteImageAction } from "@/features/settings/actions/public-site";
+import { isOptimizablePublicImageUrl } from "@/domain/public-site/media";
+import {
+  PUBLIC_IMAGE_ACCEPT,
+  uploadPublicImage,
+} from "@/features/public-site/editor/ui/upload-public-image";
 import { SettingsFieldError } from "@/components/admin/settings/SettingsFieldError";
 import { SettingsFieldHint } from "@/components/admin/settings/SettingsFieldHint";
 
@@ -41,16 +45,9 @@ export function PublicSiteImageField({
   async function handleFile(file: File | undefined) {
     if (!file || disabled) return;
     setLocalError(null);
-    if (file.size > PUBLIC_SITE_MEDIA_MAX_BYTES) {
-      setLocalError(t("mediaTooLarge"));
-      return;
-    }
     setPending(true);
     try {
-      const body = new FormData();
-      body.set("kind", kind);
-      body.set("file", file);
-      const result = await uploadPublicSiteImageAction(body);
+      const result = await uploadPublicImage(file, kind, t("mediaTooLarge"));
       if (!result.ok) {
         setLocalError(result.error);
         return;
@@ -75,8 +72,14 @@ export function PublicSiteImageField({
           data-empty={!value || undefined}
         >
           {value ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={value} alt="" />
+            // A small resized copy: the original can be several megabytes.
+            <Image
+              src={value}
+              alt=""
+              fill
+              sizes="96px"
+              unoptimized={!isOptimizablePublicImageUrl(value)}
+            />
           ) : (
             <span>{t("imageEmpty")}</span>
           )}
@@ -86,7 +89,7 @@ export function PublicSiteImageField({
             ref={fileRef}
             id={inputId}
             type="file"
-            accept="image/jpeg,image/png,image/webp"
+            accept={PUBLIC_IMAGE_ACCEPT}
             hidden
             disabled={disabled || pending}
             onChange={(event) => void handleFile(event.target.files?.[0])}
