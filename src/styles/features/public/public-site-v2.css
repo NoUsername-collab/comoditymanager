@@ -647,6 +647,22 @@
     border-top: 1px solid var(--pub-border);
     background: color-mix(in srgb, var(--pub-bg) 92%, transparent);
     backdrop-filter: blur(10px);
+    transition:
+      transform 0.25s ease,
+      opacity 0.25s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pub-mobile-booking-bar {
+      transition: none;
+    }
+  }
+
+  /* Out of the way while the top booking button is on screen. */
+  .pub-mobile-booking-bar[data-away] {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
   }
 
   .pub-mobile-booking-bar__btn {

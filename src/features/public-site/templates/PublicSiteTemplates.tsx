@@ -37,6 +37,7 @@ function TemplateSections({
         return (
           <div
             key={`${section.id}-${index}`}
+            className="pub-home__section"
             data-pub-section={preview ? section.sectionType : undefined}
             data-pub-nth={preview ? nth : undefined}
           >
@@ -89,7 +90,8 @@ export function PublicSiteBody({
         preview={preview}
       />
       {template === "immersive" ? <div className="pub-home__immersive-body">{body}</div> : body}
-      <PublicMobileBookingBar config={config} locale={locale} preview={preview} />
+      {/* Keyed by layout: switching it in the studio redraws the top button the bar watches. */}
+      <PublicMobileBookingBar key={template} config={config} locale={locale} preview={preview} />
     </main>
   );
 }

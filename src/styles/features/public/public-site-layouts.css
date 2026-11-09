@@ -737,3 +737,81 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   margin-inline: auto;
   box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 0.35);
 }
+
+/* ── Classic: a hairline between sections, like the pages of a brochure ── */
+.pub-home--classic .pub-home__section + .pub-home__section > .pub-section:not(.pub-section--cta) > .pub-section__inner {
+  padding-top: clamp(2rem, 5vw, 3.5rem);
+  border-top: 1px solid var(--pub-border);
+}
+
+/* ── Panoramic: cards read centred, like the heads above them ── */
+.pub-home--immersive .pub-step,
+.pub-home--immersive .pub-benefit,
+.pub-home--immersive .pub-stay__body,
+.pub-home--immersive .pub-attraction {
+  text-align: center;
+}
+
+.pub-home--immersive .pub-step__num,
+.pub-home--immersive .pub-benefit__icon {
+  margin-inline: auto;
+}
+
+.pub-home--immersive .pub-stay__body {
+  align-items: center;
+}
+
+.pub-home--immersive .pub-attraction__head {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Panoramic footer: one centred column under the last band. */
+[data-pub-template="immersive"] .public-footer__grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+[data-pub-template="immersive"] .public-footer__brand-name {
+  font-family: var(--pub-font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+[data-pub-template="immersive"] .public-footer__brand-desc {
+  margin-inline: auto;
+}
+
+[data-pub-template="immersive"] .public-footer__links,
+[data-pub-template="immersive"] .public-footer__contact-links {
+  justify-content: center;
+  align-items: center;
+}
+
+/* ── Magazine on phones: a compact masthead and a larger, tighter title ── */
+@media (max-width: 640px) {
+  [data-pub-template="editorial"] .public-header__inner {
+    flex-direction: row;
+    padding-block: 0.7rem 0.6rem;
+    gap: 0.5rem;
+    text-align: left;
+  }
+
+  [data-pub-template="editorial"] .public-header__name {
+    font-size: 1.05rem;
+    letter-spacing: 0.14em;
+  }
+
+  [data-pub-template="editorial"] .public-header__tag {
+    display: none;
+  }
+
+  .pub-hero--editorial .pub-hero__title {
+    font-size: clamp(2.5rem, 13vw, 3.25rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+}

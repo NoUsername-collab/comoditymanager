@@ -2,11 +2,13 @@ import { Link } from "@/i18n/navigation";
 import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import { safeNavHref } from "@/lib/security/html-escape";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
+import { BookingBarReveal } from "@/features/public-site/home/BookingBarReveal";
 
 /**
  * Phone-only booking button, on every layout. Render it as the last child of
  * `<main>`: a sticky bar stays at the bottom of the screen only while its spot
  * in the page is still below, so placed last it stays for the whole scroll.
+ * It waits while the booking button at the top of the page is in view.
  */
 export function PublicMobileBookingBar({
   config,
@@ -21,7 +23,7 @@ export function PublicMobileBookingBar({
   if (!config.bookingEnabled || !label) return null;
 
   return (
-    <div className="pub-mobile-booking-bar" data-surface="public">
+    <BookingBarReveal>
       {preview ? (
         <span className="pub-mobile-booking-bar__btn">{label}</span>
       ) : (
@@ -32,6 +34,6 @@ export function PublicMobileBookingBar({
           {label}
         </Link>
       )}
-    </div>
+    </BookingBarReveal>
   );
 }
