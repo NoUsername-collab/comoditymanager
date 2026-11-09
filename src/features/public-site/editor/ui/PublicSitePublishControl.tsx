@@ -26,7 +26,7 @@ export function PublicSitePublishControl({
   siteName,
 }: {
   readiness: PublicSiteReadinessItem[];
-  onGoTo: (tab: PublicSiteEditorTab) => void;
+  onGoTo: (tab: PublicSiteEditorTab, part?: string) => void;
   /** Flip visibility and save in one go. */
   onPublish: (published: boolean) => void;
   pending: boolean;
@@ -105,7 +105,7 @@ export function PublicSitePublishControl({
                     type="button"
                     onClick={() => {
                       setOpen(false);
-                      onGoTo(item.tab);
+                      onGoTo(item.tab, item.part);
                     }}
                   >
                     {te("checkFix")}

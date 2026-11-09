@@ -1086,3 +1086,37 @@
   font-weight: 600;
   color: var(--admin-text-muted, #52525b);
 }
+
+/* The part being edited, marked in the preview. */
+.pub-site-studio__doc [data-pub-focus="1"] {
+  position: relative;
+  outline: 2px solid var(--admin-accent, #059669);
+  outline-offset: -2px;
+}
+
+/* A hidden section shown in the preview only while it is edited. */
+.pub-site-studio__doc [data-pub-hidden-label] {
+  opacity: 0.72;
+}
+
+.pub-site-studio__doc [data-pub-hidden-label]::before {
+  content: attr(data-pub-hidden-label);
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 5;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: #18181b;
+  color: #fff;
+  font: 600 0.75rem/1.2 system-ui, sans-serif;
+}
+
+/* Dragging by pointer: the handle grabs, the page does not scroll under a finger. */
+.pub-outline__row[data-dragging="1"] .pub-outline__handle {
+  cursor: grabbing;
+}
+
+.pub-outline__list:has([data-dragging="1"]) {
+  user-select: none;
+}

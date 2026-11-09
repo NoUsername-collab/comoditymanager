@@ -24,8 +24,10 @@ import {
 } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import { PublicSiteDesignPanel } from "@/features/public-site/editor/ui/PublicSiteDesignPanel";
 import { PublicSiteContentPanel } from "@/features/public-site/editor/ui/PublicSiteContentPanel";
-import { PublicSiteContactPanel } from "@/features/public-site/editor/ui/PublicSiteContactPanel";
-import { PublicSitePagesPanel } from "@/features/public-site/editor/ui/PublicSitePagesPanel";
+import {
+  PublicSiteSettingsPanel,
+  type SettingsPartKey,
+} from "@/features/public-site/editor/ui/PublicSiteSettingsPanel";
 import { PublicSitePublishControl } from "@/features/public-site/editor/ui/PublicSitePublishControl";
 import { PublicSiteQuickStart } from "@/features/public-site/editor/ui/PublicSiteQuickStart";
 import {
@@ -33,6 +35,7 @@ import {
   editKeyFromPreviewTarget,
   fillStudioLocaleFrom,
   isFreshPublicSite,
+  previewFocusFor,
   quickStartAnswersFrom,
   firstErrorTab,
   PUBLIC_SITE_EDITOR_TABS,
@@ -84,6 +87,7 @@ export function PublicSiteSettingsForm({
   const formRef = useRef<HTMLFormElement>(null);
   // Null shows the page outline; a key opens that part on its own screen.
   const [openKey, setOpenKey] = useState<string | null>(null);
+  const [settingsKey, setSettingsKey] = useState<SettingsPartKey | null>(null);
   const [scrollSeq, setScrollSeq] = useState(0);
   const [quickStartOpen, setQuickStartOpen] = useState(false);
   const [quickStartAnswers, setQuickStartAnswers] = useState<QuickStartAnswers | null>(null);
@@ -111,14 +115,34 @@ export function PublicSiteSettingsForm({
     () => buildPublicSiteConfigFromInput(config, draftInput, primaryContact),
     [config, draftInput, primaryContact],
   );
+  // The part being edited: the preview scrolls to it, marks it, and shows it if hidden.
+  const previewFocus = useMemo(
+    () => previewFocusFor(tab === "content" ? openKey : null, settledDraft),
+    [tab, openKey, settledDraft],
+  );
+  const focusedPreviewConfig = useMemo(() => {
+    const index = previewFocus?.hidden ? previewFocus.sectionIndex : undefined;
+    if (index === undefined) {
+      return previewFocus?.hidden && openKey === "contactBar"
+        ? { ...previewConfig, chrome: { ...previewConfig.chrome, showContactBar: true } }
+        : previewConfig;
+    }
+    // Sections keep the editor's order in the preview (sortOrder = position × 10).
+    return {
+      ...previewConfig,
+      sections: previewConfig.sections.map((section) =>
+        section.sortOrder === index * 10 ? { ...section, visible: true } : section,
+      ),
+    };
+  }, [previewConfig, previewFocus, openKey]);
   // While the quick start is open the preview shows its answers before they are applied.
   const studioPreviewConfig = useMemo(() => {
-    if (!quickStartOpen || !quickStartAnswers) return previewConfig;
+    if (!quickStartOpen || !quickStartAnswers) return focusedPreviewConfig;
     let seq = 0;
     const answered = applyQuickStart(settledDraft, quickStartAnswers, () => `quick-preview-${++seq}`);
     const input = mergeStudioToInput({ config, draft: answered });
     return buildPublicSiteConfigFromInput(config, input, primaryContact);
-  }, [quickStartOpen, quickStartAnswers, previewConfig, settledDraft, config, primaryContact]);
+  }, [quickStartOpen, quickStartAnswers, focusedPreviewConfig, settledDraft, config, primaryContact]);
   const progress = useMemo(
     () => studioLocaleProgress(settledDraft, stockCopy),
     [settledDraft, stockCopy],
@@ -164,10 +188,63 @@ export function PublicSiteSettingsForm({
     fieldError,
   };
 
-  function goTo(next: PublicSiteEditorTab) {
+  /** Switch tab, and open a part there: "hero", a section type, or a Settings part. */
+  function goTo(next: PublicSiteEditorTab, part?: string) {
     setTab(next);
+    if (next === "settings") setSettingsKey((part as SettingsPartKey | undefined) ?? null);
+    if (next === "content" && part) {
+      const section = draft.sections.find((row) => row.type === part);
+      setOpenKey(part === "hero" ? "hero" : (section?.key ?? null));
+    }
     formRef.current?.closest(".pub-site-studio__form")?.scrollTo({ top: 0 });
   }
+
+  // Bring the edited part into view in the preview and mark it there. The
+  // preview renders a moment after the draft (deferred), so look for it a few
+  // times (timers, not animation frames: those stop in a background tab); scroll only when another part is opened, not on every keystroke.
+  const scrolledToRef = useRef<string | null>(null);
+  useEffect(() => {
+    let frame = 0;
+    let tries = 0;
+    const find = () => {
+      const doc = document.querySelector<HTMLIFrameElement>(".pub-site-studio__frame iframe")
+        ?.contentDocument;
+      const root = doc?.querySelector(".pub-site-studio__doc");
+      if (!doc || !root) {
+        if (tries++ < 30) frame = window.setTimeout(find, 30);
+        return;
+      }
+      for (const marked of root.querySelectorAll("[data-pub-focus]")) {
+        marked.removeAttribute("data-pub-focus");
+        marked.removeAttribute("data-pub-hidden-label");
+      }
+      if (!previewFocus) {
+        scrolledToRef.current = null;
+        return;
+      }
+      const target = root.querySelector(previewFocus.selector);
+      if (!target) {
+        if (tries++ < 30) frame = window.setTimeout(find, 30);
+        return;
+      }
+      target.setAttribute("data-pub-focus", "1");
+      if (previewFocus.hidden) target.setAttribute("data-pub-hidden-label", te("hiddenInPreview"));
+      if (scrolledToRef.current === previewFocus.selector) return;
+      scrolledToRef.current = previewFocus.selector;
+      const win = doc.defaultView;
+      if (!win) return;
+      // A background tab never finishes a smooth scroll; jump instead.
+      const reduce =
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+        document.visibilityState !== "visible";
+      win.scrollTo({
+        top: Math.max(0, target.getBoundingClientRect().top + win.scrollY - 16),
+        behavior: reduce ? "auto" : "smooth",
+      });
+    };
+    frame = window.setTimeout(find, 30);
+    return () => window.clearTimeout(frame);
+  }, [previewFocus, preview, te]);
 
   // Back from "reload and keep my changes": lay them over the colleague's version.
   useEffect(() => {
@@ -424,15 +501,12 @@ export function PublicSiteSettingsForm({
                   openKey={openKey}
                   onOpenKeyChange={setOpenKey}
                   scrollSeq={scrollSeq}
-                  onOpenContact={() => goTo("settings")}
+                  onOpenContact={() => goTo("settings", "contact")}
                   onQuickStart={quickStartOffered ? () => setQuickStartOpen(true) : undefined}
                 />
               ) : null}
               {tab === "settings" ? (
-                <>
-                  <PublicSiteContactPanel />
-                  <PublicSitePagesPanel />
-                </>
+                <PublicSiteSettingsPanel openKey={settingsKey} onOpenKeyChange={setSettingsKey} />
               ) : null}
             </PublicSiteEditorProvider>
           </fieldset>

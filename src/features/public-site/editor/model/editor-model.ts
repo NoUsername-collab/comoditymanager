@@ -191,6 +191,8 @@ export type PublicSiteReadinessItem = {
   id: PublicSiteReadinessId;
   done: boolean;
   tab: PublicSiteEditorTab;
+  /** The part to open on that tab: "hero", a section type, or a Settings part. */
+  part?: string;
   /** Nice to have; never counted as "still to do" before publishing. */
   optional?: boolean;
 };
@@ -212,8 +214,8 @@ export function publicSiteReadiness(
   };
 
   return [
-    { id: "heroImage", done: draft.heroImageUrl.trim().length > 0, tab: "content" },
-    { id: "heroTitle", done: copy.heroTitle.trim().length > 0, tab: "content" },
+    { id: "heroImage", done: draft.heroImageUrl.trim().length > 0, tab: "content", part: "hero" },
+    { id: "heroTitle", done: copy.heroTitle.trim().length > 0, tab: "content", part: "hero" },
     {
       id: "description",
       done:
@@ -221,28 +223,34 @@ export function publicSiteReadiness(
         sectionField(findSectionDraft(draft.sections, "intro"), draft.editLocale, "lead").trim()
           .length > 0,
       tab: "content",
+      part: "hero",
     },
     // Every language: a page without it has no booking button at the top.
     {
       id: "heroButton",
       done: !draft.bookingEnabled || PUBLIC_LOCALES.every((locale) => draft.copies[locale].heroCtaPrimary.trim()),
       tab: "content",
+      part: "hero",
     },
     {
       id: "heroLinks",
       done: lands(draft.heroCtaPrimaryHref) && lands(draft.heroCtaSecondaryHref),
       tab: "content",
+      part: "hero",
     },
-    { id: "rooms", done: !draft.bookingEnabled || config.stayOffers.length > 0, tab: "settings" },
+    { id: "rooms", done: !draft.bookingEnabled || config.stayOffers.length > 0, tab: "settings", part: "booking" },
     // The booking form collects personal data; the policy is not optional.
-    { id: "privacy", done: copy.privacyBody.trim().length > 0, tab: "settings" },
+    { id: "privacy", done: copy.privacyBody.trim().length > 0, tab: "settings", part: "legal" },
     {
       id: "contact",
       done: Boolean(contact.phone || contact.email || contact.whatsapp),
       tab: "settings",
+      part: "contact",
     },
     // A hidden gallery has nothing to check; "done" would read as "has a photo".
-    ...(gallery?.visible ? [{ id: "gallery" as const, done: hasPhoto, tab: "content" as const }] : []),
+    ...(gallery?.visible
+      ? [{ id: "gallery" as const, done: hasPhoto, tab: "content" as const, part: "gallery" }]
+      : []),
     {
       id: "locales",
       done: PUBLIC_LOCALES.every((locale) => progress[locale] === 100),
@@ -250,6 +258,39 @@ export function publicSiteReadiness(
       optional: true,
     },
   ];
+}
+
+/**
+ * Where an opened part is in the preview, so the preview can scroll to it and
+ * mark it. A hidden section is shown in the preview while it is being edited.
+ */
+export type PreviewFocus = {
+  selector: string;
+  /** Position of the section in the page, to show it while it is hidden. */
+  sectionIndex?: number;
+  hidden: boolean;
+};
+
+export function previewFocusFor(
+  key: string | null,
+  draft: Pick<PublicSiteStudioDraft, "sections" | "showContactBar">,
+): PreviewFocus | null {
+  if (!key) return null;
+  if (key === "hero") return { selector: ".pub-hero", hidden: false };
+  if (key === "chrome") return { selector: ".public-header", hidden: false };
+  if (key === "contactBar") {
+    return { selector: ".pub-contact-bar", hidden: !draft.showContactBar };
+  }
+  const index = draft.sections.findIndex((section) => section.key === key);
+  const section = draft.sections[index];
+  if (!section) return null;
+  // Rendered sections are counted per type, hidden ones included (see TemplateSections).
+  const nth = draft.sections.slice(0, index).filter((row) => row.type === section.type).length;
+  return {
+    selector: `[data-pub-section="${section.type}"][data-pub-nth="${nth}"]`,
+    sectionIndex: index,
+    hidden: !section.visible,
+  };
 }
 
 /** Which editor card a click inside the live preview belongs to. */

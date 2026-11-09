@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
 /**
@@ -20,18 +20,82 @@ export function OutlineGroup({ title, children }: { title: string; children: Rea
 export type OutlineDrag = {
   /** Key of the row being dragged, shared by the rows of one list. */
   dragging: string | null;
-  setDragging: (key: string | null) => void;
-  onDrop: (key: string, targetKey: string) => void;
+  /** Key of the row it would land on. */
+  over: string | null;
+  /** Pointer handlers for a row's handle: mouse, touch and pen alike. */
+  handleProps: (key: string) => {
+    onPointerDown: (event: ReactPointerEvent<HTMLElement>) => void;
+    onPointerMove: (event: ReactPointerEvent<HTMLElement>) => void;
+    onPointerUp: (event: ReactPointerEvent<HTMLElement>) => void;
+    onPointerCancel: () => void;
+  };
   onMove: (key: string, direction: -1 | 1) => void;
 };
 
-/** Drag state for one list of rows. */
+/** Edge of the scrolling editor column where a drag scrolls it. */
+const AUTO_SCROLL_EDGE = 56;
+
+/**
+ * Drag state for one list of rows. It runs on pointer events, not HTML drag and
+ * drop, which Android browsers lack and iPhones only half support, so reordering
+ * works with a finger as it does with a mouse.
+ */
 export function useOutlineDrag(
-  onDrop: OutlineDrag["onDrop"],
+  onDrop: (key: string, targetKey: string) => void,
   onMove: OutlineDrag["onMove"],
 ): OutlineDrag {
   const [dragging, setDragging] = useState<string | null>(null);
-  return { dragging, setDragging, onDrop, onMove };
+  const [over, setOver] = useState<string | null>(null);
+
+  function targetAt(x: number, y: number, key: string): string | null {
+    const row = document.elementFromPoint(x, y)?.closest<HTMLElement>("[data-drag-target]");
+    const target = row?.dataset.editKey ?? null;
+    return target && target !== key ? target : null;
+  }
+
+  return {
+    dragging,
+    over,
+    onMove,
+    handleProps: (key) => ({
+      onPointerDown: (event) => {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        event.preventDefault();
+        try {
+          // Keeps the moves coming to this handle while the finger leaves it.
+          event.currentTarget.setPointerCapture(event.pointerId);
+        } catch {
+          /* the pointer is already gone */
+        }
+        setDragging(key);
+        setOver(null);
+      },
+      onPointerMove: (event) => {
+        if (dragging !== key) return;
+        setOver(targetAt(event.clientX, event.clientY, key));
+        // Near the top or bottom of the editor column, scroll it to reach far rows.
+        const column = event.currentTarget.closest(".pub-site-studio__form");
+        if (!column) return;
+        const box = column.getBoundingClientRect();
+        if (event.clientY < box.top + AUTO_SCROLL_EDGE) column.scrollBy(0, -12);
+        else if (event.clientY > box.bottom - AUTO_SCROLL_EDGE) column.scrollBy(0, 12);
+      },
+      onPointerUp: (event) => {
+        if (dragging !== key) return;
+        const target = targetAt(event.clientX, event.clientY, key) ?? over;
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+        setDragging(null);
+        setOver(null);
+        if (target) onDrop(key, target);
+      },
+      onPointerCancel: () => {
+        setDragging(null);
+        setOver(null);
+      },
+    }),
+  };
 }
 
 export function OutlineRow({
@@ -57,50 +121,24 @@ export function OutlineRow({
   pinned?: "top" | "bottom";
 }) {
   const t = useTranslations("admin.pages.publicSite.editor");
-  const [over, setOver] = useState(false);
   const hidden = visible === false;
 
   return (
     <li
       className="pub-outline__row"
       data-edit-key={rowKey}
+      data-drag-target={drag ? "1" : undefined}
       data-hidden={hidden ? "1" : undefined}
       data-dragging={drag?.dragging === rowKey ? "1" : undefined}
-      data-over={over ? "1" : undefined}
-      onDragOver={
-        drag
-          ? (event) => {
-              if (!drag.dragging || drag.dragging === rowKey) return;
-              event.preventDefault();
-              setOver(true);
-            }
-          : undefined
-      }
-      onDragLeave={drag ? () => setOver(false) : undefined}
-      onDrop={
-        drag
-          ? (event) => {
-              event.preventDefault();
-              setOver(false);
-              if (drag.dragging && drag.dragging !== rowKey) drag.onDrop(drag.dragging, rowKey);
-              drag.setDragging(null);
-            }
-          : undefined
-      }
+      data-over={drag && drag.dragging && drag.over === rowKey ? "1" : undefined}
     >
       {drag ? (
         <button
           type="button"
           className="pub-outline__handle"
-          draggable
           aria-label={t("dragHandle", { name })}
           title={t("dragHandle", { name })}
-          onDragStart={(event) => {
-            event.dataTransfer.effectAllowed = "move";
-            event.dataTransfer.setData("text/plain", rowKey);
-            drag.setDragging(rowKey);
-          }}
-          onDragEnd={() => drag.setDragging(null)}
+          {...drag.handleProps(rowKey)}
           onKeyDown={(event) => {
             if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
             event.preventDefault();

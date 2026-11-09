@@ -5,6 +5,7 @@ import {
   editKeyFromPreviewTarget,
   fillStudioLocaleFrom,
   isFreshPublicSite,
+  previewFocusFor,
   quickStartAnswersFrom,
   firstErrorTab,
   linkPresetFor,
@@ -228,6 +229,27 @@ describe("public site editor model", () => {
     const gallery = findSectionDraft(draft.sections, "gallery")!.key;
     const shown = patchStudioSection(draft, gallery, (section) => ({ ...section, visible: true }));
     expect(publicSiteReadiness(shown, contact).find((item) => item.id === "gallery")?.done).toBe(false);
+  });
+
+  it("points the preview at the opened part, and marks a hidden one", () => {
+    const draft = buildPublicSiteStudioDraft(config, "ro");
+    expect(previewFocusFor("hero", draft)).toEqual({ selector: ".pub-hero", hidden: false });
+    // "steps-1" is hidden in the fixture; it is the first steps section.
+    expect(previewFocusFor("steps-1", draft)).toEqual({
+      selector: '[data-pub-section="steps"][data-pub-nth="0"]',
+      sectionIndex: draft.sections.findIndex((section) => section.key === "steps-1"),
+      hidden: true,
+    });
+    expect(previewFocusFor(null, draft)).toBeNull();
+  });
+
+  it("sends each unfinished check to the part that fixes it", () => {
+    const draft = buildPublicSiteStudioDraft(config, "ro");
+    const items = publicSiteReadiness(draft, { contact: { email: null, phone: null }, stayOffers: [] });
+    const part = (id: string) => items.find((item) => item.id === id)?.part;
+    expect(part("heroImage")).toBe("hero");
+    expect(part("contact")).toBe("contact");
+    expect(part("privacy")).toBe("legal");
   });
 
   it("maps a rendered section back to its editor card", () => {
