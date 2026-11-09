@@ -397,6 +397,70 @@
   background: rgb(255 255 255 / 0.9);
 }
 
+/*
+ * Under each layout picture, the sections as that layout sets them out:
+ * cards (Classic), ruled lines (Magazine), a centred column on a band (Panoramic).
+ */
+.pub-editor-sections {
+  display: grid;
+  gap: 3px;
+  height: 1.6rem;
+  padding: 4px 5px;
+  border-radius: 0.4rem;
+  background: var(--admin-page-bg, #f4f4f5);
+}
+
+.pub-editor-sections i {
+  display: block;
+  border-radius: 2px;
+}
+
+.pub-editor-sections--classic {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.pub-editor-sections--classic i {
+  border: 1px solid color-mix(in srgb, var(--admin-text-muted, #52525b) 40%, transparent);
+  background: var(--admin-panel-bg, #fff);
+}
+
+.pub-editor-sections--editorial {
+  align-content: space-between;
+  border-top: 2px solid color-mix(in srgb, var(--admin-text, #18181b) 75%, transparent);
+  border-radius: 0;
+  background: none;
+  padding-inline: 0;
+}
+
+.pub-editor-sections--editorial i {
+  height: 1px;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--admin-text-muted, #52525b) 45%, transparent);
+}
+
+.pub-editor-sections--immersive {
+  justify-items: center;
+  align-content: center;
+  background: color-mix(in srgb, var(--admin-text, #18181b) 10%, var(--admin-page-bg, #f4f4f5));
+}
+
+.pub-editor-sections--immersive i {
+  height: 3px;
+  background: color-mix(in srgb, var(--admin-text, #18181b) 55%, transparent);
+}
+
+.pub-editor-sections--immersive i:nth-child(1) {
+  width: 40%;
+}
+
+.pub-editor-sections--immersive i:nth-child(2) {
+  width: 60%;
+}
+
+.pub-editor-sections--immersive i:nth-child(3) {
+  width: 30%;
+}
+
 /* Page outline: one compact row per part, grouped as "the page" and "across the site". */
 
 .pub-outline {

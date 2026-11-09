@@ -60,6 +60,12 @@ export function PublicSiteDesignPanel() {
                   <i className="pub-editor-layout__btn" />
                 </span>
               </span>
+              {/* Below the top: how the layout sets out the sections. */}
+              <span className={`pub-editor-sections pub-editor-sections--${option}`} aria-hidden>
+                <i />
+                <i />
+                <i />
+              </span>
               <span className="pub-editor-choice__title">{t(`templates.${option}.title`)}</span>
               <span className="pub-editor-choice__desc">{t(`templates.${option}.desc`)}</span>
             </button>
