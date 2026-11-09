@@ -53,7 +53,16 @@ export type PublicSeoConfig = {
   metaDescription?: LocalizedText;
 };
 
-export type PublicFontId = "theme" | "serif" | "sans";
+export type PublicFontId =
+  | "theme"
+  | "serif"
+  | "sans"
+  | "playfair"
+  | "lora"
+  | "cormorant"
+  | "montserrat"
+  | "raleway"
+  | "nunito";
 
 export type PublicChromeConfig = {
   logoUrl?: string | null;
@@ -61,6 +70,8 @@ export type PublicChromeConfig = {
   footerTagline?: LocalizedText;
   showContactBar?: boolean;
   fontId?: PublicFontId;
+  /** The operator's own accent colour (`#rrggbb`) over the palette; null keeps the palette's. */
+  accentColor?: string | null;
   navHome?: LocalizedText;
   navPrivacy?: LocalizedText;
   navTerms?: LocalizedText;

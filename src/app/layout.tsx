@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { PUBLIC_FONT_VARIABLES } from "@/design/fonts/public-fonts";
 import { DEFAULT_THEME_ID, DEFAULT_THEME_MODE } from "@/lib/themes";
 import { LayoutDebugHostGate } from "@/components/debug/LayoutDebugHostGate";
 import { PwaServiceWorkerRegister } from "@/components/pwa/PwaServiceWorkerRegister";
@@ -87,7 +88,7 @@ export default function RootLayout({
       data-layout-bp="xl"
       data-viewport-height="standard"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${PUBLIC_FONT_VARIABLES} h-full antialiased`}
     >
       <head>
         {process.env.NEXT_PUBLIC_SUPABASE_URL && (

@@ -1,15 +1,24 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { useTranslations } from "next-intl";
 import {
   PUBLIC_TEMPLATE_OPTIONS,
   PUBLIC_THEME_OPTIONS,
 } from "@/features/public-site/domain/defaults";
 import { PUBLIC_FONT_OPTIONS } from "@/features/public-site/domain/chrome";
-import { resolvePublicThemeStyle } from "@/features/public-site/themes/loader";
 import {
-  EditorAdvanced,
+  BRAND_COLOR_SUGGESTIONS,
+  brandColorFadesOn,
+  normalizeBrandColor,
+  relativeLuminance,
+} from "@/features/public-site/domain/brand-color";
+import {
+  publicThemeBackground,
+  resolvePublicSiteStyle,
+  resolvePublicThemeStyle,
+} from "@/features/public-site/themes/loader";
+import {
   EditorGroup,
   usePublicSiteEditor,
 } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
@@ -90,23 +99,136 @@ export function PublicSiteDesignPanel() {
         </div>
       </EditorGroup>
 
-      <EditorAdvanced>
-        <div className="admin-settings-fields">
-          <label>
-            <span>{te("fontTitle")}</span>
-            <select
-              value={draft.fontId}
-              onChange={(e) => patchDraft({ fontId: e.target.value as typeof draft.fontId })}
+      <BrandColorGroup />
+
+      <EditorGroup title={te("fontTitle")} description={te("fontDesc")}>
+        <div className="pub-editor-choices pub-editor-choices--fonts" role="radiogroup" aria-label={te("fontTitle")}>
+          {PUBLIC_FONT_OPTIONS.map((option) => (
+            <button
+              key={option}
+              type="button"
+              role="radio"
+              aria-checked={draft.fontId === option}
+              className="pub-editor-choice"
+              onClick={() => patchDraft({ fontId: option })}
             >
-              {PUBLIC_FONT_OPTIONS.map((option) => (
-                <option key={option} value={option}>
-                  {t(`fonts.${option}`)}
-                </option>
-              ))}
-            </select>
-          </label>
+              <span
+                className="pub-editor-font-sample"
+                style={resolvePublicSiteStyle(draft.themeId, { fontId: option })}
+                aria-hidden
+              >
+                {te("fontSample")}
+              </span>
+              <span className="pub-editor-choice__title">{t(`fonts.${option}`)}</span>
+            </button>
+          ))}
         </div>
-      </EditorAdvanced>
+      </EditorGroup>
     </>
+  );
+}
+
+/**
+ * The operator's own colour over the palette: a few suggestions, any colour
+ * from the picker or by its code, and a word when it fades on the page.
+ */
+function BrandColorGroup() {
+  const te = useTranslations("admin.pages.publicSite.editor");
+  const { draft, patchDraft } = usePublicSiteEditor();
+  const brand = normalizeBrandColor(draft.accentColor);
+  const pageBg = publicThemeBackground(draft.themeId);
+  const paletteAccent = resolvePublicThemeStyle(draft.themeId)["--pub-accent"];
+  const shown = brand ?? paletteAccent ?? "#000000";
+
+  // The code field keeps what is typed; a full six-digit code applies at once,
+  // a short one when the field is left. A colour picked elsewhere replaces it.
+  const [code, setCode] = useState(brand ?? "");
+  const [codeFor, setCodeFor] = useState(brand);
+  if (codeFor !== brand) {
+    setCodeFor(brand);
+    if (normalizeBrandColor(code) !== brand) setCode(brand ?? "");
+  }
+
+  const fades = brand ? brandColorFadesOn(brand, pageBg) : false;
+  const lightPage = relativeLuminance(normalizeBrandColor(pageBg) ?? "#ffffff") > 0.5;
+
+  return (
+    <EditorGroup title={te("brandTitle")} description={te("brandDesc")}>
+      <div className="pub-brand" role="radiogroup" aria-label={te("brandTitle")}>
+        <button
+          type="button"
+          role="radio"
+          aria-checked={!brand}
+          className="pub-brand__chip pub-brand__chip--palette"
+          style={{ "--chip": paletteAccent } as CSSProperties}
+          onClick={() => patchDraft({ accentColor: "" })}
+        >
+          <i aria-hidden />
+          {te("brandPalette")}
+        </button>
+        {BRAND_COLOR_SUGGESTIONS.map((color) => (
+          <button
+            key={color}
+            type="button"
+            role="radio"
+            aria-checked={brand === color}
+            aria-label={color}
+            title={color}
+            className="pub-brand__chip"
+            style={{ "--chip": color } as CSSProperties}
+            onClick={() => patchDraft({ accentColor: color })}
+          >
+            <i aria-hidden />
+          </button>
+        ))}
+      </div>
+
+      <div className="pub-brand__custom">
+        <label className="pub-brand__picker">
+          <input
+            type="color"
+            value={shown}
+            onChange={(e) => patchDraft({ accentColor: e.target.value })}
+          />
+          <span>{te("brandCustom")}</span>
+        </label>
+        <label className="pub-brand__code">
+          <span>{te("brandCode")}</span>
+          <input
+            type="text"
+            inputMode="text"
+            spellCheck={false}
+            maxLength={7}
+            placeholder="#b45309"
+            value={code}
+            onChange={(e) => {
+              const typed = e.target.value;
+              setCode(typed);
+              if (/^#?[0-9a-f]{6}$/i.test(typed.trim())) {
+                patchDraft({ accentColor: normalizeBrandColor(typed) ?? "" });
+              } else if (!typed.trim()) {
+                patchDraft({ accentColor: "" });
+              }
+            }}
+            onBlur={() => {
+              const next = normalizeBrandColor(code);
+              if (next) patchDraft({ accentColor: next });
+              else setCode(brand ?? "");
+            }}
+          />
+        </label>
+      </div>
+
+      <div className="pub-brand__sample" style={resolvePublicSiteStyle(draft.themeId, { accentColor: brand })}>
+        <span className="pub-brand__sample-btn">{te("brandSampleButton")}</span>
+        <span className="pub-brand__sample-mark">{te("brandSampleMark")}</span>
+      </div>
+
+      {fades ? (
+        <p className="pub-editor-tabhint" role="status">
+          {te(lightPage ? "brandFadesOnLight" : "brandFadesOnDark")}
+        </p>
+      ) : null}
+    </EditorGroup>
   );
 }

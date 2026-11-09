@@ -2,17 +2,15 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { PublicContactBar } from "@/features/public-site/contact/PublicContactBar";
-import { publicChromeFontStack } from "@/features/public-site/domain/chrome";
 import { effectivePublicTemplate } from "@/features/public-site/domain/template";
 import { PublicSiteBody } from "@/features/public-site/templates/PublicSiteTemplates";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import {
   publicThemeClassName,
-  resolvePublicThemeStyle,
+  resolvePublicSiteStyle,
 } from "@/features/public-site/themes/loader";
 import { PublicFooter } from "@/features/public-site/ui/PublicFooter";
 import { PublicHeader } from "@/features/public-site/ui/PublicHeader";
-import type { CSSProperties } from "react";
 import "@/styles/features/public/public-site.css";
 import "@/styles/features/public/public-site-v2.css";
 import "@/styles/features/public/public-site-layouts.css";
@@ -35,13 +33,7 @@ export function PublicSitePreview({
     checkIn: config.checkInTime,
     checkOut: config.checkOutTime,
   });
-  const themeStyle = resolvePublicThemeStyle(config.themeId);
-  const fontStack = publicChromeFontStack(config.chrome.fontId);
-  const style = (
-    fontStack
-      ? { ...themeStyle, "--pub-font-display": fontStack, "--public-font-serif": fontStack }
-      : themeStyle
-  ) as CSSProperties;
+  const style = resolvePublicSiteStyle(config.themeId, config.chrome);
 
   return (
     <div

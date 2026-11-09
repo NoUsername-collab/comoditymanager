@@ -41,7 +41,17 @@ const publicContactConfigSchema = z
   })
   .strip();
 
-const publicFontIdSchema = z.enum(["theme", "serif", "sans"]);
+const publicFontIdSchema = z.enum([
+  "theme",
+  "serif",
+  "sans",
+  "playfair",
+  "lora",
+  "cormorant",
+  "montserrat",
+  "raleway",
+  "nunito",
+]);
 
 const longLocalizedTextSchema = z
   .object({
@@ -58,6 +68,11 @@ const publicChromeConfigSchema = z
     footerTagline: localizedTextSchema.optional(),
     showContactBar: z.boolean().optional(),
     fontId: publicFontIdSchema.optional(),
+    accentColor: z
+      .string()
+      .regex(/^#[0-9a-f]{6}$/i)
+      .nullable()
+      .optional(),
     navHome: localizedTextSchema.optional(),
     navPrivacy: localizedTextSchema.optional(),
     navTerms: localizedTextSchema.optional(),

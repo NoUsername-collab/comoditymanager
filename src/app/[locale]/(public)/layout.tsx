@@ -4,16 +4,14 @@ import { PublicFooter } from "@/features/public-site/ui/PublicFooter";
 import { PublicHeader } from "@/features/public-site/ui/PublicHeader";
 import { PublicLodgingJsonLd } from "@/features/public-site/ui/PublicLodgingJsonLd";
 import { PublicContactBar } from "@/features/public-site/contact/PublicContactBar";
-import { publicChromeFontStack } from "@/features/public-site/domain/chrome";
 import { effectivePublicTemplate } from "@/features/public-site/domain/template";
 import {
   publicThemeClassName,
-  resolvePublicThemeStyle,
+  resolvePublicSiteStyle,
 } from "@/features/public-site/themes/loader";
 import { MobileShell } from "@/layout/components/MobileShell";
 import { loadPublicSiteConfig } from "@/features/public-site/loaders";
 import { getLocale, getTranslations } from "next-intl/server";
-import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import "@/styles/features/public/public-site.css";
 import "@/styles/features/public/public-site-v2.css";
@@ -40,17 +38,7 @@ export default async function PublicLayout({
     getLocale(),
   ]);
 
-  const themeStyle = resolvePublicThemeStyle(config.themeId);
-  const fontStack = publicChromeFontStack(config.chrome.fontId);
-  const style = (
-    fontStack
-      ? {
-          ...themeStyle,
-          "--pub-font-display": fontStack,
-          "--public-font-serif": fontStack,
-        }
-      : themeStyle
-  ) as CSSProperties;
+  const style = resolvePublicSiteStyle(config.themeId, config.chrome);
 
   return (
     <>

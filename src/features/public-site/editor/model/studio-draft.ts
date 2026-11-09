@@ -1,4 +1,5 @@
 import { PUBLIC_STEPS_HREF } from "@/features/public-site/domain/anchors";
+import { normalizeBrandColor } from "@/features/public-site/domain/brand-color";
 import { coercePublicLocale } from "@/features/public-site/domain/localized";
 import {
   alignNoticeDraft,
@@ -49,6 +50,8 @@ export type PublicSiteStudioDraft = {
   logoUrl: string;
   ogImageUrl: string;
   fontId: PublicFontId;
+  /** `#rrggbb`, or empty for the palette's own colour. */
+  accentColor: string;
   showContactBar: boolean;
   showNavHome: boolean;
   showNavPrivacy: boolean;
@@ -100,6 +103,7 @@ export function buildPublicSiteStudioDraft(
     logoUrl: config.chrome?.logoUrl ?? "",
     ogImageUrl: config.pages?.ogImageUrl ?? "",
     fontId: config.chrome?.fontId ?? "theme",
+    accentColor: config.chrome?.accentColor ?? "",
     showContactBar: config.chrome?.showContactBar !== false,
     showNavHome: config.chrome?.showNavHome !== false,
     showNavPrivacy: config.chrome?.showNavPrivacy !== false,
@@ -248,6 +252,7 @@ export function mergeStudioToInput(args: {
       logoUrl: draft.logoUrl.trim() || null,
       showContactBar: draft.showContactBar,
       fontId: draft.fontId,
+      accentColor: normalizeBrandColor(draft.accentColor),
       ...writeCopyGroup(CHROME_COPY, config.chrome, copies),
       showNavHome: draft.showNavHome,
       showNavPrivacy: draft.showNavPrivacy,

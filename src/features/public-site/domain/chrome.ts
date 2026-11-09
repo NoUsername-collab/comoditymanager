@@ -1,20 +1,36 @@
+import { normalizeBrandColor } from "@/features/public-site/domain/brand-color";
 import type {
   PublicChromeConfig,
   PublicFontId,
   PublicPagesConfig,
 } from "@/features/public-site/domain/types";
 
-export const PUBLIC_FONT_OPTIONS: PublicFontId[] = ["theme", "serif", "sans"];
+const SERIF = "Georgia, 'Times New Roman', serif";
+const SANS = "ui-sans-serif, system-ui, sans-serif";
 
+/**
+ * Heading fonts. The web fonts are declared once on the root layout
+ * (`design/fonts/public-fonts`) without preloading, so a visitor's browser
+ * downloads only the one the site uses.
+ */
 const PUBLIC_FONT_STACK: Record<Exclude<PublicFontId, "theme">, string> = {
-  serif: "Georgia, 'Times New Roman', serif",
-  sans: "ui-sans-serif, system-ui, sans-serif",
+  serif: SERIF,
+  sans: SANS,
+  playfair: `var(--font-pub-playfair), ${SERIF}`,
+  lora: `var(--font-pub-lora), ${SERIF}`,
+  cormorant: `var(--font-pub-cormorant), ${SERIF}`,
+  montserrat: `var(--font-pub-montserrat), ${SANS}`,
+  raleway: `var(--font-pub-raleway), ${SANS}`,
+  nunito: `var(--font-pub-nunito), ${SANS}`,
 };
+
+export const PUBLIC_FONT_OPTIONS: PublicFontId[] = ["theme", ...(Object.keys(PUBLIC_FONT_STACK) as PublicFontId[])];
 
 export function defaultPublicChrome(): PublicChromeConfig {
   return {
     showContactBar: true,
     fontId: "theme",
+    accentColor: null,
     showNavHome: true,
     showNavPrivacy: true,
     showNavTerms: false,
@@ -36,8 +52,7 @@ function asBool(raw: unknown, fallback: boolean): boolean {
 }
 
 function asFont(raw: unknown): PublicFontId {
-  if (raw === "serif" || raw === "sans" || raw === "theme") return raw;
-  return "theme";
+  return PUBLIC_FONT_OPTIONS.includes(raw as PublicFontId) ? (raw as PublicFontId) : "theme";
 }
 
 function asUrl(raw: unknown): string | null | undefined {
@@ -55,6 +70,7 @@ export function normalizePublicChrome(raw: unknown): PublicChromeConfig {
     footerTagline: (row.footerTagline ?? {}) as PublicChromeConfig["footerTagline"],
     showContactBar: asBool(row.showContactBar, base.showContactBar ?? true),
     fontId: asFont(row.fontId),
+    accentColor: normalizeBrandColor(row.accentColor),
     navHome: (row.navHome ?? {}) as PublicChromeConfig["navHome"],
     navPrivacy: (row.navPrivacy ?? {}) as PublicChromeConfig["navPrivacy"],
     navTerms: (row.navTerms ?? {}) as PublicChromeConfig["navTerms"],
@@ -89,6 +105,6 @@ export function normalizePublicPages(raw: unknown): PublicPagesConfig {
 }
 
 export function publicChromeFontStack(fontId: PublicFontId | undefined): string | null {
-  if (fontId === "serif" || fontId === "sans") return PUBLIC_FONT_STACK[fontId];
-  return null;
+  if (!fontId || fontId === "theme") return null;
+  return PUBLIC_FONT_STACK[fontId] ?? null;
 }

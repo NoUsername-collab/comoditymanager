@@ -40,7 +40,8 @@ export function tabForFieldPath(path: string): PublicSiteEditorTab {
   ) {
     return "settings";
   }
-  if (path.startsWith("templateId") || path.startsWith("themeId") || path.startsWith("chrome.fontId")) {
+  if (path.startsWith("templateId") || path.startsWith("themeId") || path.startsWith("chrome.fontId") ||
+    path.startsWith("chrome.accentColor")) {
     return "design";
   }
   return "content";
