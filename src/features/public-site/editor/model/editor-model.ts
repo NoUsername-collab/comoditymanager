@@ -26,8 +26,8 @@ import type {
   PublicSiteStudioDraft,
 } from "@/features/public-site/editor/model/studio-draft";
 
-/** Editor tabs: the page itself, how it looks, and everything around it. */
-export const PUBLIC_SITE_EDITOR_TABS = ["content", "design", "settings"] as const;
+/** Editor tabs: the page itself, how it looks, everything around it, and its languages side by side. */
+export const PUBLIC_SITE_EDITOR_TABS = ["content", "design", "settings", "translate"] as const;
 export type PublicSiteEditorTab = (typeof PUBLIC_SITE_EDITOR_TABS)[number];
 
 /** Which tab owns a server field error path (`hero.title`, `contact.email`, …). */

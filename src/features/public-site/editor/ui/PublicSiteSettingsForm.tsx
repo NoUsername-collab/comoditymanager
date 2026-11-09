@@ -25,6 +25,7 @@ import {
 } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import { PublicSiteDesignPanel } from "@/features/public-site/editor/ui/PublicSiteDesignPanel";
 import { PublicSiteContentPanel } from "@/features/public-site/editor/ui/PublicSiteContentPanel";
+import { PublicSiteTranslatePanel } from "@/features/public-site/editor/ui/PublicSiteTranslatePanel";
 import {
   PublicSiteSettingsPanel,
   type SettingsPartKey,
@@ -624,6 +625,7 @@ export function PublicSiteSettingsForm({
               {tab === "settings" ? (
                 <PublicSiteSettingsPanel openKey={settingsKey} onOpenKeyChange={setSettingsKey} />
               ) : null}
+              {tab === "translate" ? <PublicSiteTranslatePanel stock={stockCopy} progress={progress} /> : null}
             </PublicSiteEditorProvider>
           </fieldset>
         </form>
