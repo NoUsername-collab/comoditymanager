@@ -182,8 +182,8 @@ export type PublicSectionPayloadByType = {
     ctaSecondaryLabel?: LocalizedText;
     ctaSecondaryHref?: string;
   };
-  /** Room types, listed from the room settings. */
-  stays: { showPrices?: boolean };
+  /** Room types, listed from the room settings, each with its photo and words. */
+  stays: PublicSectionCopy & { showPrices?: boolean; items?: PublicStayItem[] };
   /** Address and map, from the property's details. */
   place: Record<string, never>;
   /** Guests' words: a quote, who said it and their stars. */
@@ -195,6 +195,13 @@ export type PublicSectionPayloadByType = {
   attractions: PublicSectionCopy & { items?: PublicAttractionItem[] };
   /** A YouTube or Vimeo film. */
   video: PublicSectionCopy & { url?: string };
+};
+
+/** What the site shows for one room type; the type itself comes from the room settings. */
+export type PublicStayItem = {
+  roomTypeId: string;
+  imageUrl?: string;
+  text?: LocalizedText;
 };
 
 export type PublicReviewItem = { quote: LocalizedText; author: LocalizedText; rating?: number };

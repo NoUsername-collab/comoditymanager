@@ -239,6 +239,34 @@ describe("public site studio draft", () => {
     }
   });
 
+  it("gives each room type its photo and words, kept by the room type", () => {
+    const base = buildPublicSiteStudioDraft(config, "ro");
+    const stays = findSectionDraft(base.sections, "stays")!;
+    let rooms = addSectionItem(stays, { imageUrl: "https://x.supabase.co/double.jpg" }, "type-double");
+    rooms = addSectionItem(rooms, {}, "type-triple");
+    rooms = setItemField(rooms, "ro", "type-double", "text", "Pat dublu, balcon spre munte.");
+    const draft = patchStudioSection(base, stays.key, () => rooms);
+    const input = mergeStudioToInput({ config, draft });
+    const saved = input.sections.find((s) => s.sectionType === "stays");
+    // The triple row has neither photo nor words, so it is not kept.
+    expect(saved?.payload.items).toEqual([
+      {
+        roomTypeId: "type-double",
+        imageUrl: "https://x.supabase.co/double.jpg",
+        text: { ro: "Pat dublu, balcon spre munte." },
+      },
+    ]);
+    expect(saved?.payload.showPrices).toBe(true);
+    expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
+
+    const reloaded = buildPublicSiteStudioDraft(
+      { ...config, sections: [{ id: "s", sectionType: "stays", sortOrder: 1, visible: true, payload: saved!.payload }] },
+      "ro",
+    );
+    const row = findSectionDraft(reloaded.sections, "stays")!.items[0];
+    expect(row).toMatchObject({ id: "type-double", structure: { imageUrl: "https://x.supabase.co/double.jpg" } });
+  });
+
   it("orders photos by drag and keeps each one's description", () => {
     const base = buildPublicSiteStudioDraft(config, "ro");
     const gallery = findSectionDraft(base.sections, "gallery")!;

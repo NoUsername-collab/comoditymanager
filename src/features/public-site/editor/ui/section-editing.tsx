@@ -55,7 +55,8 @@ export function useSectionEditing(section: SectionDraft) {
     setting: (name: string) => section.settings[name] ?? "",
     setSetting: (name: string) => (value: string) =>
       update((current) => ({ ...current, settings: { ...current.settings, [name]: value } })),
-    addItem: (structure?: ItemStructure) => update((current) => addSectionItem(current, structure)),
+    addItem: (structure?: ItemStructure, id?: string) =>
+      update((current) => addSectionItem(current, structure, id)),
     removeItem: (itemId: string) => update((current) => removeSectionItem(current, itemId)),
     moveItem: (itemId: string, direction: -1 | 1) =>
       update((current) => moveSectionItem(current, itemId, direction)),

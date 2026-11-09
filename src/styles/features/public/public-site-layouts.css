@@ -321,11 +321,38 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
 .pub-stay {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding: 1.15rem 1.2rem 1.25rem;
+  overflow: hidden;
   border: 1px solid var(--pub-border);
   border-radius: var(--pub-radius);
   background: color-mix(in srgb, var(--pub-surface) 88%, transparent);
+}
+
+.pub-stay__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.15rem 1.2rem 1.25rem;
+}
+
+/* The room's own photo, the same shape on every card; a room without one keeps the space. */
+.pub-stay__photo {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 4 / 3;
+  background: color-mix(in srgb, var(--pub-accent) 10%, var(--pub-card));
+}
+
+.pub-stay__photo img {
+  object-fit: cover;
+}
+
+.pub-stay__text {
+  margin: 0.2rem 0 0;
+  color: var(--pub-fg);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  white-space: pre-line;
 }
 
 .pub-stay__name {
@@ -409,12 +436,38 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   background: none;
 }
 
+[data-pub-template="editorial"] .pub-stay__body {
+  padding: 0;
+}
+
+/* With photos: a small picture at the left of each row, like a catalogue. */
+[data-pub-template="editorial"] .pub-stays--photos .pub-stay {
+  display: grid;
+  grid-template-columns: minmax(6rem, 30%) minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+[data-pub-template="editorial"] .pub-stay__photo {
+  border-radius: 0;
+}
+
 @media (min-width: 720px) {
-  [data-pub-template="editorial"] .pub-stay {
+  [data-pub-template="editorial"] .pub-stays--photos .pub-stay {
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+
+  [data-pub-template="editorial"] .pub-stay__body {
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.8fr) auto;
     align-items: baseline;
-    gap: 1rem;
+    gap: 0.35rem 1rem;
+  }
+
+  [data-pub-template="editorial"] .pub-stay__text {
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
 
   [data-pub-template="editorial"] .pub-stay__price,

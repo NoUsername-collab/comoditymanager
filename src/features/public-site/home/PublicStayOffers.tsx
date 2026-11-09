@@ -1,58 +1,91 @@
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { isOptimizablePublicImageUrl } from "@/domain/public-site/media";
 import {
   formatStayFromPrice,
   shouldShowStayOffers,
 } from "@/features/public-site/domain/stay-offers";
-import type { PublicSiteConfig } from "@/features/public-site/domain/types";
+import type {
+  PublicSectionPayloadByType,
+  PublicSiteConfig,
+} from "@/features/public-site/domain/types";
+import { copy } from "@/features/public-site/sections/shell";
 
+/**
+ * The room types from the room settings, each with the photo and words the
+ * operator gave it on the site. How many rooms of a type there are is the
+ * house's own business, so the page does not say.
+ */
 export function PublicStayOffers({
   config,
   locale,
-  showPrices,
+  payload,
   preview = false,
 }: {
   config: PublicSiteConfig;
   locale: string;
-  showPrices: boolean;
+  payload: PublicSectionPayloadByType["stays"];
   preview?: boolean;
 }) {
   const t = useTranslations("public.home");
   if (!shouldShowStayOffers(config.stayOffers)) return null;
 
+  const showPrices = payload.showPrices !== false;
+  const title = copy(payload.title, locale) || t("roomsTitle");
+  const lead = copy(payload.lead, locale) || t("roomsLead");
+  const byType = new Map((payload.items ?? []).map((item) => [item.roomTypeId, item]));
+  const withPhotos = config.stayOffers.some((offer) => byType.get(offer.id)?.imageUrl?.trim());
+
   return (
     <section className="pub-section pub-section--stays" aria-labelledby="pub-stays-title">
       <div className="pub-section__inner">
         <h2 id="pub-stays-title" className="pub-section__title">
-          {t("roomsTitle")}
+          {title}
         </h2>
-        <p className="pub-section__lead">{t("roomsLead")}</p>
-        <div className="pub-stays">
-          {config.stayOffers.map((offer) => (
-            <article key={offer.id} className="pub-stay">
-              <h3 className="pub-stay__name">{offer.name}</h3>
-              <p className="pub-stay__meta">
-                {t("roomsCapacity", { count: offer.capacity })}
-                {offer.roomCount > 1
-                  ? ` · ${t("roomsCount", { count: offer.roomCount })}`
-                  : null}
-              </p>
-              {showPrices && offer.fromPrice != null ? (
-                <p className="pub-stay__price">
-                  {t("roomsFrom", { price: formatStayFromPrice(offer.fromPrice, locale) })}
-                </p>
-              ) : null}
-              {config.bookingEnabled ? (
-                preview ? (
-                  <span className="pub-stay__cta">{t("roomsCta")}</span>
-                ) : (
-                  <Link href="/calendar" className="pub-stay__cta">
-                    {t("roomsCta")}
-                  </Link>
-                )
-              ) : null}
-            </article>
-          ))}
+        {lead ? <p className="pub-section__lead">{lead}</p> : null}
+        <div className={withPhotos ? "pub-stays pub-stays--photos" : "pub-stays"}>
+          {config.stayOffers.map((offer) => {
+            const extra = byType.get(offer.id);
+            const photo = extra?.imageUrl?.trim();
+            const text = copy(extra?.text, locale);
+            return (
+              <article key={offer.id} className="pub-stay">
+                {photo ? (
+                  <figure className="pub-stay__photo">
+                    <Image
+                      src={photo}
+                      alt={offer.name}
+                      fill
+                      sizes="(max-width: 720px) 100vw, 33vw"
+                      unoptimized={!isOptimizablePublicImageUrl(photo)}
+                    />
+                  </figure>
+                ) : withPhotos ? (
+                  <div className="pub-stay__photo pub-stay__photo--empty" aria-hidden />
+                ) : null}
+                <div className="pub-stay__body">
+                  <h3 className="pub-stay__name">{offer.name}</h3>
+                  <p className="pub-stay__meta">{t("roomsCapacity", { count: offer.capacity })}</p>
+                  {text ? <p className="pub-stay__text">{text}</p> : null}
+                  {showPrices && offer.fromPrice != null ? (
+                    <p className="pub-stay__price">
+                      {t("roomsFrom", { price: formatStayFromPrice(offer.fromPrice, locale) })}
+                    </p>
+                  ) : null}
+                  {config.bookingEnabled ? (
+                    preview ? (
+                      <span className="pub-stay__cta">{t("roomsCta")}</span>
+                    ) : (
+                      <Link href="/calendar" className="pub-stay__cta">
+                        {t("roomsCta")}
+                      </Link>
+                    )
+                  ) : null}
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

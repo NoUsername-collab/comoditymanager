@@ -11,7 +11,7 @@ export function renderStays(section: PublicSiteSectionOf<"stays">, ctx: SectionR
     <PublicStayOffers
       config={ctx.config}
       locale={ctx.locale}
-      showPrices={section.payload.showPrices !== false}
+      payload={section.payload}
       preview={ctx.preview}
     />
   );
