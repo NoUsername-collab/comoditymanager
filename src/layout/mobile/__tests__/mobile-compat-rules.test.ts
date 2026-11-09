@@ -201,7 +201,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(manifest).toContain('display: "standalone"');
     expect(manifest).toContain("display_override");
     expect(manifest).toContain("prefer_related_applications");
-    const layout = readFileSync(join(PROJECT_ROOT, "src/app/layout.tsx"), "utf8");
+    const layout = readFileSync(join(PROJECT_ROOT, "src/app/_document/root-document.tsx"), "utf8");
     expect(layout).toContain("viewportFit: \"cover\"");
     expect(layout).toContain("appleWebApp");
     expect(layout).toContain("themeColor");

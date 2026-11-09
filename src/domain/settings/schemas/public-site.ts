@@ -26,6 +26,7 @@ const publicHeroConfigSchema = z
     ctaPrimaryHref: optionalSafeNavHrefSchema.optional(),
     ctaSecondaryHref: optionalSafeNavHrefSchema.optional(),
     imageUrl: optionalUrlSchema.optional(),
+    imageAlt: localizedTextSchema.optional(),
     showCheckTimes: z.boolean().optional(),
   })
   .strip();

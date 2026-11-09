@@ -5,6 +5,7 @@ import { PublicBookingNotice } from "@/features/public-site/ui/PublicBookingNoti
 import { PublicUnpublishedPage } from "@/features/public-site/ui/PublicUnpublishedPage";
 import { buildBookingNoticePresetCopy } from "@/features/public-site/ui/booking-notice-copy";
 import { pickOwnLocalized, storedTitle } from "@/features/public-site/domain/localized";
+import { publicPageMetadata } from "@/features/public-site/page-metadata";
 import { loadPublicCalendarPage, loadPublicSiteConfig } from "@/features/public-site/loaders";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -19,16 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const description =
     pickOwnLocalized(config.pages.seoCalendarDescription, locale) ||
     pickOwnLocalized(config.pages.calendarLead, locale);
-  const image = config.pages.ogImageUrl || config.hero.imageUrl || null;
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: image ? [{ url: image }] : undefined,
-    },
-  };
+  return publicPageMetadata(config, { title, description });
 }
 
 export default async function CalendarPublicPage() {

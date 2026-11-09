@@ -36,6 +36,8 @@ export type PublicHeroConfig = {
   ctaPrimaryHref?: string;
   ctaSecondaryHref?: string;
   imageUrl?: string | null;
+  /** What the photo shows, for search engines and screen readers; empty keeps it decorative. */
+  imageAlt?: LocalizedText;
   showCheckTimes?: boolean;
 };
 

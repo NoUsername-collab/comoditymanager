@@ -183,6 +183,7 @@ type PublicSiteReadinessId =
   | "heroButton"
   | "heroLinks"
   | "rooms"
+  | "searchText"
   | "privacy"
   | "contact"
   | "gallery"
@@ -197,6 +198,9 @@ export type PublicSiteReadinessItem = {
   /** Nice to have; never counted as "still to do" before publishing. */
   optional?: boolean;
 };
+
+/** Shorter than about a sentence, a search result's description looks unfinished. */
+export const SEARCH_TEXT_MIN_LENGTH = 50;
 
 /** Checklist shown before publishing. `config` is the resolved preview config. */
 export function publicSiteReadiness(
@@ -225,6 +229,15 @@ export function publicSiteReadiness(
           .length > 0,
       tab: "content",
       part: "hero",
+    },
+    // What Google shows under the title: the search description, or the hero
+    // line it falls back to. A word or two reads as unfinished in the results.
+    {
+      id: "searchText",
+      done: (copy.seoDescription.trim() || copy.heroSubtitle.trim()).length >= SEARCH_TEXT_MIN_LENGTH,
+      tab: "settings",
+      part: "google",
+      optional: true,
     },
     // Every language: a page without it has no booking button at the top.
     {

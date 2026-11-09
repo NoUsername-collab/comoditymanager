@@ -7,7 +7,7 @@ import { PwaServiceWorkerRegister } from "@/components/pwa/PwaServiceWorkerRegis
 import { DEVICE_BOOT_SCRIPT } from "@/lib/device";
 import { ADMIN_THEME_BOOT_SCRIPT } from "@/lib/admin-theme";
 import { platformSiteUrl } from "@/lib/platform/branding";
-import "./globals.css";
+import "../globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,7 +22,8 @@ const geistMono = Geist_Mono({
   preload: false,
 });
 
-export const metadata: Metadata = {
+/** The platform's defaults; a page's own metadata (the guesthouse site's) overrides them. */
+export const rootMetadata: Metadata = {
   metadataBase: new URL(platformSiteUrl()),
   title: "Zalmox",
   description: "Software modern pentru pensiuni si hoteluri mici",
@@ -60,7 +61,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = {
+export const rootViewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -70,14 +71,21 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+/**
+ * The <html> document every root layout renders. `lang` comes from the page's
+ * language, so the server already sends the right one to search engines and
+ * screen readers.
+ */
+export function RootDocument({
+  lang,
   children,
 }: Readonly<{
+  lang: string;
   children: React.ReactNode;
 }>) {
   return (
     <html
-      lang="en"
+      lang={lang}
       data-theme={DEFAULT_THEME_ID}
       data-mode={DEFAULT_THEME_MODE}
       data-device="desktop"

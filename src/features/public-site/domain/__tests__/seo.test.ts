@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildDefaultPublicSiteConfig } from "@/features/public-site/domain/defaults";
-import { publicSiteRobots, publicSiteSitemap } from "@/features/public-site/domain/seo";
+import { publicSiteRobots, publicSiteSitemap, titleWithName } from "@/features/public-site/domain/seo";
 import {
   seedPublicChromeCopy,
   seedPublicHomeCopy,
@@ -58,5 +58,14 @@ describe("public site sitemap", () => {
   it("leaves out the booking page when booking is off", () => {
     const urls = publicSiteSitemap({ ...site(true), bookingEnabled: false }, BASE).map((e) => e.url);
     expect(urls.some((url) => url.includes("/calendar"))).toBe(false);
+  });
+});
+
+describe("page titles", () => {
+  it("carry the property's name once", () => {
+    expect(titleWithName("Hospira Managia", "Test Hotel")).toBe("Hospira Managia · Test Hotel");
+    expect(titleWithName("Camere la Casa Ana", "casa ana")).toBe("Camere la Casa Ana");
+    expect(titleWithName("", "Casa Ana")).toBe("Casa Ana");
+    expect(titleWithName("Confidențialitate", "")).toBe("Confidențialitate");
   });
 });

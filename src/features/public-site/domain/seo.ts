@@ -61,3 +61,16 @@ export function publicSiteSitemap(config: PublicSiteConfig, baseUrl: string): Pu
     }));
   });
 }
+
+/**
+ * A page title that carries the property's name, so search results and shared
+ * links show one name for the place: "Rooms · Casa Ana", or the title alone
+ * when it already names the property.
+ */
+export function titleWithName(title: string, propertyName: string): string {
+  const name = propertyName.trim();
+  const own = title.trim();
+  if (!own) return name;
+  if (!name || own.toLocaleLowerCase().includes(name.toLocaleLowerCase())) return own;
+  return `${own} · ${name}`;
+}

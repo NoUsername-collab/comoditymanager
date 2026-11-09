@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { titleWithName } from "@/features/public-site/domain/seo";
 import { PublicSiteImageField } from "@/features/public-site/editor/ui/PublicSiteImageField";
 import { EditorField, usePublicSiteEditor } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 
@@ -62,7 +63,10 @@ export function GoogleEditor() {
   const te = useTranslations("admin.pages.publicSite.editor");
   const { config, draft, copy, patchDraft, patchCopy, fieldError, readOnly } =
     usePublicSiteEditor();
-  const googleTitle = copy.seoTitle.trim() || copy.heroTitle.trim() || config.displayName;
+  const googleTitle = titleWithName(
+    copy.seoTitle.trim() || copy.heroTitle.trim() || config.displayName,
+    config.displayName,
+  );
   const googleDesc = copy.seoDescription.trim() || copy.heroSubtitle.trim();
   return (
     <>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PublicStaffPreviewLazy } from "@/features/public-site/ui/PublicStaffPreviewLazy";
 import { PublicUnpublishedPage } from "@/features/public-site/ui/PublicUnpublishedPage";
 import { pickOwnLocalized, storedTitle } from "@/features/public-site/domain/localized";
+import { publicPageMetadata } from "@/features/public-site/page-metadata";
 import { PublicSitePage } from "@/features/public-site/templates/PublicSitePage";
 import {
   loadPublicHomePage,
@@ -9,25 +10,11 @@ import {
 } from "@/features/public-site/loaders";
 import { getLocale } from "next-intl/server";
 
-function ogImage(url: string | null | undefined) {
-  return url ? [{ url }] : undefined;
-}
-
 export async function generateMetadata(): Promise<Metadata> {
   const [config, locale] = await Promise.all([loadPublicSiteConfig(), getLocale()]);
   const title = storedTitle(config.seo.metaTitle, locale, config.displayName);
   const description = pickOwnLocalized(config.seo.metaDescription, locale);
-  const image = config.pages.ogImageUrl || config.hero.imageUrl || null;
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: ogImage(image),
-    },
-  };
+  return publicPageMetadata(config, { title, description });
 }
 
 export default async function HomePage() {

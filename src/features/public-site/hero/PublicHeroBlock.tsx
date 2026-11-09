@@ -37,13 +37,14 @@ function PreviewOrLink({
 
 /**
  * The hero photo is the page's largest image: served resized for the screen and
- * fetched first. Decorative, since the title beside it says what it shows.
+ * fetched first. Described when the operator says what it shows; otherwise
+ * decorative, the title beside it naming the place.
  */
-function HeroMedia({ url, sizes }: { url: string; sizes: string }) {
+function HeroMedia({ url, sizes, alt }: { url: string; sizes: string; alt: string }) {
   return (
     <Image
       src={url}
-      alt=""
+      alt={alt}
       fill
       sizes={sizes}
       loading="eager"
@@ -66,6 +67,7 @@ export function PublicHeroBlock({
   const subtitle = pickOwnLocalized(hero.subtitle, locale);
   const tagline = pickOwnLocalized(hero.tagline, locale);
   const badge = pickOwnLocalized(hero.badge, locale);
+  const imageAlt = pickOwnLocalized(hero.imageAlt, locale);
   const ctaPrimary = pickOwnLocalized(hero.ctaPrimary, locale);
   const ctaSecondary = pickOwnLocalized(hero.ctaSecondary, locale);
   const secondaryHref = safeNavHref(hero.ctaSecondaryHref, PUBLIC_STEPS_HREF);
@@ -119,7 +121,7 @@ export function PublicHeroBlock({
         </div>
         <div className="pub-hero__portrait">
           {hero.imageUrl ? (
-            <HeroMedia url={hero.imageUrl} sizes="(min-width: 900px) 50vw, 100vw" />
+            <HeroMedia url={hero.imageUrl} alt={imageAlt} sizes="(min-width: 900px) 50vw, 100vw" />
           ) : (
             <div className="pub-hero__poster" aria-hidden>
               <span>{config.displayName}</span>
@@ -142,7 +144,7 @@ export function PublicHeroBlock({
           .join(" ")}
       >
         {hero.imageUrl ? (
-          <HeroMedia url={hero.imageUrl} sizes="100vw" />
+          <HeroMedia url={hero.imageUrl} alt={imageAlt} sizes="100vw" />
         ) : (
           <div className="pub-hero__glow" aria-hidden />
         )}
@@ -176,7 +178,7 @@ export function PublicHeroBlock({
     >
       {hero.imageUrl ? (
         <figure className="pub-hero__photo">
-          <HeroMedia url={hero.imageUrl} sizes="(max-width: 74rem) 100vw, 72rem" />
+          <HeroMedia url={hero.imageUrl} alt={imageAlt} sizes="(max-width: 74rem) 100vw, 72rem" />
         </figure>
       ) : (
         <div className="pub-hero__glow" aria-hidden />

@@ -293,3 +293,32 @@ describe("public site editor model", () => {
     expect(isFreshPublicSite(next)).toBe(false);
   });
 });
+
+describe("search text and the main photo's description", () => {
+  it("asks for a full sentence under the title in search results", () => {
+    const draft = buildPublicSiteStudioDraft(config, "ro");
+    const short = publicSiteReadiness(patchStudioCopy(draft, { seoDescription: "", heroSubtitle: "Ahaha" }), {
+      contact: { email: null, phone: null },
+      stayOffers: [],
+    });
+    expect(short.find((item) => item.id === "searchText")).toMatchObject({
+      done: false,
+      optional: true,
+      tab: "settings",
+      part: "google",
+    });
+    const full = publicSiteReadiness(
+      patchStudioCopy(draft, { seoDescription: "Pensiune liniștită la munte, cu mic dejun și vedere spre pădure." }),
+      { contact: { email: null, phone: null }, stayOffers: [] },
+    );
+    expect(full.find((item) => item.id === "searchText")?.done).toBe(true);
+  });
+
+  it("saves what the main photo shows, per language", () => {
+    const draft = patchStudioCopy(buildPublicSiteStudioDraft(config, "ro"), {
+      heroImageAlt: "Pensiunea văzută din grădină",
+    });
+    const input = mergeStudioToInput({ config, draft });
+    expect(input.hero.imageAlt?.ro).toBe("Pensiunea văzută din grădină");
+  });
+});

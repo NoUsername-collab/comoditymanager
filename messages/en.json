@@ -1835,6 +1835,9 @@
           "heroTitle": "Big title",
           "heroTitleHint": "Your property name or a short phrase. Also used in Google.",
           "heroTitleNotName": "The header, the footer and the other pages' titles use the name “{name}”.",
+          "heroImageAlt": "What the photo shows (optional)",
+          "heroImageAltPlaceholder": "The guesthouse seen from the garden, mountains behind",
+          "heroImageAltHint": "For Google and for screen readers. Left empty, the photo counts as decoration.",
           "heroTitleNameLink": "Change the property name",
           "heroSubtitle": "Short description",
           "heroSubtitleHint": "One sentence about what makes you special.",
@@ -1904,6 +1907,7 @@
             "heroButton": "The booking button at the top has a label in every language",
             "heroLinks": "The buttons at the top lead to sections that are shown",
             "rooms": "The booking page has rooms to choose from",
+            "searchText": "The description for Google is a full sentence (at least 50 characters)",
             "contact": "Guests have a phone or email",
             "privacy": "You have a privacy policy",
             "gallery": "The gallery has at least one photo",
@@ -2075,15 +2079,15 @@
         "templates": {
           "classic": {
             "title": "Classic",
-            "desc": "Photo on top, text below. Simple and clear."
+            "desc": "Photo on top, sections in cards. Simple and clear."
           },
           "editorial": {
             "title": "Magazine",
-            "desc": "Title beside the photo, like a magazine."
+            "desc": "Title beside the photo, sections with rules and large quotes, like a magazine."
           },
           "immersive": {
             "title": "Panoramic",
-            "desc": "Full-screen photo. For stunning photos."
+            "desc": "Full-screen photo, sections centred on wide bands. For striking photos."
           }
         },
         "themes": {

@@ -37,6 +37,16 @@ export function HeroEditor() {
           disabled={readOnly}
         />
       </div>
+      {draft.heroImageUrl.trim() ? (
+        <EditorField
+          full
+          label={te("heroImageAlt")}
+          value={copy.heroImageAlt}
+          placeholder={te("heroImageAltPlaceholder")}
+          onChange={(heroImageAlt) => patchCopy({ heroImageAlt })}
+          hint={te("heroImageAltHint")}
+        />
+      ) : null}
       <EditorField
         full
         label={te("heroTitle")}

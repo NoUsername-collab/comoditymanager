@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { titleWithName } from "@/features/public-site/domain/seo";
 import { useTranslations } from "next-intl";
 import {
   OutlineDetail,
@@ -85,7 +86,10 @@ export function PublicSiteSettingsPanel({
     key: "google",
     name: te("googleTitle"),
     description: te("googleDesc"),
-    summary: copy.seoTitle.trim() || copy.heroTitle.trim() || config.displayName,
+    summary: titleWithName(
+      copy.seoTitle.trim() || copy.heroTitle.trim() || config.displayName,
+      config.displayName,
+    ),
     editor: <GoogleEditor />,
   };
   const pages: SettingsPart = {

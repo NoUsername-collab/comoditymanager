@@ -1,6 +1,7 @@
 import { PublicPageShell } from "@/features/public-site/ui/PublicPageShell";
 import { PublicLegalCopy } from "@/features/public-site/ui/PublicLegalCopy";
 import { pickOwnLocalized, storedTitle } from "@/features/public-site/domain/localized";
+import { publicPageMetadata } from "@/features/public-site/page-metadata";
 import { loadPublicSiteConfig } from "@/features/public-site/loaders";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
@@ -15,16 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const description =
     pickOwnLocalized(config.pages.seoPrivacyDescription, locale) ||
     pickOwnLocalized(config.pages.privacyLead, locale);
-  const image = config.pages.ogImageUrl || config.hero.imageUrl || null;
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: image ? [{ url: image }] : undefined,
-    },
-  };
+  return publicPageMetadata(config, { title, description });
 }
 
 export default async function PrivacyPage() {

@@ -1820,6 +1820,9 @@
           "heroTitle": "Titlul mare",
           "heroTitleHint": "Numele pensiunii sau o frază scurtă. Apare și în Google.",
           "heroTitleNotName": "Antetul, subsolul și titlul celorlalte pagini folosesc numele „{name}”.",
+          "heroImageAlt": "Ce se vede în poză (opțional)",
+          "heroImageAltPlaceholder": "Pensiunea văzută din grădină, cu munții în spate",
+          "heroImageAltHint": "Pentru Google și pentru cititoarele de ecran. Dacă lași gol, poza e tratată ca decor.",
           "heroTitleNameLink": "Schimbă numele pensiunii",
           "heroSubtitle": "Descriere scurtă",
           "heroSubtitleHint": "O propoziție despre ce vă face speciali.",
@@ -1889,6 +1892,7 @@
             "heroButton": "Butonul de rezervare din partea de sus are text în fiecare limbă",
             "heroLinks": "Butoanele de sus duc spre secțiuni afișate",
             "rooms": "Pagina de rezervare are camere de ales",
+            "searchText": "Descrierea pentru Google e o frază întreagă (cel puțin 50 de caractere)",
             "contact": "Oaspeții au un telefon sau e-mail",
             "privacy": "Ai o politică de confidențialitate",
             "gallery": "Galeria are cel puțin o poză",
@@ -2059,15 +2063,15 @@
         "templates": {
           "classic": {
             "title": "Clasic",
-            "desc": "Poza sus, textele dedesubt. Simplu și clar."
+            "desc": "Poza sus, secțiunile în carduri. Simplu și clar."
           },
           "editorial": {
             "title": "Revistă",
-            "desc": "Titlul lângă poză, ca într-o revistă."
+            "desc": "Titlul lângă poză, secțiunile cu linii și citate mari, ca într-o revistă."
           },
           "immersive": {
             "title": "Panoramic",
-            "desc": "Poza pe tot ecranul. Pentru poze spectaculoase."
+            "desc": "Poza pe tot ecranul, secțiunile centrate pe benzi late. Pentru poze spectaculoase."
           }
         },
         "themes": {

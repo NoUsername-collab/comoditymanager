@@ -21,6 +21,7 @@ export const HERO_COPY = {
   heroTagline: "tagline",
   heroCtaPrimary: "ctaPrimary",
   heroCtaSecondary: "ctaSecondary",
+  heroImageAlt: "imageAlt",
 } as const;
 
 /** Draft key → field of `config.seo`. */
