@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { EditorField } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
+import { RichTextField } from "@/features/public-site/editor/ui/RichTextField";
 import {
   useSectionEditing,
   type SectionEditorProps,
@@ -20,17 +21,8 @@ export function TextEditor({ section }: SectionEditorProps) {
           value={ed.field("lead")}
           onChange={ed.setField("lead")}
         />
-        <EditorField
-          rows={6}
-          label={te("textBody")}
-          value={ed.field("body")}
-          onChange={ed.setField("body")}
-          hint={te("textBodyHint")}
-        />
+        <RichTextField label={te("textBody")} value={ed.field("body")} onChange={ed.setField("body")} />
       </div>
-      <button type="button" className="pub-editor-item__remove" onClick={ed.removeSection}>
-        {te("removeText")}
-      </button>
     </>
   );
 }

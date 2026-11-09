@@ -241,6 +241,83 @@ const publicSiteSectionInputSchema = z.discriminatedUnion("sectionType", [
   ),
   sectionInputSchema("stays", z.object({ showPrices: z.boolean().optional() }).strip()),
   sectionInputSchema("place", z.object({}).strip()),
+  sectionInputSchema(
+    "reviews",
+    z
+      .object({
+        ...sectionCopyShape,
+        items: z
+          .array(
+            z
+              .object({
+                quote: localizedTextSchema,
+                author: localizedTextSchema,
+                rating: z.number().int().min(1).max(5).optional(),
+              })
+              .strip(),
+          )
+          .max(MAX_SECTION_ITEMS)
+          .optional(),
+      })
+      .strip(),
+  ),
+  sectionInputSchema(
+    "faq",
+    z
+      .object({
+        ...sectionCopyShape,
+        items: z
+          .array(z.object({ question: localizedTextSchema, answer: localizedTextSchema }).strip())
+          .max(MAX_SECTION_ITEMS)
+          .optional(),
+      })
+      .strip(),
+  ),
+  sectionInputSchema(
+    "amenities",
+    z
+      .object({
+        ...sectionCopyShape,
+        items: z
+          .array(z.object({ icon: z.string().max(32).optional(), label: localizedTextSchema }).strip())
+          .max(MAX_SECTION_ITEMS)
+          .optional(),
+      })
+      .strip(),
+  ),
+  sectionInputSchema(
+    "attractions",
+    z
+      .object({
+        ...sectionCopyShape,
+        items: z
+          .array(
+            z
+              .object({
+                name: localizedTextSchema,
+                text: localizedTextSchema,
+                distance: z.string().max(40).optional(),
+              })
+              .strip(),
+          )
+          .max(MAX_SECTION_ITEMS)
+          .optional(),
+      })
+      .strip(),
+  ),
+  sectionInputSchema(
+    "video",
+    z
+      .object({
+        ...sectionCopyShape,
+        url: z
+          .string()
+          .max(500)
+          .refine((v) => v === "" || isSafeHttpUrl(v), { message: "invalid_url" })
+          .optional(),
+      })
+      .strip(),
+  ),
 ]);
 
 const untranslatedTextsSchema = z.array(z.string().max(5000)).max(300).optional();

@@ -363,13 +363,13 @@ export function moveSectionDraft(
   return [...movable, ...sections.filter((section) => sectionKind(section.type).pinnedLast)];
 }
 
-/** Add a section of a repeatable kind; null when the kind is at its limit. */
+/** Add a section of a kind the operator adds; null when it is at its limit or not addable. */
 export function addSectionDraft(
   sections: SectionDraft[],
   type: PublicSectionType,
   key: string,
 ): SectionDraft[] | null {
-  const limit = sectionKind(type).repeatable?.max ?? 1;
+  const limit = sectionKind(type).addable?.max ?? 0;
   if (sections.filter((section) => section.type === type).length >= limit) return null;
   return keepPinnedLast([...sections, newSectionDraft(type, key)]);
 }

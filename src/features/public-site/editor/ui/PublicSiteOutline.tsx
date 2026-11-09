@@ -193,6 +193,7 @@ export function OutlineDetail({
   visible,
   onToggleVisible,
   onBack,
+  onRemove,
   children,
 }: {
   name: string;
@@ -200,6 +201,8 @@ export function OutlineDetail({
   visible?: boolean;
   onToggleVisible?: (visible: boolean) => void;
   onBack: () => void;
+  /** Present for sections the operator added: takes this one off the page. */
+  onRemove?: () => void;
   children: ReactNode;
 }) {
   const t = useTranslations("admin.pages.publicSite.editor");
@@ -227,6 +230,17 @@ export function OutlineDetail({
         ) : null}
       </header>
       <div className="pub-outline-detail__body">{children}</div>
+      {onRemove ? (
+        <button
+          type="button"
+          className="pub-outline-detail__remove"
+          onClick={() => {
+            if (window.confirm(t("removeSectionConfirm", { name }))) onRemove();
+          }}
+        >
+          {t("removeSection")}
+        </button>
+      ) : null}
     </div>
   );
 }

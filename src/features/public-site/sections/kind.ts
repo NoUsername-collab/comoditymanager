@@ -50,8 +50,10 @@ export type SectionKind = {
     read: (payload: StoredFields) => Record<string, string>;
     write: (settings: Record<string, string>) => StoredFields;
   };
-  /** Several of this kind may exist; the editor offers to add more. */
-  repeatable?: { max: number };
+  /** The operator adds it from "Add a section" and may remove it; at most `max` on a page. */
+  addable?: { max: number };
+  /** Several exist side by side, so each is named by its own title (free texts). */
+  namedByTitle?: boolean;
   /** Always the last section, on the page and in the editor. */
   pinnedLast?: boolean;
   /** The editor always has one to place, even before anything is saved; `visible` is how it starts. */

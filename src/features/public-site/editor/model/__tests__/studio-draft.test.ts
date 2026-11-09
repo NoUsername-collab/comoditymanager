@@ -253,6 +253,27 @@ describe("public site studio draft", () => {
     expect(items[1]?.alt).toEqual({ ro: "Camera dublă cu balcon" });
   });
 
+  it("adds each new kind once, saves it and lets it be removed", () => {
+    let draft = buildPublicSiteStudioDraft(config, "ro");
+    for (const type of ["reviews", "faq", "amenities", "attractions", "video"] as const) {
+      const sections = addSectionDraft(draft.sections, type, `00000000-0000-4000-8000-00000000000${type.length}`);
+      expect(sections).not.toBeNull();
+      draft = { ...draft, sections: sections! };
+      // One of each on a page.
+      expect(addSectionDraft(draft.sections, type, "again")).toBeNull();
+    }
+    const faq = findSectionDraft(draft.sections, "faq")!;
+    draft = patchStudioSection(draft, faq.key, (section) =>
+      setItemField(setItemField(section, "ro", section.items[0]!.id, "question", "Animale?"), "ro", section.items[0]!.id, "answer", "Da, **mici**."),
+    );
+    const input = mergeStudioToInput({ config, draft });
+    expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
+    const saved = input.sections.find((section) => section.sectionType === "faq");
+    expect(saved?.payload.items).toEqual([{ question: { ro: "Animale?" }, answer: { ro: "Da, **mici**." } }]);
+    // Built-in kinds such as the closing band are not added by the operator.
+    expect(addSectionDraft(draft.sections, "cta", "x")).toBeNull();
+  });
+
   it("round-trips extra jsonb keys through parse", () => {
     const messy = {
       ...config,

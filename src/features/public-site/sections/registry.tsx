@@ -22,6 +22,16 @@ import { renderPlace } from "@/features/public-site/sections/place/render";
 import { StaysEditor } from "@/features/public-site/sections/stays/Editor";
 import { renderStays } from "@/features/public-site/sections/stays/render";
 import type { SectionRenderContext } from "@/features/public-site/sections/render-context";
+import { AmenitiesEditor } from "@/features/public-site/sections/amenities/Editor";
+import { renderAmenities } from "@/features/public-site/sections/amenities/render";
+import { AttractionsEditor } from "@/features/public-site/sections/attractions/Editor";
+import { renderAttractions } from "@/features/public-site/sections/attractions/render";
+import { FaqEditor } from "@/features/public-site/sections/faq/Editor";
+import { renderFaq } from "@/features/public-site/sections/faq/render";
+import { ReviewsEditor } from "@/features/public-site/sections/reviews/Editor";
+import { renderReviews } from "@/features/public-site/sections/reviews/render";
+import { VideoEditor } from "@/features/public-site/sections/video/Editor";
+import { renderVideo } from "@/features/public-site/sections/video/render";
 
 type Renderer<T extends PublicSectionType> = (
   section: PublicSiteSectionOf<T>,
@@ -40,6 +50,11 @@ const SECTION_VIEWS: { [T in PublicSectionType]: SectionView<T> } = {
   gallery: { render: (s, ctx) => renderGallery(s, ctx.locale, ctx.template), Editor: GalleryEditor },
   steps: { render: (s, ctx) => renderSteps(s, ctx.locale, ctx.template), Editor: StepsEditor },
   text: { render: (s, ctx) => renderText(s, ctx.locale), Editor: TextEditor },
+  reviews: { render: (s, ctx) => renderReviews(s, ctx.locale), Editor: ReviewsEditor },
+  faq: { render: (s, ctx) => renderFaq(s, ctx.locale), Editor: FaqEditor },
+  amenities: { render: (s, ctx) => renderAmenities(s, ctx.locale), Editor: AmenitiesEditor },
+  attractions: { render: (s, ctx) => renderAttractions(s, ctx.locale), Editor: AttractionsEditor },
+  video: { render: (s, ctx) => renderVideo(s, ctx.locale), Editor: VideoEditor },
   stays: { render: renderStays, Editor: StaysEditor },
   place: { render: renderPlace, Editor: PlaceEditor },
   cta: { render: (s, ctx) => renderCta(s, ctx.locale), Editor: CtaEditor },

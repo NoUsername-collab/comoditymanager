@@ -6,5 +6,6 @@ export const textKind: SectionKind = {
   copyFields: ["title", "lead", "body"],
   progressFields: ["title", "body"],
   summaryField: "title",
-  repeatable: { max: 8 },
+  addable: { max: 8 },
+  namedByTitle: true,
 };

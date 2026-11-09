@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import {
@@ -20,6 +20,7 @@ import {
   moveSectionDraft,
   moveSectionDraftTo,
   movableSections,
+  removeSectionDraft,
   sectionField,
   type SectionDraft,
 } from "@/features/public-site/editor/model/section-draft";
@@ -36,6 +37,8 @@ type PagePart = {
   visible?: boolean;
   onToggleVisible?: (visible: boolean) => void;
   editor: ReactNode;
+  /** Present for sections the operator added and may take away. */
+  onRemove?: () => void;
 };
 
 /**
@@ -59,6 +62,7 @@ export function PublicSiteContentPanel({
 }) {
   const te = useTranslations("admin.pages.publicSite.editor");
   const { draft, copy, setDraft, patchDraft } = usePublicSiteEditor();
+  const [adding, setAdding] = useState(false);
   const drag = useOutlineDrag(
     (key, targetKey) =>
       setDraft((d) => ({ ...d, sections: moveSectionDraftTo(d.sections, key, targetKey) })),
@@ -87,13 +91,19 @@ export function PublicSiteContentPanel({
   function sectionPart(section: SectionDraft): PagePart {
     const kind = sectionKind(section.type);
     const Editor = sectionEditor(section.type);
-    // Repeatable kinds are told apart by their own title.
-    const ownName = kind.repeatable ? sectionField(section, draft.editLocale, "title").trim() : "";
+    // Kinds that sit side by side are told apart by their own title.
+    const ownName = kind.namedByTitle ? sectionField(section, draft.editLocale, "title").trim() : "";
     return {
       key: section.key,
       name: ownName || te(`cards.${section.type}.name`),
       description: te(`cards.${section.type}.desc`),
-      summary: kind.repeatable ? te(`cards.${section.type}.desc`) : summaryFor(section),
+      summary: kind.namedByTitle ? te(`cards.${section.type}.desc`) : summaryFor(section),
+      onRemove: kind.addable
+        ? () => {
+            setDraft((d) => ({ ...d, sections: removeSectionDraft(d.sections, section.key) }));
+            setOpenKey(null);
+          }
+        : undefined,
       visible: section.visible,
       onToggleVisible: (visible) =>
         setDraft((d) => patchStudioSection(d, section.key, (current) => ({ ...current, visible }))),
@@ -140,6 +150,7 @@ export function PublicSiteContentPanel({
         visible={opened.visible}
         onToggleVisible={opened.onToggleVisible}
         onBack={() => setOpenKey(null)}
+        onRemove={opened.onRemove}
       >
         {opened.editor}
       </OutlineDetail>
@@ -159,7 +170,20 @@ export function PublicSiteContentPanel({
       pinned={extra.pinned}
     />
   );
-  const repeatable = Object.values(SECTION_KINDS).filter((kind) => kind.repeatable);
+  // Kinds still to add: those the operator adds, below their limit on the page.
+  const addable = Object.values(SECTION_KINDS).filter(
+    (kind) =>
+      kind.addable &&
+      draft.sections.filter((section) => section.type === kind.type).length < kind.addable.max,
+  );
+  function addSection(type: SectionDraft["type"]) {
+    const key = crypto.randomUUID();
+    const sections = addSectionDraft(draft.sections, type, key);
+    if (!sections) return;
+    setDraft((d) => ({ ...d, sections }));
+    setAdding(false);
+    setOpenKey(key);
+  }
 
   return (
     <>
@@ -175,28 +199,33 @@ export function PublicSiteContentPanel({
       <OutlineGroup title={te("outlinePage")}>
         {row(hero, { pinned: "top" })}
         {movable.map((part) => row(part, { drag: true }))}
-        {repeatable.map((kind) => {
-          const count = draft.sections.filter((section) => section.type === kind.type).length;
-          return (
-            <li key={`add-${kind.type}`} className="pub-outline__add">
-              <AdminButton
-                type="button"
-                variant="secondary"
-                size="sm"
-                disabled={count >= (kind.repeatable?.max ?? 0)}
-                onClick={() => {
-                  const key = crypto.randomUUID();
-                  const sections = addSectionDraft(draft.sections, kind.type, key);
-                  if (!sections) return;
-                  setDraft((d) => ({ ...d, sections }));
-                  setOpenKey(key);
-                }}
-              >
-                + {te(`cards.${kind.type}.add`)}
+        {addable.length > 0 ? (
+          <li className="pub-outline__add">
+            {adding ? (
+              <div className="pub-add-section" role="menu" aria-label={te("addSection")}>
+                {addable.map((kind) => (
+                  <button
+                    key={kind.type}
+                    type="button"
+                    role="menuitem"
+                    className="pub-add-section__kind"
+                    onClick={() => addSection(kind.type)}
+                  >
+                    <strong>{te(`cards.${kind.type}.name`)}</strong>
+                    <span>{te(`cards.${kind.type}.desc`)}</span>
+                  </button>
+                ))}
+                <button type="button" className="pub-add-section__cancel" onClick={() => setAdding(false)}>
+                  {te("cancel")}
+                </button>
+              </div>
+            ) : (
+              <AdminButton type="button" variant="secondary" size="sm" onClick={() => setAdding(true)}>
+                + {te("addSection")}
               </AdminButton>
-            </li>
-          );
-        })}
+            )}
+          </li>
+        ) : null}
         {pinnedLast.map((part) => row(part, { pinned: "bottom" }))}
       </OutlineGroup>
 

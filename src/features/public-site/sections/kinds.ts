@@ -8,6 +8,11 @@ import { placeKind } from "@/features/public-site/sections/place/kind";
 import { staysKind } from "@/features/public-site/sections/stays/kind";
 import { stepsKind } from "@/features/public-site/sections/steps/kind";
 import { textKind } from "@/features/public-site/sections/text/kind";
+import { amenitiesKind } from "@/features/public-site/sections/amenities/kind";
+import { attractionsKind } from "@/features/public-site/sections/attractions/kind";
+import { faqKind } from "@/features/public-site/sections/faq/kind";
+import { reviewsKind } from "@/features/public-site/sections/reviews/kind";
+import { videoKind } from "@/features/public-site/sections/video/kind";
 
 /**
  * Every kind of homepage section, by type, in the order a new site starts with.
@@ -19,6 +24,11 @@ export const SECTION_KINDS: Record<PublicSectionType, SectionKind> = {
   gallery: galleryKind,
   steps: stepsKind,
   text: textKind,
+  amenities: amenitiesKind,
+  reviews: reviewsKind,
+  attractions: attractionsKind,
+  video: videoKind,
+  faq: faqKind,
   stays: staysKind,
   place: placeKind,
   cta: ctaKind,

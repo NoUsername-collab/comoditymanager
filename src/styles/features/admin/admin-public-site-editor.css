@@ -1224,3 +1224,85 @@
   font-size: 0.75rem;
   color: var(--admin-danger, #dc2626);
 }
+
+/* Formatted text field: a small toolbar above the textarea. */
+.pub-rich-field__tools {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin: 0.15rem 0 0.35rem;
+}
+
+.pub-rich-field__tools button {
+  min-width: 2rem;
+  height: 1.8rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  border-radius: 0.45rem;
+  background: var(--admin-panel-bg, #fff);
+  color: var(--admin-text, #18181b);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.pub-rich-field__tools button:hover {
+  border-color: var(--admin-accent, #059669);
+}
+
+/* "Add a section": the kinds still to add, each with a line about it. */
+.pub-add-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  border-radius: 0.8rem;
+  background: var(--admin-panel-bg, #fff);
+}
+
+.pub-add-section__kind {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0.6rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: var(--admin-text, #18181b);
+  text-align: left;
+  cursor: pointer;
+}
+
+.pub-add-section__kind:hover {
+  background: var(--admin-page-bg, #f4f4f5);
+}
+
+.pub-add-section__kind strong {
+  font-size: 0.875rem;
+}
+
+.pub-add-section__kind span {
+  font-size: 0.75rem;
+  color: var(--admin-text-muted, #52525b);
+}
+
+.pub-add-section__cancel {
+  align-self: flex-end;
+  padding: 0.3rem 0.6rem;
+  border: 0;
+  background: none;
+  color: var(--admin-text-muted, #52525b);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+/* Removing an added section, at the foot of its own screen. */
+.pub-outline-detail__remove {
+  margin-top: 1.5rem;
+  padding: 0.4rem 0;
+  border: 0;
+  background: none;
+  color: var(--admin-danger, #dc2626);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}

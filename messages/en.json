@@ -1679,6 +1679,42 @@
           "contentLead": "Your page, top to bottom. Tap a part to write it, drag ⋮⋮ to move it, and the eye hides it.",
           "dragHandle": "Drag to move “{name}” (or use the up/down arrows)",
           "backToPage": "Back to the page",
+          "addSection": "Add a section",
+          "cancel": "Cancel",
+          "removeSection": "Remove the section from the page",
+          "removeSectionConfirm": "Remove the “{name}” section? You can add it again any time.",
+          "richToolbar": "Formatting",
+          "richBold": "Bold",
+          "richLink": "Link",
+          "richList": "List",
+          "richLinkPrompt": "Link address (https://…, mailto:… or /page)",
+          "richBoldPlaceholder": "bold text",
+          "richLinkPlaceholder": "link text",
+          "richListPlaceholder": "first point",
+          "richHint": "A blank line starts a paragraph. **text** is bold, [text](address) is a link, “- ” at the start of a line makes a list.",
+          "reviewNumber": "Review {index}",
+          "addReview": "Add a review",
+          "reviewQuote": "What the guest said",
+          "reviewAuthor": "Who",
+          "reviewAuthorPlaceholder": "Anna, from London",
+          "reviewRating": "Stars",
+          "faqNumber": "Question {index}",
+          "addFaq": "Add a question",
+          "faqQuestion": "Question",
+          "faqQuestionPlaceholder": "Are pets welcome?",
+          "faqAnswer": "Answer",
+          "addAmenity": "Add a facility",
+          "amenityLabel": "What you offer",
+          "amenityPlaceholder": "Free Wi-Fi",
+          "attractionNumber": "Place {index}",
+          "addAttraction": "Add a place",
+          "attractionName": "Name of the place",
+          "attractionNamePlaceholder": "Bigăr Waterfall",
+          "attractionDistance": "How far",
+          "attractionDistancePlaceholder": "10 min by car",
+          "videoUrl": "Film address",
+          "videoUrlHint": "Paste the link from YouTube or Vimeo.",
+          "videoUrlUnknown": "We do not recognise this address: only YouTube or Vimeo links work.",
           "undo": "Undo",
           "redo": "Redo",
           "undoShortcut": "Undo (Ctrl+Z)",
@@ -1716,6 +1752,26 @@
           "shown": "Shown",
           "hidden": "Hidden",
           "cards": {
+            "reviews": {
+              "name": "Reviews",
+              "desc": "What guests say about you."
+            },
+            "faq": {
+              "name": "Questions",
+              "desc": "Answers to what guests often ask."
+            },
+            "amenities": {
+              "name": "Facilities",
+              "desc": "What guests find: Wi-Fi, parking, breakfast…"
+            },
+            "attractions": {
+              "name": "Nearby",
+              "desc": "Places to visit close by."
+            },
+            "video": {
+              "name": "Video",
+              "desc": "A film from YouTube or Vimeo."
+            },
             "hero": {
               "name": "Top of the page",
               "desc": "Big photo, title and booking button — the first impression."
@@ -1742,8 +1798,7 @@
             },
             "text": {
               "name": "Free text",
-              "desc": "Your own text: house rules, history, activities.",
-              "add": "Add a free text"
+              "desc": "Your own text: house rules, history, activities."
             },
             "stays": {
               "name": "Rooms",
@@ -1794,8 +1849,6 @@
           "galleryEmpty": "No photos yet. Add 4–8 photos of the rooms and surroundings.",
           "photoCaption": "Photo description (optional)",
           "textBody": "Text",
-          "textBodyHint": "Plain text. Leave an empty line between paragraphs.",
-          "removeText": "Remove this text",
           "stayPrices": "Show the “from” price on each room",
           "staysHint": "Rooms, photos and prices are edited in your room list.",
           "openRooms": "Open rooms",

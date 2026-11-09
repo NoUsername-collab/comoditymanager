@@ -9,9 +9,9 @@ export const PUBLIC_TEMPLATE_SECTION_ORDER: Record<
   PublicTemplateId,
   PublicSectionType[]
 > = {
-  classic: ["intro", "benefits", "gallery", "steps", "text", "stays", "place", "cta"],
-  editorial: ["intro", "gallery", "benefits", "steps", "text", "stays", "place", "cta"],
-  immersive: ["gallery", "intro", "benefits", "steps", "text", "stays", "place", "cta"],
+  classic: ["intro", "benefits", "amenities", "gallery", "video", "steps", "reviews", "text", "attractions", "faq", "stays", "place", "cta"],
+  editorial: ["intro", "gallery", "video", "benefits", "amenities", "steps", "reviews", "text", "attractions", "faq", "stays", "place", "cta"],
+  immersive: ["gallery", "video", "intro", "benefits", "amenities", "steps", "reviews", "text", "attractions", "faq", "stays", "place", "cta"],
 };
 
 /** Live and preview order: what the operator saved. */

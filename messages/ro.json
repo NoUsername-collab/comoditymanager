@@ -1664,6 +1664,42 @@
           "contentLead": "Pagina ta, de sus în jos. Apasă pe o parte ca s-o scrii, trage de ⋮⋮ ca s-o muți, iar ochiul o ascunde.",
           "dragHandle": "Trage ca să muți „{name}” (sau săgețile sus/jos)",
           "backToPage": "Înapoi la pagină",
+          "addSection": "Adaugă o secțiune",
+          "cancel": "Renunță",
+          "removeSection": "Șterge secțiunea de pe pagină",
+          "removeSectionConfirm": "Ștergi secțiunea „{name}”? O poți adăuga din nou oricând.",
+          "richToolbar": "Formatare",
+          "richBold": "Îngroșat",
+          "richLink": "Link",
+          "richList": "Listă",
+          "richLinkPrompt": "Adresa linkului (https://…, mailto:… sau /pagina)",
+          "richBoldPlaceholder": "text îngroșat",
+          "richLinkPlaceholder": "textul linkului",
+          "richListPlaceholder": "primul punct",
+          "richHint": "Un rând gol face paragraf nou. **text** e îngroșat, [text](adresă) e link, „- ” la început de rând face listă.",
+          "reviewNumber": "Recenzia {index}",
+          "addReview": "Adaugă o recenzie",
+          "reviewQuote": "Ce a spus oaspetele",
+          "reviewAuthor": "Cine",
+          "reviewAuthorPlaceholder": "Ana, din Cluj",
+          "reviewRating": "Stele",
+          "faqNumber": "Întrebarea {index}",
+          "addFaq": "Adaugă o întrebare",
+          "faqQuestion": "Întrebarea",
+          "faqQuestionPlaceholder": "Se acceptă animale de companie?",
+          "faqAnswer": "Răspunsul",
+          "addAmenity": "Adaugă o facilitate",
+          "amenityLabel": "Ce oferiți",
+          "amenityPlaceholder": "Wi-Fi gratuit",
+          "attractionNumber": "Locul {index}",
+          "addAttraction": "Adaugă un loc",
+          "attractionName": "Numele locului",
+          "attractionNamePlaceholder": "Cascada Bigăr",
+          "attractionDistance": "Cât de departe",
+          "attractionDistancePlaceholder": "10 min cu mașina",
+          "videoUrl": "Adresa filmului",
+          "videoUrlHint": "Lipește linkul de pe YouTube sau Vimeo.",
+          "videoUrlUnknown": "Nu recunoaștem adresa: merg doar linkuri de pe YouTube sau Vimeo.",
           "undo": "Anulează",
           "redo": "Refă",
           "undoShortcut": "Anulează (Ctrl+Z)",
@@ -1701,6 +1737,26 @@
           "shown": "Afișată",
           "hidden": "Ascunsă",
           "cards": {
+            "reviews": {
+              "name": "Recenzii",
+              "desc": "Ce spun oaspeții despre voi."
+            },
+            "faq": {
+              "name": "Întrebări frecvente",
+              "desc": "Răspunsuri la ce vă întreabă oaspeții des."
+            },
+            "amenities": {
+              "name": "Facilități",
+              "desc": "Ce găsesc oaspeții: Wi-Fi, parcare, mic dejun…"
+            },
+            "attractions": {
+              "name": "În zonă",
+              "desc": "Locuri de vizitat în apropiere."
+            },
+            "video": {
+              "name": "Video",
+              "desc": "Un film de pe YouTube sau Vimeo."
+            },
             "hero": {
               "name": "Partea de sus",
               "desc": "Poza mare, titlul și butonul de rezervare — prima impresie."
@@ -1727,8 +1783,7 @@
             },
             "text": {
               "name": "Text liber",
-              "desc": "Un text al tău: reguli, istoric, activități.",
-              "add": "Adaugă un text liber"
+              "desc": "Un text al tău: reguli, istoric, activități."
             },
             "stays": {
               "name": "Camere",
@@ -1779,8 +1834,6 @@
           "galleryEmpty": "Nicio poză încă. Adaugă 4–8 poze cu camerele și împrejurimile.",
           "photoCaption": "Descriere poză (opțional)",
           "textBody": "Textul",
-          "textBodyHint": "Text simplu. Lasă un rând gol între paragrafe.",
-          "removeText": "Șterge acest text",
           "stayPrices": "Arată prețul „de la” la fiecare cameră",
           "staysHint": "Camerele, pozele și prețurile se schimbă din lista de camere.",
           "openRooms": "Deschide camerele",

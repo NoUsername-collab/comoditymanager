@@ -17,6 +17,11 @@ export const PUBLIC_SECTION_TYPES = [
   "steps",
   "stays",
   "place",
+  "reviews",
+  "faq",
+  "amenities",
+  "attractions",
+  "video",
 ] as const;
 
 export type PublicSectionType = (typeof PUBLIC_SECTION_TYPES)[number];
@@ -168,7 +173,21 @@ export type PublicSectionPayloadByType = {
   stays: { showPrices?: boolean };
   /** Address and map, from the property's details. */
   place: Record<string, never>;
+  /** Guests' words: a quote, who said it and their stars. */
+  reviews: PublicSectionCopy & { items?: PublicReviewItem[] };
+  faq: PublicSectionCopy & { items?: PublicFaqItem[] };
+  /** What the house offers, as icon and label. */
+  amenities: PublicSectionCopy & { items?: PublicAmenityItem[] };
+  /** Places to visit nearby. */
+  attractions: PublicSectionCopy & { items?: PublicAttractionItem[] };
+  /** A YouTube or Vimeo film. */
+  video: PublicSectionCopy & { url?: string };
 };
+
+export type PublicReviewItem = { quote: LocalizedText; author: LocalizedText; rating?: number };
+export type PublicFaqItem = { question: LocalizedText; answer: LocalizedText };
+export type PublicAmenityItem = { icon?: string; label: LocalizedText };
+export type PublicAttractionItem = { name: LocalizedText; text: LocalizedText; distance?: string };
 
 export type PublicSectionPayload = PublicSectionPayloadByType[PublicSectionType];
 
