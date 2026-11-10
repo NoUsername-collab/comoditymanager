@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { MEDIA_ALBUMS } from "@/domain/media/types";
+import { GALLERY_LAYOUTS } from "@/features/public-site/domain/types";
 import { isSafeHttpUrl } from "@/lib/security/html-escape";
 import {
   formatZodError,
@@ -168,18 +170,6 @@ const publicBenefitItemSchema = z
   })
   .strict();
 
-const publicGalleryItemSchema = z
-  .object({
-    id: z.string().min(1).max(64),
-    url: z
-      .string()
-      .max(2048)
-      .refine((v) => isSafeHttpUrl(v), { message: "invalid_url" }),
-    caption: localizedTextSchema.optional(),
-    alt: localizedTextSchema.optional(),
-    category: z.string().max(64).optional(),
-  })
-  .strict();
 
 const publicStepItemSchema = z
   .object({
@@ -239,7 +229,9 @@ const publicSiteSectionInputSchema = z.discriminatedUnion("sectionType", [
     z
       .object({
         ...sectionCopyShape,
-        items: z.array(publicGalleryItemSchema).max(MAX_SECTION_ITEMS).optional(),
+        albums: z.array(z.enum(MEDIA_ALBUMS)).max(MEDIA_ALBUMS.length).optional(),
+        layout: z.enum(GALLERY_LAYOUTS).optional(),
+        limit: z.number().int().min(0).max(48).optional(),
       })
       .strip(),
   ),

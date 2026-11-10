@@ -508,6 +508,26 @@
     }
   },
   "public": {
+    "gallery": {
+      "filter": "Категории снимки",
+      "all": "Всички",
+      "enlarge": "Увеличи снимката",
+      "photo": "Снимка {index}",
+      "seeAll": "Виж всички {count} снимки",
+      "viewer": "Увеличени снимки",
+      "count": "{index} от {total}",
+      "previous": "Предишна снимка",
+      "next": "Следваща снимка",
+      "close": "Затвори",
+      "albums": {
+        "exterior": "Отвън",
+        "rooms": "Стаи",
+        "common": "Общи части",
+        "area": "Околността",
+        "food": "Храна",
+        "other": "Други"
+      }
+    },
     "shell": {
       "backHome": "Начало",
       "legalEyebrow": "Правни",
@@ -1917,6 +1937,21 @@
             }
           },
           "photoCount": "{count, plural, one {# снимка} other {# снимки}}",
+          "galleryAlbums": "Кои албуми показва",
+          "galleryAllAlbums": "Няма отметнат албум: показва всички снимки ({count}).",
+          "gallerySomeAlbums": "Показва {count} снимки от отметнатите албуми.",
+          "galleryLayout": "Как изглежда",
+          "galleryLayoutAuto": "Като страницата ({layout})",
+          "galleryLayouts": {
+            "grid": "Мрежа",
+            "mosaic": "Мозайка",
+            "carousel": "Въртележка",
+            "feature": "Една голяма и миниатюри"
+          },
+          "galleryLimit": "Снимки преди „Виж всички“",
+          "galleryLimitAll": "Всички",
+          "galleryLimitN": "{count} снимки",
+          "galleryPhotos": "Снимките (библиотеката на мястото)",
           "noPhotos": "Още няма снимки",
           "heroImage": "Основна снимка",
           "heroImageHint": "Най-хубавата снимка на мястото. JPEG, PNG или WebP, до 5 MB.",

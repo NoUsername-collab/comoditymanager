@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { loadPublicMedia } from "@/services/public-site/media-photos";
 import { unstable_cache } from "next/cache";
 import { buildDefaultPublicSiteConfig } from "@/features/public-site/domain/defaults";
 import {
@@ -27,11 +28,12 @@ async function getPublicSiteConfigUncached(
 ): Promise<PublicSiteConfig> {
   // Tenant passed explicitly: this runs inside unstable_cache, without request headers.
   // Errors propagate: a failed read must not show another business's defaults.
-  const [pension, identity, stayOffers, place] = await Promise.all([
+  const [pension, identity, stayOffers, place, media] = await Promise.all([
     getPensionSettingsForTenant(tenantId),
     getPensionIdentityForTenant(tenantId),
     loadPublicStayOffers(tenantId),
     loadPublicPlace(tenantId),
+    loadPublicMedia(tenantId),
   ]);
   const copy = seedPublicHomeCopy();
 
@@ -50,6 +52,7 @@ async function getPublicSiteConfigUncached(
   });
   fallback.stayOffers = stayOffers;
   fallback.place = place;
+  fallback.media = media;
 
   const supabase = createPublicAdminClient();
   const [settingsResult, sectionsResult] = await Promise.all([
@@ -88,6 +91,7 @@ async function getPublicSiteConfigUncached(
     fallbackContactEmail: fallback.contact.email,
     stayOffers,
     place,
+    media,
     logoUrl: identityLogo,
   });
 }
@@ -121,6 +125,9 @@ const getCachedPublicSiteConfig = (tenantId: string) =>
         // Name, logo, contact and check-in times come from the pension settings.
         CACHE_TAGS.pensionSettings,
         tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+        // Galleries and room photos come from the photo library.
+        CACHE_TAGS.media,
+        tenantTag(tenantId, CACHE_TAGS.media),
       ],
       revalidate: 120,
     }

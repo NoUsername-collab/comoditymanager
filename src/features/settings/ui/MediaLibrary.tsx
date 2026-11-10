@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, type DragEvent } from "react";
+import { useEffect, useRef, useState, type DragEvent } from "react";
 import { useTranslations } from "next-intl";
 import {
   deleteMediaAction,
@@ -32,21 +32,33 @@ export function MediaLibrary({
   initial,
   roomTypes,
   roomType = null,
+  initialAlbum = null,
+  onChange,
 }: {
   initial: MediaAsset[];
   roomTypes: RoomTypeChoice[];
   /** Only this room type's photos: new ones go to the rooms album under it. */
   roomType?: RoomTypeChoice | null;
+  /** The album tab to open on. */
+  initialAlbum?: MediaAlbum | null;
+  /** Told the whole library after every change, so a preview can follow. */
+  onChange?: (assets: MediaAsset[]) => void;
 }) {
   const t = useTranslations("admin.pages.settings.photos");
   const [assets, setAssets] = useState(initial);
-  const [album, setAlbum] = useState<MediaAlbum | "all">(roomType ? "rooms" : "all");
+  const [album, setAlbum] = useState<MediaAlbum | "all">(roomType ? "rooms" : (initialAlbum ?? "all"));
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [uploading, setUploading] = useState<{ done: number; total: number } | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [dragId, setDragId] = useState<string | null>(null);
   const [dropOver, setDropOver] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  const reported = useRef(assets);
+  useEffect(() => {
+    if (reported.current === assets) return;
+    reported.current = assets;
+    onChange?.(assets);
+  }, [assets, onChange]);
 
   const visible = assets
     .filter((a) => (roomType ? a.roomTypeId === roomType.id : album === "all" || a.album === album))

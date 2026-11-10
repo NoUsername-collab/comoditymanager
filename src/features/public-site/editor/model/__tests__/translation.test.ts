@@ -52,6 +52,7 @@ const config: PublicSiteConfig = {
   checkOutTime: "11:00",
   stayOffers: [],
   place: { address: null, lat: null, lng: null },
+  media: [],
 };
 
 describe("translating side by side", () => {

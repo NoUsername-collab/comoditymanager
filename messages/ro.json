@@ -508,6 +508,26 @@
     }
   },
   "public": {
+    "gallery": {
+      "filter": "Categorii de poze",
+      "all": "Toate",
+      "enlarge": "Mărește poza",
+      "photo": "Poza {index}",
+      "seeAll": "Vezi toate cele {count} poze",
+      "viewer": "Poze mărite",
+      "count": "{index} din {total}",
+      "previous": "Poza anterioară",
+      "next": "Poza următoare",
+      "close": "Închide",
+      "albums": {
+        "exterior": "Exterior",
+        "rooms": "Camere",
+        "common": "Spații comune",
+        "area": "Zona",
+        "food": "Mâncare",
+        "other": "Altele"
+      }
+    },
     "shell": {
       "backHome": "Acasă",
       "legalEyebrow": "Legal",
@@ -1943,6 +1963,21 @@
             }
           },
           "photoCount": "{count, plural, one {# poză} few {# poze} other {# de poze}}",
+          "galleryAlbums": "Ce albume arată",
+          "galleryAllAlbums": "Niciun album bifat: arată toate pozele ({count}).",
+          "gallerySomeAlbums": "Arată {count} poze din albumele bifate.",
+          "galleryLayout": "Cum arată",
+          "galleryLayoutAuto": "Ca pagina ({layout})",
+          "galleryLayouts": {
+            "grid": "Grilă",
+            "mosaic": "Mozaic",
+            "carousel": "Carusel",
+            "feature": "Una mare și miniaturi"
+          },
+          "galleryLimit": "Câte poze apar înainte de „Vezi toate”",
+          "galleryLimitAll": "Toate",
+          "galleryLimitN": "{count} poze",
+          "galleryPhotos": "Pozele (biblioteca pensiunii)",
           "noPhotos": "Nicio poză încă",
           "heroImage": "Poza principală",
           "heroImageHint": "Cea mai frumoasă poză a pensiunii. JPEG, PNG sau WebP, maxim 5 MB.",

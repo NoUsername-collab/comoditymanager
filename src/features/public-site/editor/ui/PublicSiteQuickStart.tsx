@@ -7,13 +7,14 @@ import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { PublicSiteImageField } from "@/features/public-site/editor/ui/PublicSiteImageField";
 import { EditorField } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import { IdentityContactSummary } from "@/features/settings/ui/IdentityContactSummary";
+import { MediaLibrary } from "@/features/settings/ui/MediaLibrary";
+import type { MediaAsset } from "@/domain/media/types";
 import {
   PUBLIC_STYLE_PRESETS,
   type QuickStartAnswers,
 } from "@/features/public-site/editor/model/editor-model";
 
 const STEPS = ["about", "photos", "style", "contact"] as const;
-const MAX_QUICK_PHOTOS = 8;
 
 /**
  * Four plain questions that fill a usable homepage; everything stays editable after.
@@ -28,8 +29,15 @@ export function PublicSiteQuickStart({
   onChange,
   onFinish,
   onClose,
+  library,
+  roomTypes,
+  onLibraryChange,
 }: {
   initial: QuickStartAnswers;
+  /** The photo library: photos added here go straight into it (album "Exterior"). */
+  library: MediaAsset[];
+  roomTypes: { id: string; name: string }[];
+  onLibraryChange: (assets: MediaAsset[]) => void;
   /** What visitors will see, taken from Property identity. */
   contact: { phone?: string | null; email?: string | null; whatsapp?: string | null };
   displayName: string;
@@ -42,12 +50,10 @@ export function PublicSiteQuickStart({
   onClose: () => void;
 }) {
   const t = useTranslations("admin.pages.publicSite.editor.quickStart");
-  const tSite = useTranslations("admin.pages.publicSite");
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<QuickStartAnswers>(() => ({
     ...initial,
     heroTitle: initial.heroTitle || displayName,
-    galleryUrls: [...initial.galleryUrls, ""],
   }));
   const dialogRef = useRef<HTMLElement>(null);
   const current = STEPS[step]!;
@@ -75,15 +81,6 @@ export function PublicSiteQuickStart({
 
   function patch(partial: Partial<QuickStartAnswers>) {
     setAnswers((a) => ({ ...a, ...partial }));
-  }
-
-  function setPhoto(index: number, url: string) {
-    setAnswers((a) => {
-      const urls = a.galleryUrls.map((row, i) => (i === index ? url : row));
-      // Keep one empty slot at the end so the next photo is one tap away.
-      if (urls[urls.length - 1]?.trim() && urls.length < MAX_QUICK_PHOTOS) urls.push("");
-      return { ...a, galleryUrls: urls };
-    });
   }
 
   return (
@@ -140,17 +137,15 @@ export function PublicSiteQuickStart({
                 hint={t("heroPhotoHint")}
               />
               <p className="pub-quickstart__subhead">{t("galleryLabel")}</p>
-              <div className="pub-quickstart__grid">
-                {answers.galleryUrls.map((url, index) => (
-                  <PublicSiteImageField
-                    key={index}
-                    kind="gallery"
-                    label={tSite("galleryPhotoLabel", { index: index + 1 })}
-                    value={url}
-                    onChange={(next) => setPhoto(index, next)}
-                  />
-                ))}
-              </div>
+              <MediaLibrary
+                initial={library}
+                roomTypes={roomTypes}
+                initialAlbum="exterior"
+                onChange={(assets) => {
+                  onLibraryChange(assets);
+                  patch({ photoCount: assets.length });
+                }}
+              />
             </div>
           ) : null}
 

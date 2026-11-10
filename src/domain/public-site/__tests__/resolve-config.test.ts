@@ -162,6 +162,7 @@ describe("buildPublicSiteConfigFromInput", () => {
       },
       stayOffers: [],
       place: { address: null, lat: null, lng: null },
+      media: [],
     };
 
     const preview = buildPublicSiteConfigFromInput(

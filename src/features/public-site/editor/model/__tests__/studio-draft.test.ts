@@ -6,7 +6,6 @@ import {
   findSectionDraft,
   moveSectionDraft,
   moveSectionDraftTo,
-  moveSectionItemTo,
   addSectionItem,
   setItemField,
   orderSectionsForTemplate,
@@ -63,6 +62,7 @@ const config: PublicSiteConfig = {
   checkOutTime: "11:00",
   stayOffers: [],
   place: { address: null, lat: null, lng: null },
+  media: [],
 };
 
 const ALL_TYPES = Object.keys(SECTION_KINDS) as PublicSectionType[];
@@ -282,18 +282,29 @@ describe("public site studio draft", () => {
     expect(findSectionDraft(reloaded.sections, "stays")!.items[0]?.id).toBe("type-double");
   });
 
-  it("orders photos by drag and keeps each one's description", () => {
+  it("keeps which albums a gallery shows, how and how many first", () => {
     const base = buildPublicSiteStudioDraft(config, "ro");
     const gallery = findSectionDraft(base.sections, "gallery")!;
-    let photos = addSectionItem(addSectionItem(gallery, { url: "https://x.supabase.co/a.jpg" }, "a"), { url: "https://x.supabase.co/b.jpg" }, "b");
-    photos = setItemField(photos, "ro", "a", "alt", "Camera dublă cu balcon");
-    photos = moveSectionItemTo(photos, "b", "a");
-    expect(photos.items.map((item) => item.id)).toEqual(["b", "a"]);
-    const draft = patchStudioSection(base, gallery.key, () => ({ ...photos, visible: true }));
-    const saved = mergeStudioToInput({ config, draft }).sections.find((s) => s.sectionType === "gallery");
-    const items = saved?.payload.items as { id: string; alt?: Record<string, string> }[];
-    expect(items.map((item) => item.id)).toEqual(["b", "a"]);
-    expect(items[1]?.alt).toEqual({ ro: "Camera dublă cu balcon" });
+    const draft = patchStudioSection(base, gallery.key, (section) => ({
+      ...section,
+      visible: true,
+      settings: { ...section.settings, albums: "food,exterior,nope", layout: "carousel", limit: "12" },
+    }));
+    const input = mergeStudioToInput({ config, draft });
+    const saved = input.sections.find((s) => s.sectionType === "gallery")!;
+    expect(saved.payload).toMatchObject({ albums: ["exterior", "food"], layout: "carousel", limit: 12 });
+    expect(saved.visible).toBe(true);
+    expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
+
+    const reloaded = buildPublicSiteStudioDraft(
+      { ...config, sections: [{ id: "g", sectionType: "gallery", sortOrder: 1, visible: true, payload: saved.payload }] },
+      "ro",
+    );
+    expect(findSectionDraft(reloaded.sections, "gallery")!.settings).toMatchObject({
+      albums: "exterior,food",
+      layout: "carousel",
+      limit: "12",
+    });
   });
 
   it("adds each new kind once, saves it and lets it be removed", () => {

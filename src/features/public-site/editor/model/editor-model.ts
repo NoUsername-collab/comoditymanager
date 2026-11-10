@@ -1,3 +1,4 @@
+import { galleryPhotos, readGalleryAlbums } from "@/features/public-site/domain/gallery";
 import {
   anchoredSectionType,
   PUBLIC_INTRO_HREF,
@@ -11,7 +12,6 @@ import type {
 import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 import { HOMEPAGE_COPY_KEYS } from "@/features/public-site/editor/model/copy-fields";
 import {
-  addSectionItem,
   findSectionDraft,
   orderSectionsForTemplate,
   sectionField,
@@ -205,12 +205,16 @@ export const SEARCH_TEXT_MIN_LENGTH = 50;
 /** Checklist shown before publishing. `config` is the resolved preview config. */
 export function publicSiteReadiness(
   draft: PublicSiteStudioDraft,
-  config: Pick<PublicSiteConfig, "contact" | "stayOffers">,
+  config: Pick<PublicSiteConfig, "contact" | "stayOffers" | "media">,
   stock?: PublicStockCopy,
 ): PublicSiteReadinessItem[] {
   const copy = draft.copies[draft.editLocale];
   const gallery = findSectionDraft(draft.sections, "gallery");
-  const hasPhoto = Boolean(gallery?.items.some((item) => item.structure.url?.trim()));
+  // A gallery shows albums of the photo library: it is ready once they hold a photo.
+  const hasPhoto =
+    gallery != null &&
+    galleryPhotos(config.media, readGalleryAlbums((gallery.settings.albums ?? "").split(",").filter(Boolean)))
+      .length > 0;
   const contact = config.contact;
   const progress = studioLocaleProgress(draft, stock);
   const lands = (href: string) => {
@@ -346,11 +350,12 @@ export type QuickStartAnswers = {
   heroSubtitle: string;
   introLead: string;
   heroImageUrl: string;
-  galleryUrls: string[];
+  /** Photos in the library: the gallery is switched on once there are any. */
+  photoCount: number;
   styleId: PublicStylePresetId | null;
 };
 
-export function quickStartAnswersFrom(draft: PublicSiteStudioDraft): QuickStartAnswers {
+export function quickStartAnswersFrom(draft: PublicSiteStudioDraft, photoCount: number): QuickStartAnswers {
   const copy = draft.copies[draft.editLocale];
   const preset = PUBLIC_STYLE_PRESETS.find(
     (row) => row.templateId === draft.templateId && row.themeId === draft.themeId,
@@ -360,21 +365,18 @@ export function quickStartAnswersFrom(draft: PublicSiteStudioDraft): QuickStartA
     heroSubtitle: copy.heroSubtitle,
     introLead: sectionField(findSectionDraft(draft.sections, "intro"), draft.editLocale, "lead"),
     heroImageUrl: draft.heroImageUrl,
-    galleryUrls: (findSectionDraft(draft.sections, "gallery")?.items ?? [])
-      .map((item) => item.structure.url ?? "")
-      .filter((url) => url.trim()),
+    photoCount,
     styleId: preset?.id ?? null,
   };
 }
 
 /**
- * Write quick-start answers into the draft (current language only). Photos are
- * appended to the gallery, which is switched on once it has any.
+ * Write quick-start answers into the draft (current language only). Photos go
+ * straight into the photo library; the gallery is switched on once it has any.
  */
 export function applyQuickStart(
   draft: PublicSiteStudioDraft,
   answers: QuickStartAnswers,
-  newItemId: () => string,
 ): PublicSiteStudioDraft {
   const locale = draft.editLocale;
   const preset = PUBLIC_STYLE_PRESETS.find((row) => row.id === answers.styleId);
@@ -383,15 +385,7 @@ export function applyQuickStart(
   let sections = draft.sections.map((section) => {
     if (section.type === "intro" && intro) return setSectionField(section, locale, "lead", intro);
     if (section.type !== "gallery") return section;
-    const known = new Set(section.items.map((item) => item.structure.url));
-    let gallery = section;
-    for (const raw of answers.galleryUrls) {
-      const url = raw.trim();
-      if (!url || known.has(url)) continue;
-      known.add(url);
-      gallery = addSectionItem(gallery, { url }, newItemId());
-    }
-    return gallery.items.length > section.items.length ? { ...gallery, visible: true } : gallery;
+    return answers.photoCount > 0 ? { ...section, visible: true } : section;
   });
   if (preset && preset.templateId !== draft.templateId) {
     sections = orderSectionsForTemplate(sections, preset.templateId);
@@ -414,11 +408,7 @@ export function applyQuickStart(
   };
 }
 
-/** A site nobody has set up yet: never published, no photos. */
-export function isFreshPublicSite(draft: PublicSiteStudioDraft): boolean {
-  return (
-    !draft.published &&
-    !draft.heroImageUrl.trim() &&
-    !findSectionDraft(draft.sections, "gallery")?.items.some((item) => item.structure.url?.trim())
-  );
+/** A site nobody has set up yet: never published, no photos anywhere. */
+export function isFreshPublicSite(draft: PublicSiteStudioDraft, photoCount: number): boolean {
+  return !draft.published && !draft.heroImageUrl.trim() && photoCount === 0;
 }

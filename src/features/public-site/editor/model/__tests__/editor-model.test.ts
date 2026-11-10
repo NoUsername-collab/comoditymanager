@@ -78,6 +78,7 @@ const config: PublicSiteConfig = {
   checkOutTime: "11:00",
   stayOffers: [],
   place: { address: null, lat: null, lng: null },
+  media: [],
 };
 
 describe("public site editor model", () => {
@@ -161,7 +162,7 @@ describe("public site editor model", () => {
 
   it("lists what is missing before publishing", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
-    const items = publicSiteReadiness(draft, { contact: { email: null, phone: null }, stayOffers: [] });
+    const items = publicSiteReadiness(draft, { contact: { email: null, phone: null }, stayOffers: [], media: [] });
     const byId = Object.fromEntries(items.map((item) => [item.id, item]));
     expect(byId.heroImage).toMatchObject({ done: false, tab: "content" });
     expect(byId.heroTitle?.done).toBe(true);
@@ -169,7 +170,7 @@ describe("public site editor model", () => {
 
     const ready = publicSiteReadiness(patchStudioCopy({ ...draft, heroImageUrl: "x.jpg" }, {}), {
       contact: { email: "a@b.ro", phone: null },
-      stayOffers: [],
+      stayOffers: [], media: [],
     });
     expect(ready.find((item) => item.id === "heroImage")?.done).toBe(true);
     expect(ready.find((item) => item.id === "contact")?.done).toBe(true);
@@ -184,7 +185,7 @@ describe("public site editor model", () => {
     const hiddenIntro = showSection(draft, "intro", false);
     const items = publicSiteReadiness(
       patchStudioCopy(hiddenIntro, { heroCtaPrimary: "Rezervă" }),
-      { contact: { email: "a@b.ro", phone: null }, stayOffers: [] },
+      { contact: { email: "a@b.ro", phone: null }, stayOffers: [], media: [] },
     );
     const byId = Object.fromEntries(items.map((item) => [item.id, item.done]));
     expect(byId.heroButton).toBe(false);
@@ -193,7 +194,7 @@ describe("public site editor model", () => {
 
     const fixed = publicSiteReadiness(
       { ...showSection(draft, "intro", true), bookingEnabled: false },
-      { contact: { email: "a@b.ro", phone: null }, stayOffers: [] },
+      { contact: { email: "a@b.ro", phone: null }, stayOffers: [], media: [] },
     );
     const fixedById = Object.fromEntries(fixed.map((item) => [item.id, item.done]));
     expect(fixedById.heroButton).toBe(true);
@@ -214,7 +215,7 @@ describe("public site editor model", () => {
 
   it("asks for a privacy policy before publishing", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
-    const contact = { contact: { email: "a@b.ro", phone: null }, stayOffers: [] };
+    const contact = { contact: { email: "a@b.ro", phone: null }, stayOffers: [], media: [] };
     const privacy = (d: PublicSiteStudioDraft) =>
       publicSiteReadiness(d, contact).find((item) => item.id === "privacy");
     expect(privacy(draft)).toMatchObject({ done: false, tab: "settings" });
@@ -223,7 +224,7 @@ describe("public site editor model", () => {
 
   it("checks the gallery only when it is shown", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
-    const contact = { contact: { email: "a@b.ro", phone: null }, stayOffers: [] };
+    const contact = { contact: { email: "a@b.ro", phone: null }, stayOffers: [], media: [] };
     const ids = (d: PublicSiteStudioDraft) => publicSiteReadiness(d, contact).map((item) => item.id);
     expect(ids(draft)).not.toContain("gallery");
     const gallery = findSectionDraft(draft.sections, "gallery")!.key;
@@ -245,7 +246,7 @@ describe("public site editor model", () => {
 
   it("sends each unfinished check to the part that fixes it", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
-    const items = publicSiteReadiness(draft, { contact: { email: null, phone: null }, stayOffers: [] });
+    const items = publicSiteReadiness(draft, { contact: { email: null, phone: null }, stayOffers: [], media: [] });
     const part = (id: string) => items.find((item) => item.id === id)?.part;
     expect(part("heroImage")).toBe("hero");
     expect(part("contact")).toBe("contact");
@@ -267,30 +268,37 @@ describe("public site editor model", () => {
 
   it("applies quick start answers to the current language only", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
-    expect(isFreshPublicSite(draft)).toBe(true);
-    let seq = 0;
-    const next = applyQuickStart(
-      draft,
-      {
-        ...quickStartAnswersFrom(draft),
-        heroSubtitle: "Nou",
-        heroImageUrl: "hero.jpg",
-        galleryUrls: ["a.jpg", "", "a.jpg"],
-        styleId: "seaside",
-      },
-      () => `g${++seq}`,
-    );
+    expect(isFreshPublicSite(draft, 0)).toBe(true);
+    const next = applyQuickStart(draft, {
+      ...quickStartAnswersFrom(draft, 0),
+      heroSubtitle: "Nou",
+      heroImageUrl: "hero.jpg",
+      // Photos went straight into the library during the quick start.
+      photoCount: 3,
+      styleId: "seaside",
+    });
     expect(next.copies.ro.heroSubtitle).toBe("Nou");
     expect(next.copies.en.heroSubtitle).toBe(draft.copies.en.heroSubtitle);
-    const gallery = findSectionDraft(next.sections, "gallery")!;
-    expect(gallery.items).toEqual([{ id: "g1", structure: { url: "a.jpg" } }]);
-    expect(gallery.visible).toBe(true);
+    expect(findSectionDraft(next.sections, "gallery")!.visible).toBe(true);
     expect(next.templateId).toBe("immersive");
     expect(next.themeId).toBe("mediterranean");
     expect(next.sections[0]?.type).toBe("gallery");
     // Contact belongs to Property identity; the quick start leaves the site's own fields alone.
     expect(next.contactPhone).toBe(draft.contactPhone);
-    expect(isFreshPublicSite(next)).toBe(false);
+    expect(isFreshPublicSite(next, 3)).toBe(false);
+    expect(isFreshPublicSite(draft, 1)).toBe(false);
+  });
+
+  it("calls the gallery ready once its albums hold a photo", () => {
+    const draft = buildPublicSiteStudioDraft(config, "ro");
+    const shown = { ...draft, sections: draft.sections.map((s) => (s.type === "gallery" ? { ...s, visible: true } : s)) };
+    const photo = { id: "p", url: "u", album: "food", alt: {}, focus: "50% 50%" };
+    const check = (media: (typeof photo)[]) =>
+      publicSiteReadiness(shown, { contact: { email: "a@b.ro", phone: null }, stayOffers: [], media }).find(
+        (item) => item.id === "gallery",
+      )?.done;
+    expect(check([])).toBe(false);
+    expect(check([photo])).toBe(true);
   });
 });
 
@@ -299,7 +307,7 @@ describe("search text and the main photo's description", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
     const short = publicSiteReadiness(patchStudioCopy(draft, { seoDescription: "", heroSubtitle: "Ahaha" }), {
       contact: { email: null, phone: null },
-      stayOffers: [],
+      stayOffers: [], media: [],
     });
     expect(short.find((item) => item.id === "searchText")).toMatchObject({
       done: false,
@@ -309,7 +317,7 @@ describe("search text and the main photo's description", () => {
     });
     const full = publicSiteReadiness(
       patchStudioCopy(draft, { seoDescription: "Pensiune liniștită la munte, cu mic dejun și vedere spre pădure." }),
-      { contact: { email: null, phone: null }, stayOffers: [] },
+      { contact: { email: null, phone: null }, stayOffers: [], media: [] },
     );
     expect(full.find((item) => item.id === "searchText")?.done).toBe(true);
   });

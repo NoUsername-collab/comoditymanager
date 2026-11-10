@@ -1,5 +1,6 @@
 "use client";
 
+import { readGalleryAlbums } from "@/features/public-site/domain/gallery";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
@@ -61,7 +62,7 @@ export function PublicSiteContentPanel({
   onQuickStart?: () => void;
 }) {
   const te = useTranslations("admin.pages.publicSite.editor");
-  const { draft, copy, setDraft, patchDraft } = usePublicSiteEditor();
+  const { draft, copy, setDraft, patchDraft, library } = usePublicSiteEditor();
   const [adding, setAdding] = useState(false);
   const drag = useOutlineDrag(
     (key, targetKey) =>
@@ -76,11 +77,12 @@ export function PublicSiteContentPanel({
     document.querySelector(".pub-site-studio__form")?.scrollTo({ top: 0 });
   }, [openKey, scrollSeq]);
 
-  /** Collapsed line: the section's title, or how many photos it has. */
+  /** Collapsed line: the section's title, or how many photos its albums hold. */
   function summaryFor(section: SectionDraft): string | undefined {
     const kind = sectionKind(section.type);
-    if (kind.shownOnlyWithItems) {
-      const count = section.items.filter((item) => item.structure.url?.trim()).length;
+    if (section.type === "gallery") {
+      const albums = readGalleryAlbums((section.settings.albums ?? "").split(",").filter(Boolean));
+      const count = library.filter((photo) => albums.length === 0 || albums.includes(photo.album)).length;
       return count > 0 ? te("photoCount", { count }) : te("noPhotos");
     }
     if (!kind.summaryField) return te(`cards.${section.type}.desc`);

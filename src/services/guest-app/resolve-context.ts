@@ -1,8 +1,9 @@
 import { pickLocalized } from "@/features/public-site/domain/localized";
+import { galleryPhotos, readGalleryAlbums } from "@/features/public-site/domain/gallery";
+import type { PublicMediaPhoto } from "@/features/public-site/domain/types";
 import { findSection } from "@/features/public-site/domain/order-sections";
 import type {
   PublicBenefitItem,
-  PublicGalleryItem,
   PublicSiteConfig,
 } from "@/features/public-site/domain/types";
 import type { GuestPrecheckinPrefill } from "@/domain/guest-app/precheckin-prefill";
@@ -55,17 +56,13 @@ function mapBenefits(
   })).filter((item) => item.title.trim().length > 0);
 }
 
-function mapGallery(
-  items: PublicGalleryItem[],
-  locale: string,
-): GuestGalleryDisplayItem[] {
-  return items
-    .filter((item) => item.url?.trim())
-    .map((item) => ({
-      id: item.id,
-      url: item.url,
-      caption: pickLocalized(item.caption, locale, [item.category ?? ""]),
-    }));
+/** The site gallery's photos (its albums of the photo library), described in the guest's language. */
+function mapGallery(photos: PublicMediaPhoto[], locale: string): GuestGalleryDisplayItem[] {
+  return photos.map((photo) => ({
+    id: photo.id,
+    url: photo.url,
+    caption: pickLocalized(photo.alt, locale, [""]) || undefined,
+  }));
 }
 
 function mergeHotel(
@@ -198,7 +195,10 @@ export async function resolveGuestAppContext(
 
   const gallerySection = findSection(publicConfig?.sections, "gallery", { visibleOnly: true });
   const galleryFromSite = gallerySection
-    ? mapGallery(gallerySection.payload.items ?? [], locale)
+    ? mapGallery(
+        galleryPhotos(publicConfig?.media ?? [], readGalleryAlbums(gallerySection.payload.albums)),
+        locale,
+      )
     : [];
 
   // The booked room types' photos from the photo library; a type can have several.

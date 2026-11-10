@@ -2,7 +2,7 @@
 import { Link } from "@/i18n/navigation";
 import { PublicSiteSettingsForm } from "@/features/public-site/editor/ui/PublicSiteSettingsForm";
 import { publicStockCopy } from "@/features/public-site/domain/seed-copy";
-import { loadPublicSiteAdminBundle } from "@/features/settings/loaders";
+import { loadMediaLibraryPage, loadPublicSiteAdminBundle } from "@/features/settings/loaders";
 import { getLocale, getTranslations } from "next-intl/server";
 import {
   buildSettingsAlerts,
@@ -17,13 +17,14 @@ export default async function PublicSiteSettingsPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const [t, params, locale, ctx, bundle, siteUrl] = await Promise.all([
+  const [t, params, locale, ctx, bundle, siteUrl, library] = await Promise.all([
     getTranslations("admin.pages.publicSite"),
     searchParams,
     getLocale(),
     guardSettingsPermission("pension_settings"),
     loadPublicSiteAdminBundle(),
     resolveTenantPublicSiteUrl(),
+    loadMediaLibraryPage().catch(() => ({ assets: [], roomTypes: [] })),
   ]);
 
   if (!bundle) {
@@ -52,6 +53,8 @@ export default async function PublicSiteSettingsPage({
         alerts={alerts}
         siteUrl={siteUrl}
         stockCopy={publicStockCopy()}
+        library={library.assets}
+        roomTypes={library.roomTypes}
       />
     </Suspense>
   );

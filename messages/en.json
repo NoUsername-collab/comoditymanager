@@ -508,6 +508,26 @@
     }
   },
   "public": {
+    "gallery": {
+      "filter": "Photo categories",
+      "all": "All",
+      "enlarge": "Enlarge the photo",
+      "photo": "Photo {index}",
+      "seeAll": "See all {count} photos",
+      "viewer": "Enlarged photos",
+      "count": "{index} of {total}",
+      "previous": "Previous photo",
+      "next": "Next photo",
+      "close": "Close",
+      "albums": {
+        "exterior": "Exterior",
+        "rooms": "Rooms",
+        "common": "Common areas",
+        "area": "The area",
+        "food": "Food",
+        "other": "Other"
+      }
+    },
     "shell": {
       "backHome": "Home",
       "legalEyebrow": "Legal",
@@ -1958,6 +1978,21 @@
             }
           },
           "photoCount": "{count, plural, one {# photo} other {# photos}}",
+          "galleryAlbums": "Which albums it shows",
+          "galleryAllAlbums": "No album ticked: it shows every photo ({count}).",
+          "gallerySomeAlbums": "It shows {count} photos from the ticked albums.",
+          "galleryLayout": "How it looks",
+          "galleryLayoutAuto": "Like the page ({layout})",
+          "galleryLayouts": {
+            "grid": "Grid",
+            "mosaic": "Mosaic",
+            "carousel": "Carousel",
+            "feature": "One large and thumbnails"
+          },
+          "galleryLimit": "Photos shown before “See all”",
+          "galleryLimitAll": "All",
+          "galleryLimitN": "{count} photos",
+          "galleryPhotos": "The photos (the property's library)",
           "noPhotos": "No photos yet",
           "heroImage": "Main photo",
           "heroImageHint": "Your best photo of the property. JPEG, PNG or WebP, up to 5 MB.",

@@ -181,7 +181,8 @@ export type PublicSectionPayloadByType = {
   intro: PublicSectionCopy & SectionPhoto & { body?: LocalizedText };
   text: PublicSectionCopy & SectionPhoto & { body?: LocalizedText };
   benefits: PublicSectionCopy & { items?: PublicBenefitItem[] };
-  gallery: PublicSectionCopy & { items?: PublicGalleryItem[] };
+  /** Albums of the photo library, how to lay them out and how many to show first. */
+  gallery: PublicSectionCopy & { albums?: string[]; layout?: GalleryLayout; limit?: number };
   steps: PublicSectionCopy & { items?: PublicStepItem[] };
   cta: PublicSectionCopy & {
     ctaLabel?: LocalizedText;
@@ -294,7 +295,23 @@ export type PublicSiteConfig = PublicSiteSettingsRow & {
   checkOutTime: string;
   stayOffers: PublicStayOffer[];
   place: PublicPlace;
+  /** The property's photo library, for galleries (album by album). */
+  media: PublicMediaPhoto[];
 };
+
+/** A library photo as the public pages show it. */
+export type PublicMediaPhoto = {
+  id: string;
+  url: string;
+  album: string;
+  alt: LocalizedText;
+  /** CSS object-position keeping the subject in view. */
+  focus: string;
+};
+
+/** How a gallery lays its photos out; "auto" follows the page layout. */
+export const GALLERY_LAYOUTS = ["auto", "grid", "mosaic", "carousel", "feature"] as const;
+export type GalleryLayout = (typeof GALLERY_LAYOUTS)[number];
 
 export type PublicSiteSettingsInput = {
   templateId: PublicTemplateId;

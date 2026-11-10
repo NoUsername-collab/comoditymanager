@@ -1,5 +1,6 @@
 "use client";
 
+import type { MediaAsset } from "@/domain/media/types";
 import type { PensionContact } from "@/domain/settings/pension-identity";
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
@@ -17,6 +18,10 @@ import type {
 
 export type PublicSiteEditorApi = {
   config: PublicSiteConfig;
+  /** The photo library; galleries show its albums. */
+  library: MediaAsset[];
+  setLibrary: (assets: MediaAsset[]) => void;
+  roomTypes: { id: string; name: string }[];
   /** Contact from Property identity; the site shows it unless overridden. */
   primaryContact: PensionContact;
   draft: PublicSiteStudioDraft;

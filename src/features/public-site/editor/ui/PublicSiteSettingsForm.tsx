@@ -1,5 +1,7 @@
 "use client";
 
+import type { MediaAsset } from "@/domain/media/types";
+import { publicMediaPhoto } from "@/features/public-site/domain/gallery";
 import { useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -55,7 +57,6 @@ import {
   type LocaleCopy,
   type PublicSiteStudioDraft,
 } from "@/features/public-site/editor/model/studio-draft";
-import { nextItemDraftId } from "@/features/public-site/editor/model/section-draft";
 import "@/styles/features/admin/admin-public-site-editor.css";
 
 export function PublicSiteSettingsForm({
@@ -66,9 +67,14 @@ export function PublicSiteSettingsForm({
   alerts = [],
   siteUrl,
   stockCopy,
+  library: initialLibrary,
+  roomTypes,
 }: {
   /** Default texts per language, so progress can tell them from the operator's own. */
   stockCopy: PublicStockCopy;
+  /** The photo library: galleries show its albums, and photos added here show at once. */
+  library: MediaAsset[];
+  roomTypes: { id: string; name: string }[];
   config: PublicSiteConfig;
   locale: string;
   primaryContact: PensionContact;
@@ -118,9 +124,14 @@ export function PublicSiteSettingsForm({
     [config, settledDraft],
   );
   const draftInputJson = useMemo(() => JSON.stringify(draftInput), [draftInput]);
+  const [library, setLibrary] = useState(initialLibrary);
+  const configWithLibrary = useMemo(
+    () => ({ ...config, media: library.map(publicMediaPhoto) }),
+    [config, library],
+  );
   const previewConfig = useMemo(
-    () => buildPublicSiteConfigFromInput(config, draftInput, primaryContact),
-    [config, draftInput, primaryContact],
+    () => buildPublicSiteConfigFromInput(configWithLibrary, draftInput, primaryContact),
+    [configWithLibrary, draftInput, primaryContact],
   );
   // The part being edited: the preview scrolls to it, marks it, and shows it if hidden.
   const previewFocus = useMemo(
@@ -145,11 +156,10 @@ export function PublicSiteSettingsForm({
   // While the quick start is open the preview shows its answers before they are applied.
   const studioPreviewConfig = useMemo(() => {
     if (!quickStartOpen || !quickStartAnswers) return focusedPreviewConfig;
-    let seq = 0;
-    const answered = applyQuickStart(settledDraft, quickStartAnswers, () => `quick-preview-${++seq}`);
-    const input = mergeStudioToInput({ config, draft: answered });
-    return buildPublicSiteConfigFromInput(config, input, primaryContact);
-  }, [quickStartOpen, quickStartAnswers, focusedPreviewConfig, settledDraft, config, primaryContact]);
+    const answered = applyQuickStart(settledDraft, quickStartAnswers);
+    const input = mergeStudioToInput({ config: configWithLibrary, draft: answered });
+    return buildPublicSiteConfigFromInput(configWithLibrary, input, primaryContact);
+  }, [quickStartOpen, quickStartAnswers, focusedPreviewConfig, settledDraft, configWithLibrary, primaryContact]);
   const progress = useMemo(
     () => studioLocaleProgress(settledDraft, stockCopy),
     [settledDraft, stockCopy],
@@ -184,7 +194,10 @@ export function PublicSiteSettingsForm({
   }
 
   const api: PublicSiteEditorApi = {
-    config,
+    config: configWithLibrary,
+    library,
+    setLibrary,
+    roomTypes,
     primaryContact,
     draft,
     copy,
@@ -314,7 +327,7 @@ export function PublicSiteSettingsForm({
   }
 
   useEffect(() => {
-    if (readOnly || !isFreshPublicSite(draft) || quickStartDismissed()) return;
+    if (readOnly || !isFreshPublicSite(draft, library.length) || quickStartDismissed()) return;
     setQuickStartOpen(true);
     // Only on first render: a fresh site opens the guide once.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -327,7 +340,7 @@ export function PublicSiteSettingsForm({
   }
 
   function finishQuickStart(answers: QuickStartAnswers) {
-    setDraftState((d) => applyQuickStart(d, answers, nextItemDraftId));
+    setDraftState((d) => applyQuickStart(d, answers));
     closeQuickStart();
     setTab("content");
   }
@@ -546,7 +559,10 @@ export function PublicSiteSettingsForm({
       form={
         quickStartOpen ? (
           <PublicSiteQuickStart
-            initial={quickStartAnswersFrom(draft)}
+            initial={quickStartAnswersFrom(draft, library.length)}
+            library={library}
+            roomTypes={roomTypes}
+            onLibraryChange={setLibrary}
             contact={previewConfig.contact}
             displayName={config.displayName}
             language={languageName(draft.editLocale)}

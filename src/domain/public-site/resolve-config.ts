@@ -7,6 +7,7 @@ import type {
   PublicSiteSettingsInput,
   PublicSiteSettingsRow,
   PublicStayOffer,
+  PublicMediaPhoto,
 } from "@/features/public-site/domain/types";
 import { emptyPublicPlace } from "@/features/public-site/domain/stay-offers";
 
@@ -19,6 +20,7 @@ export type PublicSiteConfigContext = {
   fallbackContactEmail?: string | null;
   stayOffers?: PublicStayOffer[];
   place?: PublicPlace;
+  media?: PublicMediaPhoto[];
   /**
    * Identity logo. `undefined` keeps a previously stored chrome logo
    * (identity could not be loaded). `null` means the owner has no logo.
@@ -63,6 +65,7 @@ export function finalizePublicSiteConfig(
     },
     stayOffers: ctx.stayOffers ?? [],
     place: ctx.place ?? emptyPublicPlace(),
+    media: ctx.media ?? [],
   };
 }
 
@@ -107,6 +110,7 @@ export function buildPublicSiteConfigFromInput(
       fallbackContactEmail: base.contact.email,
       stayOffers: base.stayOffers,
       place: base.place,
+      media: base.media,
       logoUrl: base.chrome.logoUrl ?? null,
     },
   );
