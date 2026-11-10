@@ -52,6 +52,14 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         matchPath: "/admin/settings/identity",
         permissionGroup: "pension_settings",
       },
+      {
+        id: "photos",
+        labelKey: "navPhotos",
+        descriptionKey: "navPhotosDesc",
+        href: "/admin/settings/photos",
+        matchPath: "/admin/settings/photos",
+        permissionGroup: "pension_settings",
+      },
     ],
   },
   {

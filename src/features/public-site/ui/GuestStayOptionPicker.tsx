@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { isOptimizablePublicImageUrl } from "@/domain/public-site/media";
 import { useLocale, useTranslations } from "next-intl";
 import type {
   GuestStayOption,
@@ -99,6 +101,18 @@ export function GuestStayOptionPicker({
                         : "border border-[var(--site-border)] hover:border-[var(--site-accent)]",
                     ].join(" ")}
                   >
+                    {option.rooms[0]?.photo ? (
+                      <span className="guest-option__photo" aria-hidden>
+                        <Image
+                          src={option.rooms[0].photo.url}
+                          alt=""
+                          fill
+                          sizes="(max-width: 640px) 100vw, 320px"
+                          style={{ objectFit: "cover", objectPosition: option.rooms[0].photo.focus }}
+                          unoptimized={!isOptimizablePublicImageUrl(option.rooms[0].photo.url)}
+                        />
+                      </span>
+                    ) : null}
                     {wanted ? (
                       <span className="guest-option__wanted">{t("wantedRoomMatch", { room: wantedRoom!.name })}</span>
                     ) : null}

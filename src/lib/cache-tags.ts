@@ -8,6 +8,7 @@ export const CACHE_TAGS = {
   checkins: "checkins",
   bookingPayments: "booking-payments",
   publicSite: "public-site",
+  media: "media",
 } as const;
 
 type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];

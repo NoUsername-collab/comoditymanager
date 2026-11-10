@@ -19,6 +19,7 @@ import {
 import { loadMonthComparison } from "@/services/month-comparison";
 import { loadStatisticsReport } from "@/services/statistics";
 import { loadSiteStatistics } from "@/services/statistics-site";
+import { listMediaAssets } from "@/services/media-library";
 import { todayIso } from "@/lib/stay-dates";
 import {
   getPublicSiteAdminBundle,
@@ -147,11 +148,13 @@ export async function loadSettingsDomainsPage() {
 
 export async function loadLocationSetupCatalog() {
   try {
-    const [catalogTypes, catalogOptions] = await Promise.all([
+    const [catalogTypes, catalogOptions, photos] = await Promise.all([
       listRoomTypes(true),
       listRoomOptions(true),
+      // The room types stay editable even if the photos cannot be read.
+      listMediaAssets().catch(() => []),
     ]);
-    return { ok: true as const, catalogTypes, catalogOptions };
+    return { ok: true as const, catalogTypes, catalogOptions, photos };
   } catch (e) {
     return {
       ok: false as const,
@@ -220,6 +223,12 @@ export async function loadStatisticsPageAccess() {
 
 export async function loadStatisticsMonthCompare() {
   return loadMonthComparison().catch(() => null);
+}
+
+/** The photo library and the room types a photo can belong to. */
+export async function loadMediaLibraryPage() {
+  const [assets, types] = await Promise.all([listMediaAssets(), listRoomTypes(true).catch(() => [])]);
+  return { assets, roomTypes: types.map((t) => ({ id: t.id, name: t.name })) };
 }
 
 /** The public site's visits and requests; null when they cannot be read. */

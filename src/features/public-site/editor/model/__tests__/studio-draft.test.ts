@@ -259,22 +259,18 @@ describe("public site studio draft", () => {
     expect(after.payload.imageUrl).toBeUndefined();
   });
 
-  it("gives each room type its photo and words, kept by the room type", () => {
+  it("keeps each room type's words by the room type; photos come from the library", () => {
     const base = buildPublicSiteStudioDraft(config, "ro");
     const stays = findSectionDraft(base.sections, "stays")!;
-    let rooms = addSectionItem(stays, { imageUrl: "https://x.supabase.co/double.jpg" }, "type-double");
+    let rooms = addSectionItem(stays, {}, "type-double");
     rooms = addSectionItem(rooms, {}, "type-triple");
     rooms = setItemField(rooms, "ro", "type-double", "text", "Pat dublu, balcon spre munte.");
     const draft = patchStudioSection(base, stays.key, () => rooms);
     const input = mergeStudioToInput({ config, draft });
     const saved = input.sections.find((s) => s.sectionType === "stays");
-    // The triple row has neither photo nor words, so it is not kept.
+    // The triple row has no words, so it is not kept.
     expect(saved?.payload.items).toEqual([
-      {
-        roomTypeId: "type-double",
-        imageUrl: "https://x.supabase.co/double.jpg",
-        text: { ro: "Pat dublu, balcon spre munte." },
-      },
+      { roomTypeId: "type-double", text: { ro: "Pat dublu, balcon spre munte." } },
     ]);
     expect(saved?.payload.showPrices).toBe(true);
     expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
@@ -283,8 +279,7 @@ describe("public site studio draft", () => {
       { ...config, sections: [{ id: "s", sectionType: "stays", sortOrder: 1, visible: true, payload: saved!.payload }] },
       "ro",
     );
-    const row = findSectionDraft(reloaded.sections, "stays")!.items[0];
-    expect(row).toMatchObject({ id: "type-double", structure: { imageUrl: "https://x.supabase.co/double.jpg" } });
+    expect(findSectionDraft(reloaded.sections, "stays")!.items[0]?.id).toBe("type-double");
   });
 
   it("orders photos by drag and keeps each one's description", () => {

@@ -5,6 +5,8 @@ import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { useTranslations } from "next-intl";
+import type { MediaAsset } from "@/domain/media/types";
+import { MediaLibrary } from "@/features/settings/ui/MediaLibrary";
 import {
   createRoomOptionAction,
   createRoomTypeAction,
@@ -15,10 +17,13 @@ import {
 export function AdminRoomCatalogPanel({
   types,
   options,
+  photos,
   catalogError,
 }: {
   types: RoomTypeDefinition[];
   options: RoomOptionDefinition[];
+  /** The photo library: each room type shows and adds its own photos. */
+  photos: MediaAsset[];
   catalogError: string | null;
 }) {
   const tCommon = useTranslations("admin.common");
@@ -95,6 +100,16 @@ export function AdminRoomCatalogPanel({
                   {tCatalog("saveType")}
                 </AdminSubmitButton>
               </AdminPendingForm>
+              <details className="room-type-photos" open={photos.some((p) => p.roomTypeId === t.id) ? undefined : true}>
+                <summary>
+                  {tCatalog("photosTitle", { count: photos.filter((p) => p.roomTypeId === t.id).length })}
+                </summary>
+                <MediaLibrary
+                  initial={photos}
+                  roomTypes={types.map((type) => ({ id: type.id, name: type.name }))}
+                  roomType={{ id: t.id, name: t.name }}
+                />
+              </details>
             </li>
           ))}
         </ul>

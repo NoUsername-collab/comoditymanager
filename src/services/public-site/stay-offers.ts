@@ -1,6 +1,8 @@
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { buildPublicStayOffers } from "@/features/public-site/domain/stay-offers";
-import type { PublicStayOffer } from "@/features/public-site/domain/types";
+import type { PublicStayOffer, PublicStayPhoto } from "@/features/public-site/domain/types";
+import { mediaFocus, type MediaAsset } from "@/domain/media/types";
+import { roomTypePhotosForTenant } from "@/services/media-library";
 
 export async function loadPublicStayOffers(tenantId: string): Promise<PublicStayOffer[]> {
   try {
@@ -19,7 +21,17 @@ export async function loadPublicStayOffers(tenantId: string): Promise<PublicStay
         .eq("is_active", true),
     ]);
     if (typesResult.error || roomsResult.error) return [];
-    return buildPublicStayOffers(typesResult.data ?? [], roomsResult.data ?? []);
+    // Without the photo library the rooms still list, only without photos.
+    const library = await roomTypePhotosForTenant(tenantId).catch(
+      () => new Map<string, MediaAsset[]>(),
+    );
+    const photos = new Map<string, PublicStayPhoto[]>(
+      [...library].map(([typeId, assets]) => [
+        typeId,
+        assets.map((asset) => ({ url: asset.url, alt: asset.alt, focus: mediaFocus(asset) })),
+      ]),
+    );
+    return buildPublicStayOffers(typesResult.data ?? [], roomsResult.data ?? [], photos);
   } catch {
     return [];
   }

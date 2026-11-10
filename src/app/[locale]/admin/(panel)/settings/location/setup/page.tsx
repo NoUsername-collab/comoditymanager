@@ -16,6 +16,7 @@ export default async function LocationSetupPage() {
 
   const catalogTypes = catalogResult.ok ? catalogResult.catalogTypes : [];
   const catalogOptions = catalogResult.ok ? catalogResult.catalogOptions : [];
+  const photos = catalogResult.ok ? catalogResult.photos : [];
   const catalogError = catalogResult.ok
     ? null
     : catalogResult.error === "catalogUnavailable"
@@ -39,6 +40,7 @@ export default async function LocationSetupPage() {
         <AdminRoomCatalogPanel
           types={catalogTypes}
           options={catalogOptions}
+          photos={photos}
           catalogError={catalogError}
         />
       </SettingsSection>

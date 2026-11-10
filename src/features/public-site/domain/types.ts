@@ -204,10 +204,9 @@ export type PublicSectionPayloadByType = {
   video: PublicSectionCopy & { url?: string };
 };
 
-/** What the site shows for one room type; the type itself comes from the room settings. */
+/** What the site says about one room type; the type and its photos come from the room settings. */
 export type PublicStayItem = {
   roomTypeId: string;
-  imageUrl?: string;
   text?: LocalizedText;
 };
 
@@ -270,6 +269,15 @@ export type PublicStayOffer = {
   capacity: number;
   fromPrice: number | null;
   roomCount: number;
+  /** The room type's photos from the photo library, the cover first. */
+  photos: PublicStayPhoto[];
+};
+
+export type PublicStayPhoto = {
+  url: string;
+  alt: LocalizedText;
+  /** CSS object-position keeping the photo's subject in view. */
+  focus: string;
 };
 
 export type PublicPlace = {

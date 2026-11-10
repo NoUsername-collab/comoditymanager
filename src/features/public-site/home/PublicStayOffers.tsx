@@ -35,7 +35,7 @@ export function PublicStayOffers({
   const title = copy(payload.title, locale) || t("roomsTitle");
   const lead = copy(payload.lead, locale) || t("roomsLead");
   const byType = new Map((payload.items ?? []).map((item) => [item.roomTypeId, item]));
-  const withPhotos = config.stayOffers.some((offer) => byType.get(offer.id)?.imageUrl?.trim());
+  const withPhotos = config.stayOffers.some((offer) => offer.photos.length > 0);
 
   return (
     <section className="pub-section pub-section--stays" aria-labelledby="pub-stays-title">
@@ -47,18 +47,19 @@ export function PublicStayOffers({
         <div className={withPhotos ? "pub-stays pub-stays--photos" : "pub-stays"}>
           {config.stayOffers.map((offer) => {
             const extra = byType.get(offer.id);
-            const photo = extra?.imageUrl?.trim();
+            const photo = offer.photos[0];
             const text = copy(extra?.text, locale);
             return (
               <article key={offer.id} className="pub-stay">
                 {photo ? (
                   <figure className="pub-stay__photo">
                     <Image
-                      src={photo}
-                      alt={offer.name}
+                      src={photo.url}
+                      alt={copy(photo.alt, locale) || offer.name}
                       fill
                       sizes="(max-width: 720px) 100vw, 33vw"
-                      unoptimized={!isOptimizablePublicImageUrl(photo)}
+                      style={{ objectPosition: photo.focus }}
+                      unoptimized={!isOptimizablePublicImageUrl(photo.url)}
                     />
                   </figure>
                 ) : withPhotos ? (

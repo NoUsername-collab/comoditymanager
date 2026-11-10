@@ -625,3 +625,248 @@
 .map-point__message--error {
   color: var(--admin-danger, #dc2626);
 }
+
+/* ── Photo library (Settings → Photos, and each room type's photos) ── */
+.media-lib {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.media-lib__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.media-lib__tab {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  border-radius: 999px;
+  background: var(--admin-panel-bg, #fff);
+  color: var(--admin-text, #18181b);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.media-lib__tab span {
+  margin-left: 0.2rem;
+  color: var(--admin-text-muted, #52525b);
+  font-weight: 500;
+}
+
+.media-lib__tab[aria-selected="true"] {
+  border-color: var(--admin-accent, #059669);
+  background: color-mix(in srgb, var(--admin-accent, #059669) 14%, var(--admin-panel-bg, #fff));
+}
+
+.media-lib__drop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1.5px dashed var(--admin-panel-border, #e4e4e7);
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--admin-text-muted, #52525b);
+}
+
+.media-lib__drop[data-over] {
+  border-color: var(--admin-accent, #059669);
+  background: color-mix(in srgb, var(--admin-accent, #059669) 8%, transparent);
+}
+
+.media-lib__upload,
+.media-lib__save {
+  min-height: 2.25rem;
+  padding: 0 0.95rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: var(--admin-accent, #059669);
+  color: var(--admin-accent-fg, #fff);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.media-lib__upload:disabled,
+.media-lib__save:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.media-lib__errors {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--admin-danger, #dc2626);
+  font-size: 0.8125rem;
+}
+
+.media-lib__empty,
+.media-lib__hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--admin-text-muted, #52525b);
+}
+
+.media-lib__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.media-lib__cell[data-dragging] {
+  opacity: 0.4;
+}
+
+.media-lib__thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 0.6rem;
+  background: var(--admin-surface-bg, #f4f4f5);
+  cursor: pointer;
+}
+
+.media-lib__cell[data-selected] .media-lib__thumb {
+  border-color: var(--admin-accent, #059669);
+}
+
+.media-lib__cover,
+.media-lib__tag,
+.media-lib__missing {
+  position: absolute;
+  z-index: 1;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.media-lib__cover {
+  top: 0.35rem;
+  left: 0.35rem;
+  background: var(--admin-accent, #059669);
+  color: var(--admin-accent-fg, #fff);
+}
+
+.media-lib__tag {
+  bottom: 0.35rem;
+  left: 0.35rem;
+  max-width: calc(100% - 0.7rem);
+  overflow: hidden;
+  background: rgb(0 0 0 / 0.65);
+  color: #fff;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-lib__missing {
+  top: 0.35rem;
+  right: 0.35rem;
+  background: #f59e0b;
+  color: #1c1917;
+}
+
+.media-lib__details {
+  padding: 0.9rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  border-radius: 0.75rem;
+  background: var(--admin-panel-bg, #fff);
+}
+
+.media-lib__details-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.media-lib__details-head h3 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+.media-lib__details-head button {
+  border: 0;
+  background: none;
+  color: var(--admin-text-muted, #52525b);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.media-lib__details-body {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .media-lib__details-body {
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+  }
+}
+
+.media-lib__focus {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0.6rem;
+  background: #111;
+  cursor: crosshair;
+}
+
+.media-lib__focus-dot {
+  position: absolute;
+  z-index: 1;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: var(--admin-accent, #059669);
+  box-shadow: 0 0 0 2px rgb(0 0 0 / 0.45);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.media-lib__details-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.media-lib__delete {
+  border: 0;
+  background: none;
+  color: var(--admin-danger, #dc2626);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Each room type's photos, under its settings card. */
+.room-type-photos {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--admin-panel-border, #e4e4e7);
+}
+
+.room-type-photos summary {
+  margin-bottom: 0.6rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}

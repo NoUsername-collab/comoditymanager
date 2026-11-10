@@ -275,11 +275,6 @@ const publicSiteSectionInputSchema = z.discriminatedUnion("sectionType", [
             z
               .object({
                 roomTypeId: z.string().min(1).max(64),
-                imageUrl: z
-                  .string()
-                  .max(2048)
-                  .refine((v) => isSafeHttpUrl(v), { message: "invalid_url" })
-                  .optional(),
                 text: localizedTextSchema.optional(),
               })
               .strip(),

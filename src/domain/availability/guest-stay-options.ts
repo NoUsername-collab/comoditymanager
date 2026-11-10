@@ -22,6 +22,8 @@ export type GuestOptionRoom = RoomCapacity & {
   id: string;
   /** The room's type (room settings), when it has one. */
   room_type_id: string | null;
+  /** The cover photo of the room's type, from the photo library. */
+  photo?: { url: string; focus: string } | null;
   name: string;
   building_name: string;
   has_ac: boolean;

@@ -22,6 +22,7 @@ import { withTenantId } from "@/lib/tenant/scope";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getGuestAppSettings, getGuestAppSettingsPublic } from "./settings";
 import { getGuestAppPublicDb } from "./public-db";
+import { roomTypePhotosForTenant } from "@/services/media-library";
 
 function generateAccessCode(): string {
   return randomBytes(9).toString("base64url").slice(0, 12).toLowerCase();
@@ -38,7 +39,7 @@ async function loadBookingSnapshot(
       `
       id, status, check_in, check_out, guest_name, guest_email, guest_phone, guest_id, total_price,
       booking_rooms (
-        rooms ( name, image_url )
+        rooms ( name, room_type_definition_id )
       )
     `,
     )
@@ -49,17 +50,21 @@ async function loadBookingSnapshot(
   if (error) throw new Error(error.message);
   if (!data) return null;
 
+  type BookedRoom = { name: string; room_type_definition_id?: string | null };
   const roomLabels: string[] = [];
-  const roomImageUrls: string[] = [];
-  const bookingRooms = data.booking_rooms as
-    | { rooms: { name: string; image_url?: string | null } | { name: string; image_url?: string | null }[] | null }[]
-    | null;
+  const roomTypeIds: string[] = [];
+  const bookingRooms = data.booking_rooms as { rooms: BookedRoom | BookedRoom[] | null }[] | null;
   for (const row of bookingRooms ?? []) {
     const r = row.rooms;
     const room = Array.isArray(r) ? r[0] : r;
     if (room?.name) roomLabels.push(room.name);
-    if (room?.image_url) roomImageUrls.push(String(room.image_url));
+    if (room?.room_type_definition_id) roomTypeIds.push(room.room_type_definition_id);
   }
+  // The booked room types' photos from the photo library, each photo once.
+  const library = await roomTypePhotosForTenant(tenantId).catch(() => new Map());
+  const roomImageUrls = [
+    ...new Set(roomTypeIds.flatMap((typeId) => (library.get(typeId) ?? []).map((photo: { url: string }) => photo.url))),
+  ];
 
   let checkedInAt: string | null = null;
   let paymentStatus: GuestAccessBookingSnapshot["paymentStatus"] = null;

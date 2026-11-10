@@ -8,28 +8,24 @@ import {
   EditorToggle,
   usePublicSiteEditor,
 } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
-import { PublicSiteImageField } from "@/features/public-site/editor/ui/PublicSiteImageField";
+import Image from "next/image";
+import { isOptimizablePublicImageUrl } from "@/domain/public-site/media";
 import {
   useSectionEditing,
   type SectionEditorProps,
 } from "@/features/public-site/editor/ui/section-editing";
 
 /**
- * The rooms come from the room settings (name, guests, price); here each one
- * gets a photo and a few words. A room's row is made the first time it is given
- * either, under the room type's id.
+ * The rooms come from the room settings (name, guests, price) with their photos
+ * from the photo library; here each one gets a few words. A room's row is made
+ * the first time it is given some, under the room type's id.
  */
 export function StaysEditor({ section }: SectionEditorProps) {
   const te = useTranslations("admin.pages.publicSite.editor");
   const th = useTranslations("public.home");
-  const { config, readOnly } = usePublicSiteEditor();
+  const { config } = usePublicSiteEditor();
   const ed = useSectionEditing(section);
   const has = (id: string) => section.items.some((item) => item.id === id);
-
-  function setPhoto(id: string, imageUrl: string) {
-    if (has(id)) ed.setItemStructure(id, { imageUrl });
-    else ed.addItem({ imageUrl }, id);
-  }
 
   function setText(id: string, text: string) {
     if (!has(id)) ed.addItem({}, id);
@@ -72,14 +68,28 @@ export function StaysEditor({ section }: SectionEditorProps) {
                   </span>
                 </div>
                 <div className="admin-settings-fields admin-settings-fields--2col">
-                  <div className="admin-settings-fields__full">
-                    <PublicSiteImageField
-                      kind="room"
-                      label={te("roomPhoto")}
-                      value={item?.structure.imageUrl ?? ""}
-                      onChange={(url) => setPhoto(offer.id, url)}
-                      disabled={readOnly}
-                    />
+                  <div className="admin-settings-fields__full stays-editor__photos">
+                    {offer.photos.length > 0 ? (
+                      <ul>
+                        {offer.photos.slice(0, 6).map((photo) => (
+                          <li key={photo.url}>
+                            <Image
+                              src={photo.url}
+                              alt=""
+                              fill
+                              sizes="72px"
+                              style={{ objectFit: "cover", objectPosition: photo.focus }}
+                              unoptimized={!isOptimizablePublicImageUrl(photo.url)}
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>{te("roomNoPhotos")}</p>
+                    )}
+                    <Link href="/admin/settings/location/setup" className="underline">
+                      {te("roomPhotosManage", { count: offer.photos.length })}
+                    </Link>
                   </div>
                   <EditorField
                     full

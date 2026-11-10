@@ -7,6 +7,9 @@ import { listAllRoomsForPublic } from "@/services/rooms-admin";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getBookingRulesSettings } from "@/services/booking-rules-settings";
 import { getFreeStockForStay } from "@/services/stay-inventory";
+import { roomTypePhotosForTenant } from "@/services/media-library";
+import { getTenantPublicScope } from "@/lib/tenant/scope";
+import { mediaFocus, type MediaAsset } from "@/domain/media/types";
 import { DEFAULT_BOOKING_RULES, toStayPricingRules } from "@/domain/settings/booking-rules";
 import {
   DEFAULT_CHECK_IN_TIME,
@@ -21,7 +24,8 @@ const loadGuestStayPreviewCached = cache(async (
 ): Promise<GuestStayPreview> => {
   const party = JSON.parse(partyKey) as Party;
 
-  const [roomsRaw, occupied, settings, rules] = await Promise.all([
+  const { tenantId } = await getTenantPublicScope();
+  const [roomsRaw, occupied, settings, rules, photos] = await Promise.all([
     listAllRoomsForPublic(),
     listOccupiedRoomRanges(undefined, {
       forPublicCalendar: true,
@@ -30,6 +34,7 @@ const loadGuestStayPreviewCached = cache(async (
     }),
     getPensionSettings().catch(() => null),
     getBookingRulesSettings().catch(() => DEFAULT_BOOKING_RULES),
+    roomTypePhotosForTenant(tenantId).catch(() => new Map<string, MediaAsset[]>()),
   ]);
 
   const inventory = await getFreeStockForStay({
@@ -48,6 +53,10 @@ const loadGuestStayPreviewCached = cache(async (
     .map((r) => ({
       id: r.id,
       room_type_id: r.room_type_definition_id ?? null,
+      photo: (() => {
+        const cover = r.room_type_definition_id ? photos.get(r.room_type_definition_id)?.[0] : undefined;
+        return cover ? { url: cover.url, focus: mediaFocus(cover) } : null;
+      })(),
       name: r.name,
       building_name: r.building_name,
       has_ac: r.has_ac,

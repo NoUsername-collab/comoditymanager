@@ -1,4 +1,4 @@
-import type { PublicPlace, PublicStayOffer } from "./types";
+import type { PublicPlace, PublicStayOffer, PublicStayPhoto } from "./types";
 
 export function emptyPublicPlace(): PublicPlace {
   return { address: null, lat: null, lng: null };
@@ -22,6 +22,7 @@ type CatalogRoom = {
 export function buildPublicStayOffers(
   types: CatalogType[],
   rooms: CatalogRoom[],
+  photos: ReadonlyMap<string, PublicStayPhoto[]> = new Map(),
 ): PublicStayOffer[] {
   const counts = new Map<string, number>();
   for (const room of rooms) {
@@ -39,6 +40,7 @@ export function buildPublicStayOffers(
       capacity: type.capacity_base,
       fromPrice: type.base_price_per_night > 0 ? type.base_price_per_night : null,
       roomCount: counts.get(type.id) ?? 0,
+      photos: photos.get(type.id) ?? [],
       sortOrder: type.sort_order,
     }))
     .filter((offer) => offer.roomCount > 0 && offer.name)

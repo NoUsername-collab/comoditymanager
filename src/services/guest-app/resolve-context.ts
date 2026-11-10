@@ -201,11 +201,11 @@ export async function resolveGuestAppContext(
     ? mapGallery(gallerySection.payload.items ?? [], locale)
     : [];
 
+  // The booked room types' photos from the photo library; a type can have several.
   const roomGallery: GuestGalleryDisplayItem[] = booking.roomImageUrls.map(
     (url, index) => ({
       id: `room-${index}`,
       url,
-      caption: booking.roomLabels[index] ?? undefined,
     }),
   );
 

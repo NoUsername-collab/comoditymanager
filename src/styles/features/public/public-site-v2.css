@@ -1171,3 +1171,15 @@
   font-weight: 800;
   letter-spacing: 0.02em;
 }
+
+/* Booking form: each variant shows its room type's cover photo. */
+.guest-option__photo {
+  position: relative;
+  display: block;
+  /* A strip, not a poster: four variants still fit on a phone screen. */
+  aspect-ratio: 21 / 9;
+  max-height: 8.5rem;
+  overflow: hidden;
+  border-radius: 0.55rem;
+  background: var(--site-card);
+}
