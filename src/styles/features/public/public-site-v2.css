@@ -6,6 +6,17 @@
 .pub-site {
   --pub-radius: 1rem;
   --pub-radius-sm: 0.65rem;
+  /*
+   * Surfaces a palette may tune. Palettes change these values only; whether a
+   * card, row or band has a fill, a shadow or a border is the layout's call.
+   */
+  --pub-card-fill: color-mix(in srgb, var(--pub-card) 88%, transparent);
+  --pub-card-shadow: none;
+  --pub-cta-fill: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--pub-accent) 12%, var(--pub-card)) 0%,
+    var(--pub-card) 100%
+  );
   min-height: 100%;
 }
 
@@ -261,7 +272,8 @@
   padding: 1.15rem;
   border-radius: var(--pub-radius);
   border: 1px solid var(--pub-border);
-  background: color-mix(in srgb, var(--pub-card) 88%, transparent);
+  background: var(--pub-card-fill);
+  box-shadow: var(--pub-card-shadow);
 }
 
 .pub-benefit__icon {
@@ -294,6 +306,7 @@
 }
 
 .pub-benefits--editorial .pub-benefit {
+  box-shadow: none;
   display: grid;
   grid-template-columns: 2.5rem minmax(0, 1fr);
   column-gap: 1rem;
@@ -456,7 +469,8 @@
   padding: 1rem;
   border-radius: var(--pub-radius-sm);
   border: 1px solid var(--pub-border);
-  background: color-mix(in srgb, var(--pub-card) 84%, transparent);
+  background: var(--pub-card-fill);
+  box-shadow: var(--pub-card-shadow);
 }
 
 .pub-step__num {
@@ -492,6 +506,7 @@
 }
 
 .pub-steps--editorial .pub-step {
+  box-shadow: none;
   display: grid;
   grid-template-columns: 2rem minmax(0, 1fr);
   column-gap: 1rem;
@@ -516,8 +531,7 @@
   padding: clamp(1.5rem, 4vw, 2.25rem);
   border-radius: calc(var(--pub-radius) + 0.15rem);
   border: 1px solid var(--pub-border);
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--pub-accent) 12%, var(--pub-card)) 0%, var(--pub-card) 100%);
+  background: var(--pub-cta-fill);
   text-align: center;
 }
 
@@ -798,10 +812,12 @@
 /* ── Per-palette touches (color-scheme comes from resolvePublicThemeStyle) ── */
 
 /* Light palettes (alpine, pearl, slate, forest) — light surfaces need stronger separation */
-.pub-site--light .pub-benefit,
-.pub-site--light .pub-step,
+.pub-site--light {
+  --pub-card-shadow: 0 1px 2px color-mix(in srgb, var(--pub-fg) 6%, transparent);
+}
+
 .pub-site--light .pub-booking-aside {
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--pub-fg) 6%, transparent);
+  box-shadow: var(--pub-card-shadow);
 }
 
 .pub-site--light .pub-btn--ghost {
@@ -826,9 +842,8 @@
   );
 }
 
-.pub-site--theme-mediterranean .pub-benefit,
-.pub-site--theme-mediterranean .pub-step {
-  background: color-mix(in srgb, var(--pub-card) 92%, var(--pub-card-elevated));
+.pub-site--theme-mediterranean {
+  --pub-card-fill: color-mix(in srgb, var(--pub-card) 92%, var(--pub-card-elevated));
 }
 
 /* Noir — gold accent polish */
@@ -836,13 +851,12 @@
   text-shadow: 0 2px 28px color-mix(in srgb, var(--pub-accent) 12%, transparent);
 }
 
-.pub-site--theme-noir .pub-cta-band {
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--pub-accent) 14%, var(--pub-card)) 0%,
-      var(--pub-card) 100%
-    );
+.pub-site--theme-noir {
+  --pub-cta-fill: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--pub-accent) 14%, var(--pub-card)) 0%,
+    var(--pub-card) 100%
+  );
 }
 
 /* Shared focus + links */
