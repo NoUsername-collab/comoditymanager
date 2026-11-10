@@ -22,6 +22,7 @@ import { resolveEffectiveStaffRole, mfaRedirectIfNeeded } from "@/lib/proxy/staf
 import { createProxySupabase, type ProxySupabase } from "@/lib/proxy/edge-session";
 import { intlMiddleware } from "@/lib/proxy/intl";
 import { redirectToPath } from "@/lib/proxy/redirect";
+import { withRequestHeaderOverrides } from "@/lib/proxy/forward-headers";
 
 type TenantHostRef = { slug: string } | { customDomain: string };
 type User = { id: string; email?: string };
@@ -48,8 +49,10 @@ function applyForwardedRequestHeaders(
     return source;
   }
 
+  // Keep what the intl middleware passes to the page (its language header):
+  // without it every page falls back to the default language.
   const forwarded = NextResponse.next({
-    request: { headers: requestHeaders },
+    request: { headers: withRequestHeaderOverrides(requestHeaders, source.headers) },
   });
 
   source.cookies.getAll().forEach((cookie) => {

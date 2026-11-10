@@ -786,6 +786,12 @@
     }
   },
   "admin": {
+    "panelError": {
+      "title": "Something went wrong in this section",
+      "text": "This section could not load. You can try again or go back to the admin home page.",
+      "retry": "Try again",
+      "home": "Admin home"
+    },
     "nav": {
       "menuAria": "Admin menu",
       "bottomNavAria": "Mobile primary navigation",

@@ -786,6 +786,12 @@
     }
   },
   "admin": {
+    "panelError": {
+      "title": "Eroare în această secțiune",
+      "text": "Secțiunea nu s-a putut încărca. Poți reîncerca sau reveni la pagina principală admin.",
+      "retry": "Reîncearcă",
+      "home": "Acasă admin"
+    },
     "nav": {
       "menuAria": "Meniu administrare",
       "bottomNavAria": "Navigare principală mobil",
