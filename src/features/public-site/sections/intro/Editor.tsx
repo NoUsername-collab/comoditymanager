@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { EditorField } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
+import { SectionPhotoField } from "@/features/public-site/editor/ui/SectionPhotoField";
 import {
   useSectionEditing,
   type SectionEditorProps,
@@ -20,6 +21,7 @@ export function IntroEditor({ section }: SectionEditorProps) {
         onChange={ed.setField("lead")}
         hint={te("introTextHint")}
       />
+      <SectionPhotoField editing={ed} />
     </div>
   );
 }

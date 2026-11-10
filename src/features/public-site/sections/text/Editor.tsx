@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { EditorField } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import { RichTextField } from "@/features/public-site/editor/ui/RichTextField";
+import { SectionPhotoField } from "@/features/public-site/editor/ui/SectionPhotoField";
 import {
   useSectionEditing,
   type SectionEditorProps,
@@ -22,6 +23,7 @@ export function TextEditor({ section }: SectionEditorProps) {
           onChange={ed.setField("lead")}
         />
         <RichTextField label={te("textBody")} value={ed.field("body")} onChange={ed.setField("body")} />
+        <SectionPhotoField editing={ed} />
       </div>
     </>
   );

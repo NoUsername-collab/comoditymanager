@@ -900,3 +900,92 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
     line-height: 1.5;
   }
 }
+
+/* ── A text section's own photo, placed by each layout ──
+ * Classic: beside the words, on the right. Magazine: alternating sides, square
+ * corners. Panoramic: a full-width band at the top of the section, the words
+ * centred under it. On phones the photo comes first everywhere.
+ */
+.pub-home .pub-section--with-photo .pub-section__inner {
+  display: block;
+}
+
+.pub-split {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.pub-split__photo {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--pub-radius);
+  background: var(--pub-card);
+}
+
+.pub-split__photo img {
+  object-fit: cover;
+}
+
+/* Magazine photos have square corners, like a printed page. */
+.pub-home--editorial .pub-split__photo {
+  border-radius: 0;
+}
+
+.pub-split__copy > :first-child {
+  margin-top: 0;
+}
+
+@media (min-width: 768px) {
+  .pub-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  .pub-split__photo {
+    order: 2;
+  }
+
+  /* Magazine: sides alternating down the page. */
+  .pub-home--editorial .pub-home__section:nth-child(odd) .pub-split__photo {
+    order: -1;
+  }
+
+  .pub-home--editorial .pub-split {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+/* Panoramic: the photo spans the page above the words. */
+.pub-home--immersive .pub-section--with-photo {
+  padding-top: 0;
+}
+
+/* Right under the top of the page, the band keeps its distance from the buttons there. */
+.pub-home--immersive .pub-home__immersive-body > .pub-home__section:first-child .pub-section--with-photo {
+  padding-top: clamp(3rem, 7vw, 5rem);
+}
+
+.pub-home--immersive .pub-section--with-photo .pub-section__inner {
+  width: 100%;
+  max-width: none;
+  padding-inline: 0;
+}
+
+.pub-home--immersive .pub-split {
+  display: block;
+}
+
+.pub-home--immersive .pub-split__photo {
+  aspect-ratio: auto;
+  height: clamp(16rem, 62vh, 36rem);
+  border-radius: 0;
+}
+
+.pub-home--immersive .pub-split__copy {
+  width: min(48rem, calc(100% - 3rem));
+  margin: clamp(2rem, 5vw, 3.5rem) auto 0;
+}

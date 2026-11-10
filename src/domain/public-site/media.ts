@@ -1,7 +1,7 @@
 export const PUBLIC_SITE_MEDIA_BUCKET = "public-site-media";
 export const PUBLIC_SITE_MEDIA_MAX_BYTES = 5 * 1024 * 1024;
 
-const PUBLIC_SITE_MEDIA_KINDS = ["hero", "gallery", "room", "logo", "og"] as const;
+const PUBLIC_SITE_MEDIA_KINDS = ["hero", "gallery", "room", "section", "logo", "og"] as const;
 export type PublicSiteMediaKind = (typeof PUBLIC_SITE_MEDIA_KINDS)[number];
 
 const PUBLIC_SITE_MEDIA_MIME = {

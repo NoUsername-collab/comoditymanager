@@ -164,6 +164,13 @@ export type PublicStepItem = {
   text: LocalizedText;
 };
 
+/** An optional photo beside a text section; each layout places it its own way. */
+type SectionPhoto = {
+  imageUrl?: string;
+  /** What the photo shows, for search engines and screen readers. */
+  imageAlt?: LocalizedText;
+};
+
 type PublicSectionCopy = {
   title?: LocalizedText;
   lead?: LocalizedText;
@@ -171,8 +178,8 @@ type PublicSectionCopy = {
 
 /** What each kind of section stores; `sectionType` decides which one applies. */
 export type PublicSectionPayloadByType = {
-  intro: PublicSectionCopy & { body?: LocalizedText };
-  text: PublicSectionCopy & { body?: LocalizedText };
+  intro: PublicSectionCopy & SectionPhoto & { body?: LocalizedText };
+  text: PublicSectionCopy & SectionPhoto & { body?: LocalizedText };
   benefits: PublicSectionCopy & { items?: PublicBenefitItem[] };
   gallery: PublicSectionCopy & { items?: PublicGalleryItem[] };
   steps: PublicSectionCopy & { items?: PublicStepItem[] };

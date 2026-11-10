@@ -239,6 +239,26 @@ describe("public site studio draft", () => {
     }
   });
 
+  it("keeps a text section's photo and what it shows, and drops the photo once removed", () => {
+    const base = buildPublicSiteStudioDraft(config, "ro");
+    const intro = findSectionDraft(base.sections, "intro")!;
+    let withPhoto: typeof intro = {
+      ...intro,
+      settings: { ...intro.settings, imageUrl: "https://x.supabase.co/casa.jpg" },
+    };
+    withPhoto = setSectionField(withPhoto, "ro", "imageAlt", "Casa văzută din grădină");
+    const draft = patchStudioSection(base, intro.key, () => withPhoto);
+    const input = mergeStudioToInput({ config, draft });
+    const saved = input.sections.find((s) => s.sectionType === "intro")!;
+    expect(saved.payload.imageUrl).toBe("https://x.supabase.co/casa.jpg");
+    expect(saved.payload.imageAlt).toEqual({ ro: "Casa văzută din grădină" });
+    expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
+
+    const removed = patchStudioSection(draft, intro.key, (s) => ({ ...s, settings: { ...s.settings, imageUrl: "" } }));
+    const after = mergeStudioToInput({ config, draft: removed }).sections.find((s) => s.sectionType === "intro")!;
+    expect(after.payload.imageUrl).toBeUndefined();
+  });
+
   it("gives each room type its photo and words, kept by the room type", () => {
     const base = buildPublicSiteStudioDraft(config, "ro");
     const stays = findSectionDraft(base.sections, "stays")!;

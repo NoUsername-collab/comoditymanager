@@ -1753,7 +1753,8 @@
               "caption": "Caption",
               "alt": "What the photo shows",
               "quote": "Review",
-              "author": "Who"
+              "author": "Who",
+              "imageAlt": "What the photo shows"
             }
           },
           "backToPage": "Back to the page",
@@ -1932,6 +1933,8 @@
           "textBody": "Text",
           "stayPrices": "Show the “from” price on each room",
           "roomPhoto": "Room photo",
+          "sectionPhoto": "Photo (optional)",
+          "sectionPhotoHint": "Shown with the text. Each layout places it its own way: beside it, alternating sides, or full width.",
           "roomText": "A few lines about the room",
           "roomTextPlaceholder": "Double bed, private bathroom, balcony facing the mountains.",
           "staysHint": "Names, guests and prices come from the room list; each room's photo and lines are set here.",

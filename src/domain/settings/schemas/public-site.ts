@@ -209,7 +209,16 @@ function sectionInputSchema<T extends string, P extends z.ZodTypeAny>(sectionTyp
 }
 
 const bodyPayloadSchema = z
-  .object({ ...sectionCopyShape, body: localizedTextSchema.optional() })
+  .object({
+    ...sectionCopyShape,
+    body: localizedTextSchema.optional(),
+    imageUrl: z
+      .string()
+      .max(2048)
+      .refine((v) => isSafeHttpUrl(v), { message: "invalid_url" })
+      .optional(),
+    imageAlt: localizedTextSchema.optional(),
+  })
   .strip();
 
 /** Each section type accepts only its own payload: highlights can't arrive as photos. */
