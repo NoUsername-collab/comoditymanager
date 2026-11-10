@@ -27,37 +27,6 @@ html[data-theme="default"][data-mode="night"] {
   --accent-hover: #93b4ff;
   --accent-muted: #1a2744;
 
-  /* ── Booking / status semantics ── */
-  --active-bg: #0f2a1a;
-  --active-border: #34d399;
-  --active-text: #86efac;
-  --active-glow: 0 0 0 1px color-mix(in srgb, #34d399 45%, transparent);
-
-  --pending-bg: #2a2008;
-  --pending-border: #fbbf24;
-  --pending-text: #fde68a;
-
-  --past-bg: #3a3634;
-  --past-border: #78716c;
-  --past-text: #d4cfcb;
-
-  --blocked-bg: #1e1428;
-  --blocked-border: #a78bfa;
-  --blocked-text: #ddd6fe;
-
-  --hold-bg: #12202e;
-  --hold-border: #38bdf8;
-  --hold-text: #7dd3fc;
-
-  --cancelled-bg: #2d1212;
-  --cancelled-border: #f87171;
-  --cancelled-text: #fecaca;
-
-  --success: #4ade80;
-  --warning: #fbbf24;
-  --error: #f87171;
-  --info: #7aa2ff;
-
   --weekend-bg: rgba(122, 162, 255, 0.07);
   --today-bg: rgba(122, 162, 255, 0.11);
   --today-line: #7aa2ff;
@@ -174,4 +143,42 @@ html[data-theme="default"][data-mode="night"] {
   --gantt-bar-fill-past: var(--past-bg);
   --gantt-cap-ok: #34d399;
   --gantt-cap-problem: #f87171;
+}
+
+/*
+  Status colours at night, the same on every theme: confirmed, pending, past,
+  blocked, on hold, cancelled. Themes set only their surfaces, text and accent
+  (design-families.css); without this, night themes other than Default kept the
+  day values from _base.css, and every status tint came out nearly white.
+*/
+html[data-mode="night"] {
+  --active-bg: #0f2a1a;
+  --active-border: #34d399;
+  --active-text: #86efac;
+  --active-glow: 0 0 0 1px color-mix(in srgb, #34d399 45%, transparent);
+
+  --pending-bg: #2a2008;
+  --pending-border: #fbbf24;
+  --pending-text: #fde68a;
+
+  --past-bg: #3a3634;
+  --past-border: #78716c;
+  --past-text: #d4cfcb;
+
+  --blocked-bg: #1e1428;
+  --blocked-border: #a78bfa;
+  --blocked-text: #ddd6fe;
+
+  --hold-bg: #12202e;
+  --hold-border: #38bdf8;
+  --hold-text: #7dd3fc;
+
+  --cancelled-bg: #2d1212;
+  --cancelled-border: #f87171;
+  --cancelled-text: #fecaca;
+
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --info: #7aa2ff;
 }
