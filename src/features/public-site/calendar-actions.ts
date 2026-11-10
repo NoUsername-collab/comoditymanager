@@ -48,6 +48,8 @@ export async function previewGuestStayAction(input: {
   check_in: string;
   check_out: string;
   party: Party;
+  /** The room type the visitor came for, from a room card on the site. */
+  room_type_id?: string | null;
 }) {
   const t = await getTranslations("errors");
   try {
@@ -55,7 +57,14 @@ export async function previewGuestStayAction(input: {
     const party = parsePartyInput(input.party);
     if (!party) return { ok: false as const, error: t("childAgesRequired") };
     const preview = await runInPublicBookingMode(() =>
-      loadGuestStayPreview(input.check_in, input.check_out, party)
+      loadGuestStayPreview(
+        input.check_in,
+        input.check_out,
+        party,
+        typeof input.room_type_id === "string" && /^[\w-]{1,64}$/.test(input.room_type_id)
+          ? input.room_type_id
+          : null,
+      )
     );
     return { ok: true as const, preview };
   } catch (e) {

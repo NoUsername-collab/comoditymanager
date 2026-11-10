@@ -77,7 +77,10 @@ export function PublicStayOffers({
                     preview ? (
                       <span className="pub-stay__cta">{t("roomsCta")}</span>
                     ) : (
-                      <Link href="/calendar" className="pub-stay__cta">
+                      <Link
+                        href={{ pathname: "/calendar", query: { room: offer.id } }}
+                        className="pub-stay__cta"
+                      >
                         {t("roomsCta")}
                       </Link>
                     )

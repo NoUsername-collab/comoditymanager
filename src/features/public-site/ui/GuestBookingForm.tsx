@@ -37,11 +37,13 @@ import {
 type Props = {
   checkInTime: string;
   checkOutTime: string;
+  /** The room type the visitor picked on the site, offered first. */
+  preferredRoom?: { id: string; name: string } | null;
 };
 
 type Step = "dates" | "rooms" | "contact";
 
-export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
+export function GuestBookingForm({ checkInTime, checkOutTime, preferredRoom = null }: Props) {
   const t = useTranslations("public.form");
   const tErrors = useTranslations("errors");
   const tCommon = useTranslations("common");
@@ -59,6 +61,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const [preview, setPreview] = useState<GuestStayPreview | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<GuestStayOption | null>(null);
+  const [wantedRoom, setWantedRoom] = useState(preferredRoom);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptGdpr, setAcceptGdpr] = useState(false);
   const [previewPending, startPreviewTransition] = useTransition();
@@ -106,6 +109,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
         check_in: checkIn,
         check_out: checkOut,
         party,
+        room_type_id: wantedRoom?.id ?? null,
       });
       if (!res.ok) {
         setPreviewError(res.error);
@@ -213,6 +217,20 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
 
       {step === "dates" && (
         <div className="space-y-4">
+          {wantedRoom ? (
+            <p className="guest-booking-form__wanted" role="status">
+              <span>{t("wantedRoom", { room: wantedRoom.name })}</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setWantedRoom(null);
+                  resetPreview();
+                }}
+              >
+                {t("wantedRoomClear")}
+              </button>
+            </p>
+          ) : null}
           <div className="guest-form-grid-2 grid grid-cols-2 gap-3">
             <label className="site-field">
               {t("checkIn")}
@@ -264,6 +282,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
       {step === "rooms" && preview && (
         <GuestStayOptionPicker
           preview={preview}
+          wantedRoom={wantedRoom}
           selectedOptionId={selectedOption?.option_id ?? null}
           onSelect={(option) => {
             setSelectedOption(option);

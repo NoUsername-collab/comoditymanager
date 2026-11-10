@@ -32,34 +32,7 @@ async function listAllRoomsUncached(tenantId: string): Promise<RoomWithJoins[]> 
 
   if (error) throw new Error(error.message);
 
-  return (data ?? []).map((row) => {
-    const b = row.buildings as { name: string } | { name: string }[] | null;
-    const f = row.floors as { name: string } | { name: string }[] | null;
-    const t = row.room_type_definitions as
-      | { name: string }
-      | { name: string }[]
-      | null;
-    const typeName = Array.isArray(t) ? t[0]?.name : t?.name;
-    return {
-      id: row.id,
-      building_id: row.building_id,
-      floor_id: row.floor_id,
-      name: row.name,
-      room_type: row.room_type,
-      capacity_base: row.capacity_base,
-      allows_extra_beds: row.allows_extra_beds,
-      max_extra_beds_per_room: row.max_extra_beds_per_room,
-      max_cots: Number(row.max_cots ?? 0),
-      max_occupancy: row.max_occupancy ?? null,
-      has_ac: row.has_ac,
-      price_per_night: Number(row.price_per_night),
-      is_active: row.is_active,
-      sort_order: row.sort_order,
-      building_name: Array.isArray(b) ? b[0]?.name ?? "?" : b?.name ?? "?",
-      floor_name: Array.isArray(f) ? f[0]?.name ?? null : f?.name ?? null,
-      room_type_name: typeName ?? null,
-    };
-  });
+  return mapRoomRows(data ?? []);
 }
 
 const getCachedRooms = (tenantId: string) =>
@@ -119,13 +92,7 @@ const loadAllRoomsForPublic = cache((tenantId: string) =>
 );
 
 /** Public calendar preview — tenant from host only. */
-export async function listAllRoomsForPublic(): Promise<
-  (Room & {
-    building_name: string;
-    floor_name: string | null;
-    room_type_name: string | null;
-  })[]
-> {
+export async function listAllRoomsForPublic(): Promise<RoomWithJoins[]> {
   const { tenantId } = await getTenantPublicScope();
   return loadAllRoomsForPublic(tenantId);
 }

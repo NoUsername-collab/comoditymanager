@@ -19,6 +19,8 @@ export type CreateRoomInput = {
 };
 
 export type RoomWithJoins = Room & {
+  /** The room type from the room settings, when it has one. */
+  room_type_definition_id: string | null;
   building_name: string;
   floor_name: string | null;
   room_type_name: string | null;
@@ -84,6 +86,7 @@ export function mapRoomRows(
       floor_id: row.floor_id,
       name: row.name,
       room_type: row.room_type,
+      room_type_definition_id: row.room_type_definition_id ?? null,
       capacity_base: row.capacity_base,
       allows_extra_beds: row.allows_extra_beds,
       max_extra_beds_per_room: row.max_extra_beds_per_room,

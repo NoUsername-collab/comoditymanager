@@ -23,14 +23,22 @@ export async function generateMetadata(): Promise<Metadata> {
   return publicPageMetadata(config, { title, description });
 }
 
-export default async function CalendarPublicPage() {
-  const [t, tShell, config, locale, staff] = await Promise.all([
+export default async function CalendarPublicPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ room?: string | string[] }>;
+}) {
+  const [t, tShell, config, locale, staff, params] = await Promise.all([
     getTranslations("public.calendar"),
     getTranslations("public.shell"),
     loadPublicCalendarPage(),
     getLocale(),
     getAdminUser().catch(() => null),
+    searchParams,
   ]);
+  // A room card on the site sends its room type; only one the site lists counts.
+  const roomParam = Array.isArray(params.room) ? params.room[0] : params.room;
+  const preferredRoom = config.stayOffers.find((offer) => offer.id === roomParam);
 
   if (!config.published && !staff) {
     return <PublicUnpublishedPage config={config} locale={locale} />;
@@ -76,7 +84,11 @@ export default async function CalendarPublicPage() {
           presets={buildBookingNoticePresetCopy(t)}
         />
 
-        <GuestBookingFormLazy checkInTime={checkInTime} checkOutTime={checkOutTime} />
+        <GuestBookingFormLazy
+          checkInTime={checkInTime}
+          checkOutTime={checkOutTime}
+          preferredRoom={preferredRoom ? { id: preferredRoom.id, name: preferredRoom.name } : null}
+        />
       </div>
     </main>
   );

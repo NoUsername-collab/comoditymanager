@@ -20,6 +20,8 @@ import { stayNightCount } from "@/lib/stay-dates";
 
 export type GuestOptionRoom = RoomCapacity & {
   id: string;
+  /** The room's type (room settings), when it has one. */
+  room_type_id: string | null;
   name: string;
   building_name: string;
   has_ac: boolean;
@@ -71,6 +73,11 @@ export function computeGuestStayOptions(args: {
   inventory?: SharedInventory;
   times: { checkIn: string; checkOut: string };
   pricingRules?: StayPricingRules | null;
+  /**
+   * The room type the visitor came for (a room card's link): variants with a
+   * room of that type come first, so they make the short list, then the rest.
+   */
+  preferRoomTypeId?: string | null;
 }): GuestStayPreview {
   const { checkIn, checkOut, party } = args;
   const base = {
@@ -105,7 +112,13 @@ export function computeGuestStayOptions(args: {
 
   const inventory = args.inventory ?? UNLIMITED_INVENTORY;
   const options: GuestStayOption[] = [];
-  for (const set of rankRoomSetsForParty(party, freeRooms, args.policy, inventory)) {
+  const ranked = rankRoomSetsForParty(party, freeRooms, args.policy, inventory);
+  const prefer = args.preferRoomTypeId;
+  const hasPreferred = (set: GuestOptionRoom[]) => set.some((room) => room.room_type_id === prefer);
+  const ordered = prefer
+    ? [...ranked.filter(hasPreferred), ...ranked.filter((set) => !hasPreferred(set))]
+    : ranked;
+  for (const set of ordered) {
     if (options.length >= MAX_OPTIONS) break;
     const quote = quoteStay({
       rooms: set,

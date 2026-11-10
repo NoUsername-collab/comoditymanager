@@ -1132,3 +1132,42 @@
   height: 100%;
   border: 0;
 }
+
+/* Booking form: the room picked on the site, and its variants marked. */
+.guest-booking-form__wanted {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem 0.75rem;
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--site-accent) 45%, var(--site-border));
+  border-radius: 0.65rem;
+  background: color-mix(in srgb, var(--site-accent) 10%, transparent);
+  color: var(--site-fg);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.guest-booking-form__wanted button {
+  border: 0;
+  background: none;
+  color: var(--site-accent);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.guest-option__wanted {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: var(--site-accent);
+  color: var(--site-accent-fg);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}

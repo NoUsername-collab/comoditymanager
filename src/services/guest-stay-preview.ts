@@ -17,6 +17,7 @@ const loadGuestStayPreviewCached = cache(async (
   checkIn: string,
   checkOut: string,
   partyKey: string,
+  preferRoomTypeId: string | null,
 ): Promise<GuestStayPreview> => {
   const party = JSON.parse(partyKey) as Party;
 
@@ -46,6 +47,7 @@ const loadGuestStayPreviewCached = cache(async (
     .filter((r) => r.is_active)
     .map((r) => ({
       id: r.id,
+      room_type_id: r.room_type_definition_id ?? null,
       name: r.name,
       building_name: r.building_name,
       has_ac: r.has_ac,
@@ -67,6 +69,7 @@ const loadGuestStayPreviewCached = cache(async (
     inventory,
     times: { checkIn: checkInTime, checkOut: checkOutTime },
     pricingRules: toStayPricingRules(rules),
+    preferRoomTypeId,
   });
 });
 
@@ -74,6 +77,7 @@ export async function loadGuestStayPreview(
   checkIn: string,
   checkOut: string,
   party: Party,
+  preferRoomTypeId: string | null = null,
 ): Promise<GuestStayPreview> {
-  return loadGuestStayPreviewCached(checkIn, checkOut, JSON.stringify(party));
+  return loadGuestStayPreviewCached(checkIn, checkOut, JSON.stringify(party), preferRoomTypeId);
 }

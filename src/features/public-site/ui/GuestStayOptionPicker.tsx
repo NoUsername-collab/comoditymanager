@@ -19,11 +19,14 @@ function formatRon(value: number, locale: string): string {
  */
 export function GuestStayOptionPicker({
   preview,
+  wantedRoom = null,
   selectedOptionId,
   onSelect,
   onBack,
 }: {
   preview: GuestStayPreview;
+  /** The room type the visitor came for; its variants are listed first and marked. */
+  wantedRoom?: { id: string; name: string } | null;
   selectedOptionId: string | null;
   onSelect: (option: GuestStayOption) => void;
   onBack: () => void;
@@ -66,6 +69,12 @@ export function GuestStayOptionPicker({
         </p>
       ) : (
         <>
+          {wantedRoom &&
+          !preview.options.some((option) => option.rooms.some((room) => room.room_type_id === wantedRoom.id)) ? (
+            <p className="public-notice p-3 text-sm" role="status">
+              {t("wantedRoomTaken", { room: wantedRoom.name })}
+            </p>
+          ) : null}
           <p className="text-sm font-medium text-[var(--site-fg)]">
             {preview.options.length === 1
               ? t("oneOption")
@@ -74,6 +83,8 @@ export function GuestStayOptionPicker({
           <ul className="space-y-2">
             {preview.options.map((option) => {
               const selected = option.option_id === selectedOptionId;
+              const wanted =
+                wantedRoom != null && option.rooms.some((room) => room.room_type_id === wantedRoom.id);
               const together = option.rooms.length === 1 && preview.party.childAges.length > 0;
               return (
                 <li key={option.option_id}>
@@ -88,6 +99,9 @@ export function GuestStayOptionPicker({
                         : "border border-[var(--site-border)] hover:border-[var(--site-accent)]",
                     ].join(" ")}
                   >
+                    {wanted ? (
+                      <span className="guest-option__wanted">{t("wantedRoomMatch", { room: wantedRoom!.name })}</span>
+                    ) : null}
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="font-semibold text-[var(--site-fg)]">
