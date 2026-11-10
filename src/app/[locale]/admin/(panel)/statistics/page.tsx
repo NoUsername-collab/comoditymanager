@@ -6,6 +6,7 @@ import { loadStatisticsPageAccess } from "@/features/settings/loaders";
 import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { MonthCompareSection } from "./_sections/MonthCompareSection";
+import { SiteStatisticsSection } from "./_sections/SiteStatisticsSection";
 import { StatisticsReportSection } from "./_sections/StatisticsReportSection";
 import { StatisticsSkeleton } from "./_sections/StatisticsSkeleton";
 
@@ -32,6 +33,9 @@ export default async function AdminStatisticsPage({
     >
       <Suspense fallback={<StatisticsSkeleton rows={3} />}>
         <MonthCompareSection />
+      </Suspense>
+      <Suspense fallback={<StatisticsSkeleton rows={3} />}>
+        <SiteStatisticsSection />
       </Suspense>
       <Suspense fallback={<StatisticsSkeleton rows={8} />}>
         <StatisticsReportSection year={params.year} />

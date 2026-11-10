@@ -198,6 +198,7 @@ export async function createGuestRebookStay(input: {
   }
 
   const bookingId = await createBookingRequest({
+    source: "staff",
     check_in: input.checkIn,
     check_out: input.checkOut,
     guest_name: guestName || guest.display_name,

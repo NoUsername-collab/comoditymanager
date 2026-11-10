@@ -156,6 +156,7 @@ export async function submitGuestRequestAction(formData: FormData) {
         : variantBlock;
 
       const bookingId = await createBookingRequest({
+        source: "site",
         check_in,
         check_out,
         ...guest,

@@ -2437,6 +2437,30 @@
       "statistics": {
         "title": "Statistics — Zalmox",
         "monthCompare": "Month comparison",
+        "site": {
+          "title": "Public site",
+          "lead": "How many people saw your site and how many booking requests came from it.",
+          "visitors": "Visitors",
+          "visits": "Pages seen",
+          "requests": "Requests from the site",
+          "confirmed": "Confirmed",
+          "conversion": "Request rate",
+          "last30": "Last 30 days. A visitor is counted once a day.",
+          "empty": "No visits recorded yet. Counting starts with this release.",
+          "bySource": "All bookings in the last 30 days, by source",
+          "sources": {
+            "site": "From the site",
+            "staff": "Entered by you",
+            "phone": "Phone form",
+            "unknown": "No source (older)"
+          },
+          "topPages": "Most seen pages",
+          "topReferrers": "Where visitors come from",
+          "direct": "Direct (saved link, typed address)",
+          "byMonth": "By month",
+          "month": "Month",
+          "privacy": "No cookies and no IP addresses stored: visitors cannot be identified, so no consent banner is needed."
+        },
         "continuous": "Continuous registration",
         "guestNights": "Guest nights",
         "requestsYear": "Requests created this year",

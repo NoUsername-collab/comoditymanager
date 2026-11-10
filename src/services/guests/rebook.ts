@@ -95,6 +95,7 @@ export async function rebookGuestLastStay(guestId: string): Promise<string> {
 
   const { createBookingRequest } = await import("@/services/bookings");
   const bookingId = await createBookingRequest({
+    source: "staff",
     check_in: shifted.check_in,
     check_out: shifted.check_out,
     guest_name: guest.display_name,
@@ -152,6 +153,7 @@ export async function rebookGuestSamePeriodNextYear(
 
   const { createBookingRequest } = await import("@/services/bookings");
   const bookingId = await createBookingRequest({
+    source: "staff",
     check_in: shifted.check_in,
     check_out: shifted.check_out,
     guest_name: guest.display_name,

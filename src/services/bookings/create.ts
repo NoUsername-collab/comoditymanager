@@ -1,4 +1,5 @@
 import { after } from "next/server";
+import type { NewBookingSource } from "@/domain/booking/source";
 import { unstable_cache } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { GuestFlagLevel } from "@/domain/guest/types";
@@ -107,6 +108,8 @@ export async function createBookingRequest(input: {
   deferGuestLink?: boolean;
   /** Per-room guests entered at create. Titular is bookings.guest_id. */
   occupants?: BookingOccupantDraft[];
+  /** Where the booking comes from: the public site, staff, or the phone form. */
+  source: NewBookingSource;
 }): Promise<string> {
   const timer = createServerTimer("createBookingRequest");
   assertValidGuestPhone(input.guest_phone);
@@ -165,6 +168,7 @@ export async function createBookingRequest(input: {
         check_in: input.check_in,
         check_out: input.check_out,
         status: "cerere_noua",
+        source: input.source,
         guest_name: input.guest_name.trim(),
         guest_last_name: input.guest_last_name.trim(),
         guest_first_name: input.guest_first_name.trim(),

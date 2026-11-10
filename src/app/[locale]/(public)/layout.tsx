@@ -1,5 +1,6 @@
 import { bindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
 import { AdminCorner } from "@/features/public-site/ui/AdminCorner";
+import { SiteVisitBeacon } from "@/features/public-site/ui/SiteVisitBeacon";
 import { PublicFooter } from "@/features/public-site/ui/PublicFooter";
 import { PublicHeader } from "@/features/public-site/ui/PublicHeader";
 import { PublicLodgingJsonLd } from "@/features/public-site/ui/PublicLodgingJsonLd";
@@ -50,6 +51,7 @@ export default async function PublicLayout({
         data-pub-template={effectivePublicTemplate(config)}
       >
         <AdminCorner />
+        <SiteVisitBeacon />
         <PublicHeader config={config} locale={locale} />
         <div className="ml-main ml-content flex-1">{children}</div>
         {config.chrome.showContactBar !== false ? (

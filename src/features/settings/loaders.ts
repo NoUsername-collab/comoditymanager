@@ -18,6 +18,8 @@ import {
 } from "@/services/pension-settings";
 import { loadMonthComparison } from "@/services/month-comparison";
 import { loadStatisticsReport } from "@/services/statistics";
+import { loadSiteStatistics } from "@/services/statistics-site";
+import { todayIso } from "@/lib/stay-dates";
 import {
   getPublicSiteAdminBundle,
   getPublicSiteConfigForAdmin,
@@ -218,6 +220,11 @@ export async function loadStatisticsPageAccess() {
 
 export async function loadStatisticsMonthCompare() {
   return loadMonthComparison().catch(() => null);
+}
+
+/** The public site's visits and requests; null when they cannot be read. */
+export async function loadSiteStatisticsPage() {
+  return loadSiteStatistics(todayIso()).catch(() => null);
 }
 
 export async function loadStatisticsReportPage() {

@@ -50,6 +50,7 @@ export type StaffStayCreateInput = {
   notes?: string;
   occupants?: StaffStayOccupantInput[];
   skipAvailabilityCheck?: boolean;
+  /** The phone booking form says "reception"; the calendar leaves it out or says "gantt". */
   source?: "gantt" | "reception";
 };
 
@@ -190,6 +191,7 @@ export async function createStaffStayAction(
     const notes = input.notes?.trim() || defaultNote;
 
     const bookingId = await createBookingRequest({
+      source: input.source === "reception" ? "phone" : "staff",
       check_in: input.checkIn,
       check_out: input.checkOut,
       guest_name: `${titular.last} ${titular.first}`.trim(),

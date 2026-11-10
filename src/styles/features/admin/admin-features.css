@@ -404,3 +404,128 @@
   border-radius: 9999px;
 }
 
+
+/* ── Statistics: the public site's visits and requests ── */
+.site-stats__lead,
+.site-stats__note {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--admin-text-muted, #52525b);
+}
+
+.site-stats__note {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+}
+
+.site-stats__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 0.6rem;
+}
+
+.site-stats__empty {
+  margin: 1rem 0 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.6rem;
+  background: var(--admin-surface-bg, #f4f4f5);
+  color: var(--admin-text-muted, #52525b);
+  font-size: 0.8125rem;
+}
+
+.site-stats__heading {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--admin-text, #18181b);
+}
+
+.site-stats__sources,
+.site-stats__top {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-stats__sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.site-stats__sources li {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  color: var(--admin-text-muted, #52525b);
+}
+
+.site-stats__sources strong,
+.site-stats__top strong {
+  color: var(--admin-text, #18181b);
+  font-variant-numeric: tabular-nums;
+}
+
+.site-stats__lists {
+  display: grid;
+  gap: 0 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .site-stats__lists {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.site-stats__top li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--admin-panel-border, #e4e4e7);
+  font-size: 0.8125rem;
+  color: var(--admin-text, #18181b);
+}
+
+.site-stats__top span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.site-stats__table-wrap {
+  overflow-x: auto;
+}
+
+.site-stats__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  color: var(--admin-text, #18181b);
+}
+
+.site-stats__table th,
+.site-stats__table td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--admin-panel-border, #e4e4e7);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.site-stats__table th:first-child {
+  text-align: left;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.site-stats__table thead th {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--admin-text-muted, #52525b);
+}

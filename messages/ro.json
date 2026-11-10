@@ -2421,6 +2421,30 @@
       "statistics": {
         "title": "Statistici — Zalmox",
         "monthCompare": "Comparativ lună",
+        "site": {
+          "title": "Site-ul public",
+          "lead": "Câți oameni v-au văzut site-ul și câte cereri de rezervare au venit de pe el.",
+          "visitors": "Vizitatori",
+          "visits": "Pagini văzute",
+          "requests": "Cereri de pe site",
+          "confirmed": "Confirmate",
+          "conversion": "Rata de cereri",
+          "last30": "Ultimele 30 de zile. Un vizitator se numără o dată pe zi.",
+          "empty": "Încă nu sunt vizite înregistrate. Numărătoarea pornește de la publicarea acestei versiuni.",
+          "bySource": "Toate rezervările din ultimele 30 de zile, după sursă",
+          "sources": {
+            "site": "De pe site",
+            "staff": "Introduse de voi",
+            "phone": "Formularul de telefon",
+            "unknown": "Fără sursă (mai vechi)"
+          },
+          "topPages": "Cele mai văzute pagini",
+          "topReferrers": "De unde vin vizitatorii",
+          "direct": "Direct (link salvat, adresă tastată)",
+          "byMonth": "Pe luni",
+          "month": "Luna",
+          "privacy": "Fără cookie-uri și fără adrese IP salvate: vizitatorii nu pot fi identificați, deci nu e nevoie de banner de consimțământ."
+        },
         "continuous": "Înregistrare continuă",
         "guestNights": "Nopți oaspeți",
         "requestsYear": "Cereri create în an",

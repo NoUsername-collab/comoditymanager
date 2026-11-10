@@ -241,6 +241,7 @@ export async function duplicateBookingAsRequest(bookingId: string): Promise<stri
   }
 
   const id = await createBookingRequest({
+    source: "staff",
     check_in: b.check_in,
     check_out: b.check_out,
     guest_name: b.guest_name,
