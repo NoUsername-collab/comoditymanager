@@ -828,3 +828,75 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
     font-size: clamp(2.3rem, 11vw, 2.9rem);
   }
 }
+
+/* ── Classic on phones: highlights and steps as one grouped list ──
+ * Stacked cards on a narrow screen cost a screenful each. Classic groups the
+ * rows into a single card instead, mark at the left and words beside it;
+ * Panoramic keeps separate centred cards and Magazine its ruled lines.
+ */
+@media (max-width: 640px) {
+  .pub-benefits--classic,
+  .pub-steps--classic {
+    gap: 0;
+  }
+
+  .pub-benefits--classic .pub-benefit,
+  .pub-steps--classic .pub-step {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    column-gap: 0.85rem;
+    padding: 0.9rem 1rem;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .pub-benefits--classic .pub-benefit + .pub-benefit,
+  .pub-steps--classic .pub-step + .pub-step {
+    border-top: 0;
+  }
+
+  .pub-benefits--classic .pub-benefit:first-child,
+  .pub-steps--classic .pub-step:first-child {
+    border-top-left-radius: var(--pub-radius);
+    border-top-right-radius: var(--pub-radius);
+  }
+
+  .pub-benefits--classic .pub-benefit:last-child,
+  .pub-steps--classic .pub-step:last-child {
+    border-bottom-left-radius: var(--pub-radius);
+    border-bottom-right-radius: var(--pub-radius);
+  }
+
+  /* The group keeps the palette's card shadow once, around the whole list. */
+  .pub-benefits--classic,
+  .pub-steps--classic {
+    border-radius: var(--pub-radius);
+    box-shadow: var(--pub-card-shadow);
+  }
+
+  .pub-benefits--classic .pub-benefit__icon,
+  .pub-steps--classic .pub-step__num {
+    grid-row: 1 / span 2;
+    align-self: start;
+    margin-top: 0.1rem;
+  }
+
+  .pub-benefits--classic .pub-benefit__svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  .pub-benefits--classic .pub-benefit__title,
+  .pub-steps--classic .pub-step__title {
+    grid-column: 2;
+    margin: 0;
+  }
+
+  .pub-benefits--classic .pub-benefit__text,
+  .pub-steps--classic .pub-step__text {
+    grid-column: 2;
+    margin-top: 0.2rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
