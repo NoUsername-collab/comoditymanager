@@ -1,3 +1,5 @@
+import type { MapPoint } from "@/domain/settings/map-point";
+
 export type PensionContact = {
   email: string | null;
   phone: string | null;
@@ -14,6 +16,8 @@ export type PensionIdentity = {
   contact: PensionContact;
   /** Property address: site map, invoices and the ANAF tourist sheet all read it. */
   address: string | null;
+  /** Where the property is on the map: the site's map and the guest app's weather. */
+  location: MapPoint | null;
 };
 
 export const EMPTY_PENSION_CONTACT: PensionContact = {

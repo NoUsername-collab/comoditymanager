@@ -8,10 +8,11 @@ import {
   type PensionContact,
   type PensionIdentity,
 } from "@/domain/settings/pension-identity";
+import { mapPoint, type MapPoint } from "@/domain/settings/map-point";
 import { DEFAULT_PENSION_DISPLAY_NAME } from "@/lib/constants";
 
 const IDENTITY_SELECT =
-  "display_name, logo_url, fisa_property_address, contact_email, contact_phone, contact_whatsapp, contact_telegram, contact_facebook, contact_instagram";
+  "display_name, logo_url, fisa_property_address, weather_lat, weather_lng, contact_email, contact_phone, contact_whatsapp, contact_telegram, contact_facebook, contact_instagram";
 
 function mapContact(row: Record<string, unknown>): PensionContact {
   const str = (key: string) => {
@@ -41,6 +42,7 @@ function mapIdentity(row: Record<string, unknown> | null): PensionIdentity {
       typeof row?.fisa_property_address === "string" && row.fisa_property_address.trim()
         ? row.fisa_property_address.trim()
         : null,
+    location: mapPoint(row?.weather_lat, row?.weather_lng),
   };
 }
 
@@ -87,6 +89,7 @@ export type PensionIdentityInput = {
   logoUrl: string | null;
   contact: PensionContact;
   address: string | null;
+  location: MapPoint | null;
 };
 
 export async function updatePensionIdentity(
@@ -101,6 +104,8 @@ export async function updatePensionIdentity(
       display_name: input.displayName.trim() || DEFAULT_PENSION_DISPLAY_NAME,
       logo_url: input.logoUrl,
       fisa_property_address: input.address?.trim() || null,
+      weather_lat: input.location?.lat ?? null,
+      weather_lng: input.location?.lng ?? null,
       contact_email: input.contact.email,
       contact_phone: input.contact.phone,
       contact_whatsapp: input.contact.whatsapp,

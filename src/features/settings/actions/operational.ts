@@ -192,8 +192,15 @@ export async function updatePensionIdentityAction(
         ? logoParsed.data.trim()
         : null;
 
+    // A point the browser sends is checked again: within the map, never 0,0.
+    const { mapPoint } = await import("@/domain/settings/map-point");
+    const location = input.location ? mapPoint(input.location.lat, input.location.lng) : null;
+    if (input.location && !location) {
+      return { ok: false, error: t("identityLocationInvalid") };
+    }
+
     const { updatePensionIdentity } = await import("@/services/pension-identity");
-    await updatePensionIdentity({ ...input, logoUrl });
+    await updatePensionIdentity({ ...input, logoUrl, location });
     await logAdminActivityFromSession({
       action: "settings.updated",
       entityType: "settings",
@@ -308,4 +315,30 @@ export async function updateBookingRulesSettingsAction(
 /** @deprecated Use updateAppearanceSettingsAction or updateOperationalSettingsAction */
 export async function updateSettingsAction(formData: FormData) {
   return updateOperationalSettingsAction(formData);
+}
+
+/** The map point of the property's address, for the identity settings; nothing is saved here. */
+export async function geocodePropertyAddressAction(
+  address: string,
+): Promise<
+  { ok: true; lat: number; lng: number; label: string; approximate: boolean } | { ok: false; error: string }
+> {
+  const t = await getTranslations("admin.serverActions");
+  try {
+    await requireStaffPermission("pension_settings");
+  } catch {
+    return { ok: false, error: t("roleForbidden") };
+  }
+  const { enforceRateLimit } = await import("@/lib/rate-limit");
+  const tenantId = await resolveTenantIdForData();
+  const rl = await enforceRateLimit(`geocode:${tenantId}`, 6, 60_000);
+  if (!rl.allowed) return { ok: false, error: t("geocodeTooOften") };
+  try {
+    const { geocodeAddress } = await import("@/services/geocode");
+    const found = await geocodeAddress(address);
+    if (!found) return { ok: false, error: t("geocodeNotFound") };
+    return { ok: true, ...found };
+  } catch {
+    return { ok: false, error: t("geocodeFailed") };
+  }
 }

@@ -17,6 +17,7 @@ import {
   formatTouristSheetAddress,
   parseTouristSheetAddress,
 } from "@/domain/checkin/tourist-sheet-address";
+import { MapPointField } from "@/features/settings/ui/MapPointField";
 import "@/styles/features/admin/admin-public-site-studio.css";
 
 type Props = {
@@ -32,6 +33,7 @@ export function PensionIdentityForm({ identity }: Props) {
   const [addressParts, setAddressParts] = useState(() =>
     parseTouristSheetAddress(identity.address),
   );
+  const [location, setLocation] = useState(identity.location);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [pending, setPending] = useState(false);
@@ -42,10 +44,11 @@ export function PensionIdentityForm({ identity }: Props) {
       logoUrl: identity.logoUrl ?? "",
       contact: identity.contact,
       addressParts: parseTouristSheetAddress(identity.address),
+      location: identity.location,
     }),
   );
   const dirty =
-    JSON.stringify({ displayName, logoUrl, contact, addressParts }) !==
+    JSON.stringify({ displayName, logoUrl, contact, addressParts, location }) !==
     initialSnapshot.current;
   useSettingsUnsavedWarning(dirty && !pending);
 
@@ -59,6 +62,7 @@ export function PensionIdentityForm({ identity }: Props) {
       logoUrl: logoUrl.trim() || null,
       contact,
       address: formatTouristSheetAddress(addressParts),
+      location,
     });
     setPending(false);
     if (!result.ok) {
@@ -66,7 +70,7 @@ export function PensionIdentityForm({ identity }: Props) {
       return;
     }
     setSaved(true);
-    initialSnapshot.current = JSON.stringify({ displayName, logoUrl, contact, addressParts });
+    initialSnapshot.current = JSON.stringify({ displayName, logoUrl, contact, addressParts, location });
   }
 
   return (
@@ -256,6 +260,11 @@ export function PensionIdentityForm({ identity }: Props) {
                   autoComplete="address-level1"
                 />
               </label>
+              <MapPointField
+                value={location}
+                onChange={setLocation}
+                address={formatTouristSheetAddress(addressParts) ?? ""}
+              />
             </div>
           </section>
 
