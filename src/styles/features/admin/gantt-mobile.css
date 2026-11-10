@@ -1159,10 +1159,19 @@ html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gan
    ═══════════════════════════════════════════════════════════════════ */
 
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) {
-  /* Light shell — never mix from dark admin-page-bg (noir stays readable) */
-  --gantt-day-page-bg: color-mix(in srgb, #ffffff 90%, var(--admin-accent-muted, #ecfdf5));
-  --gantt-day-nav-bg: color-mix(in srgb, #ffffff 90%, var(--admin-accent-muted, #ecfdf5));
-  --gantt-day-toolbar-bg: color-mix(in srgb, #ffffff 92%, var(--admin-accent-muted, #ecfdf5));
+  /*
+   * By day the phone calendar sits on light "paper" with dark green ink; at
+   * night the same tokens come from the theme (below), so the frame matches
+   * the dark grid instead of a light frame around it.
+   */
+  --gantt-day-paper: #ffffff;
+  --gantt-day-ink: #134e4a;
+  --gantt-day-ink-soft: color-mix(in srgb, #134e4a 92%, #334155);
+  --gantt-day-ink-muted: color-mix(in srgb, #134e4a 78%, #64748b);
+  --gantt-day-highlight: white;
+  --gantt-day-page-bg: color-mix(in srgb, var(--gantt-day-paper) 90%, var(--admin-accent-muted, #ecfdf5));
+  --gantt-day-nav-bg: color-mix(in srgb, var(--gantt-day-paper) 90%, var(--admin-accent-muted, #ecfdf5));
+  --gantt-day-toolbar-bg: color-mix(in srgb, var(--gantt-day-paper) 92%, var(--admin-accent-muted, #ecfdf5));
   --gantt-day-toolbar-border: color-mix(
     in srgb,
     var(--admin-accent, #059669) 18%,
@@ -1170,21 +1179,21 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) {
   );
   --gantt-day-toolbar-shadow:
     0 4px 14px color-mix(in srgb, var(--admin-accent) 9%, transparent),
-    inset 0 1px 0 color-mix(in srgb, white 65%, transparent);
-  --gantt-day-scroll-bg: color-mix(in srgb, #ffffff 94%, var(--admin-accent-muted, #ecfdf5));
+    inset 0 1px 0 color-mix(in srgb, var(--gantt-day-highlight) 65%, transparent);
+  --gantt-day-scroll-bg: color-mix(in srgb, var(--gantt-day-paper) 94%, var(--admin-accent-muted, #ecfdf5));
   --gantt-day-scroll-border: color-mix(
     in srgb,
     var(--admin-accent) 14%,
     var(--admin-panel-border, #e4e4e7)
   );
   --gantt-day-scroll-shadow: 0 10px 28px color-mix(in srgb, var(--admin-accent) 7%, transparent);
-  --gantt-day-control-bg: color-mix(in srgb, #ffffff 96%, var(--admin-accent-muted, #ecfdf5));
+  --gantt-day-control-bg: color-mix(in srgb, var(--gantt-day-paper) 96%, var(--admin-accent-muted, #ecfdf5));
   --gantt-day-control-border: color-mix(
     in srgb,
     var(--admin-accent) 16%,
     var(--admin-panel-border, #e4e4e7)
   );
-  --gantt-day-control-active-bg: color-mix(in srgb, var(--admin-accent, #059669) 12%, #ffffff);
+  --gantt-day-control-active-bg: color-mix(in srgb, var(--admin-accent, #059669) 12%, var(--gantt-day-paper));
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-shell:has(.gantt-calendar-page) {
@@ -1198,12 +1207,12 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-bo
 }
 
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-bottom-nav__link {
-  color: color-mix(in srgb, #134e4a 92%, #334155) !important;
+  color: var(--gantt-day-ink-soft) !important;
 }
 
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-bottom-nav__link--active {
   color: var(--admin-accent, #059669) !important;
-  background: color-mix(in srgb, var(--admin-accent, #059669) 14%, #ffffff) !important;
+  background: color-mix(in srgb, var(--admin-accent, #059669) 14%, var(--gantt-day-paper)) !important;
 }
 
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-page-main {
@@ -1216,18 +1225,18 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) {
 
 html[data-layout-chrome="compact"] .gantt-calendar-page {
   background: var(--gantt-day-page-bg);
-  color: #134e4a;
+  color: var(--gantt-day-ink);
 }
 
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-drawer--admin {
   background: var(--gantt-day-toolbar-bg);
-  color: #134e4a;
+  color: var(--gantt-day-ink);
   border-bottom-color: var(--gantt-day-toolbar-border);
   box-shadow: var(--gantt-day-toolbar-shadow);
 }
 
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-drawer--admin .ml-drawer__link {
-  color: #134e4a;
+  color: var(--gantt-day-ink);
   border-color: var(--gantt-day-control-border);
   background: var(--gantt-day-control-bg);
 }
@@ -1240,7 +1249,7 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-dr
 
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-drawer--admin .ml-drawer__title,
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-drawer--admin .ml-drawer__close {
-  color: color-mix(in srgb, #134e4a 78%, #64748b);
+  color: var(--gantt-day-ink-muted);
 }
 
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-drawer--admin .ml-drawer__head {
@@ -1294,8 +1303,8 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__home-btn {
   border-color: var(--gantt-day-control-border) !important;
   background: var(--gantt-day-control-bg) !important;
-  color: #134e4a !important;
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 72%, transparent);
+  color: var(--gantt-day-ink) !important;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--gantt-day-highlight) 72%, transparent);
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__nav-btn {
@@ -1331,7 +1340,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn--active:hover,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn--active:active {
-  background: color-mix(in srgb, var(--admin-accent) 88%, white) !important;
+  background: color-mix(in srgb, var(--admin-accent) 88%, var(--gantt-day-paper)) !important;
   filter: none !important;
 }
 
@@ -1343,7 +1352,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__title,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__jump-icon {
-  color: #134e4a;
+  color: var(--gantt-day-ink);
 }
 
 /* Action strip badges — solid pills (no transparent-on-dark) */
@@ -1390,12 +1399,12 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__bad
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__btn:not(.gantt-action-strip__btn--primary):not(.gantt-action-strip__btn--caret) {
   background: var(--gantt-day-control-bg) !important;
   border-color: var(--gantt-day-control-border) !important;
-  color: #134e4a !important;
+  color: var(--gantt-day-ink) !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-stay--chip {
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white 24%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--gantt-day-highlight) 24%, transparent),
     0 0 0 1px color-mix(in srgb, var(--stay-glow, var(--admin-accent)) 16%, transparent) !important;
 }
 
@@ -1407,7 +1416,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-thead-sticky .gan
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-thead-sticky .gantt-head-main-row__days,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__label,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__days {
-  background: var(--admin-surface-bg, color-mix(in srgb, #ffffff 92%, var(--admin-accent-muted, #ecfdf5)));
+  background: var(--admin-surface-bg, color-mix(in srgb, var(--gantt-day-paper) 92%, var(--admin-accent-muted, #ecfdf5)));
 }
 
 /* Premium calendar density — override padding that caused dead space */
@@ -1517,8 +1526,8 @@ html[data-layout-chrome="compact"] .gantt-calendar-page td.gantt-building-header
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header-row > td.gantt-building-header,
 html[data-layout-chrome="compact"] .gantt-calendar-page td.gantt-building-header {
   padding: 0 0.3rem !important;
-  background: color-mix(in srgb, #ffffff 82%, var(--admin-accent-muted, #ecfdf5));
-  border-color: color-mix(in srgb, var(--admin-accent, #059669) 20%, #e4e4e7);
+  background: color-mix(in srgb, var(--gantt-day-paper) 82%, var(--admin-accent-muted, #ecfdf5));
+  border-color: color-mix(in srgb, var(--admin-accent, #059669) 20%, var(--admin-panel-border, #e4e4e7));
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header-row .gantt-building-header__days {
@@ -1591,6 +1600,16 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-room-row:first-of
   html[data-layout-chrome="compact"] .gantt-compact-toolbar__center {
     scroll-behavior: auto;
   }
+}
+
+
+/* Night: the phone calendar's frame takes the theme's own surfaces and text. */
+html[data-layout-chrome="compact"][data-mode="night"] .admin-shell:has(.gantt-calendar-page) {
+  --gantt-day-paper: var(--surface);
+  --gantt-day-ink: var(--text);
+  --gantt-day-ink-soft: var(--text);
+  --gantt-day-ink-muted: var(--text-muted);
+  --gantt-day-highlight: transparent;
 }
 
 /* ── Round 3: sticky day header + larger stay tap targets ── */
