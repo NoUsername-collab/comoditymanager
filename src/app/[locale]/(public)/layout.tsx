@@ -38,7 +38,7 @@ export default async function PublicLayout({
     getLocale(),
   ]);
 
-  const style = resolvePublicSiteStyle(config.themeId, config.chrome);
+  const style = resolvePublicSiteStyle(config.themeId, config.chrome, effectivePublicTemplate(config));
 
   return (
     <>

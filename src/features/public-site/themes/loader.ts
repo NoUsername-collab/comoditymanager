@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import { getDesignTheme, migrateDesignThemeId, resolvePublicThemeStyle } from "@/design/themes";
 import type { DesignThemeId } from "@/design/themes";
-import type { PublicChromeConfig } from "@/features/public-site/domain/types";
+import type { PublicChromeConfig, PublicTemplateId } from "@/features/public-site/domain/types";
 import { publicChromeFontStack } from "@/features/public-site/domain/chrome";
 import {
   contrastRatio,
@@ -24,15 +24,18 @@ function hexToRgba(hex: string, alpha: number): string {
 
 /**
  * The site's look: the palette, then the operator's own colour and heading
- * font over it. The site and the studio preview both take it from here.
+ * font over it (by default the layout's suggested font, given `templateId`,
+ * the layout the page actually uses). The site and the studio preview both
+ * take it from here.
  */
 export function resolvePublicSiteStyle(
   themeId: DesignThemeId | string,
   chrome: Pick<PublicChromeConfig, "fontId" | "accentColor">,
+  templateId?: PublicTemplateId,
 ): CSSProperties {
   const style: Record<string, string> = { ...resolvePublicThemeStyle(themeId) };
 
-  const font = publicChromeFontStack(chrome.fontId);
+  const font = publicChromeFontStack(chrome.fontId, templateId);
   if (font) {
     style["--pub-font-display"] = font;
     style["--public-font-serif"] = font;

@@ -1679,6 +1679,8 @@
           "fontTitle": "Heading font",
           "fontDesc": "The lettering of the page's headings. Body text stays easy to read.",
           "fontSample": "Guesthouse Aa",
+          "fontFollowsLayout": "The layout suggests {font}.",
+          "fontFollowsPalette": "The layout keeps the palette's font.",
           "brandTitle": "Your colour",
           "brandDesc": "Buttons and highlights take your logo's colour, over the palette.",
           "brandPalette": "The palette's",
@@ -2098,7 +2100,7 @@
         "footerTagline": "Footer tagline",
         "fontTitle": "Headline font",
         "fonts": {
-          "theme": "Match the colour theme",
+          "theme": "Suited to the layout",
           "serif": "Classic (serif)",
           "sans": "Modern (sans-serif)",
           "playfair": "Playfair Display (elegant)",

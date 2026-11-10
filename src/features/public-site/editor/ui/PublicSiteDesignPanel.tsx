@@ -6,7 +6,8 @@ import {
   PUBLIC_TEMPLATE_OPTIONS,
   PUBLIC_THEME_OPTIONS,
 } from "@/features/public-site/domain/defaults";
-import { PUBLIC_FONT_OPTIONS } from "@/features/public-site/domain/chrome";
+import { LAYOUT_SUGGESTED_FONT, PUBLIC_FONT_OPTIONS } from "@/features/public-site/domain/chrome";
+import { effectivePublicTemplate } from "@/features/public-site/domain/template";
 import {
   BRAND_COLOR_SUGGESTIONS,
   brandColorFadesOn,
@@ -27,6 +28,13 @@ export function PublicSiteDesignPanel() {
   const t = useTranslations("admin.pages.publicSite");
   const te = useTranslations("admin.pages.publicSite.editor");
   const { draft, patchDraft } = usePublicSiteEditor();
+
+  // The default font follows the layout the page actually shows.
+  const layout = effectivePublicTemplate({
+    templateId: draft.templateId,
+    hero: { imageUrl: draft.heroImageUrl },
+  });
+  const suggestedFont = LAYOUT_SUGGESTED_FONT[layout];
 
   // Thumbnails show the operator's own photo, laid out as each layout would.
   const heroPhoto = draft.heroImageUrl.trim();
@@ -120,12 +128,19 @@ export function PublicSiteDesignPanel() {
             >
               <span
                 className="pub-editor-font-sample"
-                style={resolvePublicSiteStyle(draft.themeId, { fontId: option })}
+                style={resolvePublicSiteStyle(draft.themeId, { fontId: option }, layout)}
                 aria-hidden
               >
                 {te("fontSample")}
               </span>
               <span className="pub-editor-choice__title">{t(`fonts.${option}`)}</span>
+              {option === "theme" ? (
+                <span className="pub-editor-choice__desc">
+                  {suggestedFont
+                    ? te("fontFollowsLayout", { font: t(`fonts.${suggestedFont}`) })
+                    : te("fontFollowsPalette")}
+                </span>
+              ) : null}
             </button>
           ))}
         </div>

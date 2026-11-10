@@ -33,7 +33,7 @@ export function PublicSitePreview({
     checkIn: config.checkInTime,
     checkOut: config.checkOutTime,
   });
-  const style = resolvePublicSiteStyle(config.themeId, config.chrome);
+  const style = resolvePublicSiteStyle(config.themeId, config.chrome, effectivePublicTemplate(config));
 
   return (
     <div

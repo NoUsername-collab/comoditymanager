@@ -1664,6 +1664,8 @@
           "fontTitle": "Litere pentru titluri",
           "fontDesc": "Literele titlurilor de pe pagină. Textul obișnuit rămâne ușor de citit.",
           "fontSample": "Pensiunea Aa",
+          "fontFollowsLayout": "Aranjamentul propune {font}.",
+          "fontFollowsPalette": "Aranjamentul păstrează fontul paletei.",
           "brandTitle": "Culoarea voastră",
           "brandDesc": "Butoanele și evidențierile iau culoarea logoului vostru, peste paletă.",
           "brandPalette": "A paletei",
@@ -2082,7 +2084,7 @@
         "footerTagline": "Tagline footer",
         "fontTitle": "Font titluri",
         "fonts": {
-          "theme": "Ca tema de culori",
+          "theme": "Potrivit aranjamentului",
           "serif": "Clasic (cu serife)",
           "sans": "Modern (fără serife)",
           "playfair": "Playfair Display (elegant)",

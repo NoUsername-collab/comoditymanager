@@ -3,6 +3,7 @@ import type {
   PublicChromeConfig,
   PublicFontId,
   PublicPagesConfig,
+  PublicTemplateId,
 } from "@/features/public-site/domain/types";
 
 const SERIF = "Georgia, 'Times New Roman', serif";
@@ -25,6 +26,18 @@ const PUBLIC_FONT_STACK: Record<Exclude<PublicFontId, "theme">, string> = {
 };
 
 export const PUBLIC_FONT_OPTIONS: PublicFontId[] = ["theme", ...(Object.keys(PUBLIC_FONT_STACK) as PublicFontId[])];
+
+/**
+ * The heading font each layout suggests, used while the operator keeps the
+ * default ("theme"): a magazine reads in a high-contrast serif, a full-screen
+ * photo carries a refined display serif, the brochure keeps the palette's own.
+ * A font the operator picks always wins.
+ */
+export const LAYOUT_SUGGESTED_FONT: Record<PublicTemplateId, Exclude<PublicFontId, "theme"> | null> = {
+  classic: null,
+  editorial: "playfair",
+  immersive: "cormorant",
+};
 
 export function defaultPublicChrome(): PublicChromeConfig {
   return {
@@ -104,7 +117,17 @@ export function normalizePublicPages(raw: unknown): PublicPagesConfig {
   };
 }
 
-export function publicChromeFontStack(fontId: PublicFontId | undefined): string | null {
-  if (!fontId || fontId === "theme") return null;
+/**
+ * The heading font stack: the operator's pick, else the layout's suggestion,
+ * else null for the palette's own.
+ */
+export function publicChromeFontStack(
+  fontId: PublicFontId | undefined,
+  templateId?: PublicTemplateId,
+): string | null {
+  if (!fontId || fontId === "theme") {
+    const suggested = templateId ? LAYOUT_SUGGESTED_FONT[templateId] : null;
+    return suggested ? PUBLIC_FONT_STACK[suggested] : null;
+  }
   return PUBLIC_FONT_STACK[fontId] ?? null;
 }

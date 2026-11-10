@@ -52,6 +52,16 @@ describe("site style", () => {
     expect(junk["--pub-accent"]).toBe(plain["--pub-accent"]);
   });
 
+  it("lets each layout suggest a heading font, and the operator's pick win", () => {
+    const font = (fontId: "theme" | "lora", layout: "classic" | "editorial" | "immersive") =>
+      (resolvePublicSiteStyle("noir", { fontId }, layout) as Record<string, string>)["--pub-font-display"];
+    const palette = (resolvePublicSiteStyle("noir", {}) as Record<string, string>)["--pub-font-display"];
+    expect(font("theme", "classic")).toBe(palette);
+    expect(font("theme", "editorial")).toContain("--font-pub-playfair");
+    expect(font("theme", "immersive")).toContain("--font-pub-cormorant");
+    expect(font("lora", "editorial")).toContain("--font-pub-lora");
+  });
+
   it("sets the heading font from the chosen one", () => {
     const style = resolvePublicSiteStyle("noir", { fontId: "lora" }) as Record<string, string>;
     expect(style["--pub-font-display"]).toContain("--font-pub-lora");
