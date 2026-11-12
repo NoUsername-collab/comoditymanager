@@ -547,6 +547,12 @@
       "terms": "Termeni",
       "book": "Rezervare"
     },
+    "staffBar": {
+      "aria": "Bară pentru personal",
+      "signedIn": "Ești conectat ca personal.",
+      "panel": "Panou operator",
+      "logout": "Deconectare"
+    },
     "footer": {
       "tagline": "Cerere online — confirmare personală de la pensiune, fără plată pe site.",
       "links": "Linkuri",

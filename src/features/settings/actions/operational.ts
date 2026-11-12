@@ -199,8 +199,15 @@ export async function updatePensionIdentityAction(
       return { ok: false, error: t("identityLocationInvalid") };
     }
 
-    const { updatePensionIdentity } = await import("@/services/pension-identity");
-    await updatePensionIdentity({ ...input, logoUrl, location });
+    // Numbers are kept with their country code, so call and WhatsApp links work.
+    const [{ updatePensionIdentity }, { withInternationalPhones }, { resolveTenantCountryForRequest }] =
+      await Promise.all([
+        import("@/services/pension-identity"),
+        import("@/domain/settings/phone"),
+        import("@/lib/tenant/resolve-fiscal-tenant"),
+      ]);
+    const contact = withInternationalPhones(input.contact, await resolveTenantCountryForRequest());
+    await updatePensionIdentity({ ...input, contact, logoUrl, location });
     await logAdminActivityFromSession({
       action: "settings.updated",
       entityType: "settings",

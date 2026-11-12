@@ -44,13 +44,14 @@ export default async function PublicLayout({
   return (
     <>
       <PublicLodgingJsonLd config={config} locale={locale} />
+      {/* Above the site's frame: a layout may lay its header over the top of the page. */}
+      <AdminCorner className={`site-themed ${publicThemeClassName(config.themeId)}`} style={style} />
       <MobileShell
         surface="public"
         className={`site-themed ${publicThemeClassName(config.themeId)} flex min-h-screen flex-1 flex-col`}
         style={style}
         data-pub-template={effectivePublicTemplate(config)}
       >
-        <AdminCorner />
         <SiteVisitBeacon />
         <PublicHeader config={config} locale={locale} />
         <div className="ml-main ml-content flex-1">{children}</div>

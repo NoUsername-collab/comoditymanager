@@ -5,6 +5,8 @@ import { parsePublicSiteSettingsInput } from "@/domain/settings/schemas/public-s
 import { requireStaffPermission } from "@/lib/auth/require-staff";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { resolveRequestTenant } from "@/lib/tenant/active";
+import { resolveTenantCountryForRequest } from "@/lib/tenant/resolve-fiscal-tenant";
+import { withInternationalPhones } from "@/domain/settings/phone";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import {
   PublicSiteVersionConflictError,
@@ -44,9 +46,11 @@ export async function savePublicSiteSettingsAction(
     // Visibility before this save, so going online or offline gets its own history entry.
     const wasPublished = (await getPublicSiteConfigForAdmin()).published;
 
+    // Numbers are kept with their country code, so call and WhatsApp links work.
+    const country = await resolveTenantCountryForRequest();
     const version = await upsertPublicSiteSettingsImpl(
       tenant.id,
-      parsed.data,
+      { ...parsed.data, contact: withInternationalPhones(parsed.data.contact, country) },
       Number.isInteger(expectedVersion) ? expectedVersion : null,
     );
 

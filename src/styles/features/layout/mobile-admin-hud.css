@@ -752,23 +752,6 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room
   word-break: break-word;
 }
 
-/* ── Admin corner (staff on public site) ── */
-html[data-layout-chrome="compact"] .admin-corner {
-  right: max(0.5rem, var(--ml-safe-right));
-  top: max(0.35rem, var(--ml-safe-top));
-  max-width: calc(100vw - 1rem);
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-html[data-layout-chrome="compact"] .admin-corner a,
-html[data-layout-chrome="compact"] .admin-corner button {
-  min-height: var(--ml-touch-min, 2.75rem);
-  min-width: var(--ml-touch-min, 2.75rem);
-  font-size: 0.75rem;
-  padding-inline: 0.65rem;
-}
-
 html[data-layout-chrome="compact"] .platform-footer__inner {
   min-width: 0;
   max-width: 100%;
@@ -2377,11 +2360,6 @@ html[data-layout-chrome="compact"] .admin-login-page {
 html[data-layout-chrome="compact"] .admin-login-card {
   padding: 1rem !important;
   border-radius: 0.75rem;
-}
-
-html[data-layout-chrome="compact"] .admin-corner {
-  min-height: var(--ml-touch-min, 2.75rem);
-  padding-inline: 0.65rem;
 }
 
 /* ── Tablet portrait uses compact chrome too ── */

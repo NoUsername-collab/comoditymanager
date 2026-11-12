@@ -547,6 +547,12 @@
       "terms": "Terms",
       "book": "Book a stay"
     },
+    "staffBar": {
+      "aria": "Staff bar",
+      "signedIn": "You are signed in as staff.",
+      "panel": "Operator panel",
+      "logout": "Sign out"
+    },
     "footer": {
       "tagline": "Request online — personal confirmation from the guesthouse, no payment on the website.",
       "links": "Links",

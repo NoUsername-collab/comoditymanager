@@ -243,6 +243,51 @@
   background: color-mix(in srgb, var(--site-accent) 12%, transparent);
 }
 
+/* Staff only: a thin strip above the header, in the page's flow. */
+.pub-staff-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem 0.75rem;
+  padding: 0.3rem max(1rem, env(safe-area-inset-right)) 0.3rem max(1rem, env(safe-area-inset-left));
+  border-bottom: 1px solid var(--site-border);
+  background: color-mix(in srgb, var(--site-accent) 10%, var(--site-bg));
+  color: var(--site-muted);
+  font-size: 0.75rem;
+}
+
+.pub-staff-bar__note {
+  margin-right: auto;
+}
+
+/* On a phone the strip keeps to one line: the two links say enough. */
+@media (max-width: 480px) {
+  .pub-staff-bar__note {
+    display: none;
+  }
+}
+
+.pub-staff-bar__link,
+.pub-staff-bar__logout {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0 0.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--site-fg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pub-staff-bar__link:hover,
+.pub-staff-bar__logout:hover {
+  background: color-mix(in srgb, var(--site-accent) 14%, transparent);
+}
+
 /* Compact shell: see mobile-layout.css */
 
 /* Footer */
@@ -524,4 +569,9 @@
   .public-confirm-page {
     padding-block: 1.25rem;
   }
+}
+
+/* Phones set the site's buttons at 16px; the strip's link keeps the same size as its button. */
+html[data-layout-chrome="compact"] .pub-staff-bar__link {
+  font-size: 1rem;
 }

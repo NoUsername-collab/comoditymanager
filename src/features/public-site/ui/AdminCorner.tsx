@@ -1,29 +1,36 @@
+import type { CSSProperties } from "react";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { logoutAction } from "@/features/auth/login";
 import { getSessionUser } from "@/services/auth-session";
 
-/** Doar când ești logat — oaspeții nu văd niciun link Admin. */
-export async function AdminCorner() {
+/**
+ * Only for signed-in staff, never guests: a thin strip above the header, in the
+ * page's flow, so it covers nothing (the phone menu button, the language switch).
+ */
+export async function AdminCorner({
+  className,
+  style,
+}: {
+  /** The site's theme, so the strip takes its colours outside the site's frame. */
+  className?: string;
+  style?: CSSProperties;
+}) {
   const user = await getSessionUser();
   if (!user) {
     return null;
   }
+  const t = await getTranslations("public.staffBar");
 
   return (
-    <div className="admin-corner fixed right-4 top-3 z-50 flex items-center gap-0.5 rounded-full border border-[var(--site-border)] bg-[var(--site-header-bg)] px-1 py-1 text-[11px] shadow-md backdrop-blur-sm">
-      <Link
-        href="/admin"
-        className="rounded-full px-2.5 py-1 font-medium text-[var(--site-fg)] hover:opacity-80"
-      >
-        Panou operator
+    <div className={["pub-staff-bar", className].filter(Boolean).join(" ")} style={style} role="region" aria-label={t("aria")}>
+      <span className="pub-staff-bar__note">{t("signedIn")}</span>
+      <Link href="/admin" className="pub-staff-bar__link">
+        {t("panel")}
       </Link>
-      <form action={logoutAction} className="ml-0.5">
-        <button
-          type="submit"
-          className="rounded-full px-2 py-1 text-[var(--site-muted)] hover:text-[var(--site-fg)]"
-          title="Deconectare"
-        >
-          ⎋
+      <form action={logoutAction}>
+        <button type="submit" className="pub-staff-bar__logout">
+          {t("logout")}
         </button>
       </form>
     </div>
