@@ -6,6 +6,7 @@ import {
   type SectionDraft,
 } from "@/features/public-site/editor/model/section-draft";
 import { pageTextSlots, setPageSlot } from "@/features/public-site/editor/model/site-page-draft";
+import { menuTextSlots, setMenuLabel } from "@/features/public-site/editor/model/menu-draft";
 import { mapAllSections, type PublicSiteStudioDraft } from "@/features/public-site/editor/model/studio-draft";
 import { sectionKind } from "@/features/public-site/sections/kinds";
 
@@ -60,7 +61,7 @@ const FLAT_GROUPS: { id: TranslationPart; keys: FlatCopyKey[] }[] = [
   },
 ];
 
-export type TranslationPart = "hero" | "chrome" | "pages" | "google";
+export type TranslationPart = "hero" | "chrome" | "menu" | "pages" | "google";
 
 export type TranslationRow = {
   /** `copy.<key>` for site-wide texts, the section slot's path otherwise. */
@@ -165,8 +166,20 @@ export function translationGroups(
       return [own, ...sectionGroups(page.sections)];
     });
 
-  const [hero, ...rest] = FLAT_GROUPS.map((group) => flat(group.id, group.keys));
-  return [hero!, ...sectionGroups(draft.sections), ...pages, ...rest].filter((group) => group.rows.length > 0);
+  // The menu's own names, after the header and footer texts.
+  const menuSource = new Map(menuTextSlots(draft.menu, from).map((slot) => [slot.path, slot.value]));
+  const menu: TranslationGroup = {
+    id: "menu",
+    part: "menu",
+    rows: menuTextSlots(draft.menu, to)
+      .map((slot) => row(slot.path, "menuLabel", menuSource.get(slot.path) ?? "", slot.value))
+      .filter(worthShowing),
+  };
+
+  const [hero, chrome, ...rest] = FLAT_GROUPS.map((group) => flat(group.id, group.keys));
+  return [hero!, ...sectionGroups(draft.sections), ...pages, chrome!, menu, ...rest].filter(
+    (group) => group.rows.length > 0,
+  );
 }
 
 /** Write one row's translation into the draft, in language `to`. */
@@ -179,6 +192,9 @@ export function setTranslation(
   if (path.startsWith("copy.")) {
     const key = path.slice("copy.".length) as FlatCopyKey;
     return { ...draft, copies: { ...draft.copies, [to]: { ...draft.copies[to], [key]: value } } };
+  }
+  if (path.startsWith("menu.")) {
+    return { ...draft, menu: setMenuLabel(draft.menu, path.slice("menu.".length), to, value) };
   }
   if (path.startsWith("page.")) {
     return { ...draft, pages: draft.pages.map((page) => setPageSlot(page, to, path, value)) };

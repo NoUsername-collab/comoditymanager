@@ -107,6 +107,7 @@ export function OutlineRow({
   onOpen,
   drag,
   pinned,
+  eyeLabels,
 }: {
   rowKey: string;
   name: string;
@@ -119,9 +120,16 @@ export function OutlineRow({
   drag?: OutlineDrag;
   /** Fixed place on the page, shown instead of the drag handle. */
   pinned?: "top" | "bottom";
+  /** What the eye says when it shows or hides more than a section (a whole page). */
+  eyeLabels?: { show: string; hide: string };
 }) {
   const t = useTranslations("admin.pages.publicSite.editor");
   const hidden = visible === false;
+  const eyeLabel = eyeLabels
+    ? hidden
+      ? eyeLabels.show
+      : eyeLabels.hide
+    : t(hidden ? "showAria" : "hideAria", { name });
 
   return (
     <li
@@ -165,8 +173,8 @@ export function OutlineRow({
           type="button"
           className="pub-outline__eye"
           aria-pressed={!hidden}
-          aria-label={t(hidden ? "showAria" : "hideAria", { name })}
-          title={t(hidden ? "showAria" : "hideAria", { name })}
+          aria-label={eyeLabel}
+          title={eyeLabel}
           onClick={() => onToggleVisible(hidden)}
         >
           <EyeIcon open={!hidden} />

@@ -24,15 +24,22 @@ import {
   usePublicSiteEditor,
 } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import { SiteTemplatesGroup } from "@/features/public-site/editor/ui/SiteTemplatesGroup";
+import { siteTemplate } from "@/features/public-site/editor/model/site-templates";
 
 export function PublicSiteDesignPanel() {
   const t = useTranslations("admin.pages.publicSite");
   const te = useTranslations("admin.pages.publicSite.editor");
-  const { draft, patchDraft } = usePublicSiteEditor();
+  const { draft, patchDraft, templatePreview } = usePublicSiteEditor();
+  // While a template is looked at, the choices below show its layout, palette and
+  // font (what the preview shows) and wait until it is applied or put away.
+  const previewed = templatePreview ? siteTemplate(templatePreview) : undefined;
+  const look = previewed
+    ? { templateId: previewed.templateId, themeId: previewed.themeId, fontId: previewed.fontId }
+    : { templateId: draft.templateId, themeId: draft.themeId, fontId: draft.fontId };
 
   // The default font follows the layout the page actually shows.
   const layout = effectivePublicTemplate({
-    templateId: draft.templateId,
+    templateId: look.templateId,
     hero: { imageUrl: draft.heroImageUrl },
   });
   const suggestedFont = LAYOUT_SUGGESTED_FONT[layout];
@@ -47,107 +54,118 @@ export function PublicSiteDesignPanel() {
     <>
       <SiteTemplatesGroup />
 
-      <EditorGroup title={te("layoutTitle")} description={te("layoutDesc")}>
-        <div className="pub-editor-choices" role="radiogroup" aria-label={te("layoutTitle")}>
-          {PUBLIC_TEMPLATE_OPTIONS.map((option) => (
-            <button
-              key={option}
-              type="button"
-              role="radio"
-              aria-checked={draft.templateId === option}
-              className="pub-editor-choice"
-              // Switching layout restyles the page; the operator's section order stays.
-              onClick={() => patchDraft({ templateId: option })}
-            >
-              <span
-                className={`pub-editor-layout pub-editor-layout--${option}`}
-                style={layoutPhoto}
-                aria-hidden
+      {previewed ? (
+        <p className="pub-editor-tabhint" role="status">
+          {te("siteTemplates.choicesWait")}
+        </p>
+      ) : null}
+      <div
+        className="pub-design-choices"
+        inert={previewed ? true : undefined}
+        data-previewing={previewed ? "1" : undefined}
+      >
+        <EditorGroup title={te("layoutTitle")} description={te("layoutDesc")}>
+          <div className="pub-editor-choices" role="radiogroup" aria-label={te("layoutTitle")}>
+            {PUBLIC_TEMPLATE_OPTIONS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                role="radio"
+                aria-checked={look.templateId === option}
+                className="pub-editor-choice"
+                // Switching layout restyles the page; the operator's section order stays.
+                onClick={() => patchDraft({ templateId: option })}
               >
-                <i className="pub-editor-layout__photo" />
-                <span className="pub-editor-layout__copy">
-                  <i className="pub-editor-layout__title" />
-                  <i className="pub-editor-layout__line" />
-                  <i className="pub-editor-layout__btn" />
+                <span
+                  className={`pub-editor-layout pub-editor-layout--${option}`}
+                  style={layoutPhoto}
+                  aria-hidden
+                >
+                  <i className="pub-editor-layout__photo" />
+                  <span className="pub-editor-layout__copy">
+                    <i className="pub-editor-layout__title" />
+                    <i className="pub-editor-layout__line" />
+                    <i className="pub-editor-layout__btn" />
+                  </span>
                 </span>
-              </span>
-              {/* Below the top: how the layout sets out the sections. */}
-              <span className={`pub-editor-sections pub-editor-sections--${option}`} aria-hidden>
-                <i />
-                <i />
-                <i />
-              </span>
-              <span className="pub-editor-choice__title">{t(`templates.${option}.title`)}</span>
-              <span className="pub-editor-choice__desc">{t(`templates.${option}.desc`)}</span>
-            </button>
-          ))}
-        </div>
-        {draft.templateId === "immersive" && !draft.heroImageUrl.trim() ? (
-          <p className="pub-editor-tabhint" role="status">
-            {te("immersiveNeedsPhoto")}
-          </p>
-        ) : null}
-      </EditorGroup>
-
-      <EditorGroup title={te("colorsTitle")} description={te("colorsDesc")}>
-        <div className="pub-editor-choices" role="radiogroup" aria-label={te("colorsTitle")}>
-          {PUBLIC_THEME_OPTIONS.map((option) => (
-            <button
-              key={option}
-              type="button"
-              role="radio"
-              aria-checked={draft.themeId === option}
-              className="pub-editor-choice"
-              onClick={() => patchDraft({ themeId: option })}
-            >
-              <span
-                className="pub-editor-swatch"
-                style={resolvePublicThemeStyle(option) as CSSProperties}
-                aria-hidden
-              >
-                <i />
-                <i />
-                <i />
-              </span>
-              <span className="pub-editor-choice__title">{t(`themes.${option}.title`)}</span>
-              <span className="pub-editor-choice__desc">{t(`themes.${option}.desc`)}</span>
-            </button>
-          ))}
-        </div>
-      </EditorGroup>
-
-      <BrandColorGroup />
-
-      <EditorGroup title={te("fontTitle")} description={te("fontDesc")}>
-        <div className="pub-editor-choices pub-editor-choices--fonts" role="radiogroup" aria-label={te("fontTitle")}>
-          {PUBLIC_FONT_OPTIONS.map((option) => (
-            <button
-              key={option}
-              type="button"
-              role="radio"
-              aria-checked={draft.fontId === option}
-              className="pub-editor-choice"
-              onClick={() => patchDraft({ fontId: option })}
-            >
-              <span
-                className="pub-editor-font-sample"
-                style={resolvePublicSiteStyle(draft.themeId, { fontId: option }, layout)}
-                aria-hidden
-              >
-                {te("fontSample")}
-              </span>
-              <span className="pub-editor-choice__title">{t(`fonts.${option}`)}</span>
-              {option === "theme" ? (
-                <span className="pub-editor-choice__desc">
-                  {suggestedFont
-                    ? te("fontFollowsLayout", { font: t(`fonts.${suggestedFont}`) })
-                    : te("fontFollowsPalette")}
+                {/* Below the top: how the layout sets out the sections. */}
+                <span className={`pub-editor-sections pub-editor-sections--${option}`} aria-hidden>
+                  <i />
+                  <i />
+                  <i />
                 </span>
-              ) : null}
-            </button>
-          ))}
-        </div>
-      </EditorGroup>
+                <span className="pub-editor-choice__title">{t(`templates.${option}.title`)}</span>
+                <span className="pub-editor-choice__desc">{t(`templates.${option}.desc`)}</span>
+              </button>
+            ))}
+          </div>
+          {look.templateId === "immersive" && !draft.heroImageUrl.trim() ? (
+            <p className="pub-editor-tabhint" role="status">
+              {te("immersiveNeedsPhoto")}
+            </p>
+          ) : null}
+        </EditorGroup>
+
+        <EditorGroup title={te("colorsTitle")} description={te("colorsDesc")}>
+          <div className="pub-editor-choices" role="radiogroup" aria-label={te("colorsTitle")}>
+            {PUBLIC_THEME_OPTIONS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                role="radio"
+                aria-checked={look.themeId === option}
+                className="pub-editor-choice"
+                onClick={() => patchDraft({ themeId: option })}
+              >
+                <span
+                  className="pub-editor-swatch"
+                  style={resolvePublicThemeStyle(option) as CSSProperties}
+                  aria-hidden
+                >
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                <span className="pub-editor-choice__title">{t(`themes.${option}.title`)}</span>
+                <span className="pub-editor-choice__desc">{t(`themes.${option}.desc`)}</span>
+              </button>
+            ))}
+          </div>
+        </EditorGroup>
+
+        <BrandColorGroup />
+
+        <EditorGroup title={te("fontTitle")} description={te("fontDesc")}>
+          <div className="pub-editor-choices pub-editor-choices--fonts" role="radiogroup" aria-label={te("fontTitle")}>
+            {PUBLIC_FONT_OPTIONS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                role="radio"
+                aria-checked={look.fontId === option}
+                className="pub-editor-choice"
+                onClick={() => patchDraft({ fontId: option })}
+              >
+                <span
+                  className="pub-editor-font-sample"
+                  style={resolvePublicSiteStyle(look.themeId, { fontId: option }, layout)}
+                  aria-hidden
+                >
+                  {te("fontSample")}
+                </span>
+                <span className="pub-editor-choice__title">{t(`fonts.${option}`)}</span>
+                {option === "theme" ? (
+                  <span className="pub-editor-choice__desc">
+                    {suggestedFont
+                      ? te("fontFollowsLayout", { font: t(`fonts.${suggestedFont}`) })
+                      : te("fontFollowsPalette")}
+                  </span>
+                ) : null}
+              </button>
+            ))}
+          </div>
+        </EditorGroup>
+      </div>
     </>
   );
 }

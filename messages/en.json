@@ -547,6 +547,13 @@
       "terms": "Terms",
       "book": "Book a stay"
     },
+    "notFound": {
+      "eyebrow": "Error 404",
+      "title": "Page not found",
+      "lead": "The link you followed no longer exists or has moved. You can start from the first page.",
+      "home": "First page",
+      "booking": "See availability"
+    },
     "staffBar": {
       "aria": "Staff bar",
       "signedIn": "You are signed in as staff.",
@@ -616,6 +623,7 @@
       "instagram": "Instagram"
     },
     "calendar": {
+      "defaultTitle": "Availability and booking",
       "eyebrow": "Online booking",
       "lead": "Pick dates, compare options, and submit your request. We'll contact you to confirm.",
       "disabledTitle": "Online booking is not available",
@@ -721,6 +729,8 @@
       "backToSite": "← Public site"
     },
     "staffPreview": {
+      "peekLabel": "Operator panel",
+      "peekCounts": "{requests, plural, =0 {no new requests} one {# new request} other {# new requests}} · {arrivals, plural, =0 {no arrivals today} one {# arrival today} other {# arrivals today}}",
       "staffPreviewEyebrow": "Staff preview",
       "newRequests": "New requests",
       "requestOne": "request",
@@ -735,7 +745,7 @@
       "roomOne": "room",
       "roomMany": "rooms",
       "liveOperatorPanelOnPublicPage": "Live operator panel on public page",
-      "authenticatedPreviewHint": "You are authenticated, so you see a large preview with new requests, room heatmap, and items needing attention today. Full panel remains in admin.",
+      "authenticatedPreviewHint": "New requests, room occupancy and what needs attention today. Guests do not see this part; the full panel stays in admin.",
       "enterOperatorPanel": "Enter operator panel",
       "seeRequests": "See requests",
       "openHeatmap": "Open heatmap",
@@ -1861,6 +1871,8 @@
             },
             "settingsName": "About the page",
             "settingsDesc": "Its title, address, top photo and the text for Google.",
+            "showAria": "Show the page “{name}” on the site",
+            "hideAria": "Hide the page “{name}” from the site",
             "panelLead": "Your page, top to bottom. Tap a part to write it, drag ⋮⋮ to move it.",
             "outline": "Page “{name}”",
             "title": "Page title",
@@ -1888,6 +1900,8 @@
             "previewing": "Showing “{name}”.",
             "keeps": "Your texts and photos stay; the layout, colours, fonts and the order and look of the sections change.",
             "adds": "Added: {pages}.",
+            "replacesStyles": "The look you set on {count, plural, one {one section} other {# sections}} is replaced by the template's.",
+            "choicesWait": "Below are the template's layout, palette and font. Apply it or cancel to choose again.",
             "apply": "Apply the template",
             "items": {
               "mountain": {
@@ -1952,6 +1966,7 @@
             "parts": {
               "hero": "Top of the page",
               "chrome": "Header, footer and menu",
+              "menu": "Header menu",
               "pages": "The other pages",
               "google": "Google and shared links"
             },
@@ -1961,6 +1976,7 @@
                 "lead": "Line under the title",
                 "seoDescription": "Description for Google"
               },
+              "menuLabel": "Menu link",
               "heroBadge": "Label above the title",
               "heroTitle": "Big title",
               "heroSubtitle": "Short description",

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { pickOwnLocalized } from "@/features/public-site/domain/localized";
-import { publicPageMetadata } from "@/features/public-site/page-metadata";
+import { publicNotFoundMetadata, publicPageMetadata } from "@/features/public-site/page-metadata";
 import { PublicOwnPageBody } from "@/features/public-site/templates/PublicOwnPage";
 import { PublicUnpublishedPage } from "@/features/public-site/ui/PublicUnpublishedPage";
 import { loadPublicSiteConfig } from "@/features/public-site/loaders";
@@ -18,11 +18,11 @@ async function findPage(slug: string) {
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const [{ slug }, locale] = await Promise.all([params, getLocale()]);
   const { config, page } = await findPage(slug);
-  if (!page) return {};
+  if (!page) return publicNotFoundMetadata(config);
   const title = pickOwnLocalized(page.title, locale) || config.displayName;
   const description = pickOwnLocalized(page.seoDescription, locale) || pickOwnLocalized(page.lead, locale);
   return {
-    ...publicPageMetadata(config, { title, description }),
+    ...(await publicPageMetadata(config, { title, description, path: `/${page.slug}` })),
     // A page the operator hid stays out of search results while staff look at it.
     ...(page.visible ? {} : { robots: { index: false, follow: false } }),
   };

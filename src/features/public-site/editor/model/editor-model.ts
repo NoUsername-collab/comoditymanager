@@ -26,6 +26,7 @@ import {
   type LocaleCopy,
   type PublicSiteStudioDraft,
 } from "@/features/public-site/editor/model/studio-draft";
+import { menuTextSlots } from "@/features/public-site/editor/model/menu-draft";
 import {
   PAGE_TEXT_FIELDS,
   pageProgressSlots,
@@ -84,6 +85,8 @@ function visibleCopyFields(
     { path: "heroTitle", value: copy.heroTitle },
     { path: "heroSubtitle", value: copy.heroSubtitle },
     { path: "heroCtaPrimary", value: copy.heroCtaPrimary },
+    // The menu's own names: a name missing in a language is a link missing from its menu.
+    ...menuTextSlots(draft.menu, locale),
     ...draft.sections
       .filter((section) => section.visible)
       .flatMap((section) => sectionProgressSlots(section, locale)),

@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const description =
     pickOwnLocalized(config.pages.seoTermsDescription, locale) ||
     pickOwnLocalized(config.pages.termsLead, locale);
-  return publicPageMetadata(config, { title, description });
+  return publicPageMetadata(config, { title, description, path: "/termeni" });
 }
 
 export default async function TermsPage() {

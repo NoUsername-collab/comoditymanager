@@ -82,6 +82,22 @@ export function patchMenuItem(
   });
 }
 
+/**
+ * The menu's own names, one per link that has one in any language, addressed
+ * `menu.<id>` the same way in every language: a link named only in Romanian
+ * still needs a name in English (a submenu or an outside link has nothing else
+ * to show and would drop out of that language's menu).
+ */
+export function menuTextSlots(
+  menu: PublicMenuItem[],
+  locale: PublicLocale,
+): { path: string; value: string }[] {
+  return menu
+    .flatMap((item) => [item, ...(item.children ?? [])])
+    .filter((item) => Object.values(item.label ?? {}).some((text) => (text ?? "").trim()))
+    .map((item) => ({ path: `menu.${item.id}`, value: item.label?.[locale] ?? "" }));
+}
+
 /** One language's label; the others stay. */
 export function setMenuLabel(
   menu: PublicMenuItem[],

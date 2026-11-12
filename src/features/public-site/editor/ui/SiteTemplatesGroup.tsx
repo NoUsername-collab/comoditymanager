@@ -10,6 +10,7 @@ import {
   PAGE_MODEL_NAMES,
   SITE_TEMPLATES,
   siteTemplate,
+  templateReplacedStyles,
 } from "@/features/public-site/editor/model/site-templates";
 import { EditorGroup, usePublicSiteEditor } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 
@@ -25,6 +26,8 @@ export function SiteTemplatesGroup() {
   const current = matchingSiteTemplate(draft);
   const previewed = templatePreview ? siteTemplate(templatePreview) : undefined;
   // What applying adds: own pages the site does not have yet.
+  // Sections whose own look the template replaces: said plainly, the texts are not all that changes.
+  const replacedStyles = previewed ? templateReplacedStyles(draft, previewed) : 0;
   const newPages = (previewed?.pages ?? []).filter(
     (model) => !draft.pages.some((page) => page.slug === slugifyPageName(PAGE_MODEL_NAMES[model].ro)),
   );
@@ -39,6 +42,7 @@ export function SiteTemplatesGroup() {
             {newPages.length > 0
               ? ` ${te("adds", { pages: newPages.map((model) => PAGE_MODEL_NAMES[model][draft.editLocale]).join(", ") })}`
               : ""}
+            {replacedStyles > 0 ? ` ${te("replacesStyles", { count: replacedStyles })}` : ""}
           </p>
           <div className="pub-templates__actions">
             <AdminButton type="button" size="sm" disabled={readOnly} onClick={() => applyTemplate(previewed.id)}>

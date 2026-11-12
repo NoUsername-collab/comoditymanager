@@ -243,6 +243,69 @@
   background: color-mix(in srgb, var(--site-accent) 12%, transparent);
 }
 
+/* Staff only: today's numbers in one closed line under the site. */
+.public-staff-peek {
+  padding-block: 1rem;
+}
+
+.public-staff-peek__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  border: 1px dashed var(--site-border);
+  border-radius: 0.75rem;
+  color: var(--site-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.public-staff-peek__label {
+  color: var(--site-fg);
+  font-weight: 600;
+}
+
+.public-staff-peek__summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Says it opens: a caret at the end that turns when it is open. */
+.public-staff-peek__summary::after {
+  content: "▾";
+  margin-left: auto;
+  color: var(--site-fg);
+  transition: transform 0.15s ease;
+}
+
+.public-staff-peek[open] > .public-staff-peek__summary::after {
+  transform: rotate(180deg);
+}
+
+.public-staff-peek[open] > .public-staff-peek__summary {
+  margin-bottom: 1rem;
+}
+
+/* Design choices wait while a site template is looked at. */
+.pub-design-choices[data-previewing] {
+  opacity: 0.6;
+}
+
+/* The site's own 404. */
+.pub-not-found {
+  text-align: center;
+  padding-block: 3rem;
+}
+
+.pub-not-found__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
 /* Staff only: a thin strip above the header, in the page's flow. */
 .pub-staff-bar {
   display: flex;

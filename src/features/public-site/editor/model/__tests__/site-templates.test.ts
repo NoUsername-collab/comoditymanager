@@ -9,6 +9,7 @@ import {
   matchingSiteTemplate,
   SITE_TEMPLATES,
   siteTemplate,
+  templateReplacedStyles,
 } from "@/features/public-site/editor/model/site-templates";
 
 const config: PublicSiteConfig = {
@@ -111,5 +112,16 @@ describe("site templates", () => {
       const parsed = parsePublicSiteSettingsInput(mergeStudioToInput({ config, draft: applied }));
       expect(parsed.ok, template.id).toBe(true);
     }
+  });
+});
+
+describe("what a template replaces", () => {
+  it("counts the sections whose own look gives way to the template's", () => {
+    const draft = buildPublicSiteStudioDraft(config, "ro");
+    // The intro has its own background; the mountain template sets none on it.
+    expect(templateReplacedStyles(draft, siteTemplate("mountain")!)).toBe(1);
+    // Applied, nothing of the operator's own is left to replace.
+    const applied = applySiteTemplate(draft, siteTemplate("mountain")!, newKey);
+    expect(templateReplacedStyles(applied, siteTemplate("mountain")!)).toBe(0);
   });
 });

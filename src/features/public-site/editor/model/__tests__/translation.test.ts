@@ -10,7 +10,7 @@ import {
   buildPublicSiteStudioDraft,
   mergeStudioToInput,
 } from "@/features/public-site/editor/model/studio-draft";
-import { fillStudioLocaleFrom } from "@/features/public-site/editor/model/editor-model";
+import { fillStudioLocaleFrom, studioLocaleProgress } from "@/features/public-site/editor/model/editor-model";
 
 const config: PublicSiteConfig = {
   id: "ps-1",
@@ -115,5 +115,40 @@ describe("translating side by side", () => {
     const subtitle = translationGroups(draft, "ro", "en", stock)[0]!.rows.find((row) => row.field === "heroSubtitle")!;
     expect(subtitle).toMatchObject({ stock: true, copied: false });
     expect(rowMissing(subtitle)).toBe(true);
+  });
+});
+
+describe("translating the menu", () => {
+  const withMenu: PublicSiteConfig = {
+    ...config,
+    chrome: {
+      menu: [
+        { id: "home", kind: "home", label: {} },
+        {
+          id: "discover",
+          kind: "group",
+          label: { ro: "Descoperă" },
+          children: [{ id: "out", kind: "url", ref: "https://example.com", label: { ro: "Trasee" } }],
+        },
+      ],
+    },
+  };
+
+  it("lists the menu's own names, submenu included, and writes them where the menu keeps them", () => {
+    const draft = buildPublicSiteStudioDraft(withMenu, "en");
+    const menu = translationGroups(draft, "ro", "en").find((group) => group.part === "menu")!;
+    expect(menu.rows.map((row) => [row.path, row.source, row.target])).toEqual([
+      ["menu.discover", "Descoperă", ""],
+      ["menu.out", "Trasee", ""],
+    ]);
+    const next = setTranslation(draft, "en", "menu.out", "Trails");
+    expect(next.menu[1]!.children![0]!.label).toEqual({ ro: "Trasee", en: "Trails" });
+  });
+
+  it("counts a menu name missing in a language against that language", () => {
+    const draft = buildPublicSiteStudioDraft(withMenu, "ro");
+    const before = studioLocaleProgress(draft).en;
+    const translated = setTranslation(setTranslation(draft, "en", "menu.discover", "Discover"), "en", "menu.out", "Trails");
+    expect(studioLocaleProgress(translated).en).toBeGreaterThan(before);
   });
 });

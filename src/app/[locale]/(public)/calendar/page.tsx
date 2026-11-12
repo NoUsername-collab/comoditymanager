@@ -11,16 +11,22 @@ import { getAdminUser } from "@/lib/auth/require-admin";
 import { getLocale, getTranslations } from "next-intl/server";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [config, locale] = await Promise.all([loadPublicSiteConfig(), getLocale()]);
+  const [config, locale, t] = await Promise.all([
+    loadPublicSiteConfig(),
+    getLocale(),
+    getTranslations("public.calendar"),
+  ]);
+  // Nothing written: a title that says what the page is for, not the name alone.
   const title = storedTitle(
     config.pages.seoCalendarTitle,
     locale,
-    storedTitle(config.pages.calendarTitle, locale, config.displayName),
+    storedTitle(config.pages.calendarTitle, locale, t("defaultTitle")),
   );
   const description =
     pickOwnLocalized(config.pages.seoCalendarDescription, locale) ||
-    pickOwnLocalized(config.pages.calendarLead, locale);
-  return publicPageMetadata(config, { title, description });
+    pickOwnLocalized(config.pages.calendarLead, locale) ||
+    t("lead");
+  return publicPageMetadata(config, { title, description, path: "/calendar" });
 }
 
 export default async function CalendarPublicPage({
@@ -61,7 +67,7 @@ export default async function CalendarPublicPage({
 
   const checkInTime = config.checkInTime;
   const checkOutTime = config.checkOutTime;
-  const title = storedTitle(config.pages.calendarTitle, locale, config.displayName);
+  const title = storedTitle(config.pages.calendarTitle, locale, t("defaultTitle"));
   const lead = pickOwnLocalized(config.pages.calendarLead, locale);
 
   return (

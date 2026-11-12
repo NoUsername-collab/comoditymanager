@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const [config, locale] = await Promise.all([loadPublicSiteConfig(), getLocale()]);
   const title = storedTitle(config.seo.metaTitle, locale, config.displayName);
   const description = pickOwnLocalized(config.seo.metaDescription, locale);
-  return publicPageMetadata(config, { title, description });
+  return publicPageMetadata(config, { title, description, path: "/" });
 }
 
 export default async function HomePage() {

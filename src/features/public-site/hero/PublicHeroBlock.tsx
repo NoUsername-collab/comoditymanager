@@ -67,7 +67,8 @@ export function PublicHeroBlock({
   const subtitle = pickOwnLocalized(hero.subtitle, locale);
   const tagline = pickOwnLocalized(hero.tagline, locale);
   const badge = pickOwnLocalized(hero.badge, locale);
-  const imageAlt = pickOwnLocalized(hero.imageAlt, locale);
+  // Nothing written: the photo is of the place, so its name says what it shows.
+  const imageAlt = pickOwnLocalized(hero.imageAlt, locale) || config.displayName.trim();
   const ctaPrimary = pickOwnLocalized(hero.ctaPrimary, locale);
   const ctaSecondary = pickOwnLocalized(hero.ctaSecondary, locale);
   const secondaryHref = safeNavHref(hero.ctaSecondaryHref, PUBLIC_STEPS_HREF);

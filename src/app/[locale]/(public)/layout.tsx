@@ -22,7 +22,11 @@ import "@/styles/features/layout/mobile-public.css";
 export async function generateMetadata(): Promise<Metadata> {
   const config = await loadPublicSiteConfig();
   const icon = config.chrome.logoUrl;
-  return icon ? { icons: { icon, apple: icon } } : {};
+  const name = config.displayName.trim();
+  return {
+    ...(name ? { title: name, applicationName: name, description: null } : {}),
+    ...(icon ? { icons: { icon, apple: icon } } : {}),
+  };
 }
 
 export default async function PublicLayout({

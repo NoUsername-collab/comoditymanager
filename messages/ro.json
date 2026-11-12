@@ -547,6 +547,13 @@
       "terms": "Termeni",
       "book": "Rezervare"
     },
+    "notFound": {
+      "eyebrow": "Eroare 404",
+      "title": "Pagina nu există",
+      "lead": "Linkul pe care l-ai urmat nu mai există sau a fost mutat. Poți porni de pe prima pagină.",
+      "home": "Prima pagină",
+      "booking": "Vezi disponibilitatea"
+    },
     "staffBar": {
       "aria": "Bară pentru personal",
       "signedIn": "Ești conectat ca personal.",
@@ -616,6 +623,7 @@
       "instagram": "Instagram"
     },
     "calendar": {
+      "defaultTitle": "Disponibilitate și rezervare",
       "eyebrow": "Rezervare online",
       "lead": "Alege perioada, compară variantele și trimite cererea. Pensiunea vă contactează pentru confirmare.",
       "disabledTitle": "Rezervarea online nu este disponibilă",
@@ -721,6 +729,8 @@
       "backToSite": "← Site public"
     },
     "staffPreview": {
+      "peekLabel": "Panou operator",
+      "peekCounts": "{requests, plural, =0 {nicio cerere nouă} one {o cerere nouă} few {# cereri noi} other {# de cereri noi}} · {arrivals, plural, =0 {nicio sosire azi} one {o sosire azi} few {# sosiri azi} other {# de sosiri azi}}",
       "staffPreviewEyebrow": "Staff preview",
       "newRequests": "Cereri noi",
       "requestOne": "cerere",
@@ -735,7 +745,7 @@
       "roomOne": "cameră",
       "roomMany": "camere",
       "liveOperatorPanelOnPublicPage": "Panou operator live pe pagina publică",
-      "authenticatedPreviewHint": "Ești autentificat, deci vezi un preview mare cu cereri noi, heatmap pe camere și punctele care cer atenție azi. Panoul complet rămâne în admin.",
+      "authenticatedPreviewHint": "Cererile noi, ocuparea pe camere și ce cere atenție azi. Oaspeții nu văd această parte; panoul complet rămâne în admin.",
       "enterOperatorPanel": "Intră în panoul operator",
       "seeRequests": "Vezi cererile",
       "openHeatmap": "Deschide heatmap",
@@ -1846,6 +1856,8 @@
             },
             "settingsName": "Despre pagină",
             "settingsDesc": "Titlul, adresa, poza de sus și textul pentru Google.",
+            "showAria": "Arată pagina „{name}” pe site",
+            "hideAria": "Ascunde pagina „{name}” de pe site",
             "panelLead": "Pagina ta, de sus în jos. Apasă pe o parte ca s-o scrii, trage de ⋮⋮ ca s-o muți.",
             "outline": "Pagina „{name}”",
             "title": "Titlul paginii",
@@ -1873,6 +1885,8 @@
             "previewing": "Vezi „{name}”.",
             "keeps": "Textele și pozele tale rămân; se schimbă așezarea, culorile, literele, ordinea și aspectul secțiunilor.",
             "adds": "Se adaugă: {pages}.",
+            "replacesStyles": "Aspectul pus de tine pe {count, plural, one {o secțiune} few {# secțiuni} other {# de secțiuni}} se înlocuiește cu cel al șablonului.",
+            "choicesWait": "Mai jos vezi așezarea, paleta și literele șablonului. Aplică-l sau renunță ca să alegi din nou.",
             "apply": "Aplică șablonul",
             "items": {
               "mountain": {
@@ -1937,6 +1951,7 @@
             "parts": {
               "hero": "Partea de sus",
               "chrome": "Antet, subsol și meniu",
+              "menu": "Meniul de sus",
               "pages": "Celelalte pagini",
               "google": "Google și linkuri distribuite"
             },
@@ -1946,6 +1961,7 @@
                 "lead": "Rândul de sub titlu",
                 "seoDescription": "Descriere pentru Google"
               },
+              "menuLabel": "Link din meniu",
               "heroBadge": "Etichetă deasupra titlului",
               "heroTitle": "Titlul mare",
               "heroSubtitle": "Descriere scurtă",

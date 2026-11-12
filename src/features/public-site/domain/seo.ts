@@ -67,6 +67,23 @@ export function publicSiteSitemap(config: PublicSiteConfig, baseUrl: string): Pu
 }
 
 /**
+ * The address search engines should keep for a page in one language, and the
+ * same page in the other languages (Romanian, without a prefix, for anyone else).
+ */
+export function publicPageAlternates(
+  baseUrl: string,
+  path: string,
+  locale: string,
+): { canonical: string; languages: Record<string, string> } {
+  const own = (PUBLIC_LOCALES as readonly string[]).includes(locale) ? locale : "ro";
+  const languages: Record<string, string> = Object.fromEntries(
+    PUBLIC_LOCALES.map((code) => [code, localizedUrl(baseUrl, path, code)]),
+  );
+  languages["x-default"] = localizedUrl(baseUrl, path, "ro");
+  return { canonical: localizedUrl(baseUrl, path, own), languages };
+}
+
+/**
  * A page title that carries the property's name, so search results and shared
  * links show one name for the place: "Rooms · Casa Ana", or the title alone
  * when it already names the property.

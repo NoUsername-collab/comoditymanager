@@ -166,6 +166,29 @@ html[data-layout-chrome="compact"] .public-section {
 }
 
 
+/* ── Links a finger has to hit: at least the touch minimum tall ── */
+html[data-layout-chrome="compact"] :is(
+  .pub-staff-bar__link,
+  .pub-staff-bar__logout,
+  .pub-stay__cta,
+  .pub-place__link,
+  .pub-contact-chip
+) {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* Footer lists: each line tall enough to tap, the space between them in the lines themselves. */
+html[data-layout-chrome="compact"] :is(.public-footer__links, .public-footer__contact-links) {
+  gap: 0;
+}
+
+html[data-layout-chrome="compact"] :is(.public-footer__links, .public-footer__contact-links) a {
+  padding-block: 0.75rem;
+}
+
+
 /* ── Public staff preview (logged-in home) ── */
 html[data-layout-chrome="compact"] .public-staff-preview .grid,
 html[data-layout-chrome="compact"] .public-staff-preview [class*="grid-cols"] {

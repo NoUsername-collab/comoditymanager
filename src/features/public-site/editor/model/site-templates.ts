@@ -224,6 +224,26 @@ export function applySiteTemplate(
   };
 }
 
+/**
+ * How many sections of the first page have a look of the operator's own
+ * (layout, background, width, heading) that applying the template replaces.
+ */
+export function templateReplacedStyles(draft: Pick<PublicSiteStudioDraft, "sections">, template: SiteTemplate): number {
+  const used = new Set<string>();
+  let replaced = 0;
+  for (const entry of template.home) {
+    const existing = draft.sections.find((section) => section.type === entry.type && !used.has(section.key));
+    if (!existing) continue;
+    used.add(existing.key);
+    const changes = SECTION_STYLE_KEYS.some((key) => {
+      const own = existing.settings[styleSettingKey(key)] ?? "auto";
+      return own !== "auto" && own !== (entry.style?.[key] ?? "auto");
+    });
+    if (changes) replaced += 1;
+  }
+  return replaced;
+}
+
 /** The template the draft matches by look (layout, palette, font), if any. */
 export function matchingSiteTemplate(
   draft: Pick<PublicSiteStudioDraft, "templateId" | "themeId" | "fontId">,

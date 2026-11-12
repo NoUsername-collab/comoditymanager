@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const description =
     pickOwnLocalized(config.pages.seoPrivacyDescription, locale) ||
     pickOwnLocalized(config.pages.privacyLead, locale);
-  return publicPageMetadata(config, { title, description });
+  return publicPageMetadata(config, { title, description, path: "/confidentialitate" });
 }
 
 export default async function PrivacyPage() {

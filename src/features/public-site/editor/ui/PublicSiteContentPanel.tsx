@@ -52,6 +52,8 @@ type PagePart = {
   onRemove?: () => void;
   removeLabel?: string;
   removeConfirm?: string;
+  /** What the eye says, when it shows or hides more than a section. */
+  eyeLabels?: { show: string; hide: string };
 };
 
 /**
@@ -184,6 +186,7 @@ export function PublicSiteContentPanel({
         },
         removeLabel: tp("remove"),
         removeConfirm: tp("removeConfirm", { name: pageName }),
+        eyeLabels: { show: tp("showAria", { name: pageName }), hide: tp("hideAria", { name: pageName }) },
       }
     : null;
 
@@ -223,6 +226,7 @@ export function PublicSiteContentPanel({
       onOpen={() => setOpenKey(part.key)}
       drag={extra.drag ? drag : undefined}
       pinned={extra.pinned}
+      eyeLabels={part.eyeLabels}
     />
   );
   // Kinds still to add, below their limit on this page (an own page takes any kind).
