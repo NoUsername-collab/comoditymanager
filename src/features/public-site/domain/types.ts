@@ -223,7 +223,8 @@ export type PublicSiteSectionOf<T extends PublicSectionType> = {
   sectionType: T;
   sortOrder: number;
   visible: boolean;
-  payload: PublicSectionPayloadByType[T];
+  /** Each kind's own fields, plus how this section looks over the page layout. */
+  payload: PublicSectionPayloadByType[T] & { style?: Partial<Record<"look" | "background" | "width" | "align", string>> };
 };
 
 /** One homepage section; narrowing on `sectionType` types its payload. */

@@ -9,6 +9,7 @@ import { PublicMobileBookingBar } from "@/features/public-site/home/PublicMobile
 import { PublicHeroBlock } from "@/features/public-site/hero/PublicHeroBlock";
 import { sectionKind } from "@/features/public-site/sections/kinds";
 import { renderPublicSection } from "@/features/public-site/sections/registry";
+import { readSectionStyle, sectionLook } from "@/features/public-site/domain/section-style";
 
 function TemplateSections({
   sections,
@@ -31,13 +32,20 @@ function TemplateSections({
         // Counted before skipping: the studio's section order includes hidden ones.
         const nth = seen.get(section.sectionType) ?? 0;
         seen.set(section.sectionType, nth + 1);
-        const content = renderPublicSection(section, { locale, template, config, preview });
+        // A section may take another layout's look; renderers and CSS follow its look.
+        const style = readSectionStyle(section.payload.style);
+        const look = sectionLook(style, template);
+        const content = renderPublicSection(section, { locale, template: look, config, preview });
         // No empty wrapper for a hidden or empty section: layouts style by position.
         if (!content) return null;
         return (
           <div
             key={`${section.id}-${index}`}
             className="pub-home__section"
+            data-look={look}
+            data-bg={style.background === "auto" ? undefined : style.background}
+            data-width={style.width === "auto" ? undefined : style.width}
+            data-align={style.align === "auto" ? undefined : style.align}
             data-pub-section={preview ? section.sectionType : undefined}
             data-pub-nth={preview ? nth : undefined}
           >

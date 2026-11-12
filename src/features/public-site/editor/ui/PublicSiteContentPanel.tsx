@@ -28,6 +28,7 @@ import {
 import { patchStudioSection } from "@/features/public-site/editor/model/studio-draft";
 import { SECTION_KINDS, sectionKind } from "@/features/public-site/sections/kinds";
 import { sectionEditor } from "@/features/public-site/sections/registry";
+import { SectionStyleEditor } from "@/features/public-site/editor/ui/SectionStyleEditor";
 
 /** What a row or an opened part needs: its name, its line, its switch and its editor. */
 type PagePart = {
@@ -109,7 +110,12 @@ export function PublicSiteContentPanel({
       visible: section.visible,
       onToggleVisible: (visible) =>
         setDraft((d) => patchStudioSection(d, section.key, (current) => ({ ...current, visible }))),
-      editor: <Editor section={section} />,
+      editor: (
+        <>
+          <Editor section={section} />
+          <SectionStyleEditor section={section} />
+        </>
+      ),
     };
   }
 

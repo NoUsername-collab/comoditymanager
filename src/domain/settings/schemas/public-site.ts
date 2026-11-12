@@ -186,14 +186,25 @@ const sectionCopyShape = {
   lead: localizedTextSchema.optional(),
 };
 
-function sectionInputSchema<T extends string, P extends z.ZodTypeAny>(sectionType: T, payload: P) {
+/** How a section looks over the page layout; values left out follow the page. */
+const sectionStyleSchema = z
+  .object({
+    look: z.enum(["classic", "editorial", "immersive"]).optional(),
+    background: z.enum(["plain", "soft", "accent", "contrast"]).optional(),
+    width: z.enum(["narrow", "wide", "full"]).optional(),
+    align: z.enum(["start", "center"]).optional(),
+  })
+  .strip();
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function sectionInputSchema<T extends string, P extends z.ZodObject<any>>(sectionType: T, payload: P) {
   return z
     .object({
       id: z.string().uuid().optional(),
       sectionType: z.literal(sectionType),
       sortOrder: z.number().int().min(0).max(9999),
       visible: z.boolean(),
-      payload,
+      payload: payload.extend({ style: sectionStyleSchema.optional() }),
     })
     .strict();
 }

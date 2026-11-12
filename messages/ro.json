@@ -1737,6 +1737,40 @@
           "localeProgress": "{percent}% completat",
           "advanced": "Setări avansate",
           "advancedHint": "Opțional — site-ul arată bine și fără ele.",
+          "sectionStyle": {
+            "title": "Aspectul secțiunii",
+            "titleChanged": "Aspectul secțiunii ({count} schimbate)",
+            "hint": "Doar pentru această secțiune. „Ca pagina” urmează așezarea și culorile alese la Aspect.",
+            "reset": "Înapoi ca pagina",
+            "look": {
+              "label": "Așezare",
+              "auto": "Ca pagina",
+              "classic": "Clasic",
+              "editorial": "Revistă",
+              "immersive": "Panoramic"
+            },
+            "background": {
+              "label": "Fundal",
+              "auto": "Ca pagina",
+              "plain": "Simplu",
+              "soft": "Discret",
+              "accent": "Culoarea site-ului",
+              "contrast": "Contrast"
+            },
+            "width": {
+              "label": "Lățime",
+              "auto": "Ca pagina",
+              "narrow": "Îngustă",
+              "wide": "Largă",
+              "full": "Tot ecranul"
+            },
+            "align": {
+              "label": "Titlul",
+              "auto": "Ca pagina",
+              "start": "La stânga",
+              "center": "Pe mijloc"
+            }
+          },
           "layoutTitle": "Așezarea paginii",
           "layoutDesc": "Cum arată poza principală, textele și galeria. Ordinea secțiunilor rămâne cea pusă de tine.",
           "immersiveNeedsPhoto": "Panoramic are nevoie de o poză principală. Până o adaugi, pagina folosește așezarea Clasic.",

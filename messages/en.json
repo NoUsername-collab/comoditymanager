@@ -1752,6 +1752,40 @@
           "localeProgress": "{percent}% complete",
           "advanced": "Advanced settings",
           "advancedHint": "Optional — the site looks fine without them.",
+          "sectionStyle": {
+            "title": "Section look",
+            "titleChanged": "Section look ({count} changed)",
+            "hint": "For this section only. “As the page” follows the layout and colours chosen under Look.",
+            "reset": "Back to the page's look",
+            "look": {
+              "label": "Layout",
+              "auto": "As the page",
+              "classic": "Classic",
+              "editorial": "Magazine",
+              "immersive": "Panoramic"
+            },
+            "background": {
+              "label": "Background",
+              "auto": "As the page",
+              "plain": "Plain",
+              "soft": "Soft",
+              "accent": "Site colour",
+              "contrast": "Contrast"
+            },
+            "width": {
+              "label": "Width",
+              "auto": "As the page",
+              "narrow": "Narrow",
+              "wide": "Wide",
+              "full": "Full screen"
+            },
+            "align": {
+              "label": "Heading",
+              "auto": "As the page",
+              "start": "Left",
+              "center": "Centred"
+            }
+          },
           "layoutTitle": "Page layout",
           "layoutDesc": "How the main photo, text and gallery look. Your section order stays as you set it.",
           "immersiveNeedsPhoto": "Panoramic needs a main photo. Until you add one, the page uses the Classic layout.",

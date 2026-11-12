@@ -265,29 +265,29 @@
   z-index: 2;
 }
 
-.pub-home--immersive .pub-section--gallery-bleed {
+[data-look="immersive"] .pub-section--gallery-bleed {
   padding: 0;
 }
 
-.pub-home--immersive .pub-section--gallery-bleed .pub-section__inner {
+[data-look="immersive"] .pub-section--gallery-bleed .pub-section__inner {
   width: 100%;
   max-width: none;
   padding-inline: 0;
 }
 
-.pub-home--immersive .pub-section--gallery-bleed .pub-section__title,
-.pub-home--immersive .pub-section--gallery-bleed .pub-section__lead {
+[data-look="immersive"] .pub-section--gallery-bleed .pub-section__title,
+[data-look="immersive"] .pub-section--gallery-bleed .pub-section__lead {
   width: min(80rem, calc(100% - 3rem));
   margin-inline: auto;
   padding-inline: 0;
 }
 
 /* Immersive intro is a centred statement, not a card laid over the gallery. */
-.pub-home--immersive .pub-section--intro-card .pub-section__inner {
+[data-look="immersive"] .pub-section--intro-card .pub-section__inner {
   max-width: 48rem;
 }
 
-.pub-home--immersive .pub-section--intro-card .pub-section__lead {
+[data-look="immersive"] .pub-section--intro-card .pub-section__lead {
   font-family: var(--pub-font-display);
   font-size: clamp(1.25rem, 2.6vw, 1.75rem);
   line-height: 1.4;
@@ -407,7 +407,7 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   text-decoration: none;
 }
 
-[data-pub-template="immersive"] .pub-stay {
+[data-look="immersive"] .pub-stay {
   background: color-mix(in srgb, var(--pub-bg) 55%, transparent);
 }
 
@@ -418,18 +418,18 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
  */
 
 /* Editorial: section heads */
-[data-pub-template="editorial"] .pub-section:not(.pub-section--cta) .pub-section__title {
+[data-look="editorial"] .pub-section:not(.pub-section--cta) .pub-section__title {
   padding-top: 0.9rem;
   border-top: 3px solid var(--pub-fg);
 }
 
 /* Editorial: rooms as a ruled list, like the highlights */
-[data-pub-template="editorial"] .pub-stays {
+[data-look="editorial"] .pub-stays {
   grid-template-columns: 1fr;
   gap: 0;
 }
 
-[data-pub-template="editorial"] .pub-stay {
+[data-look="editorial"] .pub-stay {
   padding: 1rem 0;
   border: 0;
   border-bottom: 1px solid var(--pub-border);
@@ -438,49 +438,49 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   box-shadow: none;
 }
 
-[data-pub-template="editorial"] .pub-stay__body {
+[data-look="editorial"] .pub-stay__body {
   padding: 0;
 }
 
 /* With photos: a small picture at the left of each row, like a catalogue. */
-[data-pub-template="editorial"] .pub-stays--photos .pub-stay {
+[data-look="editorial"] .pub-stays--photos .pub-stay {
   display: grid;
   grid-template-columns: minmax(6rem, 30%) minmax(0, 1fr);
   align-items: start;
   gap: 1rem;
 }
 
-[data-pub-template="editorial"] .pub-stay__photo {
+[data-look="editorial"] .pub-stay__photo {
   border-radius: 0;
 }
 
 @media (min-width: 720px) {
-  [data-pub-template="editorial"] .pub-stays--photos .pub-stay {
+  [data-look="editorial"] .pub-stays--photos .pub-stay {
     grid-template-columns: 12rem minmax(0, 1fr);
     gap: 1.5rem;
   }
 
-  [data-pub-template="editorial"] .pub-stay__body {
+  [data-look="editorial"] .pub-stay__body {
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.8fr) auto;
     align-items: baseline;
     gap: 0.35rem 1rem;
   }
 
-  [data-pub-template="editorial"] .pub-stay__text {
+  [data-look="editorial"] .pub-stay__text {
     grid-column: 1 / -1;
     grid-row: 2;
   }
 
-  [data-pub-template="editorial"] .pub-stay__price,
-  [data-pub-template="editorial"] .pub-stay__cta {
+  [data-look="editorial"] .pub-stay__price,
+  [data-look="editorial"] .pub-stay__cta {
     margin: 0;
     padding: 0;
   }
 }
 
 /* Editorial: booking band between rules, left aligned */
-[data-pub-template="editorial"] .pub-cta-band {
+[data-look="editorial"] .pub-cta-band {
   display: grid;
   gap: 0.5rem;
   padding: 1.5rem 0;
@@ -491,47 +491,48 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   text-align: left;
 }
 
-[data-pub-template="editorial"] .pub-cta-band__text {
+[data-look="editorial"] .pub-cta-band__text {
   margin: 0;
 }
 
-[data-pub-template="editorial"] .pub-cta-band .pub-btn {
+[data-look="editorial"] .pub-cta-band .pub-btn {
   justify-self: start;
 }
 
-[data-pub-template="editorial"] .pub-place__map {
+[data-look="editorial"] .pub-place__map {
   border-radius: 0;
 }
 
 /* Immersive: centred heads everywhere */
-.pub-home--immersive .pub-section .pub-section__title,
-.pub-home--immersive .pub-section .pub-section__lead {
+[data-look="immersive"] .pub-section .pub-section__title,
+[data-look="immersive"] .pub-section .pub-section__lead {
   margin-inline: auto;
   text-align: center;
 }
 
-.pub-home--immersive .pub-section__title {
+[data-look="immersive"] .pub-section__title {
   font-size: clamp(1.9rem, 4.6vw, 2.9rem);
 }
 
-.pub-home--immersive .pub-place__address,
-.pub-home--immersive .pub-place__link {
+[data-look="immersive"] .pub-place__address,
+[data-look="immersive"] .pub-place__link {
   display: block;
   text-align: center;
 }
 
 /* Immersive: full-width bands that alternate (gallery and booking band stay edge to edge).
- * Children are section wrappers plus the rooms and map sections; hidden sections render nothing. */
-.pub-home--immersive .pub-home__immersive-body > :nth-child(even):not(:has(.pub-section--gallery-bleed, .pub-section--cta)) {
+ * Children are section wrappers plus the rooms and map sections; hidden sections render nothing.
+ * A section with its own background keeps it. */
+.pub-home--immersive .pub-home__immersive-body > :nth-child(even):not([data-bg], :has(.pub-section--gallery-bleed, .pub-section--cta)) {
   background: color-mix(in srgb, var(--pub-card) 70%, var(--pub-bg));
 }
 
-.pub-home--immersive .pub-section {
+[data-look="immersive"] .pub-section {
   padding-block: clamp(3rem, 7vw, 5rem);
 }
 
-.pub-home--immersive .pub-section--gallery-bleed,
-.pub-home--immersive .pub-section--cta {
+[data-look="immersive"] .pub-section--gallery-bleed,
+[data-look="immersive"] .pub-section--cta {
   padding-block: 0;
 }
 
@@ -561,13 +562,13 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
  */
 
 /* Editorial: free text in a reading column, opening on a drop capital */
-.pub-home--editorial .pub-section--text .pub-section__body {
+[data-look="editorial"] .pub-section--text .pub-section__body {
   max-width: 40rem;
   font-size: 1.0625rem;
   line-height: 1.75;
 }
 
-.pub-home--editorial .pub-section--text .pub-section__body > p:first-child::first-letter {
+[data-look="editorial"] .pub-section--text .pub-section__body > p:first-child::first-letter {
   float: left;
   margin: 0.3rem 0.55rem 0 0;
   font-family: var(--pub-font-display);
@@ -577,12 +578,12 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
 }
 
 /* Editorial: reviews as pull quotes under a rule, no boxes */
-.pub-home--editorial .pub-reviews {
+[data-look="editorial"] .pub-reviews {
   gap: 2rem 3rem;
   grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
 }
 
-.pub-home--editorial .pub-review {
+[data-look="editorial"] .pub-review {
   padding: 1.25rem 0 0;
   border: 0;
   border-top: 1px solid var(--pub-border);
@@ -590,62 +591,62 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   background: none;
 }
 
-.pub-home--editorial .pub-review__quote {
+[data-look="editorial"] .pub-review__quote {
   font-family: var(--pub-font-display);
   font-size: clamp(1.2rem, 2.2vw, 1.45rem);
   line-height: 1.4;
 }
 
-.pub-home--editorial .pub-review__author {
+[data-look="editorial"] .pub-review__author {
   font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 /* Editorial: questions as a ruled list */
-.pub-home--editorial .pub-faq {
+[data-look="editorial"] .pub-faq {
   gap: 0;
 }
 
-.pub-home--editorial .pub-faq__item {
+[data-look="editorial"] .pub-faq__item {
   border: 0;
   border-bottom: 1px solid var(--pub-border);
   border-radius: 0;
   background: none;
 }
 
-.pub-home--editorial .pub-faq__item:first-child {
+[data-look="editorial"] .pub-faq__item:first-child {
   border-top: 1px solid var(--pub-border);
 }
 
-.pub-home--editorial .pub-faq__question {
+[data-look="editorial"] .pub-faq__question {
   padding-inline: 0;
   font-family: var(--pub-font-display);
   font-size: 1.1rem;
 }
 
-.pub-home--editorial .pub-faq__answer {
+[data-look="editorial"] .pub-faq__answer {
   padding-inline: 0;
 }
 
 /* Editorial: facilities in two ruled columns */
-.pub-home--editorial .pub-amenities {
+[data-look="editorial"] .pub-amenities {
   gap: 0 2.5rem;
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
 }
 
-.pub-home--editorial .pub-amenity {
+[data-look="editorial"] .pub-amenity {
   padding: 0.7rem 0;
   border-bottom: 1px solid var(--pub-border);
 }
 
 /* Editorial: nearby places as a table of contents, distance on the right */
-.pub-home--editorial .pub-attractions {
+[data-look="editorial"] .pub-attractions {
   gap: 0;
   grid-template-columns: 1fr;
 }
 
-.pub-home--editorial .pub-attraction {
+[data-look="editorial"] .pub-attraction {
   padding: 1rem 0;
   border: 0;
   border-bottom: 1px solid var(--pub-border);
@@ -653,17 +654,17 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   background: none;
 }
 
-.pub-home--editorial .pub-attraction__name {
+[data-look="editorial"] .pub-attraction__name {
   font-family: var(--pub-font-display);
   font-size: 1.15rem;
 }
 
-.pub-home--editorial .pub-video {
+[data-look="editorial"] .pub-video {
   border-radius: 0;
 }
 
 /* Immersive: free text centred in a narrow column */
-.pub-home--immersive .pub-section--text .pub-section__body {
+[data-look="immersive"] .pub-section--text .pub-section__body {
   max-width: 38rem;
   margin-inline: auto;
   font-size: 1.0625rem;
@@ -671,13 +672,13 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   text-align: center;
 }
 
-.pub-home--immersive .pub-section--text .pub-rich ul {
+[data-look="immersive"] .pub-section--text .pub-rich ul {
   display: inline-block;
   text-align: left;
 }
 
 /* Immersive: reviews as large centred quotes, one after another */
-.pub-home--immersive .pub-reviews {
+[data-look="immersive"] .pub-reviews {
   max-width: 46rem;
   margin-inline: auto;
   gap: 2.5rem;
@@ -685,29 +686,29 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   text-align: center;
 }
 
-.pub-home--immersive .pub-review {
+[data-look="immersive"] .pub-review {
   padding: 0;
   border: 0;
   background: none;
 }
 
-.pub-home--immersive .pub-review__quote {
+[data-look="immersive"] .pub-review__quote {
   font-family: var(--pub-font-display);
   font-size: clamp(1.35rem, 3vw, 1.9rem);
   line-height: 1.35;
 }
 
 /* Immersive: questions in a centred column, on the band's own colour */
-.pub-home--immersive .pub-faq {
+[data-look="immersive"] .pub-faq {
   margin-inline: auto;
 }
 
-.pub-home--immersive .pub-faq__item {
+[data-look="immersive"] .pub-faq__item {
   background: color-mix(in srgb, var(--pub-bg) 55%, transparent);
 }
 
 /* Immersive: facilities as centred pills */
-.pub-home--immersive .pub-amenities {
+[data-look="immersive"] .pub-amenities {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -716,7 +717,7 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   margin-inline: auto;
 }
 
-.pub-home--immersive .pub-amenity {
+[data-look="immersive"] .pub-amenity {
   padding: 0.5rem 1rem 0.5rem 0.6rem;
   border: 1px solid var(--pub-border);
   border-radius: 999px;
@@ -724,17 +725,17 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
 }
 
 /* Immersive: nearby places centred, on the band's own colour */
-.pub-home--immersive .pub-attractions {
+[data-look="immersive"] .pub-attractions {
   max-width: 60rem;
   margin-inline: auto;
 }
 
-.pub-home--immersive .pub-attraction {
+[data-look="immersive"] .pub-attraction {
   background: color-mix(in srgb, var(--pub-bg) 55%, transparent);
 }
 
 /* Immersive: the film wide, as on a screen */
-.pub-home--immersive .pub-video {
+[data-look="immersive"] .pub-video {
   max-width: 64rem;
   margin-inline: auto;
   box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 0.35);
@@ -747,23 +748,23 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
 }
 
 /* ── Panoramic: cards read centred, like the heads above them ── */
-.pub-home--immersive .pub-step,
-.pub-home--immersive .pub-benefit,
-.pub-home--immersive .pub-stay__body,
-.pub-home--immersive .pub-attraction {
+[data-look="immersive"] .pub-step,
+[data-look="immersive"] .pub-benefit,
+[data-look="immersive"] .pub-stay__body,
+[data-look="immersive"] .pub-attraction {
   text-align: center;
 }
 
-.pub-home--immersive .pub-step__num,
-.pub-home--immersive .pub-benefit__icon {
+[data-look="immersive"] .pub-step__num,
+[data-look="immersive"] .pub-benefit__icon {
   margin-inline: auto;
 }
 
-.pub-home--immersive .pub-stay__body {
+[data-look="immersive"] .pub-stay__body {
   align-items: center;
 }
 
-.pub-home--immersive .pub-attraction__head {
+[data-look="immersive"] .pub-attraction__head {
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
@@ -818,13 +819,13 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   }
 
   /* Section heads keep the magazine scale on phones too, larger than Classic. */
-  .pub-home--editorial .pub-section__title {
+  [data-look="editorial"] .pub-section__title {
     font-size: clamp(1.85rem, 8.5vw, 2.3rem);
     line-height: 1.05;
     letter-spacing: -0.025em;
   }
 
-  .pub-home--editorial .pub-section--intro .pub-section__title {
+  [data-look="editorial"] .pub-section--intro .pub-section__title {
     font-size: clamp(2.3rem, 11vw, 2.9rem);
   }
 }
@@ -930,7 +931,7 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
 }
 
 /* Magazine photos have square corners, like a printed page. */
-.pub-home--editorial .pub-split__photo {
+[data-look="editorial"] .pub-split__photo {
   border-radius: 0;
 }
 
@@ -949,18 +950,18 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   }
 
   /* Magazine: sides alternating down the page. */
-  .pub-home--editorial .pub-home__section:nth-child(odd) .pub-split__photo {
+  .pub-home__section:nth-child(odd)[data-look="editorial"] .pub-split__photo {
     order: -1;
   }
 
-  .pub-home--editorial .pub-split {
+  [data-look="editorial"] .pub-split {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     align-items: start;
   }
 }
 
 /* Panoramic: the photo spans the page above the words. */
-.pub-home--immersive .pub-section--with-photo {
+[data-look="immersive"] .pub-section--with-photo {
   padding-top: 0;
 }
 
@@ -969,23 +970,110 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"]:has(.pub-home
   padding-top: clamp(3rem, 7vw, 5rem);
 }
 
-.pub-home--immersive .pub-section--with-photo .pub-section__inner {
+[data-look="immersive"] .pub-section--with-photo .pub-section__inner {
   width: 100%;
   max-width: none;
   padding-inline: 0;
 }
 
-.pub-home--immersive .pub-split {
+[data-look="immersive"] .pub-split {
   display: block;
 }
 
-.pub-home--immersive .pub-split__photo {
+[data-look="immersive"] .pub-split__photo {
   aspect-ratio: auto;
   height: clamp(16rem, 62vh, 36rem);
   border-radius: 0;
 }
 
-.pub-home--immersive .pub-split__copy {
+[data-look="immersive"] .pub-split__copy {
   width: min(48rem, calc(100% - 3rem));
   margin: clamp(2rem, 5vw, 3.5rem) auto 0;
+}
+
+/* -- One section's own style, over the page layout --
+ * Background, width and heading alignment are set on the section's wrapper
+ * (.pub-home__section). For a colour background the wrapper keeps the page's
+ * colours under new names and the section inside re-points the page tokens to
+ * them (a token cannot be redefined from itself on one element), so text,
+ * cards and buttons stay readable on the new background.
+ */
+.pub-home__section[data-bg="plain"] {
+  background: var(--pub-bg);
+}
+
+.pub-home__section[data-bg="soft"] {
+  background: color-mix(in srgb, var(--pub-card) 70%, var(--pub-bg));
+}
+
+.pub-home__section[data-bg="accent"] {
+  --sec-accent: var(--pub-accent);
+  --sec-on-accent: var(--pub-accent-fg);
+  background: var(--pub-accent);
+  color: var(--pub-accent-fg);
+}
+
+.pub-home__section[data-bg="accent"] > .pub-section {
+  --pub-bg: var(--sec-accent);
+  --pub-fg: var(--sec-on-accent);
+  --pub-muted: color-mix(in srgb, var(--sec-on-accent) 78%, var(--sec-accent));
+  --pub-card: color-mix(in srgb, var(--sec-on-accent) 10%, var(--sec-accent));
+  --pub-card-fill: color-mix(in srgb, var(--sec-on-accent) 10%, transparent);
+  --pub-border: color-mix(in srgb, var(--sec-on-accent) 28%, transparent);
+  --pub-link: var(--sec-on-accent);
+  --pub-accent: var(--sec-on-accent);
+  --pub-accent-fg: var(--sec-accent);
+  color: var(--pub-fg);
+}
+
+.pub-home__section[data-bg="contrast"] {
+  --sec-page-bg: var(--pub-bg);
+  --sec-page-fg: var(--pub-fg);
+  background: var(--pub-fg);
+  color: var(--pub-bg);
+}
+
+.pub-home__section[data-bg="contrast"] > .pub-section {
+  --pub-bg: var(--sec-page-fg);
+  --pub-fg: var(--sec-page-bg);
+  --pub-muted: color-mix(in srgb, var(--sec-page-bg) 72%, var(--sec-page-fg));
+  --pub-card: color-mix(in srgb, var(--sec-page-bg) 8%, var(--sec-page-fg));
+  --pub-card-fill: color-mix(in srgb, var(--sec-page-bg) 8%, transparent);
+  --pub-border: color-mix(in srgb, var(--sec-page-bg) 22%, transparent);
+  --pub-link: var(--sec-page-bg);
+  color: var(--pub-fg);
+}
+
+/* A coloured section breathes a little more, so its edge does not touch the words. */
+.pub-home__section[data-bg="soft"] > .pub-section,
+.pub-home__section[data-bg="accent"] > .pub-section,
+.pub-home__section[data-bg="contrast"] > .pub-section {
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+/* Width of the section's content. */
+.pub-home__section[data-width="narrow"] > .pub-section > .pub-section__inner {
+  width: min(46rem, 100%);
+}
+
+.pub-home__section[data-width="wide"] > .pub-section > .pub-section__inner {
+  width: min(84rem, 100%);
+}
+
+.pub-home__section[data-width="full"] > .pub-section > .pub-section__inner {
+  width: 100%;
+  max-width: none;
+}
+
+/* Heading alignment. */
+.pub-home__section[data-align="center"] .pub-section__title,
+.pub-home__section[data-align="center"] .pub-section__lead {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.pub-home__section[data-align="start"] .pub-section__title,
+.pub-home__section[data-align="start"] .pub-section__lead {
+  margin-inline: 0;
+  text-align: start;
 }

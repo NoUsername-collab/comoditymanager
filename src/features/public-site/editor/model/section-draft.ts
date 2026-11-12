@@ -1,3 +1,4 @@
+import { readSectionStyle, styleFromSettings, styleToSettings, writeSectionStyle } from "@/features/public-site/domain/section-style";
 import { pickOwnLocalized, writeLocalizedMap } from "@/features/public-site/domain/localized";
 import { PUBLIC_TEMPLATE_SECTION_ORDER } from "@/features/public-site/domain/order-sections";
 import {
@@ -112,7 +113,7 @@ export function readSectionDrafts(config: PublicSiteConfig): SectionDraft[] {
         type: section.sectionType,
         visible: section.visible,
         items: rows,
-        settings: kind.settings?.read(payload) ?? {},
+        settings: { ...(kind.settings?.read(payload) ?? {}), ...styleToSettings(readSectionStyle(payload.style)) },
         copy,
       };
     });
@@ -177,6 +178,10 @@ export function writeSectionDrafts(
     }
 
     if (kind.settings) Object.assign(payload, kind.settings.write(section.settings));
+    const style = writeSectionStyle(styleFromSettings(section.settings));
+    // Back to "as the page" everywhere: the stored style goes too.
+    if (style) payload.style = style;
+    else delete payload.style;
 
     return {
       ...(UUID_PATTERN.test(section.key) ? { id: section.key } : {}),
