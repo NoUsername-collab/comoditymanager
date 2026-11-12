@@ -21,11 +21,20 @@ import {
   moveSectionDraft,
   moveSectionDraftTo,
   movableSections,
-  removeSectionDraft,
   sectionField,
+  sectionKindLimit,
   type SectionDraft,
 } from "@/features/public-site/editor/model/section-draft";
-import { patchStudioSection } from "@/features/public-site/editor/model/studio-draft";
+import {
+  patchStudioPage,
+  patchStudioSection,
+  removeStudioPage,
+  removeStudioSection,
+  sectionsOf,
+  withSections,
+} from "@/features/public-site/editor/model/studio-draft";
+import { MenuEditor } from "@/features/public-site/editor/ui/MenuEditor";
+import { NewPageForm, PageSettingsEditor, PageSwitcher } from "@/features/public-site/editor/ui/SitePageEditors";
 import { SECTION_KINDS, sectionKind } from "@/features/public-site/sections/kinds";
 import { sectionEditor } from "@/features/public-site/sections/registry";
 import { SectionStyleEditor } from "@/features/public-site/editor/ui/SectionStyleEditor";
@@ -41,6 +50,8 @@ type PagePart = {
   editor: ReactNode;
   /** Present for sections the operator added and may take away. */
   onRemove?: () => void;
+  removeLabel?: string;
+  removeConfirm?: string;
 };
 
 /**
@@ -63,13 +74,19 @@ export function PublicSiteContentPanel({
   onQuickStart?: () => void;
 }) {
   const te = useTranslations("admin.pages.publicSite.editor");
-  const { draft, copy, setDraft, patchDraft, library } = usePublicSiteEditor();
+  const tp = useTranslations("admin.pages.publicSite.editor.sitePages");
+  const { draft, copy, setDraft, patchDraft, library, activePage, setActivePage } = usePublicSiteEditor();
   const [adding, setAdding] = useState(false);
+  const [newPage, setNewPage] = useState(false);
+  // The page being edited: the first page (null) or an own page.
+  const page = activePage ? draft.pages.find((row) => row.key === activePage) : undefined;
+  const ownPage = Boolean(page);
+  const sections = sectionsOf(draft, activePage);
   const drag = useOutlineDrag(
     (key, targetKey) =>
-      setDraft((d) => ({ ...d, sections: moveSectionDraftTo(d.sections, key, targetKey) })),
+      setDraft((d) => withSections(d, activePage, moveSectionDraftTo(sectionsOf(d, activePage), key, targetKey))),
     (key, direction) =>
-      setDraft((d) => ({ ...d, sections: moveSectionDraft(d.sections, key, direction) })),
+      setDraft((d) => withSections(d, activePage, moveSectionDraft(sectionsOf(d, activePage), key, direction))),
   );
 
   // An opened part starts at its top, whether opened here or from the preview.
@@ -101,12 +118,14 @@ export function PublicSiteContentPanel({
       name: ownName || te(`cards.${section.type}.name`),
       description: te(`cards.${section.type}.desc`),
       summary: kind.namedByTitle ? te(`cards.${section.type}.desc`) : summaryFor(section),
-      onRemove: kind.addable
-        ? () => {
-            setDraft((d) => ({ ...d, sections: removeSectionDraft(d.sections, section.key) }));
-            setOpenKey(null);
-          }
-        : undefined,
+      // On an own page every section may go; on the first page, those the operator adds.
+      onRemove:
+        kind.addable || ownPage
+          ? () => {
+              setDraft((d) => removeStudioSection(d, section.key));
+              setOpenKey(null);
+            }
+          : undefined,
       visible: section.visible,
       onToggleVisible: (visible) =>
         setDraft((d) => patchStudioSection(d, section.key, (current) => ({ ...current, visible }))),
@@ -140,14 +159,40 @@ export function PublicSiteContentPanel({
     name: te("cards.chrome.name"),
     description: te("cards.chrome.desc"),
     summary: te("cards.chrome.desc"),
-    editor: <ChromeEditor />,
+    editor: <ChromeEditor onOpenMenu={() => setOpenKey("menu")} />,
   };
+  const menu: PagePart = {
+    key: "menu",
+    name: te("cards.menu.name"),
+    description: te("cards.menu.desc"),
+    summary: te("menu.count", { count: draft.menu.length }),
+    editor: <MenuEditor />,
+  };
+  const pageName = page ? page.copy[draft.editLocale].title.trim() || `/${page.slug}` : "";
+  const pageSettings: PagePart | null = page
+    ? {
+        key: `page:${page.key}`,
+        name: tp("settingsName"),
+        description: tp("settingsDesc"),
+        summary: `/${page.slug}`,
+        visible: page.visible,
+        onToggleVisible: (visible) => setDraft((d) => patchStudioPage(d, page.key, (row) => ({ ...row, visible }))),
+        editor: <PageSettingsEditor page={page} />,
+        onRemove: () => {
+          setDraft((d) => removeStudioPage(d, page.key));
+          setActivePage(null);
+        },
+        removeLabel: tp("remove"),
+        removeConfirm: tp("removeConfirm", { name: pageName }),
+      }
+    : null;
 
-  const movable = movableSections(draft.sections).map(sectionPart);
-  const pinnedLast = draft.sections
+  const movable = movableSections(sections).map(sectionPart);
+  const pinnedLast = sections
     .filter((section) => sectionKind(section.type).pinnedLast)
     .map(sectionPart);
-  const all = [hero, ...movable, ...pinnedLast, contactBar, chrome];
+  const top = pageSettings ?? hero;
+  const all = [top, ...movable, ...pinnedLast, menu, contactBar, chrome];
 
   const opened = openKey ? all.find((part) => part.key === openKey) : undefined;
   if (opened) {
@@ -159,6 +204,8 @@ export function PublicSiteContentPanel({
         onToggleVisible={opened.onToggleVisible}
         onBack={() => setOpenKey(null)}
         onRemove={opened.onRemove}
+        removeLabel={opened.removeLabel}
+        removeConfirm={opened.removeConfirm}
       >
         {opened.editor}
       </OutlineDetail>
@@ -178,34 +225,37 @@ export function PublicSiteContentPanel({
       pinned={extra.pinned}
     />
   );
-  // Kinds still to add: those the operator adds, below their limit on the page.
+  // Kinds still to add, below their limit on this page (an own page takes any kind).
   const addable = Object.values(SECTION_KINDS).filter(
     (kind) =>
-      kind.addable &&
-      draft.sections.filter((section) => section.type === kind.type).length < kind.addable.max,
+      sections.filter((section) => section.type === kind.type).length < sectionKindLimit(kind.type, ownPage),
   );
   function addSection(type: SectionDraft["type"]) {
     const key = crypto.randomUUID();
-    const sections = addSectionDraft(draft.sections, type, key);
-    if (!sections) return;
-    setDraft((d) => ({ ...d, sections }));
+    const next = addSectionDraft(sections, type, key, ownPage);
+    if (!next) return;
+    setDraft((d) => withSections(d, activePage, next));
     setAdding(false);
     setOpenKey(key);
   }
 
+  if (newPage) return <NewPageForm onDone={() => setNewPage(false)} />;
+
   return (
     <>
-      {onQuickStart ? (
+      <PageSwitcher onNewPage={() => setNewPage(true)} />
+
+      {onQuickStart && !ownPage ? (
         <button type="button" className="pub-editor-quickstart-btn" onClick={onQuickStart}>
           <strong>{te("quickStart.open")}</strong>
           <span>{te("quickStart.openHint")}</span>
         </button>
       ) : null}
 
-      <p className="pub-editor-lead">{te("contentLead")}</p>
+      <p className="pub-editor-lead">{ownPage ? tp("panelLead") : te("contentLead")}</p>
 
-      <OutlineGroup title={te("outlinePage")}>
-        {row(hero, { pinned: "top" })}
+      <OutlineGroup title={page ? tp("outline", { name: pageName }) : te("outlinePage")}>
+        {row(top, { pinned: "top" })}
         {movable.map((part) => row(part, { drag: true }))}
         {addable.length > 0 ? (
           <li className="pub-outline__add">
@@ -238,6 +288,7 @@ export function PublicSiteContentPanel({
       </OutlineGroup>
 
       <OutlineGroup title={te("outlineSite")}>
+        {row(menu)}
         {row(contactBar)}
         {row(chrome)}
       </OutlineGroup>

@@ -8,6 +8,8 @@ import type {
   PublicSiteSettingsRow,
   PublicStayOffer,
   PublicMediaPhoto,
+  PublicSitePage,
+  PublicSiteSectionInput,
 } from "@/features/public-site/domain/types";
 import { emptyPublicPlace } from "@/features/public-site/domain/stay-offers";
 
@@ -21,6 +23,8 @@ export type PublicSiteConfigContext = {
   stayOffers?: PublicStayOffer[];
   place?: PublicPlace;
   media?: PublicMediaPhoto[];
+  /** The site's own pages with their sections. */
+  sitePages?: PublicSitePage[];
   /**
    * Identity logo. `undefined` keeps a previously stored chrome logo
    * (identity could not be loaded). `null` means the owner has no logo.
@@ -66,7 +70,23 @@ export function finalizePublicSiteConfig(
     stayOffers: ctx.stayOffers ?? [],
     place: ctx.place ?? emptyPublicPlace(),
     media: ctx.media ?? [],
+    sitePages: ctx.sitePages ?? [],
   };
+}
+
+/** Sections as the editor sends them, with an id each (the saved one, else one made from position). */
+function withIds(
+  sections: PublicSiteSectionInput[],
+  saved: PublicSiteSection[],
+  prefix: string,
+): PublicSiteSection[] {
+  return sections.map((section, index) => ({
+    ...section,
+    id:
+      section.id ??
+      saved.find((row) => row.sectionType === section.sectionType)?.id ??
+      `${prefix}${section.sectionType}-${index}`,
+  })) as PublicSiteSection[];
 }
 
 /** Build a visitor-facing config from admin draft input (preview pane). */
@@ -75,12 +95,14 @@ export function buildPublicSiteConfigFromInput(
   input: PublicSiteSettingsInput,
   primaryContact: PensionContact,
 ): PublicSiteConfig {
-  const sections: PublicSiteSection[] = input.sections.map((section, index) => ({
-    ...section,
-    id:
-      section.id ??
-      base.sections.find((row) => row.sectionType === section.sectionType)?.id ??
-      `${section.sectionType}-${index}`,
+  const sections = withIds(input.sections, base.sections, "");
+  const sitePages: PublicSitePage[] = (input.sitePages ?? []).map((page) => ({
+    ...page,
+    sections: withIds(
+      page.sections,
+      base.sitePages.find((row) => row.id === page.id)?.sections ?? [],
+      `${page.id}-`,
+    ),
   }));
 
   return finalizePublicSiteConfig(
@@ -111,6 +133,7 @@ export function buildPublicSiteConfigFromInput(
       stayOffers: base.stayOffers,
       place: base.place,
       media: base.media,
+      sitePages,
       logoUrl: base.chrome.logoUrl ?? null,
     },
   );

@@ -122,6 +122,7 @@ export function buildDefaultPublicSiteConfig(args: {
     stayOffers: [],
     place: emptyPublicPlace(),
     media: [],
+    sitePages: [],
   };
 }
 

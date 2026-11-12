@@ -50,6 +50,7 @@ const config: PublicSiteConfig = {
   stayOffers: [],
   place: { address: null, lat: null, lng: null },
   media: [],
+  sitePages: [],
 };
 
 function setStyle(draft: PublicSiteStudioDraft, style: Record<string, string>) {

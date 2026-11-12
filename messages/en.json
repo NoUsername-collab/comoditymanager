@@ -538,6 +538,7 @@
     },
     "nav": {
       "mainAria": "Main navigation",
+      "submenu": "“{name}” submenu",
       "menuAria": "Mobile menu",
       "menuOpen": "Open menu",
       "menuClose": "Close menu",
@@ -1786,6 +1787,95 @@
               "center": "Centred"
             }
           },
+          "menu": {
+            "count": "{count, plural, =0 {No links} one {One link} other {# links}}",
+            "open": "Choose the menu's links",
+            "hint": "This order is the menu's order. ⇥ puts a link into the submenu of the one above, ⇤ takes it out. A name left empty takes the page's or section's name.",
+            "bookHint": "The booking button is separate and comes after the menu: where it shows is set under Settings → Bookings.",
+            "empty": "The menu is empty: only the property's name and the booking button show at the top.",
+            "add": "Add a link",
+            "addSub": "Add to the submenu",
+            "moveUp": "Move up",
+            "moveDown": "Move down",
+            "indent": "Move into the submenu of the link above",
+            "outdent": "Take out of the submenu",
+            "remove": "Remove the link",
+            "target": "Goes to",
+            "pick": "Choose…",
+            "targetGone": "No longer exists",
+            "targetGoneHint": "The page or section it went to was removed. Choose another or remove the link.",
+            "incomplete": "Choose where the link goes; until then it is not saved.",
+            "needsLabel": "Write a name, or it will not show in the menu.",
+            "hiddenTarget": "hidden",
+            "address": "Address",
+            "label": "Name in the menu",
+            "groupPlaceholder": "e.g. Discover",
+            "unnamed": "New link",
+            "groups": {
+              "pages": "Pages",
+              "sections": "Sections",
+              "builtIn": "Basic pages",
+              "other": "Other"
+            },
+            "targets": {
+              "home": "First page",
+              "calendar": "Calendar and booking",
+              "privacy": "Privacy",
+              "terms": "Terms",
+              "url": "Another address (link)",
+              "group": "Submenu only (no page)"
+            }
+          },
+          "sitePages": {
+            "switchAria": "The site's pages",
+            "home": "First page",
+            "new": "New page",
+            "newTitle": "New page",
+            "name": "Page name",
+            "namePlaceholder": "e.g. Restaurant",
+            "model": "Start from",
+            "newHint": "The page is also added to the menu. Its sections can be changed any time.",
+            "create": "Create the page",
+            "models": {
+              "blank": {
+                "name": "Blank"
+              },
+              "restaurant": {
+                "name": "Restaurant"
+              },
+              "activities": {
+                "name": "Activities"
+              },
+              "about": {
+                "name": "About us"
+              },
+              "location": {
+                "name": "Getting here"
+              }
+            },
+            "settingsName": "About the page",
+            "settingsDesc": "Its title, address, top photo and the text for Google.",
+            "panelLead": "Your page, top to bottom. Tap a part to write it, drag ⋮⋮ to move it.",
+            "outline": "Page “{name}”",
+            "title": "Page title",
+            "lead": "Line under the title",
+            "address": "Address",
+            "addressHint": "Lower-case letters, digits and hyphens. If you change it, old links to the page stop working.",
+            "photo": "Top photo",
+            "photoHint": "Optional: the title shows over it.",
+            "seoDescription": "Description for Google",
+            "seoDescriptionHint": "What shows under the title in search results. Left empty, the line under the title is used.",
+            "visible": "The page is public",
+            "visibleHint": "Hidden, it is not in the menu or on Google; only you see it, signed in.",
+            "remove": "Remove the page",
+            "removeConfirm": "Remove the page “{name}” with all its sections? Menu links to it go too. Takes effect when you save.",
+            "slugProblem": {
+              "empty": "Write an address.",
+              "format": "Only lower-case letters without accents, digits and hyphens.",
+              "reserved": "The site already uses this address (e.g. calendar). Choose another.",
+              "taken": "Another page already has this address."
+            }
+          },
           "layoutTitle": "Page layout",
           "layoutDesc": "How the main photo, text and gallery look. Your section order stays as you set it.",
           "immersiveNeedsPhoto": "Panoramic needs a main photo. Until you add one, the page uses the Classic layout.",
@@ -1809,6 +1899,7 @@
           "dragHandle": "Drag to move “{name}” (or use the up/down arrows)",
           "translate": {
             "from": "Translating from",
+            "pageGroup": "Page “{name}”",
             "into": "into {language}",
             "onlyMissing": "Only what is left to translate ({count})",
             "allDone": "Everything is translated into {language}.",
@@ -1825,6 +1916,11 @@
               "google": "Google and shared links"
             },
             "fields": {
+              "page": {
+                "title": "Page title",
+                "lead": "Line under the title",
+                "seoDescription": "Description for Google"
+              },
               "heroBadge": "Label above the title",
               "heroTitle": "Big title",
               "heroSubtitle": "Short description",
@@ -1946,6 +2042,10 @@
           "shown": "Shown",
           "hidden": "Hidden",
           "cards": {
+            "menu": {
+              "name": "Menu",
+              "desc": "The links at the top: pages, sections, other addresses, with a submenu."
+            },
             "reviews": {
               "name": "Reviews",
               "desc": "What guests say about you."
@@ -2078,8 +2178,8 @@
           "headerSubtitle": "Small text next to your name (top)",
           "headerSubtitleHint": "For example: “Guesthouse in Bran”.",
           "footerTagline": "Footer text",
-          "menuTitle": "Top menu",
-          "menuHint": "Which links appear in the menu and what they are called, in this language.",
+          "menuTitle": "Names of the basic links",
+          "menuHint": "Default names of the menu's links, in this language. Which links show and in what order is chosen under Menu.",
           "links": {
             "calendar": "Booking page",
             "intro": "“About us” section",
@@ -2246,9 +2346,6 @@
           "nunito": "Nunito (friendly)"
         },
         "navTitle": "Navigation",
-        "showNavHome": "Show “Home” in the menu",
-        "showNavPrivacy": "Show “Privacy” in the menu",
-        "showNavTerms": "Show “Terms” in the menu",
         "navHomeLabel": "“Home” link name",
         "navPrivacyLabel": "“Privacy” link name",
         "navTermsLabel": "“Terms” link name",

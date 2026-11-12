@@ -1,7 +1,12 @@
 import type { PublicLocale, PublicSectionType, PublicStockCopy } from "@/features/public-site/domain/types";
 import type { FlatCopyKey } from "@/features/public-site/editor/model/copy-fields";
-import { sectionTextSlots, setSectionSlot } from "@/features/public-site/editor/model/section-draft";
-import type { PublicSiteStudioDraft } from "@/features/public-site/editor/model/studio-draft";
+import {
+  sectionTextSlots,
+  setSectionSlot,
+  type SectionDraft,
+} from "@/features/public-site/editor/model/section-draft";
+import { pageTextSlots, setPageSlot } from "@/features/public-site/editor/model/site-page-draft";
+import { mapAllSections, type PublicSiteStudioDraft } from "@/features/public-site/editor/model/studio-draft";
 import { sectionKind } from "@/features/public-site/sections/kinds";
 
 /*
@@ -81,6 +86,8 @@ export type TranslationGroup = {
   /** A part of the site, or a homepage section by its type and own title. */
   part?: TranslationPart;
   section?: { type: PublicSectionType; title: string };
+  /** An own page's title and texts, by the page's title in the source language (or its address). */
+  page?: { title: string };
   rows: TranslationRow[];
 };
 
@@ -122,7 +129,7 @@ export function translationGroups(
       .filter(worthShowing),
   });
 
-  const sections: TranslationGroup[] = draft.sections
+  const sectionGroups = (list: SectionDraft[]): TranslationGroup[] => list
     .filter((section) => section.visible)
     .map((section) => {
       const kind = sectionKind(section.type);
@@ -143,8 +150,23 @@ export function translationGroups(
       };
     });
 
+  // Each visible own page: its own texts, then its sections.
+  const pages: TranslationGroup[] = draft.pages
+    .filter((page) => page.visible)
+    .flatMap((page) => {
+      const source = new Map(pageTextSlots(page, from).map((slot) => [slot.path, slot.value]));
+      const own: TranslationGroup = {
+        id: `page.${page.key}`,
+        page: { title: page.copy[from].title.trim() || `/${page.slug}` },
+        rows: pageTextSlots(page, to)
+          .map((slot) => row(slot.path, `page.${slot.path.split(".").pop()}`, source.get(slot.path) ?? "", slot.value))
+          .filter(worthShowing),
+      };
+      return [own, ...sectionGroups(page.sections)];
+    });
+
   const [hero, ...rest] = FLAT_GROUPS.map((group) => flat(group.id, group.keys));
-  return [hero!, ...sections, ...rest].filter((group) => group.rows.length > 0);
+  return [hero!, ...sectionGroups(draft.sections), ...pages, ...rest].filter((group) => group.rows.length > 0);
 }
 
 /** Write one row's translation into the draft, in language `to`. */
@@ -158,12 +180,12 @@ export function setTranslation(
     const key = path.slice("copy.".length) as FlatCopyKey;
     return { ...draft, copies: { ...draft.copies, [to]: { ...draft.copies[to], [key]: value } } };
   }
-  return {
-    ...draft,
-    sections: draft.sections.map((section) =>
-      path.startsWith(`${section.key}.`) ? setSectionSlot(section, to, path, value) : section,
-    ),
-  };
+  if (path.startsWith("page.")) {
+    return { ...draft, pages: draft.pages.map((page) => setPageSlot(page, to, path, value)) };
+  }
+  return mapAllSections(draft, (section) =>
+    path.startsWith(`${section.key}.`) ? setSectionSlot(section, to, path, value) : section,
+  );
 }
 
 /** How many rows of each group still need translating. */

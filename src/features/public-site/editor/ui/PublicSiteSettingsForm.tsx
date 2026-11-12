@@ -53,6 +53,7 @@ import {
   mergeStudioDrafts,
   mergeStudioToInput,
   patchStudioCopy,
+  sectionsOf,
   switchStudioLocale,
   type LocaleCopy,
   type PublicSiteStudioDraft,
@@ -95,6 +96,8 @@ export function PublicSiteSettingsForm({
   const formRef = useRef<HTMLFormElement>(null);
   // Null shows the page outline; a key opens that part on its own screen.
   const [openKey, setOpenKey] = useState<string | null>(null);
+  // The page shown on the Page tab and in the preview: null for the first page.
+  const [activePageState, setActivePageState] = useState<string | null>(null);
   const [settingsKey, setSettingsKey] = useState<SettingsPartKey | null>(null);
   const [scrollSeq, setScrollSeq] = useState(0);
   const [quickStartOpen, setQuickStartOpen] = useState(false);
@@ -133,10 +136,17 @@ export function PublicSiteSettingsForm({
     () => buildPublicSiteConfigFromInput(configWithLibrary, draftInput, primaryContact),
     [configWithLibrary, draftInput, primaryContact],
   );
+  // A page taken away (or never saved, after a reload) falls back to the first page.
+  const activePage =
+    activePageState && settledDraft.pages.some((page) => page.key === activePageState) ? activePageState : null;
+  const pageSections = useMemo(
+    () => ({ sections: sectionsOf(settledDraft, activePage), showContactBar: settledDraft.showContactBar }),
+    [settledDraft, activePage],
+  );
   // The part being edited: the preview scrolls to it, marks it, and shows it if hidden.
   const previewFocus = useMemo(
-    () => previewFocusFor(tab === "content" ? openKey : null, settledDraft),
-    [tab, openKey, settledDraft],
+    () => previewFocusFor(tab === "content" ? openKey : null, pageSections),
+    [tab, openKey, pageSections],
   );
   const focusedPreviewConfig = useMemo(() => {
     const index = previewFocus?.hidden ? previewFocus.sectionIndex : undefined;
@@ -146,13 +156,18 @@ export function PublicSiteSettingsForm({
         : previewConfig;
     }
     // Sections keep the editor's order in the preview (sortOrder = position × 10).
-    return {
-      ...previewConfig,
-      sections: previewConfig.sections.map((section) =>
-        section.sortOrder === index * 10 ? { ...section, visible: true } : section,
-      ),
-    };
-  }, [previewConfig, previewFocus, openKey]);
+    const shown = <T extends { sortOrder: number; visible: boolean }>(section: T): T =>
+      section.sortOrder === index * 10 ? { ...section, visible: true } : section;
+    if (activePage) {
+      return {
+        ...previewConfig,
+        sitePages: previewConfig.sitePages.map((page) =>
+          page.id === activePage ? { ...page, visible: true, sections: page.sections.map(shown) } : page,
+        ),
+      };
+    }
+    return { ...previewConfig, sections: previewConfig.sections.map(shown) };
+  }, [previewConfig, previewFocus, openKey, activePage]);
   // While the quick start is open the preview shows its answers before they are applied.
   const studioPreviewConfig = useMemo(() => {
     if (!quickStartOpen || !quickStartAnswers) return focusedPreviewConfig;
@@ -169,8 +184,14 @@ export function PublicSiteSettingsForm({
     [settledDraft, previewConfig, stockCopy],
   );
   const preview = useMemo(
-    () => <PublicSitePreview config={studioPreviewConfig} locale={settledDraft.editLocale} />,
-    [studioPreviewConfig, settledDraft.editLocale],
+    () => (
+      <PublicSitePreview
+        config={studioPreviewConfig}
+        locale={settledDraft.editLocale}
+        pageKey={quickStartOpen ? null : activePage}
+      />
+    ),
+    [studioPreviewConfig, settledDraft.editLocale, activePage, quickStartOpen],
   );
 
   const initialSnapshot = useRef<string | null>(null);
@@ -206,6 +227,11 @@ export function PublicSiteSettingsForm({
     patchDraft: (partial) => setDraftState((d) => ({ ...d, ...partial })),
     patchCopy: (partial: Partial<LocaleCopy>) => setDraftState((d) => patchStudioCopy(d, partial)),
     fieldError,
+    activePage,
+    setActivePage: (key) => {
+      setActivePageState(key);
+      setOpenKey(null);
+    },
   };
 
   /** Switch tab, and open a part there: "hero", a section type, or a Settings part. */
@@ -214,6 +240,8 @@ export function PublicSiteSettingsForm({
     if (next === "settings") setSettingsKey((part as SettingsPartKey | undefined) ?? null);
     if (next === "content" && part) {
       const section = draft.sections.find((row) => row.type === part);
+      // Parts named here (the hero, a section kind) are on the first page.
+      setActivePageState(null);
       setOpenKey(part === "hero" ? "hero" : (section?.key ?? null));
     }
     formRef.current?.closest(".pub-site-studio__form")?.scrollTo({ top: 0 });
@@ -352,7 +380,7 @@ export function PublicSiteSettingsForm({
   }
 
   function pickFromPreview(target: Element): boolean {
-    const key = editKeyFromPreviewTarget(target, draft);
+    const key = editKeyFromPreviewTarget(target, { sections: sectionsOf(draft, activePage) });
     if (!key) return false;
     setTab("content");
     setOpenKey(key);

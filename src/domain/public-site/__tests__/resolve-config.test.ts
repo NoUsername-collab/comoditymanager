@@ -163,6 +163,7 @@ describe("buildPublicSiteConfigFromInput", () => {
       stayOffers: [],
       place: { address: null, lat: null, lng: null },
       media: [],
+      sitePages: [],
     };
 
     const preview = buildPublicSiteConfigFromInput(
@@ -187,6 +188,7 @@ describe("buildPublicSiteConfigFromInput", () => {
         pages: {},
         untranslatedCopy: {},
         sections: [{ sectionType: "intro", sortOrder: 10, visible: false, payload: {} }],
+        sitePages: [],
       },
       {
         email: "a@test.ro",

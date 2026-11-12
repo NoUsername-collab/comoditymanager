@@ -7,6 +7,7 @@ import {
   type PublicLocale,
   type PublicSectionType,
   type PublicSiteConfig,
+  type PublicSiteSection,
   type PublicSiteSectionInput,
   type PublicTemplateId,
 } from "@/features/public-site/domain/types";
@@ -58,7 +59,7 @@ function emptyCopy(): Record<PublicLocale, SectionCopy> {
   ) as Record<PublicLocale, SectionCopy>;
 }
 
-function newSectionDraft(type: PublicSectionType, key: string): SectionDraft {
+export function newSectionDraft(type: PublicSectionType, key: string): SectionDraft {
   const kind = sectionKind(type);
   return {
     key,
@@ -70,9 +71,17 @@ function newSectionDraft(type: PublicSectionType, key: string): SectionDraft {
   };
 }
 
-/** The homepage sections of a saved site, in page order, ready to edit. */
+/** The first page's sections of a saved site, in page order, ready to edit. */
 export function readSectionDrafts(config: PublicSiteConfig): SectionDraft[] {
-  const drafts = [...config.sections]
+  return readSectionList(config.sections, true);
+}
+
+/**
+ * Saved sections of one page, in page order, ready to edit. The first page
+ * also gets an empty section of each kind the editor must always be able to place.
+ */
+export function readSectionList(saved: PublicSiteSection[], withAlwaysPresent: boolean): SectionDraft[] {
+  const drafts = [...saved]
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map((section): SectionDraft => {
       const kind = sectionKind(section.sectionType);
@@ -119,7 +128,7 @@ export function readSectionDrafts(config: PublicSiteConfig): SectionDraft[] {
     });
 
   // Kinds the editor must always be able to place (the gallery) get an empty one.
-  for (const kind of Object.values(SECTION_KINDS)) {
+  for (const kind of withAlwaysPresent ? Object.values(SECTION_KINDS) : []) {
     if (kind.alwaysPresent && !drafts.some((draft) => draft.type === kind.type)) {
       drafts.push({
         ...newSectionDraft(kind.type, `new-${kind.type}`),
@@ -141,14 +150,22 @@ function localizedFrom(
   return writeLocalizedMap(previous as LocalizedText | undefined, values);
 }
 
-/** The sections to save, in page order. Fields this editor does not know are kept. */
+/** The first page's sections to save, in page order. Fields this editor does not know are kept. */
 export function writeSectionDrafts(
   config: PublicSiteConfig,
   sections: SectionDraft[],
 ): PublicSiteSectionInput[] {
+  return writeSectionList(config.sections, sections);
+}
+
+/** One page's sections to save, against what that page had saved. */
+export function writeSectionList(
+  savedSections: PublicSiteSection[],
+  sections: SectionDraft[],
+): PublicSiteSectionInput[] {
   return sections.map((section, index) => {
     const kind = sectionKind(section.type);
-    const saved = config.sections.find((row) => row.id === section.key);
+    const saved = savedSections.find((row) => row.id === section.key);
     const previous = stored(saved?.payload);
     const payload: StoredFields = { ...previous };
 
@@ -368,13 +385,20 @@ export function moveSectionDraft(
   return [...movable, ...sections.filter((section) => sectionKind(section.type).pinnedLast)];
 }
 
-/** Add a section of a kind the operator adds; null when it is at its limit or not addable. */
+/** How many of a kind a page may hold: on the first page only kinds the operator adds; on an own page, any kind. */
+export function sectionKindLimit(type: PublicSectionType, ownPage: boolean): number {
+  const addable = sectionKind(type).addable?.max;
+  return ownPage ? (addable ?? 1) : (addable ?? 0);
+}
+
+/** Add a section of a kind; null when the page holds as many as it may. */
 export function addSectionDraft(
   sections: SectionDraft[],
   type: PublicSectionType,
   key: string,
+  ownPage = false,
 ): SectionDraft[] | null {
-  const limit = sectionKind(type).addable?.max ?? 0;
+  const limit = sectionKindLimit(type, ownPage);
   if (sections.filter((section) => section.type === type).length >= limit) return null;
   return keepPinnedLast([...sections, newSectionDraft(type, key)]);
 }

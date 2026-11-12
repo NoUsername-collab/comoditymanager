@@ -19,6 +19,7 @@ import { finalizePublicSiteConfig } from "@/domain/public-site/resolve-config";
 import { loadPublicPlace } from "./place";
 import { loadPublicStayOffers } from "./stay-offers";
 import {
+  mapPublicSitePageRow,
   mapPublicSiteSectionRow,
   mapPublicSiteSettingsRow,
 } from "./map";
@@ -55,7 +56,7 @@ async function getPublicSiteConfigUncached(
   fallback.media = media;
 
   const supabase = createPublicAdminClient();
-  const [settingsResult, sectionsResult] = await Promise.all([
+  const [settingsResult, sectionsResult, pagesResult] = await Promise.all([
     supabase
       .from("public_site_settings")
       .select(
@@ -65,7 +66,12 @@ async function getPublicSiteConfigUncached(
       .maybeSingle(),
     supabase
       .from("public_site_sections")
-      .select("id, section_type, sort_order, visible, payload")
+      .select("id, page_id, section_type, sort_order, visible, payload")
+      .eq("tenant_id", tenantId)
+      .order("sort_order", { ascending: true }),
+    supabase
+      .from("public_site_pages")
+      .select("id, slug, title, lead, seo_description, image_url, visible, sort_order")
       .eq("tenant_id", tenantId)
       .order("sort_order", { ascending: true }),
   ]);
@@ -77,9 +83,18 @@ async function getPublicSiteConfigUncached(
   }
 
   if (sectionsResult.error) throw new Error(sectionsResult.error.message);
+  if (pagesResult.error) throw new Error(pagesResult.error.message);
 
   const settings = mapPublicSiteSettingsRow(settingsResult.data);
-  const sections = (sectionsResult.data ?? []).map(mapPublicSiteSectionRow);
+  const sectionRows = sectionsResult.data ?? [];
+  // The first page's sections have no page; each own page gets its own.
+  const sections = sectionRows.filter((row) => !row.page_id).map(mapPublicSiteSectionRow);
+  const sitePages = (pagesResult.data ?? []).map((row) =>
+    mapPublicSitePageRow(
+      row,
+      sectionRows.filter((section) => section.page_id === row.id).map(mapPublicSiteSectionRow),
+    ),
+  );
   const primaryContact = identity.contact;
 
   return finalizePublicSiteConfig(settings, sections, {
@@ -92,6 +107,7 @@ async function getPublicSiteConfigUncached(
     stayOffers,
     place,
     media,
+    sitePages,
     logoUrl: identityLogo,
   });
 }

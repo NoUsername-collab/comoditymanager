@@ -10,6 +10,8 @@ import type {
   PublicHeroConfig,
   PublicSectionType,
   PublicSeoConfig,
+  LocalizedText,
+  PublicSitePage,
   PublicSiteSection,
   PublicSiteSettingsRow,
   PublicTemplateId,
@@ -112,3 +114,29 @@ export function mapPublicSiteSectionRow(row: {
   } as PublicSiteSection;
 }
 
+
+export function mapPublicSitePageRow(
+  row: {
+    id: string;
+    slug: string;
+    title: unknown;
+    lead: unknown;
+    seo_description: unknown;
+    image_url: string | null;
+    visible: boolean;
+    sort_order: number;
+  },
+  sections: PublicSiteSection[],
+): PublicSitePage {
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: (row.title ?? {}) as LocalizedText,
+    lead: (row.lead ?? {}) as LocalizedText,
+    seoDescription: (row.seo_description ?? {}) as LocalizedText,
+    imageUrl: row.image_url?.trim() || null,
+    visible: row.visible !== false,
+    sortOrder: row.sort_order ?? 0,
+    sections,
+  };
+}

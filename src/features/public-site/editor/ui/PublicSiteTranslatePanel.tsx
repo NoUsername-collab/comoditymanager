@@ -61,7 +61,9 @@ export function PublicSiteTranslatePanel({
   const groupTitle = (group: TranslationGroup) =>
     group.part
       ? te(`translate.parts.${group.part}`)
-      : group.section!.title || te(`cards.${group.section!.type}.name`);
+      : group.page
+        ? te("translate.pageGroup", { name: group.page.title })
+        : group.section!.title || te(`cards.${group.section!.type}.name`);
   const rowLabel = (row: TranslationRow) => {
     const label = te(`translate.fields.${row.field}`);
     return row.itemIndex ? te("translate.inItem", { index: row.itemIndex, label }) : label;

@@ -272,7 +272,8 @@ html[data-layout-chrome="compact"] .ml-mobile-menu__bars span {
   background: currentColor;
 }
 
-html[data-layout-chrome="compact"] .public-header__nav .public-header__link:not(.public-header__cta) {
+html[data-layout-chrome="compact"] .public-header__nav .public-header__link:not(.public-header__cta),
+html[data-layout-chrome="compact"] .public-header__nav .public-header__group {
   display: none;
 }
 
@@ -346,6 +347,28 @@ html[data-layout-chrome="compact"] .ml-drawer__backdrop--visible {
 
 .ml-drawer__link--active {
   background: color-mix(in srgb, var(--site-accent) 18%, transparent);
+}
+
+/* A submenu, open under its item. */
+.ml-drawer__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.ml-drawer__group {
+  color: var(--site-muted);
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ml-drawer__sublink {
+  margin-left: 0.85rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--site-border);
+  border-radius: 0 0.65rem 0.65rem 0;
+  font-weight: 500;
 }
 
 .ml-drawer__link--cta {

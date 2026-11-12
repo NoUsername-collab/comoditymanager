@@ -48,6 +48,10 @@ export function publicSiteSitemap(config: PublicSiteConfig, baseUrl: string): Pu
   if (hasCopy(config.pages.termsTitle) || hasCopy(config.pages.termsBody)) {
     paths.push("/termeni");
   }
+  // The site's own pages that are shown.
+  for (const page of config.sitePages ?? []) {
+    if (page.visible) paths.push(`/${page.slug}`);
+  }
 
   return paths.flatMap((path) => {
     const languages = Object.fromEntries(

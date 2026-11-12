@@ -132,10 +132,10 @@ export function ContactBarEditor({ onOpenContact }: { onOpenContact: () => void 
   );
 }
 
-export function ChromeEditor() {
+export function ChromeEditor({ onOpenMenu }: { onOpenMenu?: () => void }) {
   const t = useTranslations("admin.pages.publicSite");
   const te = useTranslations("admin.pages.publicSite.editor");
-  const { draft, copy, patchDraft, patchCopy } = usePublicSiteEditor();
+  const { copy, patchCopy } = usePublicSiteEditor();
 
   return (
     <>
@@ -161,23 +161,11 @@ export function ChromeEditor() {
       </div>
       <EditorAdvanced label={te("menuTitle")}>
         <SettingsFieldHint className="mb-2 block">{te("menuHint")}</SettingsFieldHint>
-        <div className="pub-editor-menu">
-          <EditorToggle
-            label={t("showNavHome")}
-            checked={draft.showNavHome}
-            onChange={(showNavHome) => patchDraft({ showNavHome })}
-          />
-          <EditorToggle
-            label={t("showNavPrivacy")}
-            checked={draft.showNavPrivacy}
-            onChange={(showNavPrivacy) => patchDraft({ showNavPrivacy })}
-          />
-          <EditorToggle
-            label={t("showNavTerms")}
-            checked={draft.showNavTerms}
-            onChange={(showNavTerms) => patchDraft({ showNavTerms })}
-          />
-        </div>
+        {onOpenMenu ? (
+          <button type="button" className="pub-editor-linkbtn" onClick={onOpenMenu}>
+            {te("menu.open")} →
+          </button>
+        ) : null}
         <div className="admin-settings-fields admin-settings-fields--2col mt-3">
           <EditorField label={t("navHomeLabel")} value={copy.navHome} onChange={(navHome) => patchCopy({ navHome })} />
           <EditorField

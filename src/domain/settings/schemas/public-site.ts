@@ -1,7 +1,14 @@
 import { z } from "zod";
 import { MEDIA_ALBUMS } from "@/domain/media/types";
-import { GALLERY_LAYOUTS } from "@/features/public-site/domain/types";
-import { isSafeHttpUrl } from "@/lib/security/html-escape";
+import { GALLERY_LAYOUTS, PUBLIC_MENU_KINDS } from "@/features/public-site/domain/types";
+import {
+  MAX_MENU_CHILDREN,
+  MAX_MENU_ITEMS,
+  MAX_SITE_PAGES,
+  menuKindNeedsRef,
+  pageSlugProblem,
+} from "@/features/public-site/domain/site-pages";
+import { isSafeHttpUrl, isSafeNavHref } from "@/lib/security/html-escape";
 import {
   formatZodError,
   formatZodFieldErrors,
@@ -64,6 +71,36 @@ const longLocalizedTextSchema = z
   })
   .strip();
 
+/** A menu link: a page or section by id, a built-in page, or an address (`url`). */
+const menuItemShape = {
+  id: z.string().min(1).max(64),
+  kind: z.enum(PUBLIC_MENU_KINDS),
+  ref: z.string().max(500).optional(),
+  label: localizedTextSchema.default({}),
+};
+
+function checkMenuRef(item: { kind: (typeof PUBLIC_MENU_KINDS)[number]; ref?: string }, ctx: z.RefinementCtx) {
+  if (menuKindNeedsRef(item.kind) && !item.ref?.trim()) {
+    ctx.addIssue({ code: "custom", path: ["ref"], message: "required" });
+  }
+  if (item.kind === "url" && item.ref && !isSafeNavHref(item.ref)) {
+    ctx.addIssue({ code: "custom", path: ["ref"], message: "invalid_href" });
+  }
+}
+
+const menuChildSchema = z
+  .object(menuItemShape)
+  .strip()
+  .superRefine((item, ctx) => {
+    if (item.kind === "group") ctx.addIssue({ code: "custom", path: ["kind"], message: "invalid" });
+    checkMenuRef(item, ctx);
+  });
+
+const menuItemSchema = z
+  .object({ ...menuItemShape, children: z.array(menuChildSchema).max(MAX_MENU_CHILDREN).optional() })
+  .strip()
+  .superRefine(checkMenuRef);
+
 const publicChromeConfigSchema = z
   .object({
     logoUrl: optionalUrlSchema.optional(),
@@ -80,9 +117,7 @@ const publicChromeConfigSchema = z
     navPrivacy: localizedTextSchema.optional(),
     navTerms: localizedTextSchema.optional(),
     navBook: localizedTextSchema.optional(),
-    showNavHome: z.boolean().optional(),
-    showNavPrivacy: z.boolean().optional(),
-    showNavTerms: z.boolean().optional(),
+    menu: z.array(menuItemSchema).max(MAX_MENU_ITEMS).optional(),
   })
   .strip();
 
@@ -367,6 +402,20 @@ const publicSiteSectionInputSchema = z.discriminatedUnion("sectionType", [
   ),
 ]);
 
+const sitePageSchema = z
+  .object({
+    id: z.string().uuid(),
+    slug: z.string().max(60),
+    title: localizedTextSchema,
+    lead: localizedTextSchema,
+    seoDescription: localizedTextSchema,
+    imageUrl: optionalUrlSchema,
+    visible: z.boolean(),
+    sortOrder: z.number().int().min(0).max(9999),
+    sections: z.array(publicSiteSectionInputSchema).max(30),
+  })
+  .strict();
+
 const untranslatedTextsSchema = z.array(z.string().max(5000)).max(300).optional();
 
 const publicUntranslatedCopySchema = z
@@ -389,8 +438,17 @@ const publicSiteSettingsInputSchema = z
     pages: publicPagesConfigSchema.default({}),
     untranslatedCopy: publicUntranslatedCopySchema.default({}),
     sections: z.array(publicSiteSectionInputSchema).max(50),
+    sitePages: z.array(sitePageSchema).max(MAX_SITE_PAGES).default([]),
   })
-  .strict();
+  .strict()
+  .superRefine((input, ctx) => {
+    // Each page needs an address of its own that the app does not already use.
+    input.sitePages.forEach((page, index) => {
+      const others = input.sitePages.filter((_, other) => other !== index).map((row) => row.slug);
+      const problem = pageSlugProblem(page.slug, others);
+      if (problem) ctx.addIssue({ code: "custom", path: ["sitePages", index, "slug"], message: `slug_${problem}` });
+    });
+  });
 
 export type PublicSiteSettingsInputParsed = z.infer<
   typeof publicSiteSettingsInputSchema

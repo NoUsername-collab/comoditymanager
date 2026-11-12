@@ -63,6 +63,7 @@ const config: PublicSiteConfig = {
   stayOffers: [],
   place: { address: null, lat: null, lng: null },
   media: [],
+  sitePages: [],
 };
 
 const ALL_TYPES = Object.keys(SECTION_KINDS) as PublicSectionType[];

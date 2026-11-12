@@ -538,6 +538,7 @@
     },
     "nav": {
       "mainAria": "Navigare principală",
+      "submenu": "Submeniu „{name}”",
       "menuAria": "Meniu mobil",
       "menuOpen": "Deschide meniul",
       "menuClose": "Închide meniul",
@@ -1771,6 +1772,95 @@
               "center": "Pe mijloc"
             }
           },
+          "menu": {
+            "count": "{count, plural, =0 {Niciun link} one {Un link} few {# linkuri} other {# de linkuri}}",
+            "open": "Alege linkurile din meniu",
+            "hint": "Ordinea de aici e ordinea din meniu. ⇥ pune un link în submeniul celui de deasupra, ⇤ îl scoate. Un nume lăsat gol ia numele paginii sau secțiunii.",
+            "bookHint": "Butonul de rezervare e separat și vine după meniu: unde apare alegi la Setări → Rezervări.",
+            "empty": "Meniul e gol: sus apar doar numele pensiunii și butonul de rezervare.",
+            "add": "Adaugă link",
+            "addSub": "Adaugă în submeniu",
+            "moveUp": "Mută mai sus",
+            "moveDown": "Mută mai jos",
+            "indent": "Mută în submeniul linkului de deasupra",
+            "outdent": "Scoate din submeniu",
+            "remove": "Șterge linkul",
+            "target": "Duce la",
+            "pick": "Alege…",
+            "targetGone": "Nu mai există",
+            "targetGoneHint": "Pagina sau secțiunea spre care ducea a fost ștearsă. Alege alta sau șterge linkul.",
+            "incomplete": "Alege unde duce linkul; până atunci nu se salvează.",
+            "needsLabel": "Scrie un nume, altfel nu apare în meniu.",
+            "hiddenTarget": "ascunsă",
+            "address": "Adresa",
+            "label": "Nume în meniu",
+            "groupPlaceholder": "ex. Descoperă",
+            "unnamed": "Link nou",
+            "groups": {
+              "pages": "Pagini",
+              "sections": "Secțiuni",
+              "builtIn": "Pagini de bază",
+              "other": "Altele"
+            },
+            "targets": {
+              "home": "Prima pagină",
+              "calendar": "Calendar și rezervare",
+              "privacy": "Confidențialitate",
+              "terms": "Termeni",
+              "url": "Altă adresă (link)",
+              "group": "Doar submeniu (fără pagină)"
+            }
+          },
+          "sitePages": {
+            "switchAria": "Paginile site-ului",
+            "home": "Prima pagină",
+            "new": "Pagină nouă",
+            "newTitle": "Pagină nouă",
+            "name": "Numele paginii",
+            "namePlaceholder": "ex. Restaurant",
+            "model": "Pornește de la",
+            "newHint": "Pagina se adaugă și în meniu. Secțiunile le poți schimba oricând.",
+            "create": "Creează pagina",
+            "models": {
+              "blank": {
+                "name": "Goală"
+              },
+              "restaurant": {
+                "name": "Restaurant"
+              },
+              "activities": {
+                "name": "Activități"
+              },
+              "about": {
+                "name": "Despre noi"
+              },
+              "location": {
+                "name": "Cum ajungi"
+              }
+            },
+            "settingsName": "Despre pagină",
+            "settingsDesc": "Titlul, adresa, poza de sus și textul pentru Google.",
+            "panelLead": "Pagina ta, de sus în jos. Apasă pe o parte ca s-o scrii, trage de ⋮⋮ ca s-o muți.",
+            "outline": "Pagina „{name}”",
+            "title": "Titlul paginii",
+            "lead": "Rândul de sub titlu",
+            "address": "Adresa",
+            "addressHint": "Litere mici, cifre și cratimă. Dacă o schimbi, linkurile vechi spre pagină nu mai merg.",
+            "photo": "Poza de sus",
+            "photoHint": "Opțional: titlul apare peste ea.",
+            "seoDescription": "Descriere pentru Google",
+            "seoDescriptionHint": "Ce apare sub titlu în căutări. Goală, se folosește rândul de sub titlu.",
+            "visible": "Pagina e publică",
+            "visibleHint": "Ascunsă, nu apare în meniu și nici pe Google; o vezi doar tu, conectat.",
+            "remove": "Șterge pagina",
+            "removeConfirm": "Ștergi pagina „{name}” cu toate secțiunile ei? Linkurile spre ea dispar din meniu. Se aplică la salvare.",
+            "slugProblem": {
+              "empty": "Scrie o adresă.",
+              "format": "Doar litere mici fără diacritice, cifre și cratimă.",
+              "reserved": "Adresa e folosită deja de site (de ex. calendar). Alege alta.",
+              "taken": "Altă pagină are deja adresa asta."
+            }
+          },
           "layoutTitle": "Așezarea paginii",
           "layoutDesc": "Cum arată poza principală, textele și galeria. Ordinea secțiunilor rămâne cea pusă de tine.",
           "immersiveNeedsPhoto": "Panoramic are nevoie de o poză principală. Până o adaugi, pagina folosește așezarea Clasic.",
@@ -1794,6 +1884,7 @@
           "dragHandle": "Trage ca să muți „{name}” (sau săgețile sus/jos)",
           "translate": {
             "from": "Traduci din",
+            "pageGroup": "Pagina „{name}”",
             "into": "în {language}",
             "onlyMissing": "Doar ce mai e de tradus ({count})",
             "allDone": "Totul e tradus în {language}.",
@@ -1810,6 +1901,11 @@
               "google": "Google și linkuri distribuite"
             },
             "fields": {
+              "page": {
+                "title": "Titlul paginii",
+                "lead": "Rândul de sub titlu",
+                "seoDescription": "Descriere pentru Google"
+              },
               "heroBadge": "Etichetă deasupra titlului",
               "heroTitle": "Titlul mare",
               "heroSubtitle": "Descriere scurtă",
@@ -1931,6 +2027,10 @@
           "shown": "Afișată",
           "hidden": "Ascunsă",
           "cards": {
+            "menu": {
+              "name": "Meniu",
+              "desc": "Linkurile de sus: pagini, secțiuni, alte adrese, cu submeniu."
+            },
             "reviews": {
               "name": "Recenzii",
               "desc": "Ce spun oaspeții despre voi."
@@ -2063,8 +2163,8 @@
           "headerSubtitle": "Text mic lângă nume (sus)",
           "headerSubtitleHint": "De exemplu: „Pensiune în Bran”.",
           "footerTagline": "Text în subsolul paginii",
-          "menuTitle": "Meniul de sus",
-          "menuHint": "Ce linkuri apar în meniu și cum se numesc, pe limba curentă.",
+          "menuTitle": "Numele linkurilor de bază",
+          "menuHint": "Numele implicite ale linkurilor din meniu, pe limba curentă. Ce linkuri apar și în ce ordine alegi la Meniu.",
           "links": {
             "calendar": "Pagina de rezervare",
             "intro": "Secțiunea „Despre noi”",
@@ -2230,9 +2330,6 @@
           "nunito": "Nunito (prietenos)"
         },
         "navTitle": "Navigare",
-        "showNavHome": "Arată „Acasă” în meniu",
-        "showNavPrivacy": "Arată „Confidențialitate” în meniu",
-        "showNavTerms": "Arată „Termeni” în meniu",
         "navHomeLabel": "Nume link „Acasă”",
         "navPrivacyLabel": "Nume link „Confidențialitate”",
         "navTermsLabel": "Nume link „Termeni”",

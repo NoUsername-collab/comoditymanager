@@ -1,17 +1,13 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { HeaderLocaleSwitch } from "@/layout/components/HeaderLocaleSwitch";
 import { MobileDrawerPortal } from "@/layout/mobile/MobileDrawerPortal";
 import { useMobileDrawer } from "@/layout/mobile/use-mobile-drawer";
-import type { PublicNavItem } from "@/features/public-site/domain/nav-items";
+import { isNavItemActive, type PublicNavItem } from "@/features/public-site/domain/nav-items";
+import { PublicNavLink } from "@/features/public-site/ui/PublicNav";
 import { useTranslations } from "next-intl";
-
-function isActive(pathname: string, href: string): boolean {
-  if (href === "/") return pathname === "/";
-  return pathname.startsWith(href);
-}
 
 export function PublicMobileMenu({ items }: { items: PublicNavItem[] }) {
   const pathname = usePathname();
@@ -87,20 +83,39 @@ export function PublicMobileMenu({ items }: { items: PublicNavItem[] }) {
             </div>
             <nav className="ml-drawer__nav" aria-label={t("menuAria")}>
               {items.map((item) => (
-                <Link
-                  key={item.key}
-                  href={item.href}
-                  className={[
-                    "ml-drawer__link",
-                    item.cta && "ml-drawer__link--cta site-cta",
-                    isActive(pathname, item.href) && "ml-drawer__link--active",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  onClick={() => setOpen(false)}
-                >
-                  {item.label}
-                </Link>
+                <div key={item.key} className="ml-drawer__item">
+                  {item.href ? (
+                    <PublicNavLink
+                      item={{ ...item, href: item.href }}
+                      className={[
+                        "ml-drawer__link",
+                        item.cta && "ml-drawer__link--cta site-cta",
+                        isNavItemActive(pathname, item.href) && "ml-drawer__link--active",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      onClick={() => setOpen(false)}
+                    />
+                  ) : (
+                    <span className="ml-drawer__link ml-drawer__group">{item.label}</span>
+                  )}
+                  {/* A submenu is shown open, set in under its item: a drawer has room. */}
+                  {item.children?.map((child) =>
+                    child.href ? (
+                      <PublicNavLink
+                        key={child.key}
+                        item={{ ...child, href: child.href }}
+                        className={[
+                          "ml-drawer__link ml-drawer__sublink",
+                          isNavItemActive(pathname, child.href) && "ml-drawer__link--active",
+                        ]
+                          .filter(Boolean)
+                          .join(" ")}
+                        onClick={() => setOpen(false)}
+                      />
+                    ) : null,
+                  )}
+                </div>
               ))}
               <div className="ml-drawer__locale">
                 <HeaderLocaleSwitch slot="drawer" />

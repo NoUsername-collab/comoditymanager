@@ -10,8 +10,9 @@ import { PublicHeroBlock } from "@/features/public-site/hero/PublicHeroBlock";
 import { sectionKind } from "@/features/public-site/sections/kinds";
 import { renderPublicSection } from "@/features/public-site/sections/registry";
 import { readSectionStyle, sectionLook } from "@/features/public-site/domain/section-style";
+import { sectionAnchor } from "@/features/public-site/domain/site-pages";
 
-function TemplateSections({
+export function TemplateSections({
   sections,
   config,
   locale,
@@ -41,6 +42,7 @@ function TemplateSections({
         return (
           <div
             key={`${section.id}-${index}`}
+            id={sectionAnchor(section.id)}
             className="pub-home__section"
             data-look={look}
             data-bg={style.background === "auto" ? undefined : style.background}

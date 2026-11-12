@@ -176,6 +176,73 @@
   color: var(--site-accent-fg);
 }
 
+/* A menu item with a submenu: its link (if any), a caret, and the list under it. */
+.public-header__group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.public-header__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.public-header__group > .public-header__link + .public-header__toggle {
+  margin-left: -0.6rem;
+  padding-inline: 0.5rem;
+}
+
+.public-header__caret {
+  font-size: 0.7rem;
+  transition: transform 0.2s ease;
+}
+
+.public-header__group[data-open] .public-header__caret {
+  transform: rotate(180deg);
+}
+
+.public-header__submenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 40;
+  min-width: 13rem;
+  margin: 0;
+  padding: 0.4rem;
+  list-style: none;
+  border: 1px solid var(--site-border);
+  border-radius: 0.85rem;
+  background: var(--site-bg);
+  box-shadow: 0 14px 34px rgb(0 0 0 / 0.16);
+}
+
+/* The gap between the item and its list keeps the pointer inside on the way down. */
+.public-header__submenu::before {
+  content: "";
+  position: absolute;
+  inset: -0.5rem 0 auto;
+  height: 0.5rem;
+}
+
+.public-header__sublink {
+  display: block;
+  padding: 0.55rem 0.8rem;
+  border-radius: 0.6rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--site-fg);
+}
+
+.public-header__sublink:hover,
+.public-header__sublink--active {
+  background: color-mix(in srgb, var(--site-accent) 12%, transparent);
+}
+
 /* Compact shell: see mobile-layout.css */
 
 /* Footer */

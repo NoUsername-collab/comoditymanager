@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { PublicContactBar } from "@/features/public-site/contact/PublicContactBar";
 import { effectivePublicTemplate } from "@/features/public-site/domain/template";
 import { PublicSiteBody } from "@/features/public-site/templates/PublicSiteTemplates";
+import { PublicOwnPageBody } from "@/features/public-site/templates/PublicOwnPage";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import {
   publicThemeClassName,
@@ -19,10 +20,14 @@ import "@/styles/features/public/public-site-layouts.css";
 export function PublicSitePreview({
   config,
   locale,
+  pageKey = null,
 }: {
   config: PublicSiteConfig;
   locale: string;
+  /** An own page to show instead of the first page. */
+  pageKey?: string | null;
 }) {
+  const page = pageKey ? config.sitePages.find((row) => row.id === pageKey) : undefined;
   const tFooter = useTranslations("public.footer");
   const tHome = useTranslations("public.home");
   const tContact = useTranslations("public.contact");
@@ -43,14 +48,18 @@ export function PublicSitePreview({
       style={style}
       data-pub-template={effectivePublicTemplate(config)}
     >
-      <PublicHeader config={config} locale={previewLocale} preview />
+      <PublicHeader config={config} locale={previewLocale} preview previewPath={page ? `/${page.slug}` : "/"} />
 
-      <PublicSiteBody
-        config={config}
-        locale={previewLocale}
-        checkTimesLabel={checkTimesLabel}
-        preview
-      />
+      {page ? (
+        <PublicOwnPageBody config={config} page={page} locale={previewLocale} preview />
+      ) : (
+        <PublicSiteBody
+          config={config}
+          locale={previewLocale}
+          checkTimesLabel={checkTimesLabel}
+          preview
+        />
+      )}
 
       {config.chrome.showContactBar !== false ? (
         <PublicContactBar

@@ -194,6 +194,8 @@ export function OutlineDetail({
   onToggleVisible,
   onBack,
   onRemove,
+  removeLabel,
+  removeConfirm,
   children,
 }: {
   name: string;
@@ -203,6 +205,9 @@ export function OutlineDetail({
   onBack: () => void;
   /** Present for sections the operator added: takes this one off the page. */
   onRemove?: () => void;
+  /** What the remove button says and asks, when it takes away more than a section (a page). */
+  removeLabel?: string;
+  removeConfirm?: string;
   children: ReactNode;
 }) {
   const t = useTranslations("admin.pages.publicSite.editor");
@@ -235,10 +240,10 @@ export function OutlineDetail({
           type="button"
           className="pub-outline-detail__remove"
           onClick={() => {
-            if (window.confirm(t("removeSectionConfirm", { name }))) onRemove();
+            if (window.confirm(removeConfirm ?? t("removeSectionConfirm", { name }))) onRemove();
           }}
         >
-          {t("removeSection")}
+          {removeLabel ?? t("removeSection")}
         </button>
       ) : null}
     </div>

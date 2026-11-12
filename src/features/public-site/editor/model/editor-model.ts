@@ -21,10 +21,16 @@ import {
   setSectionField,
   setSectionSlot,
 } from "@/features/public-site/editor/model/section-draft";
-import type {
-  LocaleCopy,
-  PublicSiteStudioDraft,
+import {
+  mapAllSections,
+  type LocaleCopy,
+  type PublicSiteStudioDraft,
 } from "@/features/public-site/editor/model/studio-draft";
+import {
+  PAGE_TEXT_FIELDS,
+  pageProgressSlots,
+  setPageText,
+} from "@/features/public-site/editor/model/site-page-draft";
 
 /** Editor tabs: the page itself, how it looks, everything around it, and its languages side by side. */
 export const PUBLIC_SITE_EDITOR_TABS = ["content", "design", "settings", "translate"] as const;
@@ -81,6 +87,15 @@ function visibleCopyFields(
     ...draft.sections
       .filter((section) => section.visible)
       .flatMap((section) => sectionProgressSlots(section, locale)),
+    // Own pages count once they are shown: their title and lead, and their sections.
+    ...draft.pages
+      .filter((page) => page.visible)
+      .flatMap((page) => [
+        ...pageProgressSlots(page, locale),
+        ...page.sections
+          .filter((section) => section.visible)
+          .flatMap((section) => sectionProgressSlots(section, locale)),
+      ]),
   ];
 }
 
@@ -157,7 +172,7 @@ export function fillStudioLocaleFrom(
   const next: LocaleCopy = { ...target };
   for (const key of HOMEPAGE_COPY_KEYS) next[key] = fill(target[key], source[key]);
 
-  const sections = draft.sections.map((section) => {
+  const withSections = mapAllSections(draft, (section) => {
     const sourceSlots = new Map(sectionTextSlots(section, from).map((slot) => [slot.path, slot.value]));
     let updated = section;
     for (const slot of sectionTextSlots(section, to)) {
@@ -166,12 +181,20 @@ export function fillStudioLocaleFrom(
     }
     return updated;
   });
+  const pages = withSections.pages.map((page) => {
+    let updated = page;
+    for (const field of PAGE_TEXT_FIELDS) {
+      const value = fill(page.copy[to][field], page.copy[from][field]);
+      if (value !== page.copy[to][field]) updated = setPageText(updated, to, field, value);
+    }
+    return updated;
+  });
 
   if (!changed) return draft;
   return {
-    ...draft,
+    ...withSections,
+    pages,
     copies: { ...draft.copies, [to]: next },
-    sections,
     copiedText: { ...draft.copiedText, [to]: [...copied] },
   };
 }

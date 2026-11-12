@@ -18,12 +18,23 @@ type AtomicRpcArgs = {
   p_untranslated_copy: PublicSiteSettingsInputParsed["untranslatedCopy"];
   p_sections: Array<{
     id: string | null;
+    page_id: string | null;
     section_type: string;
     sort_order: number;
     visible: boolean;
     payload: PublicSiteSettingsInputParsed["sections"][number]["payload"];
   }>;
   p_expected_version: number | null;
+  p_site_pages: Array<{
+    id: string;
+    slug: string;
+    title: PublicSiteSettingsInputParsed["sitePages"][number]["title"];
+    lead: PublicSiteSettingsInputParsed["sitePages"][number]["lead"];
+    seo_description: PublicSiteSettingsInputParsed["sitePages"][number]["seoDescription"];
+    image_url: string | null;
+    visible: boolean;
+    sort_order: number;
+  }>;
 };
 
 /** Thrown when the settings changed since the editor loaded them. */
@@ -44,12 +55,28 @@ export async function upsertPublicSiteSettingsImpl(
 ): Promise<number> {
   const { supabase } = await getTenantScope();
 
-  const sectionsPayload = input.sections.map((section, index) => ({
+  const toRow = (pageId: string | null) => (section: PublicSiteSettingsInputParsed["sections"][number], index: number) => ({
     id: section.id ?? null,
+    page_id: pageId,
     section_type: section.sectionType,
     sort_order: section.sortOrder ?? index * 10,
     visible: section.visible,
     payload: section.payload,
+  });
+  // The first page's sections, then each own page's.
+  const sectionsPayload = [
+    ...input.sections.map(toRow(null)),
+    ...input.sitePages.flatMap((page) => page.sections.map(toRow(page.id))),
+  ];
+  const sitePagesPayload = input.sitePages.map((page, index) => ({
+    id: page.id,
+    slug: page.slug,
+    title: page.title,
+    lead: page.lead,
+    seo_description: page.seoDescription,
+    image_url: page.imageUrl ?? null,
+    visible: page.visible,
+    sort_order: page.sortOrder ?? index * 10,
   }));
 
   const args: AtomicRpcArgs = {
@@ -69,6 +96,7 @@ export async function upsertPublicSiteSettingsImpl(
     p_untranslated_copy: input.untranslatedCopy ?? {},
     p_sections: sectionsPayload,
     p_expected_version: expectedVersion,
+    p_site_pages: sitePagesPayload,
   };
 
   const { data, error } = await supabase.rpc("upsert_public_site_settings_atomic", args);

@@ -9,7 +9,6 @@ import {
   itemField,
   moveSectionItem,
   moveSectionItemTo,
-  removeSectionDraft,
   removeSectionItem,
   sectionField,
   setItemField,
@@ -18,7 +17,7 @@ import {
   type SectionDraft,
   type SectionItemDraft,
 } from "@/features/public-site/editor/model/section-draft";
-import { patchStudioSection } from "@/features/public-site/editor/model/studio-draft";
+import { patchStudioSection, removeStudioSection } from "@/features/public-site/editor/model/studio-draft";
 import type { ItemStructure } from "@/features/public-site/sections/kind";
 import { sectionKind } from "@/features/public-site/sections/kinds";
 import { useOutlineDrag } from "@/features/public-site/editor/ui/PublicSiteOutline";
@@ -63,7 +62,7 @@ export function useSectionEditing(section: SectionDraft) {
     moveItemTo: (itemId: string, targetId: string) =>
       update((current) => moveSectionItemTo(current, itemId, targetId)),
     setVisible: (visible: boolean) => update((current) => ({ ...current, visible })),
-    removeSection: () => setDraft((d) => ({ ...d, sections: removeSectionDraft(d.sections, section.key) })),
+    removeSection: () => setDraft((d) => removeStudioSection(d, section.key)),
   };
 }
 

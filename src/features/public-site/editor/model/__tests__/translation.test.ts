@@ -53,6 +53,7 @@ const config: PublicSiteConfig = {
   stayOffers: [],
   place: { address: null, lat: null, lng: null },
   media: [],
+  sitePages: [],
 };
 
 describe("translating side by side", () => {

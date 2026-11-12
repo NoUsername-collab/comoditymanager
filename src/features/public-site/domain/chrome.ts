@@ -1,4 +1,5 @@
 import { normalizeBrandColor } from "@/features/public-site/domain/brand-color";
+import { defaultPublicMenu, normalizePublicMenu } from "@/features/public-site/domain/site-pages";
 import type {
   PublicChromeConfig,
   PublicFontId,
@@ -44,9 +45,7 @@ export function defaultPublicChrome(): PublicChromeConfig {
     showContactBar: true,
     fontId: "theme",
     accentColor: null,
-    showNavHome: true,
-    showNavPrivacy: true,
-    showNavTerms: false,
+    menu: defaultPublicMenu(),
   };
 }
 
@@ -88,9 +87,7 @@ export function normalizePublicChrome(raw: unknown): PublicChromeConfig {
     navPrivacy: (row.navPrivacy ?? {}) as PublicChromeConfig["navPrivacy"],
     navTerms: (row.navTerms ?? {}) as PublicChromeConfig["navTerms"],
     navBook: (row.navBook ?? {}) as PublicChromeConfig["navBook"],
-    showNavHome: asBool(row.showNavHome, true),
-    showNavPrivacy: asBool(row.showNavPrivacy, true),
-    showNavTerms: asBool(row.showNavTerms, false),
+    menu: normalizePublicMenu(row.menu),
   };
 }
 

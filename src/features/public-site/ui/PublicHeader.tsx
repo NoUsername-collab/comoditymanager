@@ -16,10 +16,13 @@ export function PublicHeader({
   config,
   locale,
   preview = false,
+  previewPath = "/",
 }: {
   config: PublicSiteConfig;
   locale: string;
   preview?: boolean;
+  /** In the preview: the page shown, so its menu link is marked. */
+  previewPath?: string;
 }) {
   const subtitle = pickOwnLocalized(config.chrome.headerSubtitle, locale);
   const navItems = resolvePublicNavItems(config, locale);
@@ -59,12 +62,17 @@ export function PublicHeader({
                 className={[
                   "public-header__link",
                   item.cta && "public-header__cta site-cta",
-                  item.key === "home" && "public-header__link--active",
+                  item.href === previewPath && "public-header__link--active",
                 ]
                   .filter(Boolean)
                   .join(" ")}
               >
                 {item.label}
+                {item.children?.length ? (
+                  <span className="public-header__caret" aria-hidden>
+                    {" "}▾
+                  </span>
+                ) : null}
               </span>
             ))}
           </nav>

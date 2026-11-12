@@ -31,6 +31,9 @@ export type PublicSiteEditorApi = {
   patchDraft: (partial: Partial<PublicSiteStudioDraft>) => void;
   patchCopy: (partial: Partial<LocaleCopy>) => void;
   fieldError: (...paths: string[]) => string | undefined;
+  /** The page being edited on the Page tab and shown in the preview: null for the first page. */
+  activePage: string | null;
+  setActivePage: (key: string | null) => void;
 };
 
 const EditorContext = createContext<PublicSiteEditorApi | null>(null);

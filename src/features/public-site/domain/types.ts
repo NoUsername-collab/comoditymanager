@@ -78,9 +78,26 @@ export type PublicChromeConfig = {
   navPrivacy?: LocalizedText;
   navTerms?: LocalizedText;
   navBook?: LocalizedText;
-  showNavHome?: boolean;
-  showNavPrivacy?: boolean;
-  showNavTerms?: boolean;
+  /** The header menu, in order; the booking button is apart (`bookingNavPosition`). */
+  menu?: PublicMenuItem[];
+};
+
+/** Where a menu link goes. */
+export const PUBLIC_MENU_KINDS = ["home", "page", "section", "calendar", "privacy", "terms", "url", "group"] as const;
+export type PublicMenuKind = (typeof PUBLIC_MENU_KINDS)[number];
+
+/**
+ * One link of the header menu. `ref` is the page or section id, or the address
+ * of a link elsewhere; a group only opens its submenu. An empty label takes the
+ * name of what it links to.
+ */
+export type PublicMenuItem = {
+  id: string;
+  kind: PublicMenuKind;
+  ref?: string;
+  label: LocalizedText;
+  /** One level of submenu, under a top-level item. */
+  children?: PublicMenuItem[];
 };
 
 export type PublicPagesConfig = {
@@ -288,8 +305,28 @@ export type PublicPlace = {
   lng: number | null;
 };
 
-export type PublicSiteConfig = PublicSiteSettingsRow & {
+/** One of the site's own pages, at /<slug>, with its own sections. */
+export type PublicSitePage = {
+  id: string;
+  slug: string;
+  title: LocalizedText;
+  lead: LocalizedText;
+  seoDescription: LocalizedText;
+  imageUrl: string | null;
+  visible: boolean;
+  sortOrder: number;
   sections: PublicSiteSection[];
+};
+
+export type PublicSitePageInput = Omit<PublicSitePage, "sections"> & {
+  sections: PublicSiteSectionInput[];
+};
+
+export type PublicSiteConfig = PublicSiteSettingsRow & {
+  /** The first page's sections. */
+  sections: PublicSiteSection[];
+  /** The site's own pages, in menu-editor order. */
+  sitePages: PublicSitePage[];
   /** From pension_settings — not stored on public_site_settings */
   displayName: string;
   checkInTime: string;
@@ -330,4 +367,5 @@ export type PublicSiteSettingsInput = {
   untranslatedCopy: PublicUntranslatedCopy;
   /** `id` is kept for saved sections and new text sections, so rows are updated in place. */
   sections: PublicSiteSectionInput[];
+  sitePages: PublicSitePageInput[];
 };

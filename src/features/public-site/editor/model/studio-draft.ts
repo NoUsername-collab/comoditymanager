@@ -8,6 +8,7 @@ import {
   type BookingNoticeDraft,
 } from "@/features/public-site/domain/booking-notice";
 import type {
+  PublicMenuItem,
   PublicFontId,
   PublicLocale,
   PublicSiteConfig,
@@ -28,10 +29,19 @@ import {
 } from "@/features/public-site/editor/model/copy-fields";
 import {
   readSectionDrafts,
+  removeSectionDraft,
   sectionTextSlots,
   writeSectionDrafts,
   type SectionDraft,
 } from "@/features/public-site/editor/model/section-draft";
+import {
+  pageTextSlots,
+  readSitePageDrafts,
+  writeSitePages,
+  type SitePageDraft,
+} from "@/features/public-site/editor/model/site-page-draft";
+import { defaultPublicMenu } from "@/features/public-site/domain/site-pages";
+import { menuToSave } from "@/features/public-site/editor/model/menu-draft";
 
 /** One language's copy outside the homepage sections: single-line fields and the booking notice. */
 export type LocaleCopy = FlatCopy & {
@@ -53,9 +63,8 @@ export type PublicSiteStudioDraft = {
   /** `#rrggbb`, or empty for the palette's own colour. */
   accentColor: string;
   showContactBar: boolean;
-  showNavHome: boolean;
-  showNavPrivacy: boolean;
-  showNavTerms: boolean;
+  /** The header menu; labels are per language inside each item. */
+  menu: PublicMenuItem[];
   showCheckTimes: boolean;
   heroCtaPrimaryHref: string;
   heroCtaSecondaryHref: string;
@@ -65,8 +74,10 @@ export type PublicSiteStudioDraft = {
   contactTelegram: string;
   contactFacebook: string;
   contactInstagram: string;
-  /** Homepage sections in page order; each kind is described in `sections/<kind>/kind.ts`. */
+  /** The first page's sections in page order; each kind is described in `sections/<kind>/kind.ts`. */
   sections: SectionDraft[];
+  /** The site's own pages, each with its sections. */
+  pages: SitePageDraft[];
   copies: Record<PublicLocale, LocaleCopy>;
   /**
    * Per language: texts pasted in from another language and not translated yet.
@@ -105,9 +116,7 @@ export function buildPublicSiteStudioDraft(
     fontId: config.chrome?.fontId ?? "theme",
     accentColor: config.chrome?.accentColor ?? "",
     showContactBar: config.chrome?.showContactBar !== false,
-    showNavHome: config.chrome?.showNavHome !== false,
-    showNavPrivacy: config.chrome?.showNavPrivacy !== false,
-    showNavTerms: config.chrome?.showNavTerms === true,
+    menu: config.chrome?.menu ?? defaultPublicMenu(),
     showCheckTimes: config.hero.showCheckTimes !== false,
     heroCtaPrimaryHref: config.hero.ctaPrimaryHref ?? "/calendar",
     heroCtaSecondaryHref: config.hero.ctaSecondaryHref ?? PUBLIC_STEPS_HREF,
@@ -118,6 +127,7 @@ export function buildPublicSiteStudioDraft(
     contactFacebook: config.contact.facebook ?? "",
     contactInstagram: config.contact.instagram ?? "",
     sections: readSectionDrafts(config),
+    pages: readSitePageDrafts(config),
     copies,
     copiedText: config.untranslatedCopy,
   };
@@ -171,24 +181,102 @@ export function patchStudioCopy(
   };
 }
 
-/** Change one section; the rest of the draft is left as it is. */
+/** The sections of a page: the first page's (null), or an own page's by key. */
+export function sectionsOf(draft: Pick<PublicSiteStudioDraft, "sections" | "pages">, pageKey: string | null): SectionDraft[] {
+  if (!pageKey) return draft.sections;
+  return draft.pages.find((page) => page.key === pageKey)?.sections ?? [];
+}
+
+/** Replace one page's sections. */
+export function withSections(
+  draft: PublicSiteStudioDraft,
+  pageKey: string | null,
+  sections: SectionDraft[],
+): PublicSiteStudioDraft {
+  if (!pageKey) return { ...draft, sections };
+  return { ...draft, pages: draft.pages.map((page) => (page.key === pageKey ? { ...page, sections } : page)) };
+}
+
+/** The page a section is on: null for the first page, undefined when it is nowhere. */
+export function pageKeyOfSection(draft: PublicSiteStudioDraft, sectionKey: string): string | null | undefined {
+  if (draft.sections.some((section) => section.key === sectionKey)) return null;
+  return draft.pages.find((page) => page.sections.some((section) => section.key === sectionKey))?.key;
+}
+
+/** Every section of the site with the page it is on, first page first. */
+export function allSections(draft: Pick<PublicSiteStudioDraft, "sections" | "pages">): SectionDraft[] {
+  return [...draft.sections, ...draft.pages.flatMap((page) => page.sections)];
+}
+
+/** Change every section, page by page. */
+export function mapAllSections(
+  draft: PublicSiteStudioDraft,
+  update: (section: SectionDraft) => SectionDraft,
+): PublicSiteStudioDraft {
+  return {
+    ...draft,
+    sections: draft.sections.map(update),
+    pages: draft.pages.map((page) => ({ ...page, sections: page.sections.map(update) })),
+  };
+}
+
+/** Change one section, wherever it is; the rest of the draft is left as it is. */
 export function patchStudioSection(
   draft: PublicSiteStudioDraft,
   key: string,
   update: (section: SectionDraft) => SectionDraft,
 ): PublicSiteStudioDraft {
+  return mapAllSections(draft, (section) => (section.key === key ? update(section) : section));
+}
+
+/** Change one own page. */
+export function patchStudioPage(
+  draft: PublicSiteStudioDraft,
+  key: string,
+  update: (page: SitePageDraft) => SitePageDraft,
+): PublicSiteStudioDraft {
+  return { ...draft, pages: draft.pages.map((page) => (page.key === key ? update(page) : page)) };
+}
+
+function menuWithout(menu: PublicMenuItem[], gone: (item: PublicMenuItem) => boolean): PublicMenuItem[] {
+  return menu
+    .filter((item) => !gone(item))
+    .map((item) =>
+      item.children ? { ...item, children: item.children.filter((child) => !gone(child)) } : item,
+    );
+}
+
+/** Take a page away, with its sections and the menu links to them. */
+export function removeStudioPage(draft: PublicSiteStudioDraft, key: string): PublicSiteStudioDraft {
+  const page = draft.pages.find((row) => row.key === key);
+  if (!page) return draft;
+  const sectionKeys = new Set(page.sections.map((section) => section.key));
   return {
     ...draft,
-    sections: draft.sections.map((section) => (section.key === key ? update(section) : section)),
+    pages: draft.pages.filter((row) => row.key !== key),
+    menu: menuWithout(
+      draft.menu,
+      (item) =>
+        (item.kind === "page" && item.ref === key) || (item.kind === "section" && sectionKeys.has(item.ref ?? "")),
+    ),
   };
 }
 
-/** Every text of one language's homepage, sections and their rows included. */
+/** Take a section away from its page, and the menu links to it. */
+export function removeStudioSection(draft: PublicSiteStudioDraft, key: string): PublicSiteStudioDraft {
+  const pageKey = pageKeyOfSection(draft, key);
+  if (pageKey === undefined) return draft;
+  const next = withSections(draft, pageKey, removeSectionDraft(sectionsOf(draft, pageKey), key));
+  return { ...next, menu: menuWithout(draft.menu, (item) => item.kind === "section" && item.ref === key) };
+}
+
+/** Every text of one language's site: the first page, the own pages, their sections and rows. */
 export function homepageTexts(draft: PublicSiteStudioDraft, locale: PublicLocale): string[] {
   const copy = draft.copies[locale];
   return [
     ...HOMEPAGE_COPY_KEYS.map((key) => copy[key]),
-    ...draft.sections.flatMap((section) =>
+    ...draft.pages.flatMap((page) => pageTextSlots(page, locale).map((slot) => slot.value)),
+    ...allSections(draft).flatMap((section) =>
       sectionTextSlots(section, locale).map((slot) => slot.value),
     ),
   ];
@@ -254,15 +342,14 @@ export function mergeStudioToInput(args: {
       fontId: draft.fontId,
       accentColor: normalizeBrandColor(draft.accentColor),
       ...writeCopyGroup(CHROME_COPY, config.chrome, copies),
-      showNavHome: draft.showNavHome,
-      showNavPrivacy: draft.showNavPrivacy,
-      showNavTerms: draft.showNavTerms,
+      menu: menuToSave(draft.menu),
     },
     pages: {
       ...writeCopyGroup(PAGES_COPY, config.pages, copies),
       ogImageUrl: draft.ogImageUrl.trim() || null,
     },
     sections: writeSectionDrafts(config, draft.sections),
+    sitePages: writeSitePages(config, draft.pages),
   };
 }
 
