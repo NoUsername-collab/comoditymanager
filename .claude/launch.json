@@ -4,21 +4,9 @@
     {
       "name": "nextdev",
       "runtimeExecutable": "npx",
-      "runtimeArgs": [
-        "next",
-        "dev",
-        "--turbopack"
-      ],
+      "runtimeArgs": ["next", "dev", "--turbopack"],
       "port": 3000,
       "autoPort": true
-    },
-    {
-      "name": "nextdev-staging",
-      "runtimeExecutable": "node",
-      "runtimeArgs": [
-        "C:/Users/ADMINI~1/AppData/Local/Temp/claude/592dc5d369cf9180/9876108b-f188-4d2b-9b89-5814a58c39ab/scratchpad/dev-staging.mjs"
-      ],
-      "port": 3010
     }
   ]
 }
