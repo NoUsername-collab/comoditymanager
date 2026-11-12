@@ -1861,6 +1861,40 @@
               "taken": "Altă pagină are deja adresa asta."
             }
           },
+          "siteTemplates": {
+            "title": "Șabloane",
+            "desc": "Un site gata așezat pentru felul tău de loc. Apasă pe unul ca să-l vezi alături, apoi aplică-l.",
+            "previewing": "Vezi „{name}”.",
+            "keeps": "Textele și pozele tale rămân; se schimbă așezarea, culorile, literele, ordinea și aspectul secțiunilor.",
+            "adds": "Se adaugă: {pages}.",
+            "apply": "Aplică șablonul",
+            "items": {
+              "mountain": {
+                "name": "Pensiune la munte",
+                "desc": "Caldă și primitoare: poze în mozaic, dotări, recenzii pe culoarea site-ului."
+              },
+              "seaside": {
+                "name": "Vilă la mare",
+                "desc": "Poza pe tot ecranul, galerie care curge, atracții din zonă, cum ajungi."
+              },
+              "farm": {
+                "name": "Agroturism",
+                "desc": "Povestea locului, ce gătiți și ce faceți; cu pagini de restaurant și despre voi."
+              },
+              "boutique": {
+                "name": "Boutique",
+                "desc": "Ca o revistă: litere elegante, o poză mare, spații aerisite."
+              },
+              "cabin": {
+                "name": "Cabană",
+                "desc": "Întunecată și liniștită: galerie lată, ce vă face diferiți pe contrast."
+              },
+              "city": {
+                "name": "Apartamente în oraș",
+                "desc": "Simplu și clar: camerele întâi, pașii rezervării, întrebări, harta."
+              }
+            }
+          },
           "layoutTitle": "Așezarea paginii",
           "layoutDesc": "Cum arată poza principală, textele și galeria. Ordinea secțiunilor rămâne cea pusă de tine.",
           "immersiveNeedsPhoto": "Panoramic are nevoie de o poză principală. Până o adaugi, pagina folosește așezarea Clasic.",

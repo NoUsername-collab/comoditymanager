@@ -26,6 +26,7 @@ import {
   type PublicSiteEditorApi,
 } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import { PublicSiteDesignPanel } from "@/features/public-site/editor/ui/PublicSiteDesignPanel";
+import { applySiteTemplate, siteTemplate } from "@/features/public-site/editor/model/site-templates";
 import { PublicSiteContentPanel } from "@/features/public-site/editor/ui/PublicSiteContentPanel";
 import { PublicSiteTranslatePanel } from "@/features/public-site/editor/ui/PublicSiteTranslatePanel";
 import {
@@ -101,6 +102,8 @@ export function PublicSiteSettingsForm({
   const [settingsKey, setSettingsKey] = useState<SettingsPartKey | null>(null);
   const [scrollSeq, setScrollSeq] = useState(0);
   const [quickStartOpen, setQuickStartOpen] = useState(false);
+  // A site template shown in the preview before it is applied.
+  const [templatePreview, setTemplatePreview] = useState<string | null>(null);
   const [quickStartAnswers, setQuickStartAnswers] = useState<QuickStartAnswers | null>(null);
 
   const {
@@ -168,13 +171,20 @@ export function PublicSiteSettingsForm({
     }
     return { ...previewConfig, sections: previewConfig.sections.map(shown) };
   }, [previewConfig, previewFocus, openKey, activePage]);
-  // While the quick start is open the preview shows its answers before they are applied.
+  // While the quick start is open the preview shows its answers before they are applied;
+  // a site template being looked at shows the site with it applied.
+  const previewTemplate = tab === "design" && templatePreview ? siteTemplate(templatePreview) : undefined;
   const studioPreviewConfig = useMemo(() => {
-    if (!quickStartOpen || !quickStartAnswers) return focusedPreviewConfig;
-    const answered = applyQuickStart(settledDraft, quickStartAnswers);
-    const input = mergeStudioToInput({ config: configWithLibrary, draft: answered });
+    let shown: PublicSiteStudioDraft | null = null;
+    if (quickStartOpen && quickStartAnswers) shown = applyQuickStart(settledDraft, quickStartAnswers);
+    else if (previewTemplate) {
+      let n = 0;
+      shown = applySiteTemplate(settledDraft, previewTemplate, () => `template-preview-${++n}`);
+    }
+    if (!shown) return focusedPreviewConfig;
+    const input = mergeStudioToInput({ config: configWithLibrary, draft: shown });
     return buildPublicSiteConfigFromInput(configWithLibrary, input, primaryContact);
-  }, [quickStartOpen, quickStartAnswers, focusedPreviewConfig, settledDraft, configWithLibrary, primaryContact]);
+  }, [quickStartOpen, quickStartAnswers, previewTemplate, focusedPreviewConfig, settledDraft, configWithLibrary, primaryContact]);
   const progress = useMemo(
     () => studioLocaleProgress(settledDraft, stockCopy),
     [settledDraft, stockCopy],
@@ -188,10 +198,10 @@ export function PublicSiteSettingsForm({
       <PublicSitePreview
         config={studioPreviewConfig}
         locale={settledDraft.editLocale}
-        pageKey={quickStartOpen ? null : activePage}
+        pageKey={quickStartOpen || previewTemplate ? null : activePage}
       />
     ),
-    [studioPreviewConfig, settledDraft.editLocale, activePage, quickStartOpen],
+    [studioPreviewConfig, settledDraft.editLocale, activePage, quickStartOpen, previewTemplate],
   );
 
   const initialSnapshot = useRef<string | null>(null);
@@ -227,6 +237,14 @@ export function PublicSiteSettingsForm({
     patchDraft: (partial) => setDraftState((d) => ({ ...d, ...partial })),
     patchCopy: (partial: Partial<LocaleCopy>) => setDraftState((d) => patchStudioCopy(d, partial)),
     fieldError,
+    templatePreview,
+    setTemplatePreview,
+    applyTemplate: (id) => {
+      const template = siteTemplate(id);
+      if (template) setDraftState((d) => applySiteTemplate(d, template, () => crypto.randomUUID()));
+      setTemplatePreview(null);
+      setActivePageState(null);
+    },
     activePage,
     setActivePage: (key) => {
       setActivePageState(key);

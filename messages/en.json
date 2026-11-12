@@ -1876,6 +1876,40 @@
               "taken": "Another page already has this address."
             }
           },
+          "siteTemplates": {
+            "title": "Templates",
+            "desc": "A site laid out for your kind of place. Tap one to see it beside you, then apply it.",
+            "previewing": "Showing “{name}”.",
+            "keeps": "Your texts and photos stay; the layout, colours, fonts and the order and look of the sections change.",
+            "adds": "Added: {pages}.",
+            "apply": "Apply the template",
+            "items": {
+              "mountain": {
+                "name": "Mountain guesthouse",
+                "desc": "Warm and welcoming: photos in a mosaic, amenities, reviews on the site colour."
+              },
+              "seaside": {
+                "name": "Seaside villa",
+                "desc": "Full-screen photo, a flowing gallery, nearby sights, how to get here."
+              },
+              "farm": {
+                "name": "Farm stay",
+                "desc": "The place's story, what you cook and do; with restaurant and about pages."
+              },
+              "boutique": {
+                "name": "Boutique",
+                "desc": "Like a magazine: elegant type, one large photo, airy spacing."
+              },
+              "cabin": {
+                "name": "Cabin",
+                "desc": "Dark and calm: a wide gallery, what sets you apart on contrast."
+              },
+              "city": {
+                "name": "City apartments",
+                "desc": "Plain and clear: rooms first, booking steps, questions, the map."
+              }
+            }
+          },
           "layoutTitle": "Page layout",
           "layoutDesc": "How the main photo, text and gallery look. Your section order stays as you set it.",
           "immersiveNeedsPhoto": "Panoramic needs a main photo. Until you add one, the page uses the Classic layout.",

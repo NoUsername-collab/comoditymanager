@@ -23,6 +23,7 @@ import {
   EditorGroup,
   usePublicSiteEditor,
 } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
+import { SiteTemplatesGroup } from "@/features/public-site/editor/ui/SiteTemplatesGroup";
 
 export function PublicSiteDesignPanel() {
   const t = useTranslations("admin.pages.publicSite");
@@ -44,6 +45,8 @@ export function PublicSiteDesignPanel() {
 
   return (
     <>
+      <SiteTemplatesGroup />
+
       <EditorGroup title={te("layoutTitle")} description={te("layoutDesc")}>
         <div className="pub-editor-choices" role="radiogroup" aria-label={te("layoutTitle")}>
           {PUBLIC_TEMPLATE_OPTIONS.map((option) => (

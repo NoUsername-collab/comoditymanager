@@ -31,6 +31,11 @@ export type PublicSiteEditorApi = {
   patchDraft: (partial: Partial<PublicSiteStudioDraft>) => void;
   patchCopy: (partial: Partial<LocaleCopy>) => void;
   fieldError: (...paths: string[]) => string | undefined;
+  /** A site template shown in the preview before it is applied. */
+  templatePreview: string | null;
+  setTemplatePreview: (id: string | null) => void;
+  /** Apply a site template: look and structure change, the operator's texts stay. */
+  applyTemplate: (id: string) => void;
   /** The page being edited on the Page tab and shown in the preview: null for the first page. */
   activePage: string | null;
   setActivePage: (key: string | null) => void;
