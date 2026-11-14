@@ -25,6 +25,8 @@ Ghid pentru deploy pe [Vercel](https://vercel.com).
 | `RESEND_API_KEY` | Pentru email | **Da** | [Resend](https://resend.com) → API Keys (`re_...`) |
 | `RESEND_MAIL_DOMAIN` | Opțional | Nu | Domeniu verificat Resend |
 | `CRON_SECRET` | Pentru cron | **Da** | Vercel → `/api/cron/*` (backup, rezumat zilnic, iCal, păstrarea actelor) |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Anti-bot | Nu | Cloudflare → Turnstile → widget pe domeniul platformei **și** pe `*.zalmox.app` / domeniile pensiunilor (Hostnames) |
+| `TURNSTILE_SECRET_KEY` | Anti-bot | **Da** | Același widget → Secret key. Fără ambele chei, cererea de rezervare și înscrierea merg fără verificare (doar limitele pe IP). |
 | `STRIPE_SECRET_KEY` | Plata cu cardul | **Da** | Stripe → Developers → API keys (`sk_live_…` / `sk_test_…`) |
 | `STRIPE_WEBHOOK_SECRET` | Plata cu cardul | **Da** | Stripe → Webhooks → endpoint `https://<platformă>/api/stripe/webhook` → Signing secret (`whsec_…`) |
 | `STRIPE_PRICE_LIGHT` | Plata cu cardul | Nu | ID-ul prețului lunar Light (9 EUR, fără TVA inclus) |

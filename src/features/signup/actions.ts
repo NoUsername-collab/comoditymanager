@@ -8,6 +8,7 @@ import {
   enforceRateLimit,
   getClientIp,
 } from "@/lib/rate-limit";
+import { TURNSTILE_FIELD, turnstileAllows, verifyTurnstileToken } from "@/lib/security/turnstile";
 
 const RATE_LIMIT_SIGNUP = { limit: 5, windowMs: 60 * 60 * 1000 };
 
@@ -129,6 +130,17 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
   );
   if (!rl.allowed) {
     return { ok: false, error: t("rateLimited"), errorCode: "rate_limit" };
+  }
+
+  // A person, not a script, before an account is made.
+  const requestHeaders = await headers();
+  const human = await verifyTurnstileToken(
+    (formData.get(TURNSTILE_FIELD) as string | null) ?? null,
+    ip,
+    requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host"),
+  );
+  if (!turnstileAllows(human)) {
+    return { ok: false, error: t("botCheck"), errorCode: "bot_check" };
   }
 
   const pensionName = String(formData.get("pension_name") ?? "").trim();

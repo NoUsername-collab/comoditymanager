@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { TurnstileField } from "@/components/ui/TurnstileField";
 import { Link } from "@/i18n/navigation";
 import { signupAction } from "@/features/signup/actions";
 
@@ -16,6 +17,8 @@ export function SignupForm() {
   const t = useTranslations("signup");
   const locale = useLocale();
   const [pending, setPending] = useState(false);
+  /** Each send uses up the anti-bot token; counting them renews it. */
+  const [sendAttempts, setSendAttempts] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [errorField, setErrorField] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -119,8 +122,10 @@ export function SignupForm() {
           }
           setError(result.error);
           setErrorField(result.field ?? null);
+          setSendAttempts((n) => n + 1);
         } catch (err) {
           console.error("[SIGNUP] Client error:", err);
+          setSendAttempts((n) => n + 1);
           setError(t("genericError"));
         } finally {
           setPending(false);
@@ -240,6 +245,8 @@ export function SignupForm() {
         <span className="signup-form__plan-badge-label">{t("freePlan")}</span>
         <span className="signup-form__plan-badge-detail">{t("freePlanDetail")}</span>
       </div>
+
+      <TurnstileField locale={locale} resetKey={sendAttempts} />
 
       <button
         type="submit"

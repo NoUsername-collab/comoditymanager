@@ -2,7 +2,8 @@
 
 import { useActionState, useState, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { TurnstileField } from "@/components/ui/TurnstileField";
 import {
   previewGuestStayAction,
   submitGuestRequestAction,
@@ -47,6 +48,9 @@ export function GuestBookingForm({ checkInTime, checkOutTime, preferredRoom = nu
   const t = useTranslations("public.form");
   const tErrors = useTranslations("errors");
   const tCommon = useTranslations("common");
+  const locale = useLocale();
+  /** Each send uses up the anti-bot token; counting them renews it. */
+  const [sendAttempts, setSendAttempts] = useState(0);
   const tParty = useTranslations("party");
 
   const today = todayIso();
@@ -125,10 +129,12 @@ export function GuestBookingForm({ checkInTime, checkOutTime, preferredRoom = nu
       try {
         const result = await submitGuestRequestAction(formData);
         if (!result.ok) {
+          setSendAttempts((n) => n + 1);
           return { error: result.error };
         }
         return { ok: true };
       } catch (e) {
+        setSendAttempts((n) => n + 1);
         return {
           error: e instanceof Error ? e.message : tCommon("error"),
         };
@@ -363,6 +369,8 @@ export function GuestBookingForm({ checkInTime, checkOutTime, preferredRoom = nu
               <span>{t.rich("acceptGdpr", gdprLinkTags)}</span>
             </label>
           </div>
+
+          <TurnstileField locale={locale} resetKey={sendAttempts} />
 
           {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
 

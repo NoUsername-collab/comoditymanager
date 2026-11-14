@@ -24,6 +24,13 @@ import {
   RATE_LIMIT_BOOKING_PREVIEW,
 } from "@/lib/rate-limit";
 import { runInPublicBookingMode } from "@/lib/tenant/scope";
+import { TURNSTILE_FIELD, turnstileAllows, verifyTurnstileToken } from "@/lib/security/turnstile";
+import { headers } from "next/headers";
+
+async function requestHost(): Promise<string | null> {
+  const h = await headers();
+  return h.get("x-forwarded-host") ?? h.get("host");
+}
 
 async function assertRateLimit(preset: { limit: number; windowMs: number }, action: string) {
   const ip = await getClientIp();
@@ -88,6 +95,15 @@ export async function submitGuestRequestAction(formData: FormData) {
   return runInPublicBookingMode(async () => {
     try {
       await assertRateLimit(RATE_LIMIT_BOOKING_SUBMIT, "submit");
+      // A person, not a script: checked before anything else is read.
+      const human = await verifyTurnstileToken(
+        (formData.get(TURNSTILE_FIELD) as string | null) ?? null,
+        await getClientIp(),
+        await requestHost(),
+      );
+      if (!turnstileAllows(human)) {
+        return { ok: false as const, error: t("botCheck") };
+      }
       await mustAcceptLegal(formData);
 
       const check_in = String(formData.get("check_in") ?? "");

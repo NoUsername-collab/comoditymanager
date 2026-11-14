@@ -96,13 +96,13 @@ const nextConfig: NextConfig = {
           key: "Content-Security-Policy",
           value: [
             "default-src 'self'",
-            `script-src 'self' 'unsafe-inline'${devEval} https://vercel.live https://*.vercel-scripts.com https://*.sentry.io`,
+            `script-src 'self' 'unsafe-inline'${devEval} https://vercel.live https://*.vercel-scripts.com https://*.sentry.io https://challenges.cloudflare.com`,
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in",
             "font-src 'self' data:",
             // The public site's "where we are" map and its video section.
-            "frame-src https://www.openstreetmap.org https://www.youtube-nocookie.com https://player.vimeo.com",
-            "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co https://*.sentry.io https://vercel.live",
+            "frame-src https://www.openstreetmap.org https://www.youtube-nocookie.com https://player.vimeo.com https://challenges.cloudflare.com",
+            "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co https://*.sentry.io https://vercel.live https://challenges.cloudflare.com",
             "frame-ancestors 'none'",
             "base-uri 'self'",
             "form-action 'self'",
