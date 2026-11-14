@@ -57,8 +57,28 @@ export async function createRoomBlock(input: {
   return data.id as string;
 }
 
+/**
+ * A block imported from another site's calendar follows that calendar: it is
+ * changed or cancelled there, and the next sync would bring it back.
+ */
+async function assertNotImported(
+  supabase: Awaited<ReturnType<typeof getTenantScope>>["supabase"],
+  tenantId: string,
+  blockId: string,
+): Promise<void> {
+  const { data, error } = await supabase
+    .from("room_blocks")
+    .select("ical_feed_id")
+    .eq("tenant_id", tenantId)
+    .eq("id", blockId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (data?.ical_feed_id) throw new Error("room_blocks.imported");
+}
+
 export async function deleteRoomBlock(blockId: string): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
+  await assertNotImported(supabase, tenantId, blockId);
   const { error } = await supabase
     .from("room_blocks")
     .delete()
@@ -71,12 +91,13 @@ export async function extendRoomBlockOneNight(blockId: string): Promise<string> 
   const { tenantId, supabase } = await getTenantScope();
   const { data: block, error: fetchErr } = await supabase
     .from("room_blocks")
-    .select("id, room_id, check_in, check_out")
+    .select("id, room_id, check_in, check_out, ical_feed_id")
     .eq("tenant_id", tenantId)
     .eq("id", blockId)
     .maybeSingle();
   if (fetchErr) throw new Error(fetchErr.message);
   if (!block) throw new Error("room_blocks.not_found");
+  if (block.ical_feed_id) throw new Error("room_blocks.imported");
 
   const newCheckOut = addDays(block.check_out as string, 1);
   await assertRoomsAvailableForOccupancy(

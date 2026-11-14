@@ -104,6 +104,14 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         matchPath: "/admin/settings/email",
         permissionGroup: "pension_settings",
       },
+      {
+        id: "ical",
+        labelKey: "navIcal",
+        descriptionKey: "navIcalDesc",
+        href: "/admin/settings/ical",
+        matchPath: "/admin/settings/ical",
+        permissionGroup: "pension_settings",
+      },
     ],
   },
   {

@@ -33,6 +33,16 @@ import type { BookingRow } from "@/services/bookings/types";
 
 const getT = () => getTranslations("admin.serverActions");
 
+/** The error to show; a block from another site's calendar says where to change it. */
+function blockErrorMessage(
+  e: unknown,
+  t: Awaited<ReturnType<typeof getT>>,
+  fallback: string,
+): string {
+  if (e instanceof Error && e.message === "room_blocks.imported") return t("blockImported");
+  return e instanceof Error ? e.message : fallback;
+}
+
 type ActionOk = {
   ok: true;
   id: string;
@@ -257,7 +267,7 @@ export async function extendRoomBlockAction(
   } catch (e) {
     return {
       ok: false,
-      error: e instanceof Error ? e.message : t("extendBlockError"),
+      error: blockErrorMessage(e, t, t("extendBlockError")),
     };
   }
 }
@@ -292,7 +302,7 @@ export async function deleteRoomBlockAction(
   } catch (e) {
     return {
       ok: false,
-      error: e instanceof Error ? e.message : t("deleteBlockError"),
+      error: blockErrorMessage(e, t, t("deleteBlockError")),
     };
   }
 }

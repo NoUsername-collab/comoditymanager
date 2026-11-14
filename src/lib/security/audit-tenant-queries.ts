@@ -41,6 +41,8 @@ const TENANT_GUARD_PATTERNS = [
   /getGuestAppPublicDb\s*\(/,
   /tenant_id\s*:/,
   /cross-tenant cron/,
+  // A public address that names its row by a long random token (iCal export).
+  /cross-tenant by secret token/,
 ];
 
 function listServiceFiles(root: string): string[] {

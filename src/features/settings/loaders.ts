@@ -34,6 +34,8 @@ import { resolveSetupIssues } from "@/services/setup-issues";
 import { getOnboardingSnapshot } from "@/services/onboarding";
 import { listStaffAccountsForCurrentTenant } from "@/services/staff-accounts";
 import { listTenantDomains } from "@/services/tenant-domains";
+import { listRoomIcalOverview } from "@/services/ical-sync";
+import { requestOrigin } from "@/lib/tenant/site-url";
 import { getTenantFiscalSettings } from "@/services/tenant-fiscal-settings";
 import { listActiveTenantMembers } from "@/services/tenant-members";
 import {
@@ -234,6 +236,12 @@ export async function loadMediaLibraryPage() {
 /** The public site's visits and requests; null when they cannot be read. */
 export async function loadSiteStatisticsPage() {
   return loadSiteStatistics(todayIso()).catch(() => null);
+}
+
+/** Rooms with their export address and imported calendars. */
+export async function loadSettingsIcalPage() {
+  const [rooms, origin] = await Promise.all([listRoomIcalOverview(), requestOrigin()]);
+  return { rooms, origin };
 }
 
 export async function loadStatisticsReportPage() {
