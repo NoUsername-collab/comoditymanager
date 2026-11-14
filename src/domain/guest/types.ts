@@ -111,6 +111,8 @@ export type GuestRow = {
   county: string | null;
   country: string | null;
   sex: GuestSex | null;
+  /** Set when the guest's personal data was erased on request (GDPR). */
+  erased_at?: string | null;
 };
 
 export type GuestListItem = Pick<

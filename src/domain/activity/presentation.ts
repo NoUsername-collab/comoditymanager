@@ -51,6 +51,7 @@ export function activityIcon(action: ActivityAction): string {
     "guest.unblacklisted": "✓",
     "guest.adjusted": "±",
     "guest.loyalty_ref_reissued": "◇",
+    "guest.personal_data_erased": "⌫",
     "building.created": "🏠",
     "building.updated": "🏠",
     "building.deleted": "🏠",

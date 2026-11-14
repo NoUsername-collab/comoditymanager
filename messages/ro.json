@@ -4835,7 +4835,8 @@
         "blacklisted": "Client trecut în blacklist",
         "unblacklisted": "Client scos din blacklist",
         "adjusted": "Scor client ajustat",
-        "loyalty_ref_reissued": "Referință card oaspete emisă"
+        "loyalty_ref_reissued": "Referință card oaspete emisă",
+        "personal_data_erased": "Date personale șterse la cererea oaspetelui"
       },
       "building": {
         "created": "Clădire adăugată",
@@ -4967,6 +4968,31 @@
       "departureGuest": "Plecare: {name}"
     },
     "guests": {
+      "privacy": {
+        "title": "Date personale (GDPR)",
+        "exportHint": "Când oaspetele cere o copie a datelor sale, descărcați aici tot ce are pensiunea despre el: fișa, sejururile, check-in-urile, facturile și plățile.",
+        "export": "Descarcă datele (JSON)",
+        "eraseTitle": "Ștergere la cererea oaspetelui",
+        "eraseHint": "Numele, contactul, actele de identitate, notele și mesajele oaspetelui sunt șterse definitiv. Sejururile rămân în calendar și în statistici, fără nume. Facturile emise și plățile rămân neschimbate, fiind documente contabile. Nu se poate anula.",
+        "eraseConfirmLabel": "Scrieți ȘTERGE pentru confirmare",
+        "erase": "Șterge datele personale",
+        "erasing": "Se șterg…",
+        "erasedOn": "Datele personale ale acestui oaspete au fost șterse la cererea lui, pe {date}.",
+        "ownerOnly": "Doar proprietarul poate șterge datele unui oaspete.",
+        "retentionTitle": "Păstrarea actelor oaspeților",
+        "retentionDesc": "Cât timp rămân datele din acte după ultimul sejur",
+        "retentionLabel": "Datele din acte se șterg după",
+        "retentionMonths": "{count, plural, one {o lună} few {# luni} other {# de luni}} de la ultimul sejur",
+        "retentionHint": "CNP-ul, numerele actelor, data și locul nașterii și adresa se șterg automat, în fiecare noapte, după această perioadă. Numele și contactul rămân, pentru rezervări viitoare. Alegeți perioada potrivit obligațiilor legale ale pensiunii.",
+        "retentionSaved": "Perioada a fost salvată.",
+        "errors": {
+          "owner_only": "Doar proprietarul poate face asta.",
+          "confirm_mismatch": "Scrieți exact ȘTERGE pentru a confirma.",
+          "guest.not_found": "Oaspetele nu mai există.",
+          "guest.has_open_stay": "Oaspetele are un sejur în curs sau viitor. Ștergeți datele după ce sejurul se încheie sau anulați-l.",
+          "retention_invalid": "Perioada aleasă nu este validă."
+        }
+      },
       "searchPlaceholder": "Caută nume, email, telefon…",
       "mergedProfileTitle": "Profil combinat",
       "mergedProfileMessage": "Profilurile clientului au fost unite cu succes.",

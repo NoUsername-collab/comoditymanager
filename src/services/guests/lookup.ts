@@ -38,7 +38,7 @@ import { matchGuestByContact } from "./match-guest";
 import { isPlaceholderEmail } from "@/domain/guest/normalize";
 
 const GUEST_ROW_SELECT =
-  "id, last_name, first_name, display_name, phone, phone_normalized, email, email_normalized, notes, tags, identity_status, created_at, updated_at, doc_type, doc_series, doc_number, doc_issued_by, doc_issue_date, doc_expiry_date, national_id_type, national_id, cnp, birth_date, birth_place, nationality, address, city, county, country, sex";
+  "id, last_name, first_name, display_name, phone, phone_normalized, email, email_normalized, notes, tags, identity_status, created_at, updated_at, doc_type, doc_series, doc_number, doc_issued_by, doc_issue_date, doc_expiry_date, national_id_type, national_id, cnp, birth_date, birth_place, nationality, address, city, county, country, sex, erased_at";
 
 const loadGuestBaseById = cache(async (id: string): Promise<GuestRow | null> => {
   const { tenantId, supabase } = await getTenantScope();

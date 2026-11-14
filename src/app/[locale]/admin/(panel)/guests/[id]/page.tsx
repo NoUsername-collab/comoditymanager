@@ -18,6 +18,8 @@ import { GuestStayStarsInline } from "@/features/guests/ui/GuestStayStarsInline"
 import { GuestLoyaltyRefPanel } from "@/features/guests/ui/GuestLoyaltyRefPanel";
 import { GUEST_TAG_LABELS } from "@/domain/guest/tags";
 import { loadGuestDetailPage } from "@/features/guests/loaders";
+import { GuestPrivacyPanel } from "@/features/guests/ui/GuestPrivacyPanel";
+import { requireStaff } from "@/lib/auth/require-staff";
 import { getTranslations } from "next-intl/server";
 
 function statusLabel(status: string, tFlow: (key: string) => string): string {
@@ -73,6 +75,7 @@ export default async function GuestDetailPage({
     searchParams,
     params.then(({ id }) => loadGuestDetailPage(id)),
   ]);
+  const { memberRole } = await requireStaff();
   const activeTab = resolveTab(tab);
   if (!data) notFound();
 
@@ -246,12 +249,21 @@ export default async function GuestDetailPage({
           )}
 
           {activeTab === "identity" && (
-            <GuestProfileSection title={tPage("identityData")}>
-              <GuestIdentityForm
-                key={`identity-${guest.id}-${guest.updated_at}`}
-                guest={guest}
-              />
-            </GuestProfileSection>
+            <>
+              <GuestProfileSection title={tPage("identityData")}>
+                <GuestIdentityForm
+                  key={`identity-${guest.id}-${guest.updated_at}`}
+                  guest={guest}
+                />
+              </GuestProfileSection>
+              <GuestProfileSection title={tGuests("privacy.title")}>
+                <GuestPrivacyPanel
+                  guestId={guest.id}
+                  isOwner={memberRole === "owner"}
+                  erasedAt={guest.erased_at ?? null}
+                />
+              </GuestProfileSection>
+            </>
           )}
 
           {activeTab === "profile" && (

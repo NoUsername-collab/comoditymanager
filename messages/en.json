@@ -4852,7 +4852,8 @@
         "blacklisted": "Guest blacklisted",
         "unblacklisted": "Guest removed from blacklist",
         "adjusted": "Guest score adjusted",
-        "loyalty_ref_reissued": "Guest card reference issued"
+        "loyalty_ref_reissued": "Guest card reference issued",
+        "personal_data_erased": "Personal data erased at the guest's request"
       },
       "building": {
         "created": "Building added",
@@ -4984,6 +4985,31 @@
       "departureGuest": "Departure: {name}"
     },
     "guests": {
+      "privacy": {
+        "title": "Personal data (GDPR)",
+        "exportHint": "When the guest asks for a copy of their data, download here everything the property holds about them: the file, stays, check-ins, invoices and payments.",
+        "export": "Download the data (JSON)",
+        "eraseTitle": "Erasure at the guest's request",
+        "eraseHint": "The guest's name, contact, identity documents, notes and messages are erased for good. Stays remain on the calendar and in statistics, without a name. Issued invoices and payments stay as they are, as accounting documents. This cannot be undone.",
+        "eraseConfirmLabel": "Type ERASE to confirm",
+        "erase": "Erase personal data",
+        "erasing": "Erasing…",
+        "erasedOn": "This guest's personal data was erased at their request on {date}.",
+        "ownerOnly": "Only the owner can erase a guest's data.",
+        "retentionTitle": "Keeping guests' documents",
+        "retentionDesc": "How long identity document details stay after the last stay",
+        "retentionLabel": "Identity document details are erased",
+        "retentionMonths": "{count, plural, one {one month} other {# months}} after the last stay",
+        "retentionHint": "The personal ID number, document numbers, date and place of birth and the address are erased automatically each night after this period. Name and contact stay, for future bookings. Choose the period that fits the property's legal obligations.",
+        "retentionSaved": "The period was saved.",
+        "errors": {
+          "owner_only": "Only the owner can do this.",
+          "confirm_mismatch": "Type exactly ERASE to confirm.",
+          "guest.not_found": "The guest no longer exists.",
+          "guest.has_open_stay": "The guest has a current or upcoming stay. Erase the data once the stay ends, or cancel it.",
+          "retention_invalid": "The chosen period is not valid."
+        }
+      },
       "searchPlaceholder": "Search name, email, phone…",
       "mergedProfileTitle": "Profile merged",
       "mergedProfileMessage": "Guest profiles were merged successfully.",

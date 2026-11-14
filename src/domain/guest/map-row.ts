@@ -40,5 +40,6 @@ export function mapGuestRow(row: Record<string, unknown>): GuestRow {
     county: optStr(row.county),
     country: optStr(row.country),
     sex: optStr(row.sex) as GuestRow["sex"],
+    erased_at: optStr(row.erased_at),
   };
 }

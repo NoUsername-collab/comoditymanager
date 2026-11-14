@@ -6,6 +6,8 @@ import { MfaEnrollmentPanel } from "@/features/settings/ui/MfaEnrollmentPanel";
 import { AdminFactoryResetPanel } from "@/features/settings/ui/AdminFactoryResetPanel";
 import { isFactoryResetEnabled } from "@/services/database-reset";
 import { loadSettingsStaffContext } from "@/lib/settings/page-context";
+import { GuestRetentionPanel } from "@/features/settings/ui/GuestRetentionPanel";
+import { getGuestRetentionMonths } from "@/services/guest-privacy";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +27,9 @@ export default async function SettingsSecurityPage({
 
   const isOwner = ctx.staff.memberRole === "owner";
   const showFactoryReset = isOwner && isFactoryResetEnabled();
+  const [tPrivacy, retentionMonths] = isOwner
+    ? await Promise.all([getTranslations("admin.guests.privacy"), getGuestRetentionMonths()])
+    : [null, null];
   const tLocation = showFactoryReset
     ? await getTranslations("admin.pages.settingsLocation")
     : null;
@@ -42,6 +47,11 @@ export default async function SettingsSecurityPage({
       <SettingsSection title={tMfa("settingsSectionTitle")} description={tMfa("settingsSectionDesc")}>
         <MfaEnrollmentPanel next={next} />
       </SettingsSection>
+      {tPrivacy && retentionMonths != null ? (
+        <SettingsSection title={tPrivacy("retentionTitle")} description={tPrivacy("retentionDesc")}>
+          <GuestRetentionPanel months={retentionMonths} />
+        </SettingsSection>
+      ) : null}
       {showFactoryReset && tLocation ? (
         <SettingsSection
           title={tLocation("danger.title")}
