@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from "next/server";
  */
 
 const intlMiddleware = vi.fn(() => NextResponse.next());
+/** The public site's: no redirect by the browser's language. */
+const publicSiteIntlMiddleware = vi.fn(() => NextResponse.next());
 const getUser = vi.fn();
 const signOut = vi.fn();
 const lookupTenantHostOnEdge = vi.fn();
@@ -21,7 +23,10 @@ const resolveMfaRedirectPath = vi.fn();
 const getPrimaryTenantSlugForUser = vi.fn();
 const resolveDomainRoutingOnEdge = vi.fn();
 
-vi.mock("next-intl/middleware", () => ({ default: () => intlMiddleware }));
+vi.mock("next-intl/middleware", () => ({
+  default: (options: { localeDetection?: boolean }) =>
+    options.localeDetection === false ? publicSiteIntlMiddleware : intlMiddleware,
+}));
 vi.mock("@supabase/ssr", () => ({
   createServerClient: vi.fn(() => ({ auth: { getUser, signOut } })),
 }));
@@ -68,6 +73,7 @@ const location = (r: Response) => r.headers.get("location") ?? "";
 beforeEach(() => {
   vi.clearAllMocks();
   intlMiddleware.mockImplementation(() => NextResponse.next());
+  publicSiteIntlMiddleware.mockImplementation(() => NextResponse.next());
   getUser.mockResolvedValue({ data: { user: null } });
   lookupTenantHostOnEdge.mockResolvedValue({ tenantId: "t1", slug: "casaemil", status: "active" });
   resolveEffectiveStaffRole.mockResolvedValue("admin");
@@ -96,6 +102,15 @@ describe("tenant host", () => {
     const r = await proxy(tenant("/calendar"));
     expect(r.status).toBe(200);
     expect(location(r)).toBe("");
+  });
+
+  it("keeps the public site in the language of its address; staff pages follow the browser", async () => {
+    await proxy(tenant("/calendar"));
+    await proxy(tenant("/restaurant"));
+    expect(publicSiteIntlMiddleware).toHaveBeenCalledTimes(2);
+    expect(intlMiddleware).not.toHaveBeenCalled();
+    await proxy(tenant("/admin/login"));
+    expect(intlMiddleware).toHaveBeenCalledTimes(1);
   });
 
   it("sends platform-only pages back to the tenant home", async () => {
@@ -198,6 +213,18 @@ describe("custom domain", () => {
     lookupTenantHostOnEdge.mockResolvedValue(null);
     const r = await proxy(custom("/"));
     expect(location(r)).toContain("/landing");
+  });
+
+  it("serves the site's own pages on the guesthouse's domain, in every language", async () => {
+    for (const routingKind of ["custom_public", "custom_brand"]) {
+      resolveDomainRoutingOnEdge.mockResolvedValue({ slug: "casaemil", routingKind });
+      for (const path of ["/restaurant", "/en/restaurant"]) {
+        const r = await proxy(custom(path));
+        expect(location(r), `${routingKind} ${path}`).toBe("");
+      }
+      // Deeper addresses and staff pages are not pages of the site.
+      expect(location(await proxy(custom("/restaurant/meniu")))).toContain("casaemil.");
+    }
   });
 
   it("sends staff paths on a public-only domain to the tenant subdomain", async () => {

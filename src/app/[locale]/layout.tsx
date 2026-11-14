@@ -3,6 +3,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { pickMessages, SHARED_CLIENT_NAMESPACES } from "@/i18n/client-messages";
 
 export const metadata = rootMetadata;
 export const viewport = rootViewport;
@@ -29,7 +30,10 @@ export default async function LocaleLayout({
 
   return (
     <RootDocument lang={locale}>
-      <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+      {/* The shared texts only: areas that need more (admin, guest app, platform) add their own. */}
+      <NextIntlClientProvider messages={pickMessages(messages, SHARED_CLIENT_NAMESPACES)}>
+        {children}
+      </NextIntlClientProvider>
     </RootDocument>
   );
 }

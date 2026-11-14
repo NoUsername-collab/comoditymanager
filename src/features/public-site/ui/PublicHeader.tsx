@@ -6,6 +6,8 @@ import { HeaderLocaleSwitch } from "@/layout/components/HeaderLocaleSwitch";
 import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import { resolvePublicNavItems } from "@/features/public-site/domain/nav-items";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
+import { effectivePublicTemplate } from "@/features/public-site/domain/template";
+import { publicThemeClassName, resolvePublicSiteStyle } from "@/features/public-site/themes/loader";
 
 /**
  * The site header, live and in the settings preview. `preview` draws the same
@@ -79,7 +81,12 @@ export function PublicHeader({
           </div>
         ) : (
           <div className="flex items-center gap-2 sm:gap-3">
-            <PublicMobileMenu items={navItems} />
+            {/* The phone menu opens on the page's body, outside the site's frame: it takes the site's colours along. */}
+            <PublicMobileMenu
+              items={navItems}
+              themeClassName={`site-themed ${publicThemeClassName(config.themeId)}`}
+              themeStyle={resolvePublicSiteStyle(config.themeId, config.chrome, effectivePublicTemplate(config))}
+            />
             <PublicNav items={navItems} />
             <HeaderLocaleSwitch slot="nav" />
           </div>

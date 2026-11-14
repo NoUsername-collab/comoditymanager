@@ -73,6 +73,20 @@ describe("shouldShowStayOffers", () => {
 });
 
 describe("lodgingBusinessJsonLd", () => {
+  it("links the place to its site and country", () => {
+    const json = lodgingBusinessJsonLd({
+      displayName: "Casa Test",
+      locale: "bg",
+      checkInTime: "14:00",
+      checkOutTime: "11:00",
+      place: { address: null, lat: null, lng: null },
+      url: "https://casa.zalmox.app",
+      country: "BG",
+    });
+    expect(json.url).toBe("https://casa.zalmox.app");
+    expect(json.address).toEqual({ "@type": "PostalAddress", addressCountry: "BG" });
+  });
+
   it("emits LodgingBusiness with geo when coordinates exist", () => {
     const json = lodgingBusinessJsonLd({
       displayName: "Casa Test",
@@ -85,6 +99,7 @@ describe("lodgingBusinessJsonLd", () => {
       place: { address: "Strada 1", lat: 47.9, lng: 23.8 },
     });
     expect(json["@type"]).toBe("LodgingBusiness");
+    expect(json.address).toEqual({ "@type": "PostalAddress", streetAddress: "Strada 1" });
     expect(json.geo).toEqual({
       "@type": "GeoCoordinates",
       latitude: 47.9,

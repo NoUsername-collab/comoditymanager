@@ -12,6 +12,8 @@ import {
 } from "@/features/public-site/themes/loader";
 import { MobileShell } from "@/layout/components/MobileShell";
 import { loadPublicSiteConfig } from "@/features/public-site/loaders";
+import { requestOrigin } from "@/lib/tenant/site-url";
+import { resolveTenantCountryForRequest } from "@/lib/tenant/resolve-fiscal-tenant";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import "@/styles/features/public/public-site.css";
@@ -36,18 +38,20 @@ export default async function PublicLayout({
 }) {
   await bindTenantContextFromRequest();
 
-  const [config, tFooter, tContact, locale] = await Promise.all([
+  const [config, tFooter, tContact, locale, origin, country] = await Promise.all([
     loadPublicSiteConfig(),
     getTranslations("public.footer"),
     getTranslations("public.contact"),
     getLocale(),
+    requestOrigin(),
+    resolveTenantCountryForRequest(),
   ]);
 
   const style = resolvePublicSiteStyle(config.themeId, config.chrome, effectivePublicTemplate(config));
 
   return (
     <>
-      <PublicLodgingJsonLd config={config} locale={locale} />
+      <PublicLodgingJsonLd config={config} locale={locale} url={origin} country={country} />
       {/* Above the site's frame: a layout may lay its header over the top of the page. */}
       <AdminCorner className={`site-themed ${publicThemeClassName(config.themeId)}`} style={style} />
       <MobileShell

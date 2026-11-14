@@ -9,6 +9,7 @@ import {
   loadPublicSiteConfig,
 } from "@/features/public-site/loaders";
 import { getLocale } from "next-intl/server";
+import { AreaMessages } from "@/i18n/AreaMessages";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [config, locale] = await Promise.all([loadPublicSiteConfig(), getLocale()]);
@@ -30,7 +31,12 @@ export default async function HomePage() {
   return (
     <>
       <PublicSitePage config={config} locale={locale} />
-      {staffPreview ? <PublicStaffPreviewLazy data={staffPreview} /> : null}
+      {/* Staff only: the operator panel's texts come with it, never to guests. */}
+      {staffPreview ? (
+        <AreaMessages>
+          <PublicStaffPreviewLazy data={staffPreview} />
+        </AreaMessages>
+      ) : null}
     </>
   );
 }

@@ -1,3 +1,5 @@
+import { isPageSlugShape } from "@/domain/public-site/page-slug";
+
 export type TenantDomainRoutingKind =
   | "platform_subdomain"
   | "custom_full"
@@ -13,9 +15,21 @@ const PUBLIC_PATH_PREFIXES = [
 
 const BRAND_ONLY_PATHS = new Set(["/", "/confidentialitate", "/termeni"]);
 
-/** Paths allowed on custom_brand (homepage + legal only). */
+const LOCALE_SEGMENTS = ["ro", "en", "bg"];
+
+/**
+ * One of the site's own pages (/restaurant, /en/restaurant): part of the site
+ * wherever the site is served. Whether the page exists is the page's to say (404).
+ */
+function isSitePagePath(path: string): boolean {
+  const segments = path.split("/").filter(Boolean);
+  const rest = segments.length > 0 && LOCALE_SEGMENTS.includes(segments[0]!) ? segments.slice(1) : segments;
+  return rest.length === 1 && isPageSlugShape(rest[0]!);
+}
+
+/** Paths allowed on custom_brand (the site: homepage, its own pages and legal). */
 function isBrandOnlyPublicPath(path: string): boolean {
-  if (BRAND_ONLY_PATHS.has(path)) return true;
+  if (BRAND_ONLY_PATHS.has(path) || isSitePagePath(path)) return true;
   const segments = path.split("/").filter(Boolean);
   if (segments.length === 1 && ["ro", "en", "bg"].includes(segments[0]!)) {
     return true;
@@ -31,10 +45,15 @@ function isBrandOnlyPublicPath(path: string): boolean {
 }
 
 function isPublicTenantPath(path: string): boolean {
-  if (path === "/") return true;
+  if (path === "/" || isSitePagePath(path)) return true;
   return PUBLIC_PATH_PREFIXES.some(
     (prefix) => prefix !== "/" && path.startsWith(prefix)
   );
+}
+
+/** A page of the guesthouse's public site (not staff, not the guest app). */
+export function isPublicSitePath(path: string): boolean {
+  return isPublicTenantPath(path) && !isStaffOnlyPath(path);
 }
 
 export function isStaffOnlyPath(path: string): boolean {

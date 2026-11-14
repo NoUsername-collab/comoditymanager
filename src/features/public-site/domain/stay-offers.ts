@@ -96,6 +96,10 @@ export function lodgingBusinessJsonLd(args: {
   checkInTime: string;
   checkOutTime: string;
   place: PublicPlace;
+  /** The site's address, so search results link the place to it. */
+  url?: string | null;
+  /** ISO country of the property (RO, MD, BG). */
+  country?: string | null;
 }): Record<string, unknown> {
   const json: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -105,13 +109,15 @@ export function lodgingBusinessJsonLd(args: {
     checkoutTime: args.checkOutTime,
     inLanguage: args.locale,
   };
+  if (args.url) json.url = args.url;
   if (args.image) json.image = args.image;
   if (args.email) json.email = args.email;
   if (args.phone) json.telephone = args.phone;
-  if (args.place.address?.trim()) {
+  if (args.place.address?.trim() || args.country) {
     json.address = {
       "@type": "PostalAddress",
-      streetAddress: args.place.address.trim(),
+      ...(args.place.address?.trim() ? { streetAddress: args.place.address.trim() } : {}),
+      ...(args.country ? { addressCountry: args.country } : {}),
     };
   }
   if (args.place.lat != null && args.place.lng != null) {

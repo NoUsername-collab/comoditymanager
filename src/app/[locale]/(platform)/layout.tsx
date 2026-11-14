@@ -1,6 +1,7 @@
 import { PlatformHeader } from "@/features/signup/ui/PlatformHeader";
 import { PlatformFooter } from "@/features/signup/ui/PlatformFooter";
 import { MobileShell } from "@/layout/components/MobileShell";
+import { AreaMessages } from "@/i18n/AreaMessages";
 import type { CSSProperties } from "react";
 import "@/styles/features/platform/signup.css";
 import "@/styles/features/platform/landing.css";
@@ -29,14 +30,16 @@ export default function PlatformLayout({
   children: React.ReactNode;
 }) {
   return (
-    <MobileShell
-      surface="platform"
-      className="site-themed platform-shell platform-shell--split flex min-h-screen flex-1 flex-col"
-      style={platformVars}
-    >
-      <PlatformHeader variant="split" />
-      <div className="ml-main ml-content flex-1">{children}</div>
-      <PlatformFooter />
-    </MobileShell>
+    <AreaMessages only={["landing", "pricing", "signup", "platform", "admin.common"]}>
+      <MobileShell
+        surface="platform"
+        className="site-themed platform-shell platform-shell--split flex min-h-screen flex-1 flex-col"
+        style={platformVars}
+      >
+        <PlatformHeader variant="split" />
+        <div className="ml-main ml-content flex-1">{children}</div>
+        <PlatformFooter />
+      </MobileShell>
+    </AreaMessages>
   );
 }

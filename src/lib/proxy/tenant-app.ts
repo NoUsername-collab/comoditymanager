@@ -14,13 +14,13 @@ import {
   resolveTenantMemberRoleOnTenantHost,
   resolveTenantIdOnEdge,
 } from "@/lib/auth/tenant-staff-edge";
-import type { TenantDomainRoutingKind } from "@/lib/tenant/domain-routing";
+import { isPublicSitePath, type TenantDomainRoutingKind } from "@/lib/tenant/domain-routing";
 import { routing } from "@/i18n/routing";
 import { stripLocalePrefix } from "@/lib/proxy/request-context";
 import { blockedTenantRedirectIfNeeded } from "@/lib/proxy/tenant-status";
 import { resolveEffectiveStaffRole, mfaRedirectIfNeeded } from "@/lib/proxy/staff-mfa";
 import { createProxySupabase, type ProxySupabase } from "@/lib/proxy/edge-session";
-import { intlMiddleware } from "@/lib/proxy/intl";
+import { intlMiddleware, publicSiteIntlMiddleware } from "@/lib/proxy/intl";
 import { redirectToPath } from "@/lib/proxy/redirect";
 import { withRequestHeaderOverrides } from "@/lib/proxy/forward-headers";
 
@@ -205,7 +205,10 @@ export async function runTenantAppProxy(
     return redirectToPath(request, "/");
   }
 
-  const response = intlMiddleware(tenantRequest);
+  // Staff and guest-app pages follow the browser's language; the public site keeps the one in its address.
+  const response = isPublicSitePath(path)
+    ? publicSiteIntlMiddleware(tenantRequest)
+    : intlMiddleware(tenantRequest);
 
   const supabase = createProxySupabase(tenantRequest, response);
   if (!supabase) return response;

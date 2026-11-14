@@ -1,3 +1,4 @@
+import { PAGE_SLUG_MAX, PAGE_SLUG_PATTERN, RESERVED_PAGE_SLUGS } from "@/domain/public-site/page-slug";
 import {
   PUBLIC_MENU_KINDS,
   type LocalizedText,
@@ -9,30 +10,8 @@ import {
  * The site's own pages (/<slug>) and the header menu that links to them.
  */
 
-/** Addresses the app already uses; a page cannot take them. Kept in step with migration 118. */
-export const RESERVED_PAGE_SLUGS = [
-  "admin",
-  "api",
-  "calendar",
-  "confidentialitate",
-  "termeni",
-  "receptie",
-  "guest",
-  "stay",
-  "landing",
-  "preturi",
-  "signup",
-  "alpha-gate",
-  "tenant-suspended",
-  "platform-admin",
-  "offline",
-  "ro",
-  "en",
-  "bg",
-] as const;
-
-export const PAGE_SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-export const PAGE_SLUG_MAX = 60;
+// The address rules live with the routing, which serves the pages on a guesthouse's own domain too.
+export { PAGE_SLUG_MAX, PAGE_SLUG_PATTERN, RESERVED_PAGE_SLUGS };
 export const MAX_SITE_PAGES = 20;
 export const MAX_MENU_ITEMS = 12;
 export const MAX_MENU_CHILDREN = 10;

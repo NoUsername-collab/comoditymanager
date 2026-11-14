@@ -4,9 +4,13 @@ import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 export function PublicLodgingJsonLd({
   config,
   locale,
+  url,
+  country,
 }: {
   config: PublicSiteConfig;
   locale: string;
+  url: string;
+  country: string;
 }) {
   const json = lodgingBusinessJsonLd({
     displayName: config.displayName,
@@ -17,6 +21,8 @@ export function PublicLodgingJsonLd({
     checkInTime: config.checkInTime,
     checkOutTime: config.checkOutTime,
     place: config.place,
+    url,
+    country,
   });
 
   return (
