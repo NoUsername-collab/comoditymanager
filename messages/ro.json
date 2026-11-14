@@ -1335,8 +1335,8 @@
           "notifyDailySummaryDesc": "Un email pe zi cu sosirile și plecările",
           "guestNotificationsTitle": "Emailuri pentru oaspeți",
           "guestNotificationsDesc": "Ce primesc oaspeții, automat",
-          "planSendsNone": "Basic nu trimite email. Confirmarea este în Light.",
-          "planSendsConfirmation": "Light trimite doar emailul de confirmare.",
+          "planSendsNone": "Basic vă anunță pe email când vine o cerere nouă. Emailul de confirmare către oaspete este în Light.",
+          "planSendsConfirmation": "Light trimite emailul de confirmare către oaspete și vă anunță când vine o cerere nouă.",
           "notifyConfirmation": "Confirmare rezervare",
           "notifyConfirmationDesc": "Email automat la confirmare",
           "notifyCancellation": "Anulare rezervare",
@@ -1619,6 +1619,8 @@
           "invoiceNextHint": "Următorul număr de factură se alocă automat la emitere.",
           "readOnly": "Doar proprietarul poate edita setările fiscale. Poți vizualiza datele mai jos.",
           "eFacturaTitle": "Trimiterea facturilor la ANAF (e-Factura)",
+          "eFacturaManual": "Le transmiteți dumneavoastră",
+          "eFacturaManualNote": "Trimiterea automată la ANAF nu este încă disponibilă. Transmiteți factura în e-Factura din programul de contabilitate sau din aplicația gratuită ANAF, ca până acum.",
           "eFacturaDesc": "PDF-ul facturii e gata imediat; trimiterea la ANAF se face apoi singură, în fundal.",
           "fiscalProvider": "Cum ajung facturile la ANAF",
           "fiscalProviderDesc": "Le trimiți tu (descarci PDF-ul) sau le trimitem automat în SPV",
@@ -3884,7 +3886,7 @@
           "submitted": "Transmis",
           "accepted": "Acceptat",
           "rejected": "Respins",
-          "failed": "Eșuat"
+          "failed": "Netrimisă"
         }
       }
     },
@@ -5517,7 +5519,7 @@
     "gridTitle": "Trei planuri. Aceeași recepție.",
     "gridLead": "Camere fără limită pe toate. Alegeți după factură, email și site.",
     "priceFree": "Gratuit, permanent",
-    "billedMonthly": "Facturat lunar. Anulați oricând.",
+    "billedMonthly": "Lunar, fără contract. Contul pornește pe Basic; planul se activează la cerere.",
     "perMonth": "/ lună",
     "roomsUnlimited": "Nelimitat",
     "recommended": "Pentru domeniul propriu",
@@ -5530,7 +5532,7 @@
     "faq2Q": "La ce folosește Light, la 9 EUR?",
     "faq2A": "La factura PDF și la emailul de confirmare trimis oaspetelui. Până la 300 de confirmări pe lună.",
     "faq3Q": "Ce schimbă PRO, la 29 EUR?",
-    "faq3A": "Site-ul trece pe domeniul dumneavoastră, fără marca Zalmox. Se adaugă iCal, harta de ocupare, mesaje de sejur până la 2.000 pe lună, 3 proprietăți și 8 persoane în echipă.",
+    "faq3A": "Site-ul trece pe domeniul dumneavoastră, fără marca Zalmox. Se adaugă harta de ocupare, mesaje de sejur până la 2.000 pe lună și 8 persoane în echipă.",
     "faq4Q": "Luați comision din rezervare?",
     "faq4A": "Nu. Pe cererile venite de pe pagina pensiunii, comisionul este 0%. Confirmați sejurul din calendar.",
     "finalTitle": "Începe gratuit azi",
@@ -5568,20 +5570,20 @@
         "f1": "Tot ce include Light",
         "f2": "Mesaje de sejur, până la 2.000 pe lună",
         "f3": "Domeniu propriu, fără marca Zalmox",
-        "f4": "iCal și hartă de ocupare",
-        "f5": "Până la 3 proprietăți",
+        "f4": "Hartă de ocupare în calendar",
+        "f5": "O proprietate",
         "f6": "8 persoane în echipă",
         "cta": "Alegeți PRO"
       },
       "business": {
         "name": "Business",
-        "tagline": "Mai multe proprietăți",
+        "tagline": "Echipă și mesaje fără limită",
         "roomLine": "Camere fără limită de număr",
-        "f1": "Tot ce include Professional",
-        "f2": "Până la 10 proprietăți",
+        "f1": "Tot ce include PRO",
+        "f2": "Echipă fără limită",
         "f3": "Onboarding dedicat",
         "f4": "Prioritate la suport",
-        "f5": "Fără marca Zalmox pe site",
+        "f5": "Mesaje de sejur fără limită",
         "f6": "Contact pentru activare",
         "cta": "Contactați-ne"
       }
@@ -5628,8 +5630,8 @@
         "modules": {
         "free": "Pagină și link de sejur",
         "essential": "Factură PDF și o confirmare",
-        "professional": "Domeniu, iCal, ocupare",
-          "business": "+ până la 10 proprietăți"
+        "professional": "Domeniu propriu, hartă de ocupare",
+          "business": "+ onboarding și suport prioritar"
         }
     }
   },

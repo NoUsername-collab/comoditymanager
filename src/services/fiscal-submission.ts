@@ -21,6 +21,7 @@ import {
 import type { IssuedInvoiceDocument } from "@/domain/invoice/issued-invoice";
 import {
   getAnafRuntimeConfig,
+  isAnafSubmissionAvailable,
   shouldEnqueueAnafSubmission,
 } from "@/lib/fiscal/anaf-config";
 import { logTenantActivity } from "@/services/activity-log";
@@ -419,6 +420,8 @@ type ProcessPendingFiscalJobsResult = {
 export async function processPendingFiscalJobs(
   limit = 25
 ): Promise<ProcessPendingFiscalJobsResult> {
+  // Nothing can reach ANAF yet: leave the queue as it is rather than mark it.
+  if (!isAnafSubmissionAvailable()) return { processed: 0, failed: 0, skipped: 0 };
   const supabase = createPublicAdminClient();
   // cross-tenant cron batch — each job row carries tenant_id; filtered when applied
   const { data: jobs, error } = await supabase

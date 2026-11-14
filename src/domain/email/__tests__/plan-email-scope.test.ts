@@ -16,4 +16,10 @@ describe("planAllowsEmailKind", () => {
     expect(planAllowsEmailKind("stay", "confirmation")).toBe(true);
     expect(planAllowsEmailKind("stay", "stay")).toBe(true);
   });
+
+  it("tells the team about a new request on every plan", () => {
+    for (const scope of ["none", "confirmation", "stay"] as const) {
+      expect(planAllowsEmailKind(scope, "staff")).toBe(true);
+    }
+  });
 });

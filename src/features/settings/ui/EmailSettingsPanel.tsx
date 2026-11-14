@@ -156,8 +156,7 @@ export function EmailSettingsPanel({
           {t("planSendsConfirmation")}
         </p>
       ) : null}
-      {emailScope === "none" ? null : (
-      <>
+      {/* Every plan tells the team about a new request; the rest depends on the plan. */}
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
           <span className="checkin-settings__section-title">
@@ -180,7 +179,6 @@ export function EmailSettingsPanel({
         </SettingRow>
       </div>
 
-      {emailScope === "stay" ? (
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
           <span className="checkin-settings__section-title">
@@ -208,6 +206,7 @@ export function EmailSettingsPanel({
           </label>
         </SettingRow>
 
+        {emailScope === "stay" ? (
         <SettingRow
           label={t("notifyDailySummary")}
           description={t("notifyDailySummaryDesc")}
@@ -224,9 +223,11 @@ export function EmailSettingsPanel({
             <span className="checkin-toggle__slider" />
           </label>
         </SettingRow>
+        ) : null}
       </div>
-      ) : null}
 
+      {emailScope === "none" ? null : (
+      <>
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
           <span className="checkin-settings__section-title">

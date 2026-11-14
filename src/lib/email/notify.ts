@@ -79,7 +79,9 @@ async function sendForCurrentTenant(
   if (!planAllowsEmailKind(getPlanConfig(tenant.plan_id).emailScope, kind)) {
     return { success: true as const, messageId: "skipped-plan-email" };
   }
-  return sendTenantEmail(tenantId, tenant.slug, message);
+  return sendTenantEmail(tenantId, tenant.slug, message, {
+    countsTowardCap: kind !== "staff",
+  });
 }
 
 export async function notifyOwnerNewRequest(data: {
@@ -126,7 +128,7 @@ export async function notifyOwnerNewRequest(data: {
         data.emailSettings?.email_reply_to,
         data.guestEmail,
       ),
-    }, "stay");
+    }, "staff");
 
     logEmailResult("notifyOwnerNewRequest", result);
   } catch (error) {

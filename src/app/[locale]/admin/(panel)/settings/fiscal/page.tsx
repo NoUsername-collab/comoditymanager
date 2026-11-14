@@ -1,5 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { FiscalBillingSettingsPanel } from "@/features/settings/ui/FiscalBillingSettingsPanel";
+import { isAnafSubmissionAvailable } from "@/lib/fiscal/anaf-config";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import type { TenantCountry } from "@/domain/fiscal/country-fiscal-profile";
@@ -62,6 +63,7 @@ export default async function SettingsFiscalPage({
           tenantFiscalSettings={tenantFiscalSettings}
           locale={locale === "bg" ? "bg" : locale === "en" ? "en" : "ro"}
           readOnly={readOnly}
+          anafAvailable={isAnafSubmissionAvailable()}
         />
       </SettingsSection>
     </SettingsPageLayout>

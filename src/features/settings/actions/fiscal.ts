@@ -6,6 +6,7 @@ import { bustPensionSettingsCache } from "@/lib/cache/revalidate-settings";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { updatePensionSettingsPartial } from "@/services/pension-settings";
 import { updateTenantFiscalSettings } from "@/services/tenant-fiscal-settings";
+import { isAnafSubmissionAvailable } from "@/lib/fiscal/anaf-config";
 import { checkinSettingsCacheTag } from "@/services/checkin/settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
@@ -78,12 +79,14 @@ export async function updateFiscalBillingSettingsAction(
       anafEnv?: "test" | "prod";
     } = {};
 
+    // Sending to ANAF cannot be switched on while it does not exist.
+    const anafAvailable = isAnafSubmissionAvailable();
     if (formData.has("fiscal_provider")) {
       const raw = String(formData.get("fiscal_provider") ?? "internal_pdf");
-      fiscalUpdate.provider = raw === "anaf" ? "anaf" : "internal_pdf";
+      fiscalUpdate.provider = raw === "anaf" && anafAvailable ? "anaf" : "internal_pdf";
     }
     if (formData.has("anaf_enabled")) {
-      fiscalUpdate.anafEnabled = String(formData.get("anaf_enabled")) === "true";
+      fiscalUpdate.anafEnabled = anafAvailable && String(formData.get("anaf_enabled")) === "true";
     }
     if (formData.has("anaf_env")) {
       const raw = String(formData.get("anaf_env") ?? "test");

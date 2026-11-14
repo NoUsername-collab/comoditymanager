@@ -1332,8 +1332,8 @@
           "notifyDailySummaryDesc": "Daily email with check-in/out overview",
           "guestNotificationsTitle": "Emails to guests",
           "guestNotificationsDesc": "What guests receive automatically",
-          "planSendsNone": "Basic does not send email. Confirmation is on Light.",
-          "planSendsConfirmation": "Light sends only the confirmation email.",
+          "planSendsNone": "Basic emails you when a new request arrives. The confirmation email to the guest is on Light.",
+          "planSendsConfirmation": "Light sends the confirmation email to the guest and emails you when a new request arrives.",
           "notifyConfirmation": "Booking confirmation",
           "notifyConfirmationDesc": "Automatic email when booking is confirmed",
           "notifyCancellation": "Booking cancellation",
@@ -1633,6 +1633,8 @@
           "invoiceNextHint": "Next invoice number is assigned when you issue.",
           "readOnly": "Only the owner can edit fiscal settings. You can view the data below.",
           "eFacturaTitle": "RO e-Factura (ANAF)",
+          "eFacturaManual": "You send them yourself",
+          "eFacturaManualNote": "Sending invoices to ANAF automatically is not available yet. Send the invoice to e-Factura from your accounting software or from ANAF's free app, as before.",
           "eFacturaDesc": "PDF stays available instantly; ANAF submission runs in the background.",
           "fiscalProvider": "Fiscal provider",
           "fiscalProviderDesc": "Local PDF or ANAF SPV submission",
@@ -3900,7 +3902,7 @@
           "submitted": "Submitted",
           "accepted": "Accepted",
           "rejected": "Rejected",
-          "failed": "Failed"
+          "failed": "Not sent"
         }
       }
     },
@@ -5534,7 +5536,7 @@
     "gridTitle": "Three plans. The same desk.",
     "gridLead": "Unlimited rooms on all of them. Choose by invoices, email and the site.",
     "priceFree": "Free, forever",
-    "billedMonthly": "Billed monthly · cancel anytime",
+    "billedMonthly": "Monthly, no contract. The account starts on Basic; the plan is activated on request.",
     "perMonth": "/ month",
     "roomsUnlimited": "Unlimited",
     "recommended": "For your own domain",
@@ -5547,7 +5549,7 @@
     "faq2Q": "What is Light for, at 9 EUR?",
     "faq2A": "For the PDF invoice and the confirmation email sent to the guest. Up to 300 confirmations a month.",
     "faq3Q": "What does PRO change, at 29 EUR?",
-    "faq3A": "The site moves to your domain, without the Zalmox mark. It adds iCal, the occupancy map, stay messages up to 2,000 a month, 3 properties and 8 people on the team.",
+    "faq3A": "The site moves to your domain, without the Zalmox mark. It adds the occupancy map, stay messages up to 2,000 a month and 8 people on the team.",
     "faq4Q": "Do you take a commission on a booking?",
     "faq4A": "No. Requests that come from the property page carry a 0% commission. You confirm the stay from the calendar.",
     "finalTitle": "Start free today",
@@ -5585,20 +5587,20 @@
         "f1": "Everything in Light",
         "f2": "Stay messages, up to 2,000 a month",
         "f3": "Your own domain, no Zalmox mark",
-        "f4": "iCal and occupancy map",
-        "f5": "Up to 3 properties",
+        "f4": "Occupancy map on the calendar",
+        "f5": "One property",
         "f6": "8 people on the team",
         "cta": "Choose PRO"
       },
       "business": {
         "name": "Business",
-        "tagline": "More properties",
+        "tagline": "No limit on team or messages",
         "roomLine": "{count} rooms",
-        "f1": "Everything in Professional",
-        "f2": "Up to 10 properties",
+        "f1": "Everything in PRO",
+        "f2": "No limit on the team",
         "f3": "Dedicated onboarding",
         "f4": "Support priority",
-        "f5": "White label (no Zalmox on site)",
+        "f5": "No limit on stay messages",
         "f6": "Contact to activate",
         "cta": "Contact us"
       }
@@ -5645,8 +5647,8 @@
       "modules": {
         "free": "Page and guest link",
         "essential": "+ PDF invoice, one confirmation",
-        "professional": "+ domain, iCal, occupancy",
-        "business": "+ up to 10 properties"
+        "professional": "+ your own domain, occupancy map",
+        "business": "+ onboarding and priority support"
       }
     }
   },

@@ -30,6 +30,8 @@ type Props = {
   tenantFiscalSettings: TenantFiscalSettingsRecord;
   locale: "ro" | "en" | "bg";
   readOnly?: boolean;
+  /** Whether sending to ANAF exists yet; when it does not, only the PDF is offered. */
+  anafAvailable?: boolean;
 };
 
 type FiscalDraft = {
@@ -78,6 +80,7 @@ export function FiscalBillingSettingsPanel({
   tenantFiscalSettings: initialTenantFiscal,
   locale,
   readOnly = false,
+  anafAvailable = false,
 }: Props) {
   const t = useTranslations("admin.pages.settings.fiscal");
   const tCheckin = useTranslations("admin.pages.settings.checkin");
@@ -341,9 +344,13 @@ export function FiscalBillingSettingsPanel({
             <>
               <div className="fiscal-settings__summary-row fiscal-settings__summary-row--wide">
                 <dt>{t("eFacturaTitle")}</dt>
-                <dd>{t(`provider.${tenantFiscalSettings.provider}`)}</dd>
+                <dd>
+                  {anafAvailable
+                    ? t(`provider.${tenantFiscalSettings.provider}`)
+                    : t("eFacturaManual")}
+                </dd>
               </div>
-              {tenantFiscalSettings.provider === "anaf" ? (
+              {anafAvailable && tenantFiscalSettings.provider === "anaf" ? (
                 <>
                   <div className="fiscal-settings__summary-row">
                     <dt>{t("anafEnabled")}</dt>
@@ -471,6 +478,10 @@ export function FiscalBillingSettingsPanel({
       {country === "RO" && editing ? (
         <section className="fiscal-settings__efactura">
           <h4 className="fiscal-settings__efactura-title">{t("eFacturaTitle")}</h4>
+          {!anafAvailable ? (
+            <p className="checkin-settings__note">{t("eFacturaManualNote")}</p>
+          ) : (
+          <>
           <p className="checkin-settings__note">{t("eFacturaDesc")}</p>
           <SettingRow label={t("fiscalProvider")} description={t("fiscalProviderDesc")}>
             <select
@@ -525,6 +536,8 @@ export function FiscalBillingSettingsPanel({
               </SettingRow>
             </>
           ) : null}
+          </>
+          )}
         </section>
       ) : null}
 
