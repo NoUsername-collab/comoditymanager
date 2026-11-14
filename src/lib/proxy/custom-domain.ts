@@ -25,7 +25,7 @@ async function unknownDomainRedirect(
     url.protocol = "https:";
   }
   url.hostname = defaultPlatformApexHost();
-  url.pathname = "/landing";
+  url.pathname = "/";
   url.search = "";
   return NextResponse.redirect(url, 302);
 }

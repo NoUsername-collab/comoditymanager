@@ -38,6 +38,33 @@ export function publicSiteRobots(config: PublicSiteConfig, baseUrl: string): Pub
   };
 }
 
+/** The platform's own pages (zalmox.app): the landing on "/", prices and sign-up. */
+const PLATFORM_PATHS = ["/", "/preturi", "/signup"];
+
+/** robots.txt for the platform host: staff areas stay out, the sitemap is named. */
+export function platformRobots(baseUrl: string): PublicRobots {
+  return {
+    rules: { userAgent: "*", allow: "/", disallow: ["/admin", "/api", "/platform-admin", "/alpha-gate"] },
+    sitemap: `${baseUrl}/sitemap.xml`,
+  };
+}
+
+/** The platform's pages in every language, each listing its translations. */
+export function platformSitemap(baseUrl: string): PublicSitemapEntry[] {
+  return PLATFORM_PATHS.flatMap((path) => {
+    const languages: Record<string, string> = Object.fromEntries(
+      PUBLIC_LOCALES.map((locale) => [locale, localizedUrl(baseUrl, path, locale)]),
+    );
+    languages["x-default"] = localizedUrl(baseUrl, path, "ro");
+    return PUBLIC_LOCALES.map((locale) => ({
+      url: localizedUrl(baseUrl, path, locale),
+      changeFrequency: "weekly" as const,
+      priority: path === "/" ? 1 : 0.6,
+      alternates: { languages },
+    }));
+  });
+}
+
 /** Every public page in every language, each listing its translations. */
 export function publicSiteSitemap(config: PublicSiteConfig, baseUrl: string): PublicSitemapEntry[] {
   if (!config.published) return [];

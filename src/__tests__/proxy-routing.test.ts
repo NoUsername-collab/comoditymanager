@@ -178,8 +178,17 @@ describe("platform host", () => {
     expect(intlMiddleware).not.toHaveBeenCalled();
   });
 
-  it("opens the landing page at /", async () => {
-    expect(location(await proxy(platform("/")))).toBe("https://test.zalmox.app/landing");
+  it("serves the landing on / in the address's own language, and moves /landing there", async () => {
+    for (const [path, served] of [["/", "/ro/landing"], ["/en", "/en/landing"], ["/bg", "/bg/landing"]]) {
+      const r = await proxy(platform(path));
+      expect(location(r), path).toBe("");
+      // Served from the landing route, the address unchanged.
+      expect(new URL(r.headers.get("x-middleware-rewrite")!).pathname, path).toBe(served);
+    }
+    const moved = await proxy(platform("/landing"));
+    expect(moved.status).toBe(308);
+    expect(location(moved)).toBe("https://test.zalmox.app/");
+    expect(location(await proxy(platform("/en/landing")))).toBe("https://test.zalmox.app/en");
   });
 
   it("sends tenant admin paths to login when signed out", async () => {
@@ -204,7 +213,7 @@ describe("platform host", () => {
 
   it("denies /platform-admin to signed-in non-platform users", async () => {
     getUser.mockResolvedValue({ data: { user: STAFF } });
-    expect(location(await proxy(platform("/platform-admin")))).toBe("https://test.zalmox.app/landing");
+    expect(location(await proxy(platform("/platform-admin")))).toBe("https://test.zalmox.app/");
   });
 });
 
@@ -212,7 +221,7 @@ describe("custom domain", () => {
   it("sends unknown domains to the platform landing page", async () => {
     lookupTenantHostOnEdge.mockResolvedValue(null);
     const r = await proxy(custom("/"));
-    expect(location(r)).toContain("/landing");
+    expect(new URL(location(r)).pathname).toBe("/");
   });
 
   it("serves the site's own pages on the guesthouse's domain, in every language", async () => {

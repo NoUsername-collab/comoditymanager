@@ -12,6 +12,7 @@ import { loadAdminShellContext } from "@/lib/admin/shell-context";
 import { AdminMobileBottomNav } from "@/layout/components/AdminMobileBottomNav";
 import { MobileShell } from "@/layout/components/MobileShell";
 import { PwaInstallBanner } from "@/components/pwa/PwaInstallBanner";
+import { AreaMessages } from "@/i18n/AreaMessages";
 
 export default async function AdminLayout({
   children,
@@ -31,6 +32,8 @@ export default async function AdminLayout({
   } = shell;
 
   return (
+    // The panel: every admin text (the sign-in pages around it send only their own).
+    <AreaMessages>
     <AdminAppearanceProvider initialSettings={appearanceSettings}>
       <MobileShell surface="admin" className="admin-shell flex min-h-full flex-1 flex-col">
         <div className="admin-hud">
@@ -64,5 +67,6 @@ export default async function AdminLayout({
         <PwaInstallBanner />
       </MobileShell>
     </AdminAppearanceProvider>
+    </AreaMessages>
   );
 }

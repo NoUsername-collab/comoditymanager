@@ -22,10 +22,16 @@ export default async function SettingsBillingPage({
     getTranslations("admin.pages.settings"),
     searchParams,
   ]);
-  if (memberRole !== "owner") return redirect("/admin/settings");
+  if (memberRole !== "owner") {
+    await redirect("/admin/settings");
+    return null;
+  }
 
   const billing = await getTenantBilling(await resolveTenantIdForData());
-  if (!billing) return redirect("/admin/settings");
+  if (!billing) {
+    await redirect("/admin/settings");
+    return null;
+  }
 
   const plan = getPlanConfig(billing.planId);
   const situation = billingSituation(billing);

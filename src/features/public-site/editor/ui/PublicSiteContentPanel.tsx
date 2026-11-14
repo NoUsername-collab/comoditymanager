@@ -36,7 +36,7 @@ import {
 import { MenuEditor } from "@/features/public-site/editor/ui/MenuEditor";
 import { NewPageForm, PageSettingsEditor, PageSwitcher } from "@/features/public-site/editor/ui/SitePageEditors";
 import { SECTION_KINDS, sectionKind } from "@/features/public-site/sections/kinds";
-import { sectionEditor } from "@/features/public-site/sections/registry";
+import { sectionEditor } from "@/features/public-site/sections/editor-registry";
 import { SectionStyleEditor } from "@/features/public-site/editor/ui/SectionStyleEditor";
 
 /** What a row or an opened part needs: its name, its line, its switch and its editor. */

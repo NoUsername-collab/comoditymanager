@@ -13,7 +13,7 @@ type PlatformHeaderLabels = {
 export function PlatformHeaderChrome({ labels }: { labels: PlatformHeaderLabels }) {
   return (
     <div className="platform-header__inner">
-      <Link href="/landing" className="platform-header__brand">
+      <Link href="/" className="platform-header__brand">
         <span className="platform-header__logo" aria-hidden>
           <svg
             className="platform-header__mark"

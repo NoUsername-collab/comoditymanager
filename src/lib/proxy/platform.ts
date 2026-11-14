@@ -11,19 +11,20 @@ import { mfaRedirectIfNeeded } from "@/lib/proxy/staff-mfa";
 import { createProxySupabase } from "@/lib/proxy/edge-session";
 import { intlMiddleware } from "@/lib/proxy/intl";
 import { redirectToPath } from "@/lib/proxy/redirect";
+import { landingAtRoot, landingMovedToRoot } from "@/lib/proxy/platform-landing";
 
 /** Zalmox internal admin: signed in, platform-admin email, MFA. */
 async function platformAdminProxy(request: NextRequest, path: string): Promise<NextResponse> {
   const response = intlMiddleware(request);
   const supabase = createProxySupabase(request, response);
-  if (!supabase) return redirectToPath(request, "/landing");
+  if (!supabase) return redirectToPath(request, "/");
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) return redirectToPath(request, "/admin/login", { next: path });
-  if (!isPlatformAdminEmailEdge(user.email)) return redirectToPath(request, "/landing");
+  if (!isPlatformAdminEmailEdge(user.email)) return redirectToPath(request, "/");
 
   const mfaRedirect = await mfaRedirectIfNeeded(request, supabase, user, path, null);
   return mfaRedirect ?? response;
@@ -98,7 +99,8 @@ async function platformLoginProxy(
 export async function platformProxy(request: NextRequest, path: string): Promise<NextResponse> {
   const requestHost = requestHostFrom(request);
 
-  if (path === "/") return redirectToPath(request, "/landing");
+  if (path === "/") return landingAtRoot(request);
+  if (path === "/landing") return landingMovedToRoot(request);
 
   if (path.startsWith("/platform-admin")) return platformAdminProxy(request, path);
 

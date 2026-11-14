@@ -4,6 +4,24 @@ import {
   PricingGrid,
 } from "@/features/signup/ui/PricingGrid";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import type { Metadata } from "next";
+import { publicPageAlternates } from "@/features/public-site/domain/seo";
+import { requestOrigin } from "@/lib/tenant/site-url";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("pricing");
+  return {
+    title: `${t("pageTitle")} · Zalmox`,
+    description: t("pageLead"),
+    alternates: publicPageAlternates(await requestOrigin(), "/preturi", locale),
+  };
+}
 
 export default async function PricingPage({
   params,

@@ -1,3 +1,5 @@
+import { publicPageAlternates } from "@/features/public-site/domain/seo";
+import { requestOrigin } from "@/lib/tenant/site-url";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { LandingHeroShowcase } from "@/features/signup/ui/LandingHeroShowcase";
@@ -23,6 +25,8 @@ export async function generateMetadata({
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
+    // The landing is the platform's home: its address is "/" in each language.
+    alternates: publicPageAlternates(await requestOrigin(), "/", locale),
   };
 }
 

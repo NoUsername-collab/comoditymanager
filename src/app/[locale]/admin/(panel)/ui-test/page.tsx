@@ -1,7 +1,10 @@
+import { notFound } from "next/navigation";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminInput, AdminSelect, AdminTextarea } from "@/components/admin/ui/AdminInput";
 
+/** A gallery of the admin's controls, for development; the live site has no such page. */
 export default function UITestPage() {
+  if (process.env.NODE_ENV === "production") notFound();
   return (
     <div style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "2rem", maxWidth: 600 }}>
       <h2 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 700 }}>AdminButton variants</h2>
