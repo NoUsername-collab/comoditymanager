@@ -7,6 +7,7 @@ import { isTenantOperational } from "@/domain/tenant/operational";
 import { requestHostFrom } from "@/lib/proxy/request-context";
 import { tenantSuspendedRedirect } from "@/lib/proxy/tenant-status";
 import { runTenantAppProxy } from "@/lib/proxy/tenant-app";
+import { platformHomeRedirect } from "@/lib/proxy/redirect";
 
 /** Unknown or unverified domain: suspended notice if it belonged to a blocked tenant, else the landing page. */
 async function unknownDomainRedirect(
@@ -20,14 +21,7 @@ async function unknownDomainRedirect(
     if (suspended) return suspended;
   }
 
-  const url = request.nextUrl.clone();
-  if (process.env.NODE_ENV === "production") {
-    url.protocol = "https:";
-  }
-  url.hostname = defaultPlatformApexHost();
-  url.pathname = "/";
-  url.search = "";
-  return NextResponse.redirect(url, 302);
+  return platformHomeRedirect(request);
 }
 
 /** A tenant's own domain: pages its routing kind does not serve go to the tenant subdomain. */

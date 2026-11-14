@@ -113,6 +113,15 @@ describe("tenant host", () => {
     expect(intlMiddleware).toHaveBeenCalledTimes(1);
   });
 
+  it("sends a subdomain no property has to the platform home, but lets a failed lookup through", async () => {
+    lookupTenantHostOnEdge.mockResolvedValue(null);
+    const r = await proxy(tenant("/"));
+    expect(new URL(location(r)).pathname).toBe("/");
+    expect(location(r)).not.toContain("casaemil.");
+    lookupTenantHostOnEdge.mockResolvedValue(undefined);
+    expect(location(await proxy(tenant("/")))).toBe("");
+  });
+
   it("sends platform-only pages back to the tenant home", async () => {
     expect(location(await proxy(tenant("/signup")))).toBe("https://casaemil.zalmox.app/");
   });

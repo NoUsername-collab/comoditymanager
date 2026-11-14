@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { isTenantOperational } from "@/domain/tenant/operational";
 import { lookupTenantHostOnEdge } from "@/lib/tenant/tenant-host-edge";
+import { platformHomeRedirect } from "@/lib/proxy/redirect";
 
 const TENANT_STATUS_EXEMPT_PATHS = new Set([
   "/tenant-suspended",
@@ -31,6 +32,8 @@ export async function blockedTenantRedirectIfNeeded(
   const lookup = await lookupTenantHostOnEdge(
     slug ? { slug } : { customDomain: customDomain! }
   );
+  // A subdomain no property has goes to the platform's home (a failed lookup lets the request through).
+  if (lookup === null && slug) return platformHomeRedirect(request);
   if (!lookup || isTenantOperational(lookup.status)) return null;
 
   return tenantSuspendedRedirect(request, path, lookup.status);

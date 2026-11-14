@@ -1,4 +1,5 @@
 ﻿import { normalizeTenantLifecycleStatus } from "@/domain/tenant/operational";
+import { createEdgeMemo } from "@/lib/tenant/edge-memo";
 
 type TenantHostEdgeLookup = {
   tenantId: string;
@@ -17,11 +18,15 @@ function edgeServiceConfig(): { url: string; key: string } | null {
   return { url, key };
 }
 
+/** A host's property for a minute (ten seconds when there is none): the proxy asks on every request. */
+const tenantHostMemo = createEdgeMemo<TenantHostEdgeLookup>({ foundTtlMs: 60_000, missingTtlMs: 10_000 });
+
+/** The property, null when there is none, undefined when the lookup failed. */
 async function fetchTenantHostRows(
   query: string
-): Promise<TenantHostEdgeLookup | null> {
+): Promise<TenantHostEdgeLookup | null | undefined> {
   const service = edgeServiceConfig();
-  if (!service) return null;
+  if (!service) return undefined;
 
   const res = await fetch(`${service.url}/rest/v1/${query}`, {
     headers: {
@@ -32,7 +37,7 @@ async function fetchTenantHostRows(
     cache: "no-store",
   });
 
-  if (!res.ok) return null;
+  if (!res.ok) return undefined;
 
   const rows = (await res.json()) as Array<{
     id?: string;
@@ -59,16 +64,21 @@ async function fetchTenantHostRows(
   };
 }
 
+/** The host's property; null when there is none, undefined when the lookup failed. */
 export async function lookupTenantHostOnEdge(
   ref: TenantHostRef
-): Promise<TenantHostEdgeLookup | null> {
+): Promise<TenantHostEdgeLookup | null | undefined> {
   if (ref.slug) {
-    return fetchTenantHostRows(
-      `tenants?slug=eq.${encodeURIComponent(ref.slug)}&select=id,slug,status&limit=1`
+    const slug = ref.slug;
+    return tenantHostMemo(`slug:${slug}`, () =>
+      fetchTenantHostRows(`tenants?slug=eq.${encodeURIComponent(slug)}&select=id,slug,status&limit=1`)
     );
   }
 
-  return fetchTenantHostRows(
-    `tenant_domains?domain=eq.${encodeURIComponent(ref.customDomain!)}&select=tenant_id,tenants(id,slug,status)&limit=1`
+  const domain = ref.customDomain!;
+  return tenantHostMemo(`domain:${domain}`, () =>
+    fetchTenantHostRows(
+      `tenant_domains?domain=eq.${encodeURIComponent(domain)}&select=tenant_id,tenants(id,slug,status)&limit=1`
+    )
   );
 }

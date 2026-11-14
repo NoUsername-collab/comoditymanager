@@ -1,4 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { defaultPlatformApexHost } from "@/lib/tenant/host";
+
+/** The platform's home page, for a host that belongs to no property. */
+export function platformHomeRedirect(request: NextRequest): NextResponse {
+  const url = request.nextUrl.clone();
+  if (process.env.NODE_ENV === "production") {
+    url.protocol = "https:";
+    url.port = "";
+  }
+  url.hostname = defaultPlatformApexHost();
+  url.pathname = "/";
+  url.search = "";
+  return NextResponse.redirect(url, 302);
+}
 
 /** Redirect to another path on the same host, keeping the current query and adding `params`. */
 export function redirectToPath(
