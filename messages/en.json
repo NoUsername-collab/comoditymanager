@@ -1017,6 +1017,39 @@
       "settingsSectionDesc": "Besides your password, a 6-digit code from an app on your phone. You set it up once."
     },
     "logout": "Sign out",
+    "billing": {
+      "title": "The property's plan",
+      "lead": "Light and PRO are paid monthly by card, with no contract. Cancel any time; the plan stays until the end of the paid month.",
+      "currentPlan": "Current plan",
+      "statusFree": "Free, no card.",
+      "statusCard": "Paid by card. Renews on {date}.",
+      "statusCancelling": "Cancelled. The plan stays until {date}, then the property moves to Basic.",
+      "statusPaymentFailed": "The card payment failed. Update the card in “Manage subscription”; Stripe retries a few times before the plan stops.",
+      "statusPending": "The payment is being confirmed.",
+      "statusManual": "Activated by the Zalmox team.",
+      "price": "{price} EUR / month + VAT",
+      "offer": {
+        "essential": "PDF invoices and the confirmation email to the guest.",
+        "professional": "Your own domain, Booking.com and Airbnb sync, occupancy map, stay messages."
+      },
+      "subscribe": "Move to {plan}",
+      "manage": "Manage subscription",
+      "manageHint": "The card, invoices, switching between Light and PRO and cancelling are done on Stripe's secure page.",
+      "vatNote": "VAT is added according to the company's country and tax id; EU companies with a valid VAT id pay without VAT (reverse charge). Stripe issues the invoice with every payment.",
+      "notConfigured": "Card payment is not available yet. To move to Light or PRO, write to contact@zalmox.app.",
+      "businessNote": "For the Business plan or paying by bank transfer, write to",
+      "checkoutSuccess": "The payment was received. The plan changes within seconds; reload the page if it does not show yet.",
+      "checkoutCancelled": "The payment was cancelled; the plan stayed the same.",
+      "errors": {
+        "owner_only": "Only the owner can change the subscription.",
+        "invalid_plan": "The chosen plan cannot be paid by card.",
+        "not_configured": "Card payment is not available yet.",
+        "already_subscribed": "The property already has a subscription; change it in “Manage subscription”.",
+        "manual_plan": "The plan was activated by the Zalmox team; write to us for changes.",
+        "no_customer": "The property does not pay by card yet.",
+        "stripe_error": "Stripe did not answer. Try again in a minute."
+      }
+    },
     "ical": {
       "title": "Synced calendars",
       "lead": "Each room shows its taken nights to other sites and takes in their reservations, so the same night is not sold twice.",
@@ -1205,6 +1238,8 @@
         "navGroupLater": "For later",
         "navSecurity": "Account security",
         "navSecurityDesc": "Two-step sign-in and data reset (owner only)",
+        "navBilling": "Subscription",
+        "navBillingDesc": "The property's plan, card payment and invoices (owner only)",
         "navOverview": "Overview",
         "navOverviewDesc": "What's left to set up and quick access to every section",
         "navIdentity": "Property identity",

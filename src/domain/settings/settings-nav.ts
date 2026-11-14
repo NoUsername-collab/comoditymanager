@@ -184,6 +184,14 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         href: "/admin/settings/security",
         matchPath: "/admin/settings/security",
       },
+      {
+        id: "billing",
+        labelKey: "navBilling",
+        descriptionKey: "navBillingDesc",
+        href: "/admin/settings/billing",
+        matchPath: "/admin/settings/billing",
+        memberRoles: ["owner"],
+      },
     ],
   },
   {

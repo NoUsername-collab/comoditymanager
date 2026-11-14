@@ -12,6 +12,7 @@ Onboarding for **Zalmox** (platformă multi-tenant). Start: [README](../README.m
 - [PRODUCTION-READINESS.md](../PRODUCTION-READINESS.md) — **smoke test** + checklist infra
 - [zalmox-app-dns-cutover.md](./zalmox-app-dns-cutover.md) — **DNS `zalmox.app`** + teste post-migrare (când ești deblocat)
 - [vercel-env.md](./vercel-env.md) — variabile Vercel
+- [stripe-billing.md](./stripe-billing.md) — plata abonamentelor Light / PRO (Stripe)
 - [acces-staff.md](./acces-staff.md) — login staff pe domeniul pensiunii
 
 ## Legacy names (în tranziție)

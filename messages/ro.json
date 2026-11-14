@@ -1017,6 +1017,39 @@
       "settingsSectionDesc": "Pe lângă parolă, un cod de 6 cifre dintr-o aplicație de pe telefon. Se configurează o singură dată."
     },
     "logout": "Deconectare",
+    "billing": {
+      "title": "Planul pensiunii",
+      "lead": "Light și PRO se plătesc lunar cu cardul, fără contract. Anulați oricând; planul rămâne până la sfârșitul lunii plătite.",
+      "currentPlan": "Planul actual",
+      "statusFree": "Gratuit, fără card.",
+      "statusCard": "Plătit cu cardul. Se reînnoiește pe {date}.",
+      "statusCancelling": "Anulat. Planul rămâne până pe {date}, apoi pensiunea trece pe Basic.",
+      "statusPaymentFailed": "Plata cu cardul nu a reușit. Actualizați cardul din „Gestionează abonamentul”; Stripe mai încearcă de câteva ori înainte să oprească planul.",
+      "statusPending": "Plata e în curs de confirmare.",
+      "statusManual": "Activat de echipa Zalmox.",
+      "price": "{price} EUR / lună + TVA",
+      "offer": {
+        "essential": "Facturi PDF și emailul de confirmare către oaspete.",
+        "professional": "Domeniul propriu, sincronizare Booking.com și Airbnb, hartă de ocupare, mesaje de sejur."
+      },
+      "subscribe": "Treceți pe {plan}",
+      "manage": "Gestionează abonamentul",
+      "manageHint": "Cardul, facturile, trecerea între Light și PRO și anularea se fac în pagina securizată Stripe.",
+      "vatNote": "TVA-ul se adaugă după țara și codul fiscal al firmei; firmele din UE cu cod de TVA valid plătesc fără TVA (taxare inversă). Factura o emite Stripe la fiecare plată.",
+      "notConfigured": "Plata cu cardul nu este încă disponibilă. Pentru a trece pe Light sau PRO, scrieți-ne la contact@zalmox.app.",
+      "businessNote": "Pentru planul Business sau plata prin transfer bancar, scrieți-ne la",
+      "checkoutSuccess": "Plata a fost primită. Planul se schimbă în câteva secunde; reîncărcați pagina dacă încă nu apare.",
+      "checkoutCancelled": "Plata a fost anulată; planul a rămas același.",
+      "errors": {
+        "owner_only": "Doar proprietarul poate schimba abonamentul.",
+        "invalid_plan": "Planul ales nu poate fi plătit cu cardul.",
+        "not_configured": "Plata cu cardul nu este încă disponibilă.",
+        "already_subscribed": "Pensiunea are deja un abonament; schimbați-l din „Gestionează abonamentul”.",
+        "manual_plan": "Planul a fost activat de echipa Zalmox; scrieți-ne pentru schimbări.",
+        "no_customer": "Pensiunea nu are încă un abonament plătit cu cardul.",
+        "stripe_error": "Stripe nu a răspuns. Încercați din nou peste un minut."
+      }
+    },
     "ical": {
       "title": "Calendare sincronizate",
       "lead": "Fiecare cameră își arată nopțile ocupate altor site-uri și preia rezervările lor, ca să nu vindeți aceeași noapte de două ori.",
@@ -1205,6 +1238,8 @@
         "navGroupLater": "Pentru mai târziu",
         "navSecurity": "Securitate cont",
         "navSecurityDesc": "Autentificare în doi pași și ștergerea datelor (doar proprietarul)",
+        "navBilling": "Abonament",
+        "navBillingDesc": "Planul pensiunii, plata cu cardul și facturile (doar proprietarul)",
         "navOverview": "Prezentare generală",
         "navOverviewDesc": "Ce mai e de configurat și acces rapid la toate secțiunile",
         "navIdentity": "Identitate pensiune",

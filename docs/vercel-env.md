@@ -24,7 +24,13 @@ Ghid pentru deploy pe [Vercel](https://vercel.com).
 | `NEXT_PUBLIC_PENSION_NAME` | Opțional | Nu | Fallback display name în dev |
 | `RESEND_API_KEY` | Pentru email | **Da** | [Resend](https://resend.com) → API Keys (`re_...`) |
 | `RESEND_MAIL_DOMAIN` | Opțional | Nu | Domeniu verificat Resend |
-| `CRON_SECRET` | Pentru cron | **Da** | Vercel → `/api/cron/*` (backup, rezumat zilnic) |
+| `CRON_SECRET` | Pentru cron | **Da** | Vercel → `/api/cron/*` (backup, rezumat zilnic, iCal, păstrarea actelor) |
+| `STRIPE_SECRET_KEY` | Plata cu cardul | **Da** | Stripe → Developers → API keys (`sk_live_…` / `sk_test_…`) |
+| `STRIPE_WEBHOOK_SECRET` | Plata cu cardul | **Da** | Stripe → Webhooks → endpoint `https://<platformă>/api/stripe/webhook` → Signing secret (`whsec_…`) |
+| `STRIPE_PRICE_LIGHT` | Plata cu cardul | Nu | ID-ul prețului lunar Light (9 EUR, fără TVA inclus) |
+| `STRIPE_PRICE_PRO` | Plata cu cardul | Nu | ID-ul prețului lunar PRO (29 EUR, fără TVA inclus) |
+
+**Stripe:** fără toate cele patru variabile, pagina Abonament spune că plata cu cardul nu e încă disponibilă. Configurarea completă e în [stripe-billing.md](./stripe-billing.md).
 
 **După `RESEND_API_KEY`:** Redeploy (Deployments → ⋯ → Redeploy).
 

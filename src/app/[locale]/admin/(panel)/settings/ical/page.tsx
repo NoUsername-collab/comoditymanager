@@ -5,8 +5,7 @@ import { IcalSyncPanel } from "@/features/settings/ui/IcalSyncPanel";
 import { loadSettingsIcalPage } from "@/features/settings/loaders";
 import { guardSettingsPermission } from "@/lib/settings/page-context";
 import { checkModule } from "@/core/hooks/use-feature-gate";
-import { headers } from "next/headers";
-import { platformSiteUrl } from "@/lib/platform/branding";
+import { Link } from "@/i18n/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -18,17 +17,14 @@ export default async function SettingsIcalPage() {
   ]);
 
   if (!checkModule("ical_sync")) {
-    // The plans live on the platform's own site, not on the property's host.
-    const h = await headers();
-    const pricingUrl = `${platformSiteUrl(h.get("x-forwarded-host") ?? h.get("host"))}/preturi`;
     return (
       <SettingsPageLayout title={tSettings("navIcal")} description={tSettings("navIcalDesc")}>
         <SettingsSection title={t("title")} description={t("lead")}>
           <p className="settings-empty">
             {t("planRequired")}{" "}
-            <a href={pricingUrl} className="underline" target="_blank" rel="noopener">
+            <Link href="/admin/settings/billing" className="underline">
               {t("planLink")}
-            </a>
+            </Link>
           </p>
         </SettingsSection>
       </SettingsPageLayout>

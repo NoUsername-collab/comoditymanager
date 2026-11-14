@@ -26,6 +26,7 @@ const ALLOWLIST_TABLES = new Set([
   "tenant_domains",
   "platform_settings",
   "dev_logs",
+  "stripe_webhook_events",
 ]);
 
 const FROM_PATTERN = /\.from\s*\(\s*["']([a-z_][a-z0-9_]*)["']\s*\)/g;
