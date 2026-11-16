@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
-import { getAdminUser } from "@/lib/auth/require-admin";
+import { getStaffUser } from "@/lib/auth/require-admin";
 import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import { publicNotFoundMetadata, publicPageMetadata } from "@/features/public-site/page-metadata";
 import { PublicOwnPageBody } from "@/features/public-site/templates/PublicOwnPage";
@@ -34,7 +34,7 @@ export default async function OwnPage({ params }: { params: Params }) {
   const { config, page } = await findPage(slug);
   if (!page) notFound();
 
-  const staff = !page.visible || !config.published ? await getAdminUser().catch(() => null) : null;
+  const staff = !page.visible || !config.published ? await getStaffUser().catch(() => null) : null;
   if (!page.visible && !staff) notFound();
   if (!config.published && !staff) return <PublicUnpublishedPage config={config} locale={locale} />;
 

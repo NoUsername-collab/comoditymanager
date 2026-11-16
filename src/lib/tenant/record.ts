@@ -10,7 +10,6 @@ export function tenantRowToRecord(row: TenantRow): TenantRecord {
     displayName: row.display_name,
     planId: resolvePlanId(row.plan_id),
     activeModules: (row.active_modules ?? []) as TenantRecord["activeModules"],
-    mode: "cloud",
     locale: (row.locale === "en" || row.locale === "bg" ? row.locale : "ro") as TenantRecord["locale"],
     country: (row.country === "MD" || row.country === "BG" ? row.country : "RO") as TenantRecord["country"],
     timezone: row.timezone || "Europe/Bucharest",

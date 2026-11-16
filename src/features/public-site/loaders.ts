@@ -1,4 +1,4 @@
-import { getAdminUser } from "@/lib/auth/require-admin";
+import { getStaffUser } from "@/lib/auth/require-admin";
 import { loadStaffPublicPreview } from "@/services/admin-dashboard";
 import { loadBookingConfirmContext } from "@/services/booking-confirm";
 import {
@@ -13,7 +13,7 @@ export async function loadPublicSiteConfig() {
 }
 
 export async function loadPublicHomePage() {
-  const staffUserPromise = getAdminUser().catch(() => null);
+  const staffUserPromise = getStaffUser().catch(() => null);
   const [config, staffPreview] = await Promise.all([
     getPublicSiteConfig(),
     staffUserPromise.then((user) =>

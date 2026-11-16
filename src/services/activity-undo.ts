@@ -1,6 +1,6 @@
 import type { ActivityLogEntry } from "@/domain/activity/types";
 import type { BookingStatus } from "@/domain/booking/types";
-import { getAdminUser } from "@/lib/auth/require-admin";
+import { getStaffUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import {
   canUndoActivityEntry,
@@ -317,7 +317,7 @@ export async function undoActivityLogEntry(logId: string): Promise<void> {
     throw new Error("activity.undo_not_supported");
   }
 
-  const user = await getAdminUser();
+  const user = await getStaffUser();
   if (!user) throw new Error("auth.login_required");
 
   await executeUndoHandler(entry);

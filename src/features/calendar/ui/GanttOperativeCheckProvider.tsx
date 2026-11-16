@@ -4,11 +4,7 @@ import type { ReactNode } from "react";
 import {
   OperativeCheckProvider,
   useOperativeCheck,
-  type OperativeCheckRequest,
 } from "@/features/checkin/ui/OperativeCheckProvider";
-
-/** @deprecated Prefer OperativeCheckProvider — kept for Gantt. */
-export type { OperativeCheckRequest };
 
 export function GanttOperativeCheckProvider({
   children,

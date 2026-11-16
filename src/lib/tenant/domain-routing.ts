@@ -83,16 +83,8 @@ export function pathAllowedOnCustomDomain(
 export function allowedCustomRoutingKindsForPlan(
   planId: string
 ): TenantDomainRoutingKind[] {
-  if (
-    planId === "professional" ||
-    planId === "business" ||
-    planId.startsWith("hybrid_professional") ||
-    planId.startsWith("hybrid_business")
-  ) {
+  if (planId === "professional" || planId === "business") {
     return ["custom_full", "custom_public", "custom_brand"];
-  }
-  if (planId.startsWith("hybrid_essential")) {
-    return ["custom_brand", "custom_public"];
   }
   return [];
 }

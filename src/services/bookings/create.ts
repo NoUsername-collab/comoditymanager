@@ -35,7 +35,7 @@ import {
 import {
   assertRoomsAvailableForOccupancy,
 } from "@/services/room-occupancy";
-import { getAdminUser } from "@/lib/auth/require-admin";
+import { getStaffUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp } from "@/lib/operational-check";
 import { storableChildAges, type Party } from "@/domain/availability/party";

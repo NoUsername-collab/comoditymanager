@@ -17,7 +17,7 @@ import {
   clampGuestNoteStars,
 } from "@/domain/guest/reputation";
 import { todayIso } from "@/lib/stay-dates";
-import { getAdminUser } from "@/lib/auth/require-admin";
+import { getStaffUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 
@@ -266,7 +266,7 @@ export async function saveGuestStayReview(input: {
   }
 
   const [actor, { tenantId, supabase }] = await Promise.all([
-    getAdminUser(),
+    getStaffUser(),
     getTenantScope(),
   ]);
   const now = new Date().toISOString();
@@ -311,7 +311,7 @@ export async function updateGuestProfileControls(input: {
   await ensureGuestProfiles([input.guestId]);
   const current =
     (await fetchGuestProfileRow(input.guestId)) ?? createDefaultGuestProfile(input.guestId);
-  const actor = await getAdminUser();
+  const actor = await getStaffUser();
   const now = new Date().toISOString();
   const nextReason = input.blacklistReason.trim() || null;
 

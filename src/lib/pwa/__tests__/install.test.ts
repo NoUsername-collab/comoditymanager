@@ -2,22 +2,22 @@ import { describe, expect, it } from "vitest";
 import {
   isIosSafariUserAgent,
   isMobileInstallUserAgent,
-  isPwaInstalledInBrowser,
+  isPwaStandaloneInBrowser,
 } from "@/lib/pwa/install";
 
-describe("isPwaInstalledInBrowser", () => {
+describe("isPwaStandaloneInBrowser", () => {
   it("detects standalone display mode", () => {
     expect(
-      isPwaInstalledInBrowser((q) => q.includes("standalone"), false)
+      isPwaStandaloneInBrowser((q) => q.includes("standalone"), false)
     ).toBe(true);
   });
 
   it("detects iOS standalone flag", () => {
-    expect(isPwaInstalledInBrowser(() => false, true)).toBe(true);
+    expect(isPwaStandaloneInBrowser(() => false, true)).toBe(true);
   });
 
   it("returns false in browser tab", () => {
-    expect(isPwaInstalledInBrowser(() => false, false)).toBe(false);
+    expect(isPwaStandaloneInBrowser(() => false, false)).toBe(false);
   });
 });
 

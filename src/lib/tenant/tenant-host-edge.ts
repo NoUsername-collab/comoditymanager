@@ -1,4 +1,4 @@
-﻿import { normalizeTenantLifecycleStatus } from "@/domain/tenant/operational";
+import { normalizeTenantLifecycleStatus } from "@/domain/tenant/operational";
 import { createEdgeMemo } from "@/lib/tenant/edge-memo";
 
 type TenantHostEdgeLookup = {

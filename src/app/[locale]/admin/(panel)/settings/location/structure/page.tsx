@@ -1,4 +1,4 @@
-﻿import { Link } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { AdminLinkButton } from "@/components/admin/ui/AdminLinkButton";

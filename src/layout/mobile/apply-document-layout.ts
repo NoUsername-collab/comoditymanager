@@ -110,8 +110,3 @@ export function scheduleApplyDocumentLayout(
   }
   debouncedApplyDocumentLayout(preference);
 }
-
-/** @deprecated Use applyDocumentLayout */
-export function applyLayoutModeToDocument(): void {
-  applyDocumentLayout();
-}

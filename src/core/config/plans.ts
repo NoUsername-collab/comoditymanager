@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ╔══════════════════════════════════════════════════════════════════╗
  * ║  ZALMOX — Plan & Feature Gating                               ║
  * ║                                                                ║
@@ -7,17 +7,11 @@
  * ╚══════════════════════════════════════════════════════════════════╝
  */
 
-// ─── Deployment Modes ────────────────────────────────────────────
-export type DeploymentMode = "cloud" | "local" | "hybrid";
-
 // ─── Plan Tiers ─────────────────────────────────────────────────
+// Zalmox runs in the cloud only; migration 126 removed the local and hybrid plans.
 export type CloudPlan = "free" | "essential" | "professional" | "business";
-type LocalPlan = "local_essential" | "local_professional" | "local_business";
-type HybridPlan = "hybrid_essential" | "hybrid_professional" | "hybrid_business";
-export type PlanId = CloudPlan | LocalPlan | HybridPlan;
+export type PlanId = CloudPlan;
 
-/** @deprecated Use "free" instead */
-export type { CloudPlan as DeprecatedCloudPlan };
 
 // ─── Add-on Modules ─────────────────────────────────────────────
 export type ModuleId =
@@ -51,7 +45,6 @@ export type CoreFeature =
 // ─── Plan Feature Matrix ────────────────────────────────────────
 export interface PlanConfig {
   id: PlanId;
-  mode: DeploymentMode;
   label: string;
   priceEur: number;          // Monthly price in EUR (0 = free)
   maxRooms: number;          // Infinity for unlimited
@@ -90,30 +83,9 @@ const PRO_FEATURES: CoreFeature[] = [
   "custom_domain",
 ];
 
-/** Previous ladder, kept for local and hybrid deployments. */
-const FREE_FEATURES: CoreFeature[] = [
-  "calendar",
-  "gantt",
-  "guest_files",
-  "bookings",
-  "email_notifications",
-  "themes",
-];
-
-const ESSENTIAL_FEATURES: CoreFeature[] = [
-  ...FREE_FEATURES,
-  "heatmap",
-];
-
-const PROFESSIONAL_FEATURES: CoreFeature[] = [
-  ...ESSENTIAL_FEATURES,
-  "rooms_unlimited",
-  "priority_support",
-  "custom_domain",
-];
-
 const BUSINESS_FEATURES: CoreFeature[] = [
-  ...PROFESSIONAL_FEATURES,
+  ...PRO_FEATURES,
+  "priority_support",
   "sla_guarantee",
   "dedicated_manager",
   "onboarding",
@@ -126,7 +98,6 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
   // ── Cloud ──────────────────────────────────────────────────────
   free: {
     id: "free",
-    mode: "cloud",
     label: "Basic",
     priceEur: 0,
     maxRooms: Infinity,
@@ -140,7 +111,6 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
   },
   essential: {
     id: "essential",
-    mode: "cloud",
     label: "Light",
     priceEur: 9,
     maxRooms: Infinity,
@@ -154,7 +124,6 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
   },
   professional: {
     id: "professional",
-    mode: "cloud",
     label: "PRO",
     priceEur: 29,
     maxRooms: Infinity,
@@ -174,7 +143,6 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
   },
   business: {
     id: "business",
-    mode: "cloud",
     label: "Business",
     priceEur: 69,
     maxRooms: Infinity,
@@ -197,103 +165,6 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     emailScope: "stay",
   },
 
-  // ── Local ──────────────────────────────────────────────────────
-  local_essential: {
-    id: "local_essential",
-    mode: "local",
-    label: "Local Essential",
-    priceEur: 29,
-    maxRooms: 10,
-    maxTeamMembers: 3,
-    coreFeatures: ESSENTIAL_FEATURES,
-    includedModules: [],
-    showBranding: false,
-    maxProperties: 1,
-    emailMonthlyCap: 2_000,
-    emailScope: "stay",
-  },
-  local_professional: {
-    id: "local_professional",
-    mode: "local",
-    label: "Local Professional",
-    priceEur: 69,
-    maxRooms: 30,
-    maxTeamMembers: Infinity,
-    coreFeatures: PROFESSIONAL_FEATURES,
-    includedModules: ["invoicing", "advanced_reports"],
-    showBranding: false,
-    maxProperties: 1,
-    emailMonthlyCap: null,
-    emailScope: "stay",
-  },
-  local_business: {
-    id: "local_business",
-    mode: "local",
-    label: "Local Business",
-    priceEur: 129,
-    maxRooms: Infinity,
-    maxTeamMembers: Infinity,
-    coreFeatures: BUSINESS_FEATURES,
-    includedModules: [
-      "invoicing",
-      "advanced_reports",
-      "multi_property",
-      "white_label",
-    ],
-    showBranding: false,
-    maxProperties: 5,
-    emailMonthlyCap: null,
-    emailScope: "stay",
-  },
-
-  // ── Hybrid ────────────────────────────────────────────────────
-  hybrid_essential: {
-    id: "hybrid_essential",
-    mode: "hybrid",
-    label: "Hybrid Essential",
-    priceEur: 39,
-    maxRooms: 10,
-    maxTeamMembers: 3,
-    coreFeatures: ESSENTIAL_FEATURES,
-    includedModules: [],
-    showBranding: false,
-    maxProperties: 1,
-    emailMonthlyCap: 2_000,
-    emailScope: "stay",
-  },
-  hybrid_professional: {
-    id: "hybrid_professional",
-    mode: "hybrid",
-    label: "Hybrid Professional",
-    priceEur: 79,
-    maxRooms: 30,
-    maxTeamMembers: Infinity,
-    coreFeatures: PROFESSIONAL_FEATURES,
-    includedModules: ["invoicing", "advanced_reports"],
-    showBranding: false,
-    maxProperties: 1,
-    emailMonthlyCap: null,
-    emailScope: "stay",
-  },
-  hybrid_business: {
-    id: "hybrid_business",
-    mode: "hybrid",
-    label: "Hybrid Business",
-    priceEur: 149,
-    maxRooms: Infinity,
-    maxTeamMembers: Infinity,
-    coreFeatures: BUSINESS_FEATURES,
-    includedModules: [
-      "invoicing",
-      "advanced_reports",
-      "multi_property",
-      "white_label",
-    ],
-    showBranding: false,
-    maxProperties: 5,
-    emailMonthlyCap: null,
-    emailScope: "stay",
-  },
 };
 
 // ─── Module Catalog ─────────────────────────────────────────────
@@ -378,11 +249,12 @@ const LEGACY_PLAN_IDS: Record<string, PlanId> = {
   pro: "professional",
 };
 
+/** The plan for a stored id; an id Zalmox does not know gets Basic, never a paid plan. */
 export function resolvePlanId(raw: string): PlanId {
   const legacy = LEGACY_PLAN_IDS[raw];
   if (legacy) return legacy;
   if (raw in PLAN_CONFIGS) return raw as PlanId;
-  return "professional";
+  return "free";
 }
 
 export function getPlanConfig(planId: string): PlanConfig {

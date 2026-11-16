@@ -4,7 +4,6 @@
  */
 
 import type {
-  DeploymentMode,
   PlanId,
   ModuleId,
   CoreFeature,
@@ -19,7 +18,6 @@ export interface TenantRecord {
   displayName: string;
   planId: PlanId;
   activeModules: ModuleId[];
-  mode: DeploymentMode;
   locale: "ro" | "en" | "bg";
   country: "RO" | "MD" | "BG";
   timezone: string;
@@ -79,7 +77,6 @@ export const DEV_FALLBACK_TENANT: TenantRecord = {
   displayName: PLATFORM_NAME,
   planId: "professional",
   activeModules: [],
-  mode: "cloud",
   locale: "ro",
   country: "RO",
   timezone: "Europe/Bucharest",
@@ -88,9 +85,6 @@ export const DEV_FALLBACK_TENANT: TenantRecord = {
   trialEndsAt: null,
   createdAt: "2025-01-01T00:00:00.000Z",
 };
-
-/** @deprecated Use DEV_FALLBACK_TENANT in tests. */
-export const DEFAULT_TENANT = DEV_FALLBACK_TENANT;
 
 let _currentContext: TenantContext | null = null;
 

@@ -7,6 +7,7 @@ import { PLAN_CONFIGS, type PlanId } from "@/core/config/plans";
 import { slugifyTenantName } from "@/lib/platform-admin/tenant-slug";
 import { provisionTenantAction } from "@/features/platform-admin/provision-actions";
 
+/** The plans a property can be created on. */
 const PLAN_OPTIONS = Object.keys(PLAN_CONFIGS) as PlanId[];
 
 export function TenantProvisionForm() {

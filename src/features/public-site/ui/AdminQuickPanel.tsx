@@ -2,7 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { countNewRequests, listNewRequestsPreview } from "@/services/bookings/queries";
-import { getAdminUser } from "@/lib/auth/require-admin";
+import { getStaffUser } from "@/lib/auth/require-admin";
 import { PhoneBookingForm } from "./PhoneBookingForm";
 import { getTranslations } from "next-intl/server";
 
@@ -17,7 +17,7 @@ export async function AdminQuickPanel({
   adminVerified?: boolean;
 }) {
   if (!adminVerified) {
-    const admin = await getAdminUser();
+    const admin = await getStaffUser();
     if (!admin) {
       await redirect("/admin/login?next=/receptie");
     }

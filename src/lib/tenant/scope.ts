@@ -17,7 +17,7 @@ type TenantScope = {
  * request's public booking mode cannot leak into another request.
  *
  * Security: tenant ID still comes from host (cannot be spoofed).
- * Auth for admin actions is enforced at the action level (requireAdmin).
+ * Auth for admin actions is enforced at the action level (requireAnyStaff / requireStaffPermission).
  */
 import { AsyncLocalStorage } from "node:async_hooks";
 

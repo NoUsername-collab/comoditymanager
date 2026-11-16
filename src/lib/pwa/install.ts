@@ -5,7 +5,7 @@ export type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 };
 
-function isPwaStandaloneInBrowser(
+export function isPwaStandaloneInBrowser(
   matchStandalone: (query: string) => boolean,
   iosStandalone: boolean
 ): boolean {
@@ -15,9 +15,6 @@ function isPwaStandaloneInBrowser(
     iosStandalone
   );
 }
-
-/** @deprecated Use isPwaStandaloneInBrowser */
-export const isPwaInstalledInBrowser = isPwaStandaloneInBrowser;
 
 export function isIosSafariUserAgent(userAgent: string): boolean {
   const isIos = /iPhone|iPad|iPod/i.test(userAgent);

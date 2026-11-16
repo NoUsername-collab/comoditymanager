@@ -319,11 +319,6 @@ export async function updateBookingRulesSettingsAction(
   }
 }
 
-/** @deprecated Use updateAppearanceSettingsAction or updateOperationalSettingsAction */
-export async function updateSettingsAction(formData: FormData) {
-  return updateOperationalSettingsAction(formData);
-}
-
 /** The map point of the property's address, for the identity settings; nothing is saved here. */
 export async function geocodePropertyAddressAction(
   address: string,

@@ -129,12 +129,6 @@ export async function requireAnyStaff() {
   return requireStaff();
 }
 
-/** @deprecated Misleading name — allows operator too. Prefer requireAnyStaff() or requireStaffRole(). */
-export async function requireAdmin() {
-  const { user } = await requireAnyStaff();
-  return user;
-}
-
 export async function getStaffUser() {
   try {
     const ctx = await cachedStaffContext();
@@ -143,11 +137,6 @@ export async function getStaffUser() {
   } catch {
     return null;
   }
-}
-
-/** @deprecated */
-export async function getAdminUser() {
-  return getStaffUser();
 }
 
 /** Location structure: owner has direct access; staff needs permission plus owner unlock. */

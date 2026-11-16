@@ -1,4 +1,4 @@
-﻿# Pregătire producție — Zalmox (platformă multi-tenant)
+# Pregătire producție — Zalmox (platformă multi-tenant)
 
 **Ultima verificare:** 8 iulie 2026  
 **Context:** platforma și tenantii pot fi **deja live** — documentul servește la validare periodică, onboarding tenant nou și checklist infra.

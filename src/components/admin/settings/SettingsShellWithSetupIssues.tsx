@@ -1,4 +1,4 @@
-﻿import type { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { Suspense } from "react";
 import { SettingsShell } from "@/components/admin/settings/SettingsShell";
 import { resolveSetupIssues } from "@/services/setup-issues";

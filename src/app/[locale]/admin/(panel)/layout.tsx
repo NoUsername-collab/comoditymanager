@@ -1,4 +1,4 @@
-﻿import { Link } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import "@/styles/features/admin/admin-features.css";
 import "@/styles/admin/shell.css";

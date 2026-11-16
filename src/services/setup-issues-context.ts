@@ -1,4 +1,4 @@
-﻿import { cache } from "react";
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";

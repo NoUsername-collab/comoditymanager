@@ -1,4 +1,4 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import { PublicSiteSettingsForm } from "@/features/public-site/editor/ui/PublicSiteSettingsForm";
 import { publicStockCopy } from "@/features/public-site/domain/seed-copy";

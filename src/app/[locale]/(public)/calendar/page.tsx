@@ -7,7 +7,7 @@ import { buildBookingNoticePresetCopy } from "@/features/public-site/ui/booking-
 import { pickOwnLocalized, storedTitle } from "@/features/public-site/domain/localized";
 import { publicPageMetadata } from "@/features/public-site/page-metadata";
 import { loadPublicCalendarPage, loadPublicSiteConfig } from "@/features/public-site/loaders";
-import { getAdminUser } from "@/lib/auth/require-admin";
+import { getStaffUser } from "@/lib/auth/require-admin";
 import { getLocale, getTranslations } from "next-intl/server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -39,7 +39,7 @@ export default async function CalendarPublicPage({
     getTranslations("public.shell"),
     loadPublicCalendarPage(),
     getLocale(),
-    getAdminUser().catch(() => null),
+    getStaffUser().catch(() => null),
     searchParams,
   ]);
   // A room card on the site sends its room type; only one the site lists counts.

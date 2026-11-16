@@ -16,7 +16,7 @@ import {
 import {
   setTenantContext,
   resetTenantContext,
-  DEFAULT_TENANT,
+  DEV_FALLBACK_TENANT,
   type TenantRecord,
 } from "@/core/tenant/context";
 
@@ -28,18 +28,18 @@ describe("Feature Gates", () => {
   describe("assertFeature", () => {
     it("passes for features in the current plan", () => {
       // Default = Professional, has gantt
-      setTenantContext(DEFAULT_TENANT);
+      setTenantContext(DEV_FALLBACK_TENANT);
       expect(() => assertFeature("gantt")).not.toThrow();
       expect(() => assertFeature("calendar")).not.toThrow();
     });
 
     it("throws FeatureGateError for missing features", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
+      setTenantContext({ ...DEV_FALLBACK_TENANT, planId: "free" });
       expect(() => assertFeature("priority_support")).toThrow(FeatureGateError);
     });
 
     it("error includes plan info", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
+      setTenantContext({ ...DEV_FALLBACK_TENANT, planId: "free" });
       try {
         assertFeature("priority_support");
       } catch (e) {
@@ -55,18 +55,18 @@ describe("Feature Gates", () => {
   describe("assertModule", () => {
     it("passes for modules in the current plan", () => {
       // Professional has ical_sync
-      setTenantContext(DEFAULT_TENANT);
+      setTenantContext(DEV_FALLBACK_TENANT);
       expect(() => assertModule("ical_sync")).not.toThrow();
     });
 
     it("throws ModuleGateError for missing modules", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
+      setTenantContext({ ...DEV_FALLBACK_TENANT, planId: "free" });
       expect(() => assertModule("invoicing")).toThrow(ModuleGateError);
     });
 
     it("passes for purchased add-on modules", () => {
       setTenantContext({
-        ...DEFAULT_TENANT,
+        ...DEV_FALLBACK_TENANT,
         planId: "essential",
         activeModules: ["invoicing"],
       });
@@ -76,18 +76,18 @@ describe("Feature Gates", () => {
 
   describe("assertCanAddRoom", () => {
     it("allows rooms within limit", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
+      setTenantContext({ ...DEV_FALLBACK_TENANT, planId: "free" });
       expect(() => assertCanAddRoom(2)).not.toThrow();
     });
 
     it("allows rooms on Basic", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
+      setTenantContext({ ...DEV_FALLBACK_TENANT, planId: "free" });
       expect(() => assertCanAddRoom(5)).not.toThrow();
       expect(() => assertCanAddRoom(40)).not.toThrow();
     });
 
     it("allows unlimited rooms on Professional", () => {
-      setTenantContext(DEFAULT_TENANT); // Professional, unlimited
+      setTenantContext(DEV_FALLBACK_TENANT); // Professional, unlimited
       expect(() => assertCanAddRoom(29)).not.toThrow();
       expect(() => assertCanAddRoom(9999)).not.toThrow();
     });
@@ -95,12 +95,12 @@ describe("Feature Gates", () => {
 
   describe("assertCanAddProperty", () => {
     it("blocks second property for Essential plan", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "essential" });
+      setTenantContext({ ...DEV_FALLBACK_TENANT, planId: "essential" });
       expect(() => assertCanAddProperty(1)).toThrow(LimitGateError);
     });
 
     it("allows up to 10 properties for Business", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "business" });
+      setTenantContext({ ...DEV_FALLBACK_TENANT, planId: "business" });
       expect(() => assertCanAddProperty(9)).not.toThrow();
       expect(() => assertCanAddProperty(10)).toThrow(LimitGateError);
     });
@@ -108,7 +108,7 @@ describe("Feature Gates", () => {
 
   describe("checkFeature / checkModule (non-throwing)", () => {
     it("returns boolean without throwing", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
+      setTenantContext({ ...DEV_FALLBACK_TENANT, planId: "free" });
       expect(checkFeature("priority_support")).toBe(false);
       expect(checkFeature("calendar")).toBe(true);
       expect(checkModule("invoicing")).toBe(false);
@@ -159,12 +159,11 @@ describe("Feature Gates", () => {
 
   describe("buildFeatureMap", () => {
     it("returns serializable object for Professional plan", () => {
-      setTenantContext(DEFAULT_TENANT);
+      setTenantContext(DEV_FALLBACK_TENANT);
       const map = buildFeatureMap();
 
       expect(map.planId).toBe("professional");
       expect(map.planLabel).toBe("PRO");
-      expect(map.mode).toBe("cloud");
       expect(map.showBranding).toBe(false);
       expect(map.maxRooms).toBe(Infinity);
 
@@ -179,7 +178,7 @@ describe("Feature Gates", () => {
     });
 
     it("returns correct map for Free plan", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
+      setTenantContext({ ...DEV_FALLBACK_TENANT, planId: "free" });
       const map = buildFeatureMap();
 
       expect(map.showBranding).toBe(true);

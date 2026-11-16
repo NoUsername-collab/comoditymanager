@@ -1,4 +1,4 @@
-﻿export function formatStayLabel(
+export function formatStayLabel(
   pattern: string,
   values: Record<string, string | number>,
 ): string {

@@ -1,4 +1,4 @@
-﻿type TenantLifecycleStatus =
+type TenantLifecycleStatus =
   | "active"
   | "trial"
   | "suspended"

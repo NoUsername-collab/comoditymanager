@@ -4,7 +4,7 @@ import type {
   ActivityEntityType,
   ActivityLogEntry,
 } from "@/domain/activity/types";
-import { getAdminUser } from "@/lib/auth/require-admin";
+import { getStaffUser } from "@/lib/auth/require-admin";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 
@@ -94,7 +94,7 @@ export async function logAdminActivity(input: LogInput): Promise<string | null> 
 export async function logAdminActivityFromSession(
   input: Omit<LogInput, "actor">
 ): Promise<string | null> {
-  const user = await getAdminUser();
+  const user = await getStaffUser();
   return logAdminActivity({
     ...input,
     actor: user ? { id: user.id, email: user.email } : null,

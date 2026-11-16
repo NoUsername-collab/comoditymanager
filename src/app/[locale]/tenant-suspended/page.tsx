@@ -1,4 +1,4 @@
-﻿import { getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { normalizeTenantLifecycleStatus } from "@/domain/tenant/operational";
 import { Link } from "@/i18n/navigation";
 

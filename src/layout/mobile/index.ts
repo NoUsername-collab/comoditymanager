@@ -13,7 +13,6 @@ export {
 } from "./resolve";
 export {
   applyDocumentLayout,
-  applyLayoutModeToDocument,
   scheduleApplyDocumentLayout,
 } from "./apply-document-layout";
 export {

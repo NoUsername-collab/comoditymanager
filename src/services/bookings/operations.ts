@@ -33,7 +33,7 @@ import {
 import {
   assertRoomsAvailableForOccupancy,
 } from "@/services/room-occupancy";
-import { getAdminUser } from "@/lib/auth/require-admin";
+import { getStaffUser } from "@/lib/auth/require-admin";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp, isoToDatetimeLocal } from "@/lib/operational-check";
 import { assertPostCheckoutEditAllowed, assertBookingPostCheckoutEditAllowed } from "./post-checkout-guard";
@@ -145,7 +145,7 @@ export async function setBookingCheckIn(
 
   const ts = parseOperationalTimestamp(at);
   const [user, { tenantId, supabase }] = await Promise.all([
-    getAdminUser(),
+    getStaffUser(),
     getTenantScope(),
   ]);
   const { error } = await supabase
@@ -206,7 +206,7 @@ export async function setBookingCheckOut(
   }
 
   const [user, { tenantId, supabase }] = await Promise.all([
-    getAdminUser(),
+    getStaffUser(),
     getTenantScope(),
   ]);
   const { error } = await supabase
@@ -267,7 +267,7 @@ export async function editBookingCheckIn(
   }
 
   const [user, { tenantId, supabase }] = await Promise.all([
-    getAdminUser(),
+    getStaffUser(),
     getTenantScope(),
   ]);
   const { error } = await supabase
@@ -318,7 +318,7 @@ export async function editBookingCheckOut(
   const settings = await getCheckinSettings();
 
   const [user, { tenantId, supabase }] = await Promise.all([
-    getAdminUser(),
+    getStaffUser(),
     getTenantScope(),
   ]);
   const { error } = await supabase

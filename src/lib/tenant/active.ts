@@ -85,16 +85,6 @@ export const lookupRequestTenantHost = cache(async (): Promise<TenantRow | null>
   return null;
 });
 
-/** @deprecated Use requireTenantIdForData() */
-export async function getActiveTenantIdForData(): Promise<string> {
-  const h = await headers();
-  if (h.get("x-tenant-slug") || h.get("x-tenant-domain")) {
-    const key = h.get("x-tenant-slug") ?? h.get("x-tenant-domain") ?? "?";
-    throw new TenantNotFoundError(key);
-  }
-  return requireTenantIdForData();
-}
-
 export async function getActiveTenantSlug(): Promise<string | null> {
   const t = await resolveRequestTenant();
   return t?.slug ?? null;

@@ -1,4 +1,4 @@
-﻿# Zalmox — Architecture & Module Boundaries
+# Zalmox — Architecture & Module Boundaries
 
 This document defines **allowed import directions** and where new code should live.
 Goal: thin routes, testable domain logic, no UI↔route spaghetti.

@@ -1,0 +1,15 @@
+# One line ending everywhere: LF in the repository and in every checkout,
+# whatever the editor or core.autocrlf on the machine.
+* text=auto eol=lf
+
+# Binary files are never touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.traineddata binary

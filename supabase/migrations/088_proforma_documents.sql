@@ -1,4 +1,4 @@
-﻿-- 088: Proforma documents (P3) - serie PF separata, conversie la factura fiscala
+-- 088: Proforma documents (P3) - serie PF separata, conversie la factura fiscala
 
 alter table public.pension_settings
   add column if not exists proforma_series text not null default 'PF',

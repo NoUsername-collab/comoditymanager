@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
   buildTenantContext,
-  DEFAULT_TENANT,
+  DEV_FALLBACK_TENANT,
   setTenantContext,
   getTenantContext,
   resetTenantContext,
@@ -15,14 +15,13 @@ describe("TenantContext", () => {
 
   describe("buildTenantContext", () => {
     it("builds context from DEV_FALLBACK_TENANT", () => {
-      const ctx = buildTenantContext(DEFAULT_TENANT);
+      const ctx = buildTenantContext(DEV_FALLBACK_TENANT);
       expect(ctx.tenant.slug).toBe("__dev__");
       expect(ctx.plan.id).toBe("professional");
-      expect(ctx.plan.mode).toBe("cloud");
     });
 
     it("has correct features for Professional plan", () => {
-      const ctx = buildTenantContext(DEFAULT_TENANT);
+      const ctx = buildTenantContext(DEV_FALLBACK_TENANT);
       expect(ctx.hasFeature("gantt")).toBe(true);
       expect(ctx.hasFeature("calendar")).toBe(true);
       expect(ctx.hasFeature("heatmap")).toBe(true);
@@ -32,7 +31,7 @@ describe("TenantContext", () => {
     });
 
     it("has correct modules for Professional plan", () => {
-      const ctx = buildTenantContext(DEFAULT_TENANT);
+      const ctx = buildTenantContext(DEV_FALLBACK_TENANT);
       expect(ctx.hasModule("ical_sync")).toBe(true);
       expect(ctx.hasModule("advanced_reports")).toBe(true);
       expect(ctx.hasModule("invoicing")).toBe(true);
@@ -42,13 +41,13 @@ describe("TenantContext", () => {
     });
 
     it("allows unlimited rooms on Professional", () => {
-      const ctx = buildTenantContext(DEFAULT_TENANT);
+      const ctx = buildTenantContext(DEV_FALLBACK_TENANT);
       expect(ctx.canAddRoom(29)).toBe(true);
       expect(ctx.canAddRoom(9999)).toBe(true);
     });
 
     it("does not show branding on Professional", () => {
-      const ctx = buildTenantContext(DEFAULT_TENANT);
+      const ctx = buildTenantContext(DEV_FALLBACK_TENANT);
       expect(ctx.showBranding).toBe(false);
     });
   });
@@ -60,7 +59,6 @@ describe("TenantContext", () => {
       displayName: "Pensiunea Test",
       planId: "free",
       activeModules: [],
-      mode: "cloud",
       locale: "ro",
       country: "RO",
       timezone: "Europe/Bucharest",
@@ -98,7 +96,7 @@ describe("TenantContext", () => {
   describe("add-on modules", () => {
     it("merges purchased add-ons with plan includes", () => {
       const tenant: TenantRecord = {
-        ...DEFAULT_TENANT,
+        ...DEV_FALLBACK_TENANT,
         planId: "essential",
         activeModules: ["invoicing", "ical_sync"], // purchased separately
       };
@@ -116,7 +114,7 @@ describe("TenantContext", () => {
 
     it("deduplicates modules", () => {
       const tenant: TenantRecord = {
-        ...DEFAULT_TENANT,
+        ...DEV_FALLBACK_TENANT,
         planId: "professional",
         activeModules: ["ical_sync"], // already in Professional, should not duplicate
       };
@@ -133,7 +131,7 @@ describe("TenantContext", () => {
 
     it("returns set context after setTenantContext", () => {
       const tenant: TenantRecord = {
-        ...DEFAULT_TENANT,
+        ...DEV_FALLBACK_TENANT,
         id: "custom",
         slug: "pensiunea-mare",
         displayName: "Pensiunea Mare",
@@ -146,7 +144,7 @@ describe("TenantContext", () => {
 
     it("throws after resetTenantContext until bound again", () => {
       setTenantContext({
-        ...DEFAULT_TENANT,
+        ...DEV_FALLBACK_TENANT,
         slug: "temporary",
       });
 
@@ -155,51 +153,10 @@ describe("TenantContext", () => {
     });
   });
 
-  describe("Local mode tenant", () => {
-    const localTenant: TenantRecord = {
-      id: "local-001",
-      slug: "pensiune-locala",
-      displayName: "Pensiune Locala",
-      planId: "local_professional",
-      activeModules: [],
-      mode: "local",
-      locale: "ro",
-      country: "MD",
-      timezone: "Europe/Chisinau",
-      customDomain: null,
-      status: "active",
-      trialEndsAt: null,
-      createdAt: "2025-06-01T00:00:00.000Z",
-    };
-
-    it("is in local mode", () => {
-      const ctx = buildTenantContext(localTenant);
-      expect(ctx.plan.mode).toBe("local");
-    });
-
-    it("has Professional-level features", () => {
-      const ctx = buildTenantContext(localTenant);
-      expect(ctx.hasFeature("gantt")).toBe(true);
-      expect(ctx.hasFeature("priority_support")).toBe(true);
-    });
-
-    it("includes invoicing and reports", () => {
-      const ctx = buildTenantContext(localTenant);
-      expect(ctx.hasModule("invoicing")).toBe(true);
-      expect(ctx.hasModule("advanced_reports")).toBe(true);
-    });
-
-    it("does not include cloud-only modules", () => {
-      const ctx = buildTenantContext(localTenant);
-      expect(ctx.hasModule("whatsapp")).toBe(false);
-      expect(ctx.hasModule("ical_sync")).toBe(false);
-    });
-  });
-
   describe("Bulgarian tenant", () => {
     it("supports BG locale and country", () => {
       const bgTenant: TenantRecord = {
-        ...DEFAULT_TENANT,
+        ...DEV_FALLBACK_TENANT,
         id: "bg-001",
         slug: "hotel-varna",
         displayName: "Hotel Varna",

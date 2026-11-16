@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Platform admin guard — gates Zalmox internal panel.
  *
  * Checks the authenticated user's email against ZALMOX_ADMIN_EMAILS env var.

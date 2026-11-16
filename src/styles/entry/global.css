@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 @import "../themes/_base.css";
 @import "../tokens/admin-surfaces.css";
 @import "../features/layout/admin-status.css";

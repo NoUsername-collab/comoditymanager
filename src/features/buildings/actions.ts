@@ -287,14 +287,6 @@ export async function updateBuildingFormAction(
   }
 }
 
-/** @deprecated Prefer createFloorFormAction — kept for any legacy forms */
-export async function createFloorAction(formData: FormData) {
-  const result = await createFloorFormAction(null, formData);
-  if (!result?.ok) {
-    throw new Error(result?.message ?? "Error");
-  }
-}
-
 export type AdminDeleteActionResult = { error?: string };
 
 export async function deleteBuildingAction(

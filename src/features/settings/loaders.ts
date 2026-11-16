@@ -38,10 +38,8 @@ import { listRoomIcalOverview } from "@/services/ical-sync";
 import { requestOrigin } from "@/lib/tenant/site-url";
 import { getTenantFiscalSettings } from "@/services/tenant-fiscal-settings";
 import { listActiveTenantMembers } from "@/services/tenant-members";
-import {
-  getActiveTenantIdForData,
-  resolveRequestTenant,
-} from "@/lib/tenant/active";
+import { resolveRequestTenant } from "@/lib/tenant/active";
+import { requireTenantIdForData } from "@/lib/tenant/guards";
 import type { TenantMemberRole } from "@/domain/tenant/types";
 
 export async function loadSettingsOverviewData(opts: {
@@ -143,7 +141,7 @@ export async function loadGuestAppSettingsPage() {
 export async function loadSettingsDomainsPage() {
   const [tenant, domains] = await Promise.all([
     resolveRequestTenant(),
-    getActiveTenantIdForData().then((id) => listTenantDomains(id)),
+    requireTenantIdForData().then((id) => listTenantDomains(id)),
   ]);
   return { tenant, domains };
 }

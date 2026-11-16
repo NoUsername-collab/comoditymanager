@@ -30,7 +30,7 @@ import { partyFromBooking } from "@/domain/availability/party";
 import { quoteStayForRooms } from "@/services/stay-quote";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 import { getRoomsByIds } from "@/services/rooms-admin";
-import { getAdminUser } from "@/lib/auth/require-admin";
+import { getStaffUser } from "@/lib/auth/require-admin";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp } from "@/lib/operational-check";
 

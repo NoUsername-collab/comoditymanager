@@ -8,7 +8,7 @@ import {
 } from "@/lib/tenant/domain-routing";
 import { platformDomainFromRequestHost } from "@/lib/tenant/host";
 import { requireStaffPermission } from "@/lib/auth/require-staff";
-import { getActiveTenantIdForData } from "@/lib/tenant/active";
+import { requireTenantIdForData } from "@/lib/tenant/guards";
 import {
   addCustomTenantDomain,
   markTenantDomainVerified,
@@ -28,7 +28,7 @@ function planHasFeature(planId: string, feature: CoreFeature): boolean {
 export async function addCustomDomainAction(formData: FormData) {
   await requireStaffPermission("pension_settings");
 
-  const tenantId = await getActiveTenantIdForData();
+  const tenantId = await requireTenantIdForData();
   const tenant = await getTenantById(tenantId);
   if (!tenant) {
     return { ok: false as const, error: "tenant_not_found" };
@@ -79,7 +79,7 @@ export async function verifyCustomDomainAction(formData: FormData) {
   await requireStaffPermission("pension_settings");
 
   const domainId = String(formData.get("domain_id") ?? "");
-  const tenantId = await getActiveTenantIdForData();
+  const tenantId = await requireTenantIdForData();
 
   try {
     await markTenantDomainVerified(domainId, tenantId);
@@ -94,7 +94,7 @@ export async function removeCustomDomainAction(formData: FormData) {
   await requireStaffPermission("pension_settings");
 
   const domainId = String(formData.get("domain_id") ?? "");
-  const tenantId = await getActiveTenantIdForData();
+  const tenantId = await requireTenantIdForData();
 
   try {
     await removeCustomTenantDomain(domainId, tenantId);

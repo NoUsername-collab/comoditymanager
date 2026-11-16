@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { SETUP_ISSUE_IDS } from "@/domain/setup-issues/types";
 import {
   computeSettingsCompletion,

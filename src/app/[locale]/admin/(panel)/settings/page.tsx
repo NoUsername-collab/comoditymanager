@@ -1,4 +1,4 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { SETTINGS_SECTION_REDIRECTS } from "@/domain/settings/settings-nav";

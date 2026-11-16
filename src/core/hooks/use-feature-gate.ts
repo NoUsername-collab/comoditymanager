@@ -137,7 +137,6 @@ export function buildFeatureMap(ctx?: TenantContext): FeatureMap {
   return {
     planId: c.plan.id,
     planLabel: c.plan.label,
-    mode: c.plan.mode,
     maxRooms: c.plan.maxRooms,
     maxProperties: c.plan.maxProperties,
     showBranding: c.showBranding,
@@ -162,7 +161,6 @@ export function buildFeatureMap(ctx?: TenantContext): FeatureMap {
 interface FeatureMap {
   planId: PlanId;
   planLabel: string;
-  mode: string;
   maxRooms: number;
   maxProperties: number;
   showBranding: boolean;

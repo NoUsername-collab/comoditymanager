@@ -2,7 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { AdminQuickPanel } from "@/features/public-site/ui/AdminQuickPanel";
 import { loadReceptionPage } from "@/features/public-site/loaders";
-import { getAdminUser } from "@/lib/auth/require-admin";
+import { getStaffUser } from "@/lib/auth/require-admin";
 import { getTranslations } from "next-intl/server";
 import { resolvePensionStayTimes } from "@/lib/constants";
 import "@/styles/features/admin/staff-stay-create.css";
@@ -14,7 +14,7 @@ export default async function ReceptionPage({
 }) {
   const [t, admin, params, settings] = await Promise.all([
     getTranslations("public.reception"),
-    getAdminUser(),
+    getStaffUser(),
     searchParams,
     loadReceptionPage(),
   ]);

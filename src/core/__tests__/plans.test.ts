@@ -4,33 +4,26 @@ import {
   type PlanId,
   type CloudPlan,
   type ModuleId,
+  getPlanConfig,
 } from "@/core/config/plans";
 import { PLATFORM_NAME } from "@/lib/platform/branding";
 
 describe("PLAN_CONFIGS", () => {
-  it("defines all 10 plan tiers (4 cloud + 3 local + 3 hybrid)", () => {
-    expect(Object.keys(PLAN_CONFIGS)).toHaveLength(10);
+  it("defines the four cloud plans and nothing else", () => {
+    expect(Object.keys(PLAN_CONFIGS).sort()).toEqual(["business", "essential", "free", "professional"]);
   });
 
-  it("has 4 cloud plans", () => {
-    const cloudPlans = Object.values(PLAN_CONFIGS).filter(
-      (p) => p.mode === "cloud"
-    );
-    expect(cloudPlans).toHaveLength(4);
+  it("gives an unknown plan id Basic, never a paid plan", () => {
+    expect(getPlanConfig("local_professional").id).toBe("free");
+    expect(getPlanConfig("anything").id).toBe("free");
+    expect(getPlanConfig("pro").id).toBe("professional");
   });
 
-  it("has 3 local plans", () => {
-    const localPlans = Object.values(PLAN_CONFIGS).filter(
-      (p) => p.mode === "local"
-    );
-    expect(localPlans).toHaveLength(3);
-  });
-
-  it("has 3 hybrid plans", () => {
-    const hybridPlans = Object.values(PLAN_CONFIGS).filter(
-      (p) => p.mode === "hybrid"
-    );
-    expect(hybridPlans).toHaveLength(3);
+  it("keeps Business a superset of PRO's features", () => {
+    for (const feature of PLAN_CONFIGS.professional.coreFeatures) {
+      expect(PLAN_CONFIGS.business.coreFeatures).toContain(feature);
+    }
+    expect(PLAN_CONFIGS.business.coreFeatures).toContain("priority_support");
   });
 
   describe("Basic plan", () => {
@@ -176,18 +169,4 @@ describe("PLAN_CONFIGS", () => {
     });
   });
 
-  describe("local plans keep the previous feature ladder", () => {
-    it("local essential still includes heatmap and email", () => {
-      const localEssential = PLAN_CONFIGS.local_essential;
-      expect(localEssential.coreFeatures).toContain("heatmap");
-      expect(localEssential.coreFeatures).toContain("email_notifications");
-      expect(localEssential.emailScope).toBe("stay");
-    });
-
-    it("local professional still includes priority support", () => {
-      const localProfessional = PLAN_CONFIGS.local_professional;
-      expect(localProfessional.coreFeatures).toContain("priority_support");
-      expect(localProfessional.coreFeatures).toContain("custom_domain");
-    });
-  });
 });
