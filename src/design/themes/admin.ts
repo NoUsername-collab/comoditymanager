@@ -11,7 +11,7 @@ import {
 /** Build inline CSS custom properties for admin shell (primitives + key admin aliases). */
 export function adminThemeCssVars(
   themeId: DesignThemeId | string,
-  mode: DesignThemeMode
+  mode: DesignThemeMode,
 ): Record<string, string> {
   const id = migrateDesignThemeId(themeId);
   const t = getDesignTheme(id).admin[mode];
@@ -37,7 +37,7 @@ export function adminThemeCssVars(
 
 export function applyAdminThemeToDocument(
   themeId: DesignThemeId | string,
-  mode: DesignThemeMode
+  mode: DesignThemeMode,
 ): void {
   if (typeof document === "undefined") return;
   const id = migrateDesignThemeId(themeId);

@@ -55,9 +55,7 @@ export function AvailabilityKpiStrip({ kpis }: { kpis: MonthAvailabilityKpis }) 
             <p className="avail-kpi-card__value">{value}</p>
             <p className="avail-kpi-card__label">
               {label}
-              {sub && (
-                <span className="block font-normal normal-case text-zinc-500">{sub}</span>
-              )}
+              {sub && <span className="block font-normal normal-case text-zinc-500">{sub}</span>}
             </p>
           </button>
         ))}
@@ -66,11 +64,7 @@ export function AvailabilityKpiStrip({ kpis }: { kpis: MonthAvailabilityKpis }) 
       {kpis.vs_prev_full_delta !== 0 && (
         <p className="text-xs text-zinc-600">
           {tAvail("vsLastMonth")}:{" "}
-          <strong
-            className={
-              kpis.vs_prev_full_delta > 0 ? "text-rose-700" : "text-emerald-700"
-            }
-          >
+          <strong className={kpis.vs_prev_full_delta > 0 ? "text-rose-700" : "text-emerald-700"}>
             {kpis.vs_prev_full_delta > 0 ? "+" : ""}
             {kpis.vs_prev_full_delta} {tAvail("fullDays")}
           </strong>
@@ -84,9 +78,7 @@ export function AvailabilityKpiStrip({ kpis }: { kpis: MonthAvailabilityKpis }) 
         variant="modal"
         width={400}
       >
-        {kpiHelp && (
-          <p className="admin-alert-dialog__message">{kpiHelpMap[kpiHelp].body}</p>
-        )}
+        {kpiHelp && <p className="admin-alert-dialog__message">{kpiHelpMap[kpiHelp].body}</p>}
       </AdminFloatingPanel>
     </>
   );

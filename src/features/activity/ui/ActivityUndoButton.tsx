@@ -8,12 +8,7 @@ import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 
 function UndoIcon({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 16 16"
-      fill="none"
-      className={className}
-      aria-hidden
-    >
+    <svg viewBox="0 0 16 16" fill="none" className={className} aria-hidden>
       <path
         d="M3.5 5.5h6a3.5 3.5 0 0 1 0 7H7"
         stroke="currentColor"

@@ -93,9 +93,7 @@ export async function MonthCompareCards({
                   ? tCommon("fillPriceOnConfirm")
                   : py
                     ? tCommon("lastYearValue", {
-                        value: py.revenueComplete
-                          ? formatRon(py.revenueRon)
-                          : "—",
+                        value: py.revenueComplete ? formatRon(py.revenueRon) : "—",
                       })
                     : undefined
             }
@@ -122,9 +120,7 @@ export async function MonthCompareCards({
             label={t("currentMonthAdr")}
             hint={t("adrHint")}
             value={
-              current.revenueComplete && current.adrRon != null
-                ? formatRon(current.adrRon)
-                : "—"
+              current.revenueComplete && current.adrRon != null ? formatRon(current.adrRon) : "—"
             }
             sub={
               py?.revenueComplete && current.revenueComplete && py.adrRon != null
@@ -144,9 +140,7 @@ export async function MonthCompareCards({
                 : "—"
             }
             sub={
-              py?.revenueComplete &&
-              current.revenueComplete &&
-              py.revparRon != null
+              py?.revenueComplete && current.revenueComplete && py.revparRon != null
                 ? tCommon("lastYearValue", { value: formatRon(py.revparRon) })
                 : !current.revenueComplete
                   ? tCommon("fillPriceOnConfirm")
@@ -181,12 +175,7 @@ function MetricCard({
     <div className="admin-metric-card">
       <p className="admin-metric-card__label">
         <span>{label}</span>
-        {hint ? (
-          <AdminMetricHint
-            text={hint}
-            label={`${aboutLabel}?`}
-          />
-        ) : null}
+        {hint ? <AdminMetricHint text={hint} label={`${aboutLabel}?`} /> : null}
       </p>
       <p className="mt-0.5 text-xl font-bold tabular-nums text-zinc-900">{value}</p>
       {sub ? (

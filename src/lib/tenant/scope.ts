@@ -43,10 +43,7 @@ function isPublicBookingMode(): boolean {
  * server action / server component render share the result.
  */
 const cachedAssertStaff = cache(async (tenantId: string): Promise<void> => {
-  const [tenant, ctx] = await Promise.all([
-    resolveRequestTenant(),
-    cachedStaffContext(),
-  ]);
+  const [tenant, ctx] = await Promise.all([resolveRequestTenant(), cachedStaffContext()]);
 
   if (!tenant) {
     throw new Error("auth.tenant_host_required");
@@ -89,9 +86,7 @@ type TenantScopeOptions = {
  * cached per-request via React cache(). Calling getTenantScope() 10x
  * in one action chain = 1 set of DB queries, not 10.
  */
-export async function getTenantScope(
-  options: TenantScopeOptions = {}
-): Promise<TenantScope> {
+export async function getTenantScope(options: TenantScopeOptions = {}): Promise<TenantScope> {
   const { requireStaff = true } = options;
   const tenantId = await requireTenantIdForData();
   if (requireStaff && !isPublicBookingMode()) {
@@ -108,7 +103,7 @@ export async function getTenantPublicScope(): Promise<TenantScope> {
 
 export function withTenantId<T extends Record<string, unknown>>(
   tenantId: string,
-  row: T
+  row: T,
 ): T & { tenant_id: string } {
   return { ...row, tenant_id: tenantId };
 }

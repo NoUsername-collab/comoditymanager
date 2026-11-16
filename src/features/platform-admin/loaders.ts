@@ -10,10 +10,7 @@ import { loadPlatformLogsPageData } from "@/services/platform-logs-page-data";
 import { listTenantDomains } from "@/services/tenant-domains";
 
 export async function loadPlatformDashboardPage() {
-  const [stats, infraHealth] = await Promise.all([
-    getPlatformStats(),
-    getPlatformInfraHealth(),
-  ]);
+  const [stats, infraHealth] = await Promise.all([getPlatformStats(), getPlatformInfraHealth()]);
   return { stats, infraHealth };
 }
 

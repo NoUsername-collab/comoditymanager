@@ -15,19 +15,13 @@ type Props = {
   acMode?: "all_rooms" | "none" | "per_room";
 };
 
-export function ColorPalettePicker({
-  name = "color_hex",
-  defaultValue,
-  acMode,
-}: Props) {
+export function ColorPalettePicker({ name = "color_hex", defaultValue, acMode }: Props) {
   const tBuildings = useTranslations("admin.buildings");
   const [pickedHex, setPickedHex] = useState<string | null>(null);
   const [pickedForAcMode, setPickedForAcMode] = useState(acMode);
   const [hexDraft, setHexDraft] = useState<string | null>(null);
 
-  const autoForAcMode = acMode
-    ? defaultColorForAcMode(acMode)
-    : BUILDING_COLOR_PALETTE[0].hex;
+  const autoForAcMode = acMode ? defaultColorForAcMode(acMode) : BUILDING_COLOR_PALETTE[0].hex;
 
   const savedHex = canonicalHexColor(defaultValue);
 
@@ -38,9 +32,7 @@ export function ColorPalettePicker({
         ? savedHex
         : autoForAcMode;
 
-  const selected = BUILDING_COLOR_PALETTE.find(
-    (c) => c.hex.toLowerCase() === value.toLowerCase()
-  );
+  const selected = BUILDING_COLOR_PALETTE.find((c) => c.hex.toLowerCase() === value.toLowerCase());
   const draftInvalid =
     hexDraft != null && hexDraft.trim() !== "" && canonicalHexColor(hexDraft) == null;
 
@@ -52,12 +44,14 @@ export function ColorPalettePicker({
 
   return (
     <fieldset className="color-palette-picker space-y-3">
-      <legend className="text-sm font-medium text-zinc-800">
-        {tBuildings("calendarColor")}
-      </legend>
+      <legend className="text-sm font-medium text-zinc-800">{tBuildings("calendarColor")}</legend>
       <input type="hidden" name={name} value={value} />
 
-      <div className="flex flex-wrap gap-2.5" role="listbox" aria-label={tBuildings("colorPalette")}>
+      <div
+        className="flex flex-wrap gap-2.5"
+        role="listbox"
+        aria-label={tBuildings("colorPalette")}
+      >
         {BUILDING_COLOR_PALETTE.map((c) => {
           const active = c.hex.toLowerCase() === value.toLowerCase();
           return (

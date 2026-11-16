@@ -7,7 +7,8 @@ import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { isMediaAlbum, type MediaAsset, type MediaText } from "@/domain/media/types";
 
-type Result<T = undefined> = ({ ok: true } & (T extends undefined ? object : { value: T })) | { ok: false; error: string };
+type Result<T = undefined> =
+  ({ ok: true } & (T extends undefined ? object : { value: T })) | { ok: false; error: string };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -45,9 +46,11 @@ export async function uploadMediaAction(formData: FormData): Promise<Result<Medi
 
   const album = String(formData.get("album") ?? "other");
   const roomTypeId = roomTypeOrNull(formData.get("roomTypeId"));
-  if (!isMediaAlbum(album) || roomTypeId === "invalid") return { ok: false, error: t("mediaInvalid") };
+  if (!isMediaAlbum(album) || roomTypeId === "invalid")
+    return { ok: false, error: t("mediaInvalid") };
   const file = formData.get("file");
-  if (!(file instanceof Blob) || file.size === 0) return { ok: false, error: t("publicSiteMediaEmpty") };
+  if (!(file instanceof Blob) || file.size === 0)
+    return { ok: false, error: t("publicSiteMediaEmpty") };
 
   const { uploadPublicSiteImage } = await import("@/services/public-site/media");
   const uploaded = await uploadPublicSiteImage({
@@ -78,17 +81,26 @@ export async function uploadMediaAction(formData: FormData): Promise<Result<Medi
 
 export async function updateMediaAction(
   id: string,
-  patch: { album?: string; roomTypeId?: string | null; alt?: MediaText; focalX?: number; focalY?: number },
+  patch: {
+    album?: string;
+    roomTypeId?: string | null;
+    alt?: MediaText;
+    focalX?: number;
+    focalY?: number;
+  },
 ): Promise<Result> {
   const g = await guard();
   if (!("tenantId" in g) || !g.tenantId) return { ok: false, error: g.error! };
   const { t, tenantId } = g;
   if (!UUID.test(id)) return { ok: false, error: t("mediaInvalid") };
-  if (patch.album !== undefined && !isMediaAlbum(patch.album)) return { ok: false, error: t("mediaInvalid") };
+  if (patch.album !== undefined && !isMediaAlbum(patch.album))
+    return { ok: false, error: t("mediaInvalid") };
   const roomTypeId = patch.roomTypeId === undefined ? undefined : roomTypeOrNull(patch.roomTypeId);
   if (roomTypeId === "invalid") return { ok: false, error: t("mediaInvalid") };
-  const inUnit = (n: number | undefined) => n === undefined || (Number.isFinite(n) && n >= 0 && n <= 1);
-  if (!inUnit(patch.focalX) || !inUnit(patch.focalY)) return { ok: false, error: t("mediaInvalid") };
+  const inUnit = (n: number | undefined) =>
+    n === undefined || (Number.isFinite(n) && n >= 0 && n <= 1);
+  if (!inUnit(patch.focalX) || !inUnit(patch.focalY))
+    return { ok: false, error: t("mediaInvalid") };
   let alt: MediaText | undefined;
   if (patch.alt) {
     alt = {};
@@ -117,7 +129,11 @@ export async function reorderMediaAction(ids: string[]): Promise<Result> {
   const g = await guard();
   if (!("tenantId" in g) || !g.tenantId) return { ok: false, error: g.error! };
   const { t, tenantId } = g;
-  if (!Array.isArray(ids) || ids.length > 500 || !ids.every((id) => typeof id === "string" && UUID.test(id))) {
+  if (
+    !Array.isArray(ids) ||
+    ids.length > 500 ||
+    !ids.every((id) => typeof id === "string" && UUID.test(id))
+  ) {
     return { ok: false, error: t("mediaInvalid") };
   }
   try {

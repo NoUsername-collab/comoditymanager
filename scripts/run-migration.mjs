@@ -60,9 +60,11 @@ if (error) {
   let fail = 0;
 
   for (const stmt of statements) {
-    const { error: stmtError } = await supabase.rpc("exec_sql", {
-      query: stmt + ";",
-    }).catch(() => ({ error: "rpc not available" }));
+    const { error: stmtError } = await supabase
+      .rpc("exec_sql", {
+        query: stmt + ";",
+      })
+      .catch(() => ({ error: "rpc not available" }));
 
     if (stmtError) {
       // Try raw SQL via REST

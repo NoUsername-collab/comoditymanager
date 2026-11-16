@@ -5,11 +5,7 @@ import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
 import type { PensionSettings } from "@/services/pension-settings";
 import { getTranslations } from "next-intl/server";
 
-export async function ExtraBedsCapForm({
-  settings,
-}: {
-  settings: PensionSettings;
-}) {
+export async function ExtraBedsCapForm({ settings }: { settings: PensionSettings }) {
   const t = await getTranslations("admin.pages.settingsLocation.extraBeds");
 
   return (

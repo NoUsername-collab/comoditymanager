@@ -76,17 +76,13 @@ export function defaultBookingNotice(): PublicBookingNoticeConfig {
   return {
     enabled: true,
     title: {},
-    items: [
-      emptyPresetItem("noPay"),
-      emptyPresetItem("hold"),
-      emptyPresetItem("hours"),
-    ],
+    items: [emptyPresetItem("noPay"), emptyPresetItem("hold"), emptyPresetItem("hours")],
     footer: {},
   };
 }
 
 function emptyPresetItem(
-  preset: Exclude<BookingNoticePresetId, "custom">
+  preset: Exclude<BookingNoticePresetId, "custom">,
 ): PublicBookingNoticeItem {
   return {
     id: preset,
@@ -112,7 +108,7 @@ export type BookingNoticeDraft = {
 
 export function bookingNoticeToDraft(
   notice: PublicBookingNoticeConfig | null | undefined,
-  locale: string
+  locale: string,
 ): BookingNoticeDraft {
   const normalized = normalizeBookingNotice(notice);
   return {
@@ -129,9 +125,7 @@ export function bookingNoticeToDraft(
   };
 }
 
-export function bookingNoticeFromDraft(
-  draft: BookingNoticeDraft
-): PublicBookingNoticeConfig {
+export function bookingNoticeFromDraft(draft: BookingNoticeDraft): PublicBookingNoticeConfig {
   const localized = (value: string) => {
     const text = value.trim();
     return text ? { ro: text, en: text, bg: text } : {};
@@ -195,8 +189,14 @@ export function mergeBookingNoticeFromLocales(
 
   return normalizeBookingNotice({
     enabled: structure.enabled,
-    title: writeLocalizedMap(prev.title, valuesFor((draft) => draft.title)),
-    footer: writeLocalizedMap(prev.footer, valuesFor((draft) => draft.footer)),
+    title: writeLocalizedMap(
+      prev.title,
+      valuesFor((draft) => draft.title),
+    ),
+    footer: writeLocalizedMap(
+      prev.footer,
+      valuesFor((draft) => draft.footer),
+    ),
     items: structure.items.map((item, index) => {
       const previousItem = prevById.get(item.id) ?? prev.items[index];
       return {
@@ -205,15 +205,11 @@ export function mergeBookingNoticeFromLocales(
         icon: item.icon,
         title: writeLocalizedMap(
           previousItem?.title,
-          valuesFor(
-            (draft) => draft.items.find((row) => row.id === item.id)?.title ?? "",
-          ),
+          valuesFor((draft) => draft.items.find((row) => row.id === item.id)?.title ?? ""),
         ),
         text: writeLocalizedMap(
           previousItem?.text,
-          valuesFor(
-            (draft) => draft.items.find((row) => row.id === item.id)?.text ?? "",
-          ),
+          valuesFor((draft) => draft.items.find((row) => row.id === item.id)?.text ?? ""),
         ),
       };
     }),
@@ -231,7 +227,7 @@ export function emptyCustomItem(id: string): PublicBookingNoticeItem {
 }
 
 export function normalizeBookingNotice(
-  raw: PublicBookingNoticeConfig | null | undefined
+  raw: PublicBookingNoticeConfig | null | undefined,
 ): PublicBookingNoticeConfig {
   const fallback = defaultBookingNotice();
   if (!raw || !Array.isArray(raw.items)) {
@@ -252,7 +248,7 @@ export function normalizeBookingNotice(
 
 function normalizeNoticeItem(
   item: PublicBookingNoticeItem,
-  index: number
+  index: number,
 ): PublicBookingNoticeItem {
   const preset = isPresetId(item.preset) ? item.preset : "custom";
   const icon = isIconId(item.icon)
@@ -280,11 +276,9 @@ function isIconId(value: unknown): value is BookingNoticeIconId {
 export function interpolateNoticePlaceholders(
   text: string,
   checkInTime: string,
-  checkOutTime: string
+  checkOutTime: string,
 ): string {
-  return text
-    .replaceAll("{checkIn}", checkInTime)
-    .replaceAll("{checkOut}", checkOutTime);
+  return text.replaceAll("{checkIn}", checkInTime).replaceAll("{checkOut}", checkOutTime);
 }
 
 export type BookingNoticePresetCopy = Record<
@@ -307,23 +301,24 @@ export function buildBookingNoticeView(args: {
   presets: Partial<BookingNoticePresetCopy>;
 }): BookingNoticeView {
   const notice = normalizeBookingNotice(args.notice);
-  const items = notice.items.map((item) => {
-    // A checked preset with no override is the configured text.
-    const presetCopy =
-      item.preset !== "custom" ? args.presets[item.preset] : undefined;
-    const title = pickOwnLocalized(item.title, args.locale) || presetCopy?.title || "";
-    const text = interpolateNoticePlaceholders(
-      pickOwnLocalized(item.text, args.locale) || presetCopy?.text || "",
-      args.checkInTime,
-      args.checkOutTime,
-    );
-    return {
-      id: item.id,
-      icon: BOOKING_NOTICE_ICON_GLYPH[item.icon],
-      title,
-      text,
-    };
-  }).filter((item) => item.title.length > 0 || item.text.length > 0);
+  const items = notice.items
+    .map((item) => {
+      // A checked preset with no override is the configured text.
+      const presetCopy = item.preset !== "custom" ? args.presets[item.preset] : undefined;
+      const title = pickOwnLocalized(item.title, args.locale) || presetCopy?.title || "";
+      const text = interpolateNoticePlaceholders(
+        pickOwnLocalized(item.text, args.locale) || presetCopy?.text || "",
+        args.checkInTime,
+        args.checkOutTime,
+      );
+      return {
+        id: item.id,
+        icon: BOOKING_NOTICE_ICON_GLYPH[item.icon],
+        title,
+        text,
+      };
+    })
+    .filter((item) => item.title.length > 0 || item.text.length > 0);
 
   return {
     enabled: notice.enabled,

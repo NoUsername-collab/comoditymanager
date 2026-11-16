@@ -261,7 +261,9 @@ export function GuestAppSettingsPreview({
                                 </span>
                                 <span className="guest-app__feature-link__meta">
                                   {badge ? (
-                                    <span className="guest-app__badge-mock">{t("badges.demo")}</span>
+                                    <span className="guest-app__badge-mock">
+                                      {t("badges.demo")}
+                                    </span>
                                   ) : null}
                                   <ChevronRightIcon className="guest-app__feature-link__chevron h-4 w-4" />
                                 </span>
@@ -276,9 +278,7 @@ export function GuestAppSettingsPreview({
                   {settings.loyalty?.enabled ? (
                     <section className="guest-loyalty-card">
                       <p className="guest-loyalty-card__eyebrow">{t("loyalty.eyebrow")}</p>
-                      <h2 className="guest-loyalty-card__title">
-                        {t("loyalty.title", { name })}
-                      </h2>
+                      <h2 className="guest-loyalty-card__title">{t("loyalty.title", { name })}</h2>
                       <p className="guest-loyalty-card__lead">{t("loyalty.lead")}</p>
                       <GuestAppCopyField
                         label={t("loyalty.referenceLabel")}
@@ -297,7 +297,10 @@ export function GuestAppSettingsPreview({
               )}
             </div>
 
-            <nav className="guest-app__bottom-nav guest-app-preview__nav" aria-label={t("shell.navLabel")}>
+            <nav
+              className="guest-app__bottom-nav guest-app-preview__nav"
+              aria-label={t("shell.navLabel")}
+            >
               <ul
                 className="guest-app__bottom-nav__list"
                 style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}

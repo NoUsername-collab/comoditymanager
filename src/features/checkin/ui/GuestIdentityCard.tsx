@@ -2,14 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  guestHasLegalIdentity,
-  isRomanianNationality,
-} from "@/domain/checkin/identity-rules";
-import {
-  checkinUiDocTypeValue,
-  docTypeUsesRomanianNationalId,
-} from "@/domain/checkin/doc-type";
+import { guestHasLegalIdentity, isRomanianNationality } from "@/domain/checkin/identity-rules";
+import { checkinUiDocTypeValue, docTypeUsesRomanianNationalId } from "@/domain/checkin/doc-type";
 import {
   cleanNationalId,
   extractIdentityFromNationalId,
@@ -23,10 +17,7 @@ import { GuestIdentityStatusPill } from "@/features/guests/ui/GuestIdentityStatu
 import { MrzScanDialog } from "@/features/checkin/ui/MrzScanDialog";
 import type { MrzMappedIdentity } from "@/domain/guest/mrz";
 import type { CheckinIdentityScope } from "@/domain/checkin/guest-layout";
-import type {
-  CheckinCnpRule,
-  CheckinGuestInput,
-} from "@/domain/checkin/types";
+import type { CheckinCnpRule, CheckinGuestInput } from "@/domain/checkin/types";
 
 export function GuestIdentityCard({
   guest,
@@ -73,10 +64,8 @@ export function GuestIdentityCard({
   const birthDateLocked = Boolean(birthDateFromId && guest.birth_date === birthDateFromId);
   const idTypeLabel = tIdentity(`nationalIdTypes.${idType}`);
   const roomLocked = identityScope === "rep" || identityScope === "per_room";
-  const showPresentToggle =
-    identityScope === "individual" && !guest.guest_id && !keysOnly;
-  const showKeysOnlyActions =
-    identityScope === "per_room" && !guest.is_representative;
+  const showPresentToggle = identityScope === "individual" && !guest.guest_id && !keysOnly;
+  const showKeysOnlyActions = identityScope === "per_room" && !guest.is_representative;
   const identityCritical =
     !keysOnly &&
     (isIdentityStatusCritical(guest.identity_status) ||
@@ -84,10 +73,7 @@ export function GuestIdentityCard({
 
   return (
     <div
-      className={[
-        "checkin-guest-form",
-        !present && "checkin-guest-form--absent",
-      ]
+      className={["checkin-guest-form", !present && "checkin-guest-form--absent"]
         .filter(Boolean)
         .join(" ")}
     >
@@ -165,7 +151,9 @@ export function GuestIdentityCard({
       ) : (
         <>
           <div className="checkin-guest-form__section-row">
-            <div className="checkin-guest-form__section-title">{t("touristSheet.sectionPersonal")}</div>
+            <div className="checkin-guest-form__section-title">
+              {t("touristSheet.sectionPersonal")}
+            </div>
             <button
               type="button"
               className="checkin-stepper__btn checkin-stepper__btn--secondary checkin-guest-form__mrz-btn"
@@ -174,11 +162,7 @@ export function GuestIdentityCard({
               {tMrz("scanButton")}
             </button>
           </div>
-          <MrzScanDialog
-            open={mrzOpen}
-            onClose={() => setMrzOpen(false)}
-            onApply={onApplyMrz}
-          />
+          <MrzScanDialog open={mrzOpen} onClose={() => setMrzOpen(false)} onApply={onApplyMrz} />
           <div className="checkin-guest-form__grid">
             <label className="checkin-field">
               <span className="checkin-field__label">{t("field.lastName")}</span>
@@ -267,18 +251,14 @@ export function GuestIdentityCard({
             </label>
           </div>
 
-          <div className="checkin-guest-form__section-title">
-            {tIdentity("documentSection")}
-          </div>
+          <div className="checkin-guest-form__section-title">{tIdentity("documentSection")}</div>
           <div className="checkin-guest-form__grid">
             <label className="checkin-field checkin-field--span2">
               <span className="checkin-field__label">{tIdentity("docType")}</span>
               <select
                 className="checkin-field__input"
                 value={uiDocType}
-                onChange={(e) =>
-                  updateGuest(idx, "document_type", e.target.value || null)
-                }
+                onChange={(e) => updateGuest(idx, "document_type", e.target.value || null)}
               >
                 <option value="">{tIdentity("selectDocType")}</option>
                 <option value="ci">{tIdentity("docTypes.ci")}</option>
@@ -337,9 +317,7 @@ export function GuestIdentityCard({
                   className="checkin-field__input"
                   value={guest.document_number ?? ""}
                   onChange={(e) => updateGuest(idx, "document_number", e.target.value)}
-                  placeholder={
-                    showCiFields ? "123456" : tIdentity("docNumberPlaceholder")
-                  }
+                  placeholder={showCiFields ? "123456" : tIdentity("docNumberPlaceholder")}
                 />
               </label>
             )}
@@ -348,17 +326,13 @@ export function GuestIdentityCard({
               <label className="checkin-field checkin-field--span2">
                 <span className="checkin-field__label">
                   {tIdentity("docExpiryDate")}
-                  {!cnpInCiSection ? (
-                    <span className="checkin-field__required"> *</span>
-                  ) : null}
+                  {!cnpInCiSection ? <span className="checkin-field__required"> *</span> : null}
                 </span>
                 <input
                   type="date"
                   className="checkin-field__input"
                   value={guest.doc_expiry_date ?? ""}
-                  onChange={(e) =>
-                    updateGuest(idx, "doc_expiry_date", e.target.value)
-                  }
+                  onChange={(e) => updateGuest(idx, "doc_expiry_date", e.target.value)}
                   required={!cnpInCiSection}
                 />
               </label>
@@ -379,7 +353,9 @@ export function GuestIdentityCard({
                 <label className="checkin-field checkin-field--span2">
                   <span className="checkin-field__label">
                     {idTypeLabel}
-                    {roGuest && cnpRule === "required" && <span className="checkin-field__required"> *</span>}
+                    {roGuest && cnpRule === "required" && (
+                      <span className="checkin-field__required"> *</span>
+                    )}
                   </span>
                   <input
                     type="text"

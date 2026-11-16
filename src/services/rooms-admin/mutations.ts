@@ -28,18 +28,14 @@ export async function updateRoom(
     sort_order: number;
     is_active: boolean;
     building_default_price?: number;
-  }
+  },
 ): Promise<void> {
   const [[types, options, policies], { tenantId, supabase }] = await Promise.all([
-    Promise.all([
-      listRoomTypes(),
-      listRoomOptions(),
-      getBuildingOptionPolicies(input.building_id),
-    ]),
+    Promise.all([listRoomTypes(), listRoomOptions(), getBuildingOptionPolicies(input.building_id)]),
     getTenantScope(),
   ]);
   const type = input.room_type_definition_id
-    ? types.find((t) => t.id === input.room_type_definition_id) ?? null
+    ? (types.find((t) => t.id === input.room_type_definition_id) ?? null)
     : null;
 
   const price =
@@ -67,9 +63,7 @@ export async function updateRoom(
       room_type_definition_id: type?.id ?? null,
       capacity_base: capacity,
       allows_extra_beds: input.allows_extra_beds,
-      max_extra_beds_per_room: input.allows_extra_beds
-        ? input.max_extra_beds_per_room
-        : 0,
+      max_extra_beds_per_room: input.allows_extra_beds ? input.max_extra_beds_per_room : 0,
       max_cots: input.max_cots,
       max_occupancy: input.max_occupancy,
       has_ac,
@@ -84,10 +78,7 @@ export async function updateRoom(
   await setRoomEnabledOptions(id, input.enabled_option_ids);
 }
 
-export async function assignRoomToFloor(
-  roomId: string,
-  floorId: string | null
-): Promise<void> {
+export async function assignRoomToFloor(roomId: string, floorId: string | null): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   const { data: room, error: roomErr } = await supabase
     .from("rooms")
@@ -120,10 +111,7 @@ export async function assignRoomToFloor(
   if (error) throw new Error(error.message);
 }
 
-export async function setRoomActive(
-  id: string,
-  is_active: boolean
-): Promise<void> {
+export async function setRoomActive(id: string, is_active: boolean): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("rooms")
@@ -138,16 +126,10 @@ export async function deleteRoom(id: string): Promise<void> {
 
   const lockingCount = await countLockingBookingRooms([id]);
   if (lockingCount > 0) {
-    throw new Error(
-      "rooms.cannot_delete_room_with_bookings_disable_instead"
-    );
+    throw new Error("rooms.cannot_delete_room_with_bookings_disable_instead");
   }
 
   await setRoomEnabledOptions(id, []);
-  const { error } = await supabase
-    .from("rooms")
-    .delete()
-    .eq("tenant_id", tenantId)
-    .eq("id", id);
+  const { error } = await supabase.from("rooms").delete().eq("tenant_id", tenantId).eq("id", id);
   if (error) throw new Error(error.message);
 }

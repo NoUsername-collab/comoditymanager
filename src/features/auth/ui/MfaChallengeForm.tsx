@@ -32,7 +32,7 @@ export function MfaChallengeForm({ next, onCancel }: Props) {
               ? t("invalidCode")
               : verified.reason === "no_factor"
                 ? t("noFactor")
-                : t("verifyFailed")
+                : t("verifyFailed"),
           );
           return;
         }
@@ -44,7 +44,7 @@ export function MfaChallengeForm({ next, onCancel }: Props) {
         setBusy(false);
       }
     },
-    [code, next, t]
+    [code, next, t],
   );
 
   return (

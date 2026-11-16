@@ -8,17 +8,10 @@ export function AdminDayNightSwitch() {
   const { mode, setMode } = useAdminTheme();
 
   return (
-    <div
-      className="admin-dn-switch"
-      role="group"
-      aria-label={tCommon("adminTheme")}
-    >
+    <div className="admin-dn-switch" role="group" aria-label={tCommon("adminTheme")}>
       <button
         type="button"
-        className={[
-          "admin-dn-switch__btn",
-          mode === "day" && "admin-dn-switch__btn--active",
-        ]
+        className={["admin-dn-switch__btn", mode === "day" && "admin-dn-switch__btn--active"]
           .filter(Boolean)
           .join(" ")}
         aria-pressed={mode === "day"}
@@ -32,10 +25,7 @@ export function AdminDayNightSwitch() {
       </button>
       <button
         type="button"
-        className={[
-          "admin-dn-switch__btn",
-          mode === "night" && "admin-dn-switch__btn--active",
-        ]
+        className={["admin-dn-switch__btn", mode === "night" && "admin-dn-switch__btn--active"]
           .filter(Boolean)
           .join(" ")}
         aria-pressed={mode === "night"}

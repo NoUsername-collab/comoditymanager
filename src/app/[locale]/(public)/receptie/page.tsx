@@ -23,13 +23,15 @@ export default async function ReceptionPage({
     await redirect("/admin/login?next=/receptie");
   }
 
-  const { checkIn: checkInTime, checkOut: checkOutTime } =
-    resolvePensionStayTimes(settings);
+  const { checkIn: checkInTime, checkOut: checkOutTime } = resolvePensionStayTimes(settings);
 
   return (
     <main className="reception-page ml-content mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6 public-page">
       <nav className="reception-page__nav flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-        <Link href="/admin" className="reception-page__back-admin font-semibold text-emerald-700 hover:text-emerald-900">
+        <Link
+          href="/admin"
+          className="reception-page__back-admin font-semibold text-emerald-700 hover:text-emerald-900"
+        >
           {t("backToAdmin")}
         </Link>
         <Link href="/" className="reception-page__back-site text-zinc-500 hover:text-zinc-800">
@@ -43,11 +45,7 @@ export default async function ReceptionPage({
         </p>
       )}
 
-      <AdminQuickPanel
-        checkInTime={checkInTime}
-        checkOutTime={checkOutTime}
-        adminVerified
-      />
+      <AdminQuickPanel checkInTime={checkInTime} checkOutTime={checkOutTime} adminVerified />
     </main>
   );
 }

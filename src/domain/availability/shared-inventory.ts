@@ -46,8 +46,7 @@ export function inventoryInUse(args: {
       ? placementUsage(placed)
       : rooms.reduce(
           (sum, room) => ({
-            extraBeds:
-              sum.extraBeds + (room.allows_extra_beds ? room.max_extra_beds_per_room : 0),
+            extraBeds: sum.extraBeds + (room.allows_extra_beds ? room.max_extra_beds_per_room : 0),
             cots: sum.cots + Math.max(0, room.max_cots ?? 0),
           }),
           { extraBeds: 0, cots: 0 },
@@ -81,10 +80,7 @@ export function inventoryInUse(args: {
 }
 
 /** What is still free for a new stay. */
-export function remainingInventory(
-  stock: InventoryStock,
-  used: InventoryUsage,
-): SharedInventory {
+export function remainingInventory(stock: InventoryStock, used: InventoryUsage): SharedInventory {
   return {
     extraBeds: Math.max(0, stock.extraBeds - used.extraBeds),
     cots: Math.max(0, stock.cots - used.cots),

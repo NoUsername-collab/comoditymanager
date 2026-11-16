@@ -15,7 +15,9 @@ export async function SiteStatisticsSection() {
   const tag = locale === "bg" ? "bg-BG" : locale === "en" ? "en-GB" : "ro-RO";
   const n = (value: number) => new Intl.NumberFormat(tag).format(value);
   const pct = (value: number | null) =>
-    value == null ? "—" : new Intl.NumberFormat(tag, { style: "percent", maximumFractionDigits: 1 }).format(value);
+    value == null
+      ? "—"
+      : new Intl.NumberFormat(tag, { style: "percent", maximumFractionDigits: 1 }).format(value);
   const monthName = (month: string) =>
     new Intl.DateTimeFormat(tag, { month: "long", year: "numeric", timeZone: "UTC" }).format(
       new Date(`${month}-01T00:00:00Z`),

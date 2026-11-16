@@ -1,8 +1,5 @@
 import { rangesOverlap } from "@/domain/booking/conflict";
-import type {
-  OccupancyConflict,
-  OccupancySegment,
-} from "@/domain/occupancy/types";
+import type { OccupancyConflict, OccupancySegment } from "@/domain/occupancy/types";
 
 type OccupancyExclude = {
   bookingId?: string;
@@ -27,7 +24,7 @@ export function findOccupancyConflicts(
   checkOut: string,
   segments: OccupancySegment[],
   exclude?: OccupancyExclude,
-  times?: { checkIn: string; checkOut: string }
+  times?: { checkIn: string; checkOut: string },
 ): OccupancyConflict[] {
   const unique = [...new Set(roomIds.filter(Boolean))];
   const proposed = { checkIn, checkOut };
@@ -42,7 +39,7 @@ export function findOccupancyConflicts(
           proposed,
           { checkIn: seg.checkIn, checkOut: seg.checkOut },
           times?.checkIn,
-          times?.checkOut
+          times?.checkOut,
         )
       ) {
         conflicts.push({ segment: seg, roomId });
@@ -59,10 +56,7 @@ export function hasOccupancyConflict(
   checkOut: string,
   segments: OccupancySegment[],
   exclude?: OccupancyExclude,
-  times?: { checkIn: string; checkOut: string }
+  times?: { checkIn: string; checkOut: string },
 ): boolean {
-  return (
-    findOccupancyConflicts(roomIds, checkIn, checkOut, segments, exclude, times)
-      .length > 0
-  );
+  return findOccupancyConflicts(roomIds, checkIn, checkOut, segments, exclude, times).length > 0;
 }

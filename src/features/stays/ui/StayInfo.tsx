@@ -25,12 +25,9 @@ export function StayInfo({
 }) {
   const isConfirmed = stay.status === "confirmata";
   const isCancelled = stay.status === "anulata" || variant === "cancelled";
-  const checkedInRooms =
-    "checked_in_rooms" in stay ? (stay.checked_in_rooms ?? []) : [];
-  const keysHandedRooms =
-    "keys_handed_rooms" in stay ? (stay.keys_handed_rooms ?? []) : [];
-  const roomIdVerified =
-    "room_id_verified" in stay ? (stay.room_id_verified ?? []) : [];
+  const checkedInRooms = "checked_in_rooms" in stay ? (stay.checked_in_rooms ?? []) : [];
+  const keysHandedRooms = "keys_handed_rooms" in stay ? (stay.keys_handed_rooms ?? []) : [];
+  const roomIdVerified = "room_id_verified" in stay ? (stay.room_id_verified ?? []) : [];
   const roomProgress = isConfirmed
     ? computeRoomCheckinProgress(stay.room_names, checkedInRooms)
     : null;
@@ -51,8 +48,7 @@ export function StayInfo({
             <GuestFlagPill flagLevel={stay.guest_alert_level} />
           </div>
           <p className="stay-info__contact truncate text-[10px] leading-tight">
-            {[stay.guest_phone, stay.guest_email].filter(Boolean).join(" · ") ||
-              labels.noContact}
+            {[stay.guest_phone, stay.guest_email].filter(Boolean).join(" · ") || labels.noContact}
           </p>
         </div>
         <span
@@ -89,18 +85,14 @@ export function StayInfo({
             {(stay.room_names ?? []).join(", ")}
           </span>
         ) : (
-          <span className="admin-semantic-pill admin-semantic-pill--muted">
-            {labels.noRoom}
-          </span>
+          <span className="admin-semantic-pill admin-semantic-pill--muted">{labels.noRoom}</span>
         )}
         {isConfirmed && stay.total_price != null ? (
           <span className="admin-semantic-pill admin-semantic-pill--success">
             {stay.total_price} RON
           </span>
         ) : null}
-        <span className="stay-info__ref text-[9px]">
-          {formatBookingRef(stay.id)}
-        </span>
+        <span className="stay-info__ref text-[9px]">{formatBookingRef(stay.id)}</span>
       </div>
 
       {stay.guest_profile ? (
@@ -129,11 +121,7 @@ export function StayInfo({
       {isConfirmed &&
       roomProgress &&
       operativeToday &&
-      shouldShowRoomCheckinProgress(
-        stay.check_in,
-        operativeToday,
-        roomProgress,
-      ) ? (
+      shouldShowRoomCheckinProgress(stay.check_in, operativeToday, roomProgress) ? (
         <StayCheckinProgress
           roomNames={stay.room_names ?? []}
           checkedInRooms={checkedInRooms}

@@ -19,18 +19,10 @@ export function SettingsSetupProgress({ summary }: Props) {
   const dashOffset = circumference - (percent / 100) * circumference;
 
   return (
-    <section
-      className="settings-setup-progress"
-      aria-labelledby="settings-setup-progress-title"
-    >
+    <section className="settings-setup-progress" aria-labelledby="settings-setup-progress-title">
       <div className="settings-setup-progress__head">
         <div className="settings-setup-progress__ring-wrap" aria-hidden>
-          <svg
-            className="settings-setup-progress__ring"
-            viewBox="0 0 72 72"
-            width="72"
-            height="72"
-          >
+          <svg className="settings-setup-progress__ring" viewBox="0 0 72 72" width="72" height="72">
             <circle
               className="settings-setup-progress__ring-track"
               cx="36"
@@ -90,12 +82,26 @@ export function SettingsSetupProgress({ summary }: Props) {
               <span className="settings-setup-progress__check" aria-hidden="true">
                 {item.done ? (
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                    <circle cx="7" cy="7" r="6.5" fill="currentColor" opacity="0.15" stroke="currentColor" strokeWidth="1"/>
-                    <path d="M4 7l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle
+                      cx="7"
+                      cy="7"
+                      r="6.5"
+                      fill="currentColor"
+                      opacity="0.15"
+                      stroke="currentColor"
+                      strokeWidth="1"
+                    />
+                    <path
+                      d="M4 7l2 2 4-4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 ) : (
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                    <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5"/>
+                    <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />
                   </svg>
                 )}
               </span>

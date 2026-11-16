@@ -4,10 +4,7 @@ import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/features/checkin/ui/import-checkin-styles";
 import { updateBookingRulesSettingsAction } from "@/features/settings/actions";
-import {
-  settingsPartialChanged,
-  useSettingsSaveFeedback,
-} from "@/hooks/useSettingsSaveFeedback";
+import { settingsPartialChanged, useSettingsSaveFeedback } from "@/hooks/useSettingsSaveFeedback";
 import { useSettingsDraft, type SettingsSaveResult } from "@/hooks/useSettingsDraft";
 import { SettingsDraftSaveBar } from "@/components/admin/settings/SettingsDraftSaveBar";
 import {
@@ -93,10 +90,7 @@ function SeasonMonthDay({
   );
 }
 
-export function BookingRulesSettingsPanel({
-  settings: initial,
-  locale,
-}: Props) {
+export function BookingRulesSettingsPanel({ settings: initial, locale }: Props) {
   const t = useTranslations("admin.pages.settings.booking");
   const tSettings = useTranslations("admin.pages.settings");
   const months = useMemo(() => monthLabels(locale), [locale]);
@@ -374,9 +368,7 @@ export function BookingRulesSettingsPanel({
                     months={months}
                     monthAria={t("seasonMonth")}
                     dayAria={t("seasonDay")}
-                    onChange={(endMonth, endDay) =>
-                      updateSeason(index, { endMonth, endDay })
-                    }
+                    onChange={(endMonth, endDay) => updateSeason(index, { endMonth, endDay })}
                   />
                   <label>
                     +%
@@ -387,10 +379,7 @@ export function BookingRulesSettingsPanel({
                       className="checkin-field__input checkin-field__input--narrow"
                       value={Math.round((season.multiplier - 1) * 100)}
                       onChange={(e) => {
-                        const pct = Math.min(
-                          400,
-                          Math.max(0, Number(e.target.value) || 0)
-                        );
+                        const pct = Math.min(400, Math.max(0, Number(e.target.value) || 0));
                         updateSeason(index, { multiplier: 1 + pct / 100 });
                       }}
                     />

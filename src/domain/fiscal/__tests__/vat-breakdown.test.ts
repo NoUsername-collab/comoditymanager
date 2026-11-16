@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  computeVatBreakdown,
-  resolveInvoiceVatRate,
-} from "@/domain/fiscal/country-fiscal-profile";
+import { computeVatBreakdown, resolveInvoiceVatRate } from "@/domain/fiscal/country-fiscal-profile";
 
 describe("computeVatBreakdown", () => {
   it("extracts VAT when prices include VAT", () => {

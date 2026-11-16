@@ -167,14 +167,26 @@ export function ChromeEditor({ onOpenMenu }: { onOpenMenu?: () => void }) {
           </button>
         ) : null}
         <div className="admin-settings-fields admin-settings-fields--2col mt-3">
-          <EditorField label={t("navHomeLabel")} value={copy.navHome} onChange={(navHome) => patchCopy({ navHome })} />
+          <EditorField
+            label={t("navHomeLabel")}
+            value={copy.navHome}
+            onChange={(navHome) => patchCopy({ navHome })}
+          />
           <EditorField
             label={t("navPrivacyLabel")}
             value={copy.navPrivacy}
             onChange={(navPrivacy) => patchCopy({ navPrivacy })}
           />
-          <EditorField label={t("navTermsLabel")} value={copy.navTerms} onChange={(navTerms) => patchCopy({ navTerms })} />
-          <EditorField label={t("navBookLabel")} value={copy.navBook} onChange={(navBook) => patchCopy({ navBook })} />
+          <EditorField
+            label={t("navTermsLabel")}
+            value={copy.navTerms}
+            onChange={(navTerms) => patchCopy({ navTerms })}
+          />
+          <EditorField
+            label={t("navBookLabel")}
+            value={copy.navBook}
+            onChange={(navBook) => patchCopy({ navBook })}
+          />
         </div>
       </EditorAdvanced>
     </>

@@ -1,4 +1,9 @@
-import { readSectionStyle, styleFromSettings, styleToSettings, writeSectionStyle } from "@/features/public-site/domain/section-style";
+import {
+  readSectionStyle,
+  styleFromSettings,
+  styleToSettings,
+  writeSectionStyle,
+} from "@/features/public-site/domain/section-style";
 import { pickOwnLocalized, writeLocalizedMap } from "@/features/public-site/domain/localized";
 import { PUBLIC_TEMPLATE_SECTION_ORDER } from "@/features/public-site/domain/order-sections";
 import {
@@ -65,7 +70,10 @@ export function newSectionDraft(type: PublicSectionType, key: string): SectionDr
     key,
     type,
     visible: true,
-    items: (kind.items?.starter?.() ?? []).map((structure) => ({ id: nextItemDraftId(), structure })),
+    items: (kind.items?.starter?.() ?? []).map((structure) => ({
+      id: nextItemDraftId(),
+      structure,
+    })),
     settings: kind.settings?.read({}) ?? {},
     copy: emptyCopy(),
   };
@@ -80,7 +88,10 @@ export function readSectionDrafts(config: PublicSiteConfig): SectionDraft[] {
  * Saved sections of one page, in page order, ready to edit. The first page
  * also gets an empty section of each kind the editor must always be able to place.
  */
-export function readSectionList(saved: PublicSiteSection[], withAlwaysPresent: boolean): SectionDraft[] {
+export function readSectionList(
+  saved: PublicSiteSection[],
+  withAlwaysPresent: boolean,
+): SectionDraft[] {
   const drafts = [...saved]
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map((section): SectionDraft => {
@@ -122,7 +133,10 @@ export function readSectionList(saved: PublicSiteSection[], withAlwaysPresent: b
         type: section.sectionType,
         visible: section.visible,
         items: rows,
-        settings: { ...(kind.settings?.read(payload) ?? {}), ...styleToSettings(readSectionStyle(payload.style)) },
+        settings: {
+          ...(kind.settings?.read(payload) ?? {}),
+          ...styleToSettings(readSectionStyle(payload.style)),
+        },
         copy,
       };
     });
@@ -229,7 +243,10 @@ export function sectionTextSlots(section: SectionDraft, locale: PublicLocale): S
 }
 
 /** The slots a language must fill for this section to count as translated. */
-export function sectionProgressSlots(section: SectionDraft, locale: PublicLocale): SectionTextSlot[] {
+export function sectionProgressSlots(
+  section: SectionDraft,
+  locale: PublicLocale,
+): SectionTextSlot[] {
   const kind = sectionKind(section.type);
   const copy = section.copy[locale];
   return [
@@ -258,7 +275,10 @@ export function setSectionSlot(
   let next: SectionCopy;
   if (rest.startsWith("items.")) {
     const [, itemId = "", field = ""] = rest.split(".");
-    next = { ...copy, items: { ...copy.items, [itemId]: { ...copy.items[itemId], [field]: value } } };
+    next = {
+      ...copy,
+      items: { ...copy.items, [itemId]: { ...copy.items[itemId], [field]: value } },
+    };
   } else {
     next = { ...copy, fields: { ...copy.fields, [rest]: value } };
   }
@@ -273,7 +293,11 @@ export function findSectionDraft(
   return sections.find((section) => section.type === type);
 }
 
-export function sectionField(section: SectionDraft | undefined, locale: PublicLocale, field: string): string {
+export function sectionField(
+  section: SectionDraft | undefined,
+  locale: PublicLocale,
+  field: string,
+): string {
   return section?.copy[locale].fields[field] ?? "";
 }
 
@@ -340,7 +364,11 @@ export function removeSectionItem(section: SectionDraft, itemId: string): Sectio
   return { ...section, items: section.items.filter((item) => item.id !== itemId) };
 }
 
-export function moveSectionItem(section: SectionDraft, itemId: string, direction: -1 | 1): SectionDraft {
+export function moveSectionItem(
+  section: SectionDraft,
+  itemId: string,
+  direction: -1 | 1,
+): SectionDraft {
   const items = [...section.items];
   const index = items.findIndex((item) => item.id === itemId);
   const target = index + direction;
@@ -350,7 +378,11 @@ export function moveSectionItem(section: SectionDraft, itemId: string, direction
 }
 
 /** Drag and drop: put a row where another one is. */
-export function moveSectionItemTo(section: SectionDraft, itemId: string, targetId: string): SectionDraft {
+export function moveSectionItemTo(
+  section: SectionDraft,
+  itemId: string,
+  targetId: string,
+): SectionDraft {
   const items = [...section.items];
   const from = items.findIndex((item) => item.id === itemId);
   const to = items.findIndex((item) => item.id === targetId);
@@ -412,7 +444,9 @@ export function orderSectionsForTemplate(
   sections: SectionDraft[],
   templateId: PublicTemplateId,
 ): SectionDraft[] {
-  const rank = new Map(PUBLIC_TEMPLATE_SECTION_ORDER[templateId].map((type, index) => [type, index]));
+  const rank = new Map(
+    PUBLIC_TEMPLATE_SECTION_ORDER[templateId].map((type, index) => [type, index]),
+  );
   const sorted = sections
     .map((section, index) => ({ section, index }))
     .sort(

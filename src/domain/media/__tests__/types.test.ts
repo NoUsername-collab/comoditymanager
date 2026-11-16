@@ -29,7 +29,12 @@ describe("photo library", () => {
   it("groups photos by room type in their order", () => {
     const row = (id: string, type: string | null, order: number) =>
       mediaFromRow({ id, url: id, album: "rooms", room_type_id: type, sort_order: order });
-    const map = photosByRoomType([row("b", "double", 2), row("a", "double", 1), row("c", null, 0), row("d", "suite", 0)]);
+    const map = photosByRoomType([
+      row("b", "double", 2),
+      row("a", "double", 1),
+      row("c", null, 0),
+      row("d", "suite", 0),
+    ]);
     expect(map.get("double")?.map((m) => m.id)).toEqual(["a", "b"]);
     expect(map.get("suite")?.map((m) => m.id)).toEqual(["d"]);
     expect(map.size).toBe(2);

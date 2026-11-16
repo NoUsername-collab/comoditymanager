@@ -7,13 +7,7 @@ function starTone(value: number): string {
 }
 
 /** Filled star row for a single stay rating (profile history, cards). */
-export function GuestStayStarsInline({
-  value,
-  size = 12,
-}: {
-  value: number;
-  size?: number;
-}) {
+export function GuestStayStarsInline({ value, size = 12 }: { value: number; size?: number }) {
   const safeValue = Number.isFinite(value) ? Math.max(0, Math.min(5, value)) : 0;
   const rounded = Math.max(0, Math.min(5, Math.round(safeValue)));
   const tone = starTone(safeValue);

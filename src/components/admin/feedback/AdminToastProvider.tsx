@@ -1,19 +1,8 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import {
-  burstConfetti,
-  playCancelSound,
-  playConfirmSound,
-} from "./admin-fx-effects";
+import { burstConfetti, playCancelSound, playConfirmSound } from "./admin-fx-effects";
 
 type AdminToastKind = "success" | "info" | "error";
 
@@ -52,41 +41,32 @@ export function AdminToastProvider({ children }: { children: ReactNode }) {
       const ms = toast.actionLabel ? 10_000 : 4200;
       window.setTimeout(() => dismissToast(id), ms);
     },
-    [dismissToast]
+    [dismissToast],
   );
 
   const celebrateConfirm = useCallback(
-    (
-      title = tCommon("bookingConfirmedTitle"),
-      message = tCommon("bookingConfirmedMessage")
-    ) => {
+    (title = tCommon("bookingConfirmedTitle"), message = tCommon("bookingConfirmedMessage")) => {
       showToast({ kind: "success", title, message });
       burstConfetti();
       playConfirmSound();
     },
-    [showToast, tCommon]
+    [showToast, tCommon],
   );
 
   const notifyCancel = useCallback(
-    (
-      title = tCommon("bookingCancelledTitle"),
-      message = tCommon("bookingCancelledMessage")
-    ) => {
+    (title = tCommon("bookingCancelledTitle"), message = tCommon("bookingCancelledMessage")) => {
       showToast({ kind: "info", title, message });
       playCancelSound();
     },
-    [showToast, tCommon]
+    [showToast, tCommon],
   );
 
   const notifyMoved = useCallback(
-    (
-      title = tCommon("bookingMovedTitle"),
-      message = tCommon("bookingMovedMessage")
-    ) => {
+    (title = tCommon("bookingMovedTitle"), message = tCommon("bookingMovedMessage")) => {
       showToast({ kind: "success", title, message });
       playConfirmSound();
     },
-    [showToast, tCommon]
+    [showToast, tCommon],
   );
 
   const value = useMemo(
@@ -98,7 +78,7 @@ export function AdminToastProvider({ children }: { children: ReactNode }) {
       notifyCancel,
       notifyMoved,
     }),
-    [toasts, showToast, dismissToast, celebrateConfirm, notifyCancel, notifyMoved]
+    [toasts, showToast, dismissToast, celebrateConfirm, notifyCancel, notifyMoved],
   );
 
   return (
@@ -149,8 +129,7 @@ function AdminToastItem({
   onDismiss: (id: string) => void;
 }) {
   const tCommon = useTranslations("admin.common");
-  const icon =
-    toast.kind === "success" ? "✓" : toast.kind === "error" ? "!" : "i";
+  const icon = toast.kind === "success" ? "✓" : toast.kind === "error" ? "!" : "i";
 
   return (
     <div
@@ -162,9 +141,7 @@ function AdminToastItem({
       </span>
       <div className="admin-toast__body">
         <p className="admin-toast__title">{toast.title}</p>
-        {toast.message ? (
-          <p className="admin-toast__message">{toast.message}</p>
-        ) : null}
+        {toast.message ? <p className="admin-toast__message">{toast.message}</p> : null}
         {toast.actionLabel && toast.onAction ? (
           <button
             type="button"

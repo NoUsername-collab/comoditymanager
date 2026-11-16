@@ -13,10 +13,7 @@ export default function GuestStayNotFound() {
       <h1 className="guest-app__alert-warn__title">{t("title")}</h1>
       <p className="guest-app__alert-warn__body">{t("body")}</p>
       {code ? (
-        <Link
-          href={`/stay/${code}`}
-          className="guest-app__access-cta"
-        >
+        <Link href={`/stay/${code}`} className="guest-app__access-cta">
           {t("backHome")}
         </Link>
       ) : null}

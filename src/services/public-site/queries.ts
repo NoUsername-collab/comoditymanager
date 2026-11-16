@@ -18,15 +18,9 @@ import { resolvePensionStayTimes } from "@/lib/constants";
 import { finalizePublicSiteConfig } from "@/domain/public-site/resolve-config";
 import { loadPublicPlace } from "./place";
 import { loadPublicStayOffers } from "./stay-offers";
-import {
-  mapPublicSitePageRow,
-  mapPublicSiteSectionRow,
-  mapPublicSiteSettingsRow,
-} from "./map";
+import { mapPublicSitePageRow, mapPublicSiteSectionRow, mapPublicSiteSettingsRow } from "./map";
 
-async function getPublicSiteConfigUncached(
-  tenantId: string
-): Promise<PublicSiteConfig> {
+async function getPublicSiteConfigUncached(tenantId: string): Promise<PublicSiteConfig> {
   // Tenant passed explicitly: this runs inside unstable_cache, without request headers.
   // Errors propagate: a failed read must not show another business's defaults.
   const [pension, identity, stayOffers, place, media] = await Promise.all([
@@ -40,8 +34,7 @@ async function getPublicSiteConfigUncached(
 
   const identityLogo = identity.logoUrl;
   const displayName = identity.displayName;
-  const { checkIn: checkInTime, checkOut: checkOutTime } =
-    resolvePensionStayTimes(pension);
+  const { checkIn: checkInTime, checkOut: checkOutTime } = resolvePensionStayTimes(pension);
   const fallback = buildDefaultPublicSiteConfig({
     displayName,
     checkInTime,
@@ -127,27 +120,23 @@ function stampIdentityLogo(
 }
 
 const getCachedPublicSiteConfig = (tenantId: string) =>
-  unstable_cache(
-    () => getPublicSiteConfigUncached(tenantId),
-    ["public-site-config", tenantId],
-    {
-      tags: [
-        CACHE_TAGS.publicSite,
-        tenantTag(tenantId, CACHE_TAGS.publicSite),
-        CACHE_TAGS.rooms,
-        tenantTag(tenantId, CACHE_TAGS.rooms),
-        CACHE_TAGS.roomCatalog,
-        tenantTag(tenantId, CACHE_TAGS.roomCatalog),
-        // Name, logo, contact and check-in times come from the pension settings.
-        CACHE_TAGS.pensionSettings,
-        tenantTag(tenantId, CACHE_TAGS.pensionSettings),
-        // Galleries and room photos come from the photo library.
-        CACHE_TAGS.media,
-        tenantTag(tenantId, CACHE_TAGS.media),
-      ],
-      revalidate: 120,
-    }
-  );
+  unstable_cache(() => getPublicSiteConfigUncached(tenantId), ["public-site-config", tenantId], {
+    tags: [
+      CACHE_TAGS.publicSite,
+      tenantTag(tenantId, CACHE_TAGS.publicSite),
+      CACHE_TAGS.rooms,
+      tenantTag(tenantId, CACHE_TAGS.rooms),
+      CACHE_TAGS.roomCatalog,
+      tenantTag(tenantId, CACHE_TAGS.roomCatalog),
+      // Name, logo, contact and check-in times come from the pension settings.
+      CACHE_TAGS.pensionSettings,
+      tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+      // Galleries and room photos come from the photo library.
+      CACHE_TAGS.media,
+      tenantTag(tenantId, CACHE_TAGS.media),
+    ],
+    revalidate: 120,
+  });
 
 const loadPublicSiteConfig = cache(async () => {
   const tenantId = await resolveTenantIdForData();
@@ -169,13 +158,8 @@ type PublicSiteAdminBundle = {
 };
 
 /** Config + pension contact for settings UI — parallel cached service boundary. */
-export const getPublicSiteAdminBundle = cache(
-  async (): Promise<PublicSiteAdminBundle> => {
-    const [config, identity] = await Promise.all([
-      loadPublicSiteConfig(),
-      getPensionIdentity(),
-    ]);
+export const getPublicSiteAdminBundle = cache(async (): Promise<PublicSiteAdminBundle> => {
+  const [config, identity] = await Promise.all([loadPublicSiteConfig(), getPensionIdentity()]);
 
-    return { config, primaryContact: identity.contact };
-  },
-);
+  return { config, primaryContact: identity.contact };
+});

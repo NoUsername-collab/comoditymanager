@@ -9,9 +9,7 @@ export function getAdminEmail(): string {
 }
 
 export function getOperatorEmail(): string {
-  return (
-    process.env.OPERATOR_EMAIL?.trim().toLowerCase() ?? "operator@zalmox.app"
-  );
+  return process.env.OPERATOR_EMAIL?.trim().toLowerCase() ?? "operator@zalmox.app";
 }
 
 /** Platform contact shown in UI — not used for staff auth. */
@@ -23,10 +21,7 @@ export function normalizeLoginUsername(input: string): string {
 
 export function isKnownStaffUsername(input: string): boolean {
   const u = normalizeLoginUsername(input).toLowerCase();
-  return (
-    u === OPERATOR_LOGIN_USERNAME.toLowerCase() ||
-    u === ADMIN_LOGIN_USERNAME.toLowerCase()
-  );
+  return u === OPERATOR_LOGIN_USERNAME.toLowerCase() || u === ADMIN_LOGIN_USERNAME.toLowerCase();
 }
 
 export function resolveStaffEmail(username: string): string | null {

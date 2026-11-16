@@ -29,20 +29,13 @@ import {
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import { mapBookingToForCheckin } from "@/domain/checkin/map-booking";
 import { mapPersistedCheckinGuestsToInput } from "@/domain/checkin/map-persisted-guests";
-import type {
-  CheckinFormData,
-  PaymentStatus,
-  CheckinType,
-} from "@/domain/checkin/types";
+import type { CheckinFormData, PaymentStatus, CheckinType } from "@/domain/checkin/types";
 import { parseCheckinGuestsJson } from "@/domain/checkin/guest-input-schema";
 import { listRegisteredGuestsForCheckin } from "@/services/checkin/booking-guests";
 import { syncBookingOperativeCheckInFromRecord } from "@/services/checkin/sync";
 import type { CheckinTransferOffer } from "@/domain/checkin/identity-result";
 import { decodeCheckinTransferRequired } from "@/domain/checkin/identity-result";
-import type {
-  CheckinWizardContextResult,
-  CreateCheckinResult,
-} from "./types";
+import type { CheckinWizardContextResult, CreateCheckinResult } from "./types";
 
 async function buildLedgerCollectedHint(
   payments: PaymentEntry[],
@@ -104,7 +97,9 @@ async function loadWizardPaymentDefaults(
 
 function mapCreateCheckinError(
   err: unknown,
-): { ok: false; error: string } | { ok: false; needsTransfer: true; transferOffer: CheckinTransferOffer } {
+):
+  | { ok: false; error: string }
+  | { ok: false; needsTransfer: true; transferOffer: CheckinTransferOffer } {
   const msg = err instanceof Error ? err.message : "Unknown error";
   const transferOffer = decodeCheckinTransferRequired(msg);
   if (transferOffer) {
@@ -129,9 +124,7 @@ export async function loadCheckinWizardContextAction(
     if (!booking) return { ok: false, error: "Booking not found" };
 
     const settings = await getCheckinSettings();
-    const existingCheckin = await getCheckinByBookingId(bookingId).catch(
-      () => null,
-    );
+    const existingCheckin = await getCheckinByBookingId(bookingId).catch(() => null);
 
     if (existingCheckin && !booking.actual_check_in_at) {
       await syncBookingOperativeCheckInFromRecord(bookingId, existingCheckin);
@@ -145,16 +138,11 @@ export async function loadCheckinWizardContextAction(
 
     const [checkedInRooms, registeredGuests] = await Promise.all([
       getCheckedInRoomsForBooking(bookingId).catch(() => [] as string[]),
-      listRegisteredGuestsForCheckin(
-        bookingId,
-        booking.guest_id,
-        booking.room_names,
-      ).catch(() => []),
+      listRegisteredGuestsForCheckin(bookingId, booking.guest_id, booking.room_names).catch(
+        () => [],
+      ),
     ]);
-    const progress = computeRoomCheckinProgress(
-      booking.room_names,
-      checkedInRooms,
-    );
+    const progress = computeRoomCheckinProgress(booking.room_names, checkedInRooms);
 
     const mappedBooking = mapBookingToForCheckin({
       ...booking,
@@ -233,9 +221,7 @@ export async function loadCheckinWizardContextAction(
   }
 }
 
-export async function createCheckinAction(
-  formData: FormData,
-): Promise<CreateCheckinResult> {
+export async function createCheckinAction(formData: FormData): Promise<CreateCheckinResult> {
   const timer = createServerTimer("createCheckin");
   await requireAnyStaff();
   timer.mark("auth");
@@ -245,8 +231,7 @@ export async function createCheckinAction(
     if (!bookingId) return { ok: false, error: "booking_id required" };
 
     const type = (formData.get("type") as CheckinType) ?? "reservation";
-    const paymentStatus =
-      (formData.get("payment_status") as PaymentStatus) ?? "unpaid";
+    const paymentStatus = (formData.get("payment_status") as PaymentStatus) ?? "unpaid";
     const paymentAmountPaid = Number(formData.get("payment_amount_paid")) || 0;
     const depositAmount = Number(formData.get("deposit_amount")) || 0;
     const keyHanded = formData.get("key_handed") === "true";
@@ -290,8 +275,7 @@ export async function createCheckinAction(
     }
 
     const transferBookingToGuestId =
-      String(formData.get("transfer_booking_to_guest_id") ?? "").trim() ||
-      undefined;
+      String(formData.get("transfer_booking_to_guest_id") ?? "").trim() || undefined;
 
     const [booking, settings] = await Promise.all([
       getBookingById(bookingId),
@@ -338,9 +322,7 @@ export async function createCheckinAction(
   }
 }
 
-export async function updateCheckinAction(
-  formData: FormData,
-): Promise<CreateCheckinResult> {
+export async function updateCheckinAction(formData: FormData): Promise<CreateCheckinResult> {
   await requireAnyStaff();
 
   try {
@@ -354,8 +336,7 @@ export async function updateCheckinAction(
     await assertBookingPostCheckoutEditAllowed(booking);
 
     const type = (formData.get("type") as CheckinType) ?? "reservation";
-    const paymentStatus =
-      (formData.get("payment_status") as PaymentStatus) ?? "unpaid";
+    const paymentStatus = (formData.get("payment_status") as PaymentStatus) ?? "unpaid";
     const paymentAmountPaid = Number(formData.get("payment_amount_paid")) || 0;
     const depositAmount = Number(formData.get("deposit_amount")) || 0;
     const keyHanded = formData.get("key_handed") === "true";
@@ -399,16 +380,13 @@ export async function updateCheckinAction(
     }
 
     const transferBookingToGuestId =
-      String(formData.get("transfer_booking_to_guest_id") ?? "").trim() ||
-      undefined;
+      String(formData.get("transfer_booking_to_guest_id") ?? "").trim() || undefined;
 
     const [checkedInRooms, registeredGuests] = await Promise.all([
       getCheckedInRoomsForBooking(bookingId).catch(() => [] as string[]),
-      listRegisteredGuestsForCheckin(
-        bookingId,
-        booking.guest_id,
-        booking.room_names,
-      ).catch(() => []),
+      listRegisteredGuestsForCheckin(bookingId, booking.guest_id, booking.room_names).catch(
+        () => [],
+      ),
     ]);
 
     const bookingForCheckin = mapBookingToForCheckin({

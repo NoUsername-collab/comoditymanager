@@ -12,11 +12,7 @@ import {
 import { CopyTextButton } from "@/features/platform-admin/ui/CopyTextButton";
 import type { TenantDomainRow } from "@/services/tenant-domains";
 
-const ROUTING_OPTIONS: TenantDomainRoutingKind[] = [
-  "custom_public",
-  "custom_full",
-  "custom_brand",
-];
+const ROUTING_OPTIONS: TenantDomainRoutingKind[] = ["custom_public", "custom_full", "custom_brand"];
 
 export function TenantDomainsManager({
   tenantId,
@@ -31,8 +27,7 @@ export function TenantDomainsManager({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [domain, setDomain] = useState("");
-  const [routingKind, setRoutingKind] =
-    useState<TenantDomainRoutingKind>("custom_public");
+  const [routingKind, setRoutingKind] = useState<TenantDomainRoutingKind>("custom_public");
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const runAction = (action: () => Promise<{ success: boolean; error?: string }>) => {
@@ -52,17 +47,13 @@ export function TenantDomainsManager({
     event.preventDefault();
     const value = domain.trim();
     if (!value) return;
-    runAction(() =>
-      platformAddTenantDomainAction(tenantId, value, routingKind)
-    );
+    runAction(() => platformAddTenantDomainAction(tenantId, value, routingKind));
     setDomain("");
   };
 
   return (
     <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5 space-y-3">
-      <h2 className="text-sm font-semibold uppercase text-neutral-500">
-        {t("title")}
-      </h2>
+      <h2 className="text-sm font-semibold uppercase text-neutral-500">{t("title")}</h2>
 
       {domains.length === 0 ? (
         <p className="text-xs text-neutral-500">{t("empty")}</p>
@@ -74,9 +65,7 @@ export function TenantDomainsManager({
               className="flex flex-col gap-2 rounded-md bg-neutral-800/50 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="min-w-0">
-                <p className="truncate font-mono text-sm text-neutral-200">
-                  {row.domain}
-                </p>
+                <p className="truncate font-mono text-sm text-neutral-200">{row.domain}</p>
                 <p className="text-[11px] text-neutral-500">
                   {row.routing_kind}
                   {!row.verified && ` · ${t("unverified")}`}
@@ -92,9 +81,7 @@ export function TenantDomainsManager({
                         type="button"
                         disabled={pending}
                         onClick={() =>
-                          runAction(() =>
-                            platformVerifyTenantDomainAction(tenantId, row.id)
-                          )
+                          runAction(() => platformVerifyTenantDomainAction(tenantId, row.id))
                         }
                         className="rounded-md border border-emerald-900/50 bg-emerald-950/30 px-2 py-1 text-xs text-emerald-300 hover:bg-emerald-950/50 disabled:opacity-50"
                       >
@@ -105,9 +92,7 @@ export function TenantDomainsManager({
                       type="button"
                       disabled={pending}
                       onClick={() =>
-                        runAction(() =>
-                          platformRemoveTenantDomainAction(tenantId, row.id)
-                        )
+                        runAction(() => platformRemoveTenantDomainAction(tenantId, row.id))
                       }
                       className="rounded-md border border-red-900/50 bg-red-950/30 px-2 py-1 text-xs text-red-300 hover:bg-red-950/50 disabled:opacity-50"
                     >
@@ -133,9 +118,7 @@ export function TenantDomainsManager({
           />
           <select
             value={routingKind}
-            onChange={(e) =>
-              setRoutingKind(e.target.value as TenantDomainRoutingKind)
-            }
+            onChange={(e) => setRoutingKind(e.target.value as TenantDomainRoutingKind)}
             className="min-h-[var(--ml-touch-min,2.75rem)] rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 focus:border-sky-600 focus:outline-none"
             aria-label={t("routingKind")}
           >

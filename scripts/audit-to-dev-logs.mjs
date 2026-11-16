@@ -68,9 +68,7 @@ function parseVitest(stdout) {
 }
 
 function parseEslint(combined) {
-  const m = combined.match(
-    /(\d+) problems \((\d+) errors?, (\d+) warnings?\)/
-  );
+  const m = combined.match(/(\d+) problems \((\d+) errors?, (\d+) warnings?\)/);
   if (!m) return { problems: 0, errors: 0, warnings: 0 };
   return {
     problems: Number(m[1]),
@@ -183,9 +181,7 @@ async function insertDevLog(supabase, tenantId, entry) {
 async function main() {
   const envInfo = loadEnv();
   console.log("Env:");
-  console.log(
-    `  staging: ${envInfo.stagingLoaded ? envInfo.stagingPath : "—"}`
-  );
+  console.log(`  staging: ${envInfo.stagingLoaded ? envInfo.stagingPath : "—"}`);
   console.log(`  local:   ${envInfo.localLoaded ? envInfo.localPath : "—"}`);
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -243,17 +239,17 @@ async function main() {
 
   console.log("\nRezultate:");
   console.log(
-    `  vitest: ${audit.vitest.ok ? "OK" : "FAIL"} — ${audit.vitest.testsPassed} teste, ${audit.vitest.filesPassed} fișiere`
+    `  vitest: ${audit.vitest.ok ? "OK" : "FAIL"} — ${audit.vitest.testsPassed} teste, ${audit.vitest.filesPassed} fișiere`,
   );
   console.log(`  tsc:    ${audit.tsc.ok ? "OK" : "FAIL"}`);
   console.log(
-    `  eslint: ${audit.eslint.ok ? "OK" : "FAIL"} — ${audit.eslint.errors} erori, ${audit.eslint.warnings} avertismente`
+    `  eslint: ${audit.eslint.ok ? "OK" : "FAIL"} — ${audit.eslint.errors} erori, ${audit.eslint.warnings} avertismente`,
   );
   if (audit.build.skipped) {
     console.log("  build:  skipped");
   } else {
     console.log(
-      `  build:  ${audit.build.ok ? "OK" : "FAIL"} — ${audit.build.warnings ?? 0} warnings Turbopack`
+      `  build:  ${audit.build.ok ? "OK" : "FAIL"} — ${audit.build.warnings ?? 0} warnings Turbopack`,
     );
   }
 

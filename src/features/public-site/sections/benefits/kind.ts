@@ -26,7 +26,11 @@ export const benefitsKind: SectionKind = {
       items: [
         { icon: "bed", title: seedText(copy.benefit1Title), text: seedText(copy.benefit1Text) },
         { icon: "spark", title: seedText(copy.benefit2Title), text: seedText(copy.benefit2Text) },
-        { icon: "handshake", title: seedText(copy.benefit3Title), text: seedText(copy.benefit3Text) },
+        {
+          icon: "handshake",
+          title: seedText(copy.benefit3Title),
+          text: seedText(copy.benefit3Text),
+        },
       ],
     },
   }),

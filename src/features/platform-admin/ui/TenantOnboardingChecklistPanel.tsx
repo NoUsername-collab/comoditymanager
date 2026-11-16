@@ -11,11 +11,7 @@ const TONE_CLASS = {
   bad: "text-red-400",
 } as const;
 
-export async function TenantOnboardingChecklistPanel({
-  tenantId,
-}: {
-  tenantId: string;
-}) {
+export async function TenantOnboardingChecklistPanel({ tenantId }: { tenantId: string }) {
   const [checklist, t] = await Promise.all([
     getTenantOnboardingChecklist(tenantId),
     getTranslations("platformAdmin.tenantDetail.onboarding"),
@@ -23,18 +19,13 @@ export async function TenantOnboardingChecklistPanel({
 
   if (!checklist) return null;
 
-  const tone = onboardingProgressTone(
-    checklist.readyCount,
-    checklist.totalRequired,
-  );
+  const tone = onboardingProgressTone(checklist.readyCount, checklist.totalRequired);
 
   return (
     <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5 space-y-3">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h2 className="text-sm font-semibold uppercase text-neutral-500">
-            {t("title")}
-          </h2>
+          <h2 className="text-sm font-semibold uppercase text-neutral-500">{t("title")}</h2>
           <p className={`mt-1 text-xs ${TONE_CLASS[tone]}`}>
             {checklist.isGoLiveReady
               ? t("ready")
@@ -76,18 +67,13 @@ function ChecklistRow({
 }) {
   return (
     <li className="flex items-start gap-2 text-xs">
-      <span
-        className={item.ok ? "text-emerald-400" : "text-neutral-500"}
-        aria-hidden
-      >
+      <span className={item.ok ? "text-emerald-400" : "text-neutral-500"} aria-hidden>
         {item.ok ? "✓" : "○"}
       </span>
       <span className={item.ok ? "text-neutral-300" : "text-neutral-400"}>
         {label}
         {!item.required && (
-          <span className="ml-1 text-[10px] uppercase text-neutral-600">
-            ({optionalLabel})
-          </span>
+          <span className="ml-1 text-[10px] uppercase text-neutral-600">({optionalLabel})</span>
         )}
       </span>
     </li>

@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  readAdminFxPrefs,
-  writeAdminFxPrefs,
-} from "@/lib/admin-fx-storage";
+import { readAdminFxPrefs, writeAdminFxPrefs } from "@/lib/admin-fx-storage";
 import { playConfirmSound } from "@/components/admin/feedback/admin-fx-effects";
 
 export function AdminFxSettings() {
@@ -31,9 +28,7 @@ export function AdminFxSettings() {
         />
         <span>
           <strong>{t("confirmSoundTitle")}</strong>
-          <span className="admin-fx-settings__hint">
-            {t("confirmSoundHint")}
-          </span>
+          <span className="admin-fx-settings__hint">{t("confirmSoundHint")}</span>
         </span>
       </label>
     </div>

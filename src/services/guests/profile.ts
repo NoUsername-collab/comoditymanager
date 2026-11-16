@@ -1,13 +1,6 @@
 import { formatGuestFullName } from "@/domain/guest-name";
-import {
-  shiftStayDatesByYears,
-  shiftStayToNextFutureYear,
-} from "@/domain/guest/rebook-dates";
-import {
-  assertValidGuestPhone,
-  normalizeEmail,
-  normalizePhone,
-} from "@/domain/guest/normalize";
+import { shiftStayDatesByYears, shiftStayToNextFutureYear } from "@/domain/guest/rebook-dates";
+import { assertValidGuestPhone, normalizeEmail, normalizePhone } from "@/domain/guest/normalize";
 import { parseGuestTags } from "@/domain/guest/tags";
 import type {
   GuestDocType,
@@ -68,15 +61,16 @@ function computeIdentityStatus(input: GuestIdentityInput): GuestIdentityStatus {
 
 export async function updateGuestIdentity(
   guestId: string,
-  input: GuestIdentityInput
+  input: GuestIdentityInput,
 ): Promise<{ identityStatus: GuestIdentityStatus }> {
   const { tenantId, supabase } = await getTenantScope();
   const identityStatus = computeIdentityStatus(input);
 
   // Sync cnp field from national_id when type is cnp (backward compat)
-  const cnpValue = input.national_id_type === "cnp"
-    ? (input.national_id?.trim() || null)
-    : (input.cnp?.trim() || null);
+  const cnpValue =
+    input.national_id_type === "cnp"
+      ? input.national_id?.trim() || null
+      : input.cnp?.trim() || null;
 
   const nationalIdForLookup = input.national_id?.trim() || cnpValue;
   if (nationalIdForLookup) {
@@ -93,11 +87,7 @@ export async function updateGuestIdentity(
     Boolean(input.national_id?.trim() || input.cnp?.trim()) &&
     (input.national_id_type === "cnp" || Boolean(input.cnp?.trim()));
 
-  if (
-    (hasDocumentNumber || hasDocumentType) &&
-    !input.doc_expiry_date &&
-    !roCiWithValidCnp
-  ) {
+  if ((hasDocumentNumber || hasDocumentType) && !input.doc_expiry_date && !roCiWithValidCnp) {
     throw new Error("guest.doc_expiry_required");
   }
 
@@ -145,10 +135,7 @@ export async function updateGuestIdentity(
  * Find a guest by national ID (CNP, EGN, IDNP, AMKA, Szem??lyi sz??m).
  * Searches both `national_id` and legacy `cnp` fields.
  */
-export async function updateGuestPhone(
-  guestId: string,
-  rawPhone: string
-): Promise<void> {
+export async function updateGuestPhone(guestId: string, rawPhone: string): Promise<void> {
   assertValidGuestPhone(rawPhone);
   const phone = rawPhone.trim();
   const phoneNorm = normalizePhone(phone);
@@ -164,10 +151,7 @@ export async function updateGuestPhone(
   if (error) throw new Error(error.message);
 }
 
-export async function updateGuestNotes(
-  guestId: string,
-  notes: string
-): Promise<void> {
+export async function updateGuestNotes(guestId: string, notes: string): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("guests")
@@ -184,10 +168,7 @@ export async function updateGuestNotes(
   });
 }
 
-export async function updateGuestTags(
-  guestId: string,
-  tags: GuestTag[]
-): Promise<void> {
+export async function updateGuestTags(guestId: string, tags: GuestTag[]): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("guests")
@@ -203,4 +184,3 @@ export async function updateGuestTags(
     metadata: { tags },
   });
 }
-

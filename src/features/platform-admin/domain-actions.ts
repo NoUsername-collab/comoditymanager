@@ -13,8 +13,7 @@ import {
 
 type DomainActionResult = { success: boolean; error?: string };
 
-const DOMAIN_RE =
-  /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i;
+const DOMAIN_RE = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i;
 
 function domainsCacheTag(tenantId: string): string {
   return `tenant-${tenantId}-domains`;
@@ -23,7 +22,7 @@ function domainsCacheTag(tenantId: string): string {
 export async function platformAddTenantDomainAction(
   tenantId: string,
   domain: string,
-  routingKind: TenantDomainRoutingKind = "custom_public"
+  routingKind: TenantDomainRoutingKind = "custom_public",
 ): Promise<DomainActionResult> {
   const normalized = domain.toLowerCase().trim();
   if (!tenantId?.trim()) {
@@ -39,11 +38,7 @@ export async function platformAddTenantDomainAction(
       throw new Error("Tenant negasit.");
     }
 
-    const domainId = await addCustomTenantDomain(
-      tenantId,
-      normalized,
-      routingKind
-    );
+    const domainId = await addCustomTenantDomain(tenantId, normalized, routingKind);
 
     revalidateTag(domainsCacheTag(tenantId), "max");
     revalidatePath(`/platform-admin/tenants/${tenantId}`);
@@ -68,7 +63,7 @@ export async function platformAddTenantDomainAction(
 
 export async function platformRemoveTenantDomainAction(
   tenantId: string,
-  domainId: string
+  domainId: string,
 ): Promise<DomainActionResult> {
   if (!tenantId?.trim() || !domainId?.trim()) {
     return { success: false, error: "Date invalide." };
@@ -105,7 +100,7 @@ export async function platformRemoveTenantDomainAction(
 
 export async function platformVerifyTenantDomainAction(
   tenantId: string,
-  domainId: string
+  domainId: string,
 ): Promise<DomainActionResult> {
   if (!tenantId?.trim() || !domainId?.trim()) {
     return { success: false, error: "Date invalide." };

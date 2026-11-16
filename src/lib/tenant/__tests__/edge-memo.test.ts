@@ -27,7 +27,10 @@ describe("the proxy's memory of which property a host is", () => {
 
   it("does not remember a failed lookup", async () => {
     const memo = createEdgeMemo<string>({ foundTtlMs: 60_000, missingTtlMs: 10_000 });
-    const load = vi.fn(async () => undefined).mockResolvedValueOnce(undefined).mockResolvedValueOnce("casa" as never);
+    const load = vi
+      .fn(async () => undefined)
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce("casa" as never);
     expect(await memo("slug:casa", load)).toBeUndefined();
     expect(await memo("slug:casa", load)).toBe("casa");
   });
@@ -43,7 +46,11 @@ describe("the proxy's memory of which property a host is", () => {
   });
 
   it("forgets the oldest entry when full", async () => {
-    const memo = createEdgeMemo<string>({ foundTtlMs: 60_000, missingTtlMs: 10_000, maxEntries: 2 });
+    const memo = createEdgeMemo<string>({
+      foundTtlMs: 60_000,
+      missingTtlMs: 10_000,
+      maxEntries: 2,
+    });
     const load = vi.fn(async () => "x");
     await memo("a", load);
     await memo("b", load);

@@ -10,7 +10,12 @@ import { PLATFORM_NAME } from "@/lib/platform/branding";
 
 describe("PLAN_CONFIGS", () => {
   it("defines the four cloud plans and nothing else", () => {
-    expect(Object.keys(PLAN_CONFIGS).sort()).toEqual(["business", "essential", "free", "professional"]);
+    expect(Object.keys(PLAN_CONFIGS).sort()).toEqual([
+      "business",
+      "essential",
+      "free",
+      "professional",
+    ]);
   });
 
   it("gives an unknown plan id Basic, never a paid plan", () => {
@@ -127,8 +132,13 @@ describe("PLAN_CONFIGS", () => {
 
     it("includes all bundled modules (whatsapp stays add-on only)", () => {
       const allModules: ModuleId[] = [
-        "public_page", "ical_sync", "invoicing", "advanced_reports",
-        "multi_property", "white_label", "api_access",
+        "public_page",
+        "ical_sync",
+        "invoicing",
+        "advanced_reports",
+        "multi_property",
+        "white_label",
+        "api_access",
       ];
       for (const m of allModules) {
         expect(business.includedModules).toContain(m);
@@ -168,5 +178,4 @@ describe("PLAN_CONFIGS", () => {
       }
     });
   });
-
 });

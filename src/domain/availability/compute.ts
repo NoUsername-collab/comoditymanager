@@ -43,24 +43,16 @@ export type ComputedDay = {
 
 export function filterRoomsByBuilding<T extends AvailRoomInput>(
   rooms: T[],
-  buildingId: string | null
+  buildingId: string | null,
 ): T[] {
   if (!buildingId) return rooms.filter((r) => r.is_active);
   return rooms.filter((r) => r.is_active && r.building_id === buildingId);
 }
 
-function countOccupiedOnNight(
-  iso: string,
-  roomIds: string[],
-  occupied: OccupiedRange[]
-): number {
+function countOccupiedOnNight(iso: string, roomIds: string[], occupied: OccupiedRange[]): number {
   let n = 0;
   for (const id of roomIds) {
-    if (
-      occupied.some(
-        (o) => o.room_id === id && nightOccupied(iso, o.check_in, o.check_out)
-      )
-    ) {
+    if (occupied.some((o) => o.room_id === id && nightOccupied(iso, o.check_in, o.check_out))) {
       n += 1;
     }
   }
@@ -73,14 +65,14 @@ export function computeDayAvailability(
   rooms: AvailRoomInput[],
   occupied: OccupiedRange[],
   counts: DayCounts,
-  locale = "ro"
+  locale = "ro",
 ): ComputedDay {
   const active = rooms.filter((r) => r.is_active);
   const total = active.length;
   const occupiedCount = countOccupiedOnNight(
     iso,
     active.map((r) => r.id),
-    occupied
+    occupied,
   );
   const free = total - occupiedCount;
   const pressure = availabilityPressure(free, total);

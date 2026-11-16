@@ -46,9 +46,7 @@ export function BuildingRoomsCollapsible({
               </span>
             )}
           </span>
-          <span className="text-xs font-normal text-zinc-500">
-            · {viewDateLabel}
-          </span>
+          <span className="text-xs font-normal text-zinc-500">· {viewDateLabel}</span>
         </span>
         <span className="text-zinc-400" aria-hidden>
           {open ? "▾" : "▸"}

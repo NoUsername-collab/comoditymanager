@@ -41,10 +41,7 @@ export function BuildingDashboardCardInteractive({
     >
       {/* Header — mereu vizibil */}
       <div
-        className={[
-          "sticky top-0 z-10 px-4 py-3 shadow-sm",
-          theme.headerBg,
-        ].join(" ")}
+        className={["sticky top-0 z-10 px-4 py-3 shadow-sm", theme.headerBg].join(" ")}
         style={{ borderBottom: `3px solid ${theme.accent}` }}
       >
         <header className="building-dashboard-card__header flex flex-wrap items-start justify-between gap-3">
@@ -54,23 +51,17 @@ export function BuildingDashboardCardInteractive({
                 className="h-3.5 w-3.5 shrink-0 rounded-full shadow-sm ring-2 ring-white/80"
                 style={{ backgroundColor: theme.accent }}
               />
-              <h2 className="text-lg font-bold tracking-tight text-zinc-900">
-                {building.name}
-              </h2>
+              <h2 className="text-lg font-bold tracking-tight text-zinc-900">{building.name}</h2>
             </div>
             <p className="mt-1 text-sm text-zinc-600">
-              {AC_LABELS[building.ac_mode]} ·{" "}
-              <span className="text-zinc-500">{theme.label}</span>
+              {AC_LABELS[building.ac_mode]} · <span className="text-zinc-500">{theme.label}</span>
             </p>
             <BuildingDefaultPriceForm
               buildingId={building.id}
               defaultPrice={building.default_price_per_night ?? 0}
             />
           </div>
-          <AdminLinkButton
-            href={`/admin/rooms/new?building=${building.id}`}
-            size="sm"
-          >
+          <AdminLinkButton href={`/admin/rooms/new?building=${building.id}`} size="sm">
             + {tCommon("room")}
           </AdminLinkButton>
         </header>
@@ -80,9 +71,7 @@ export function BuildingDashboardCardInteractive({
             <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
               {tBuildings("floors")}
             </p>
-            <p className="text-xl font-bold tabular-nums text-zinc-900">
-              {data.floor_count}
-            </p>
+            <p className="text-xl font-bold tabular-nums text-zinc-900">{data.floor_count}</p>
           </div>
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
@@ -90,9 +79,7 @@ export function BuildingDashboardCardInteractive({
             </p>
             <p className="text-xl font-bold tabular-nums text-zinc-900">
               {data.active_room_count}
-              <span className="ml-1 text-xs font-medium text-zinc-500">
-                {tCommon("active")}
-              </span>
+              <span className="ml-1 text-xs font-medium text-zinc-500">{tCommon("active")}</span>
             </p>
           </div>
           <div className="flex flex-wrap gap-1.5 pb-0.5">
@@ -185,10 +172,7 @@ export function BuildingDashboardCardInteractive({
               hideSummary
             />
 
-            <AddFloorForm
-              buildingId={building.id}
-              nextSortOrder={data.floor_count + 1}
-            />
+            <AddFloorForm buildingId={building.id} nextSortOrder={data.floor_count + 1} />
 
             {catalogOptions.length > 0 && (
               <BuildingPoliciesForm

@@ -12,30 +12,20 @@ type Props = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
   children: ReactNode;
 };
 
-export const AdminLinkButton = forwardRef<HTMLAnchorElement, Props>(
-  function AdminLinkButton(
-    {
-      href,
-      variant = "secondary",
-      size = "md",
-      iconOnly,
-      fullWidth,
-      className,
-      ...props
-    },
-    ref,
-  ) {
-    const cls = [
-      "admin-btn",
-      `admin-btn--${variant}`,
-      `admin-btn--${size}`,
-      iconOnly && "admin-btn--icon-only",
-      fullWidth && "admin-btn--full",
-      className,
-    ]
-      .filter(Boolean)
-      .join(" ");
+export const AdminLinkButton = forwardRef<HTMLAnchorElement, Props>(function AdminLinkButton(
+  { href, variant = "secondary", size = "md", iconOnly, fullWidth, className, ...props },
+  ref,
+) {
+  const cls = [
+    "admin-btn",
+    `admin-btn--${variant}`,
+    `admin-btn--${size}`,
+    iconOnly && "admin-btn--icon-only",
+    fullWidth && "admin-btn--full",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-    return <Link ref={ref} href={href} className={cls} {...props} />;
-  },
-);
+  return <Link ref={ref} href={href} className={cls} {...props} />;
+});

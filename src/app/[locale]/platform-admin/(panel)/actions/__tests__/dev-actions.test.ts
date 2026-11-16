@@ -19,17 +19,14 @@ describe("revalidatePlatformAdminCacheAction", () => {
 
   it("revalidates platform admin paths when authorized", async () => {
     runPlatformAdminAction.mockImplementation(
-      async (
-        handler: (session: { userId: string; email: string }) => Promise<string[]>
-      ) => ({
+      async (handler: (session: { userId: string; email: string }) => Promise<string[]>) => ({
         success: true,
         data: await handler({ userId: "u1", email: "admin@test.com" }),
-      })
+      }),
     );
 
-    const { revalidatePlatformAdminCacheAction } = await import(
-      "@/features/platform-admin/dev-actions"
-    );
+    const { revalidatePlatformAdminCacheAction } =
+      await import("@/features/platform-admin/dev-actions");
 
     const result = await revalidatePlatformAdminCacheAction();
 
@@ -50,9 +47,8 @@ describe("revalidatePlatformAdminCacheAction", () => {
       error: "Neautorizat.",
     });
 
-    const { revalidatePlatformAdminCacheAction } = await import(
-      "@/features/platform-admin/dev-actions"
-    );
+    const { revalidatePlatformAdminCacheAction } =
+      await import("@/features/platform-admin/dev-actions");
 
     const result = await revalidatePlatformAdminCacheAction();
     expect(result).toEqual({ success: false, error: "Neautorizat." });

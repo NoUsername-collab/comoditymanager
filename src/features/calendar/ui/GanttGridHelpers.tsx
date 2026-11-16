@@ -48,7 +48,7 @@ export type GanttDayGridOptions = {
 /** Column widths for compact chrome (portrait / landscape). */
 export function resolveGanttColumnMetrics(
   compactChrome: boolean,
-  orientation: "portrait" | "landscape"
+  orientation: "portrait" | "landscape",
 ): GanttColumnMetrics {
   if (!compactChrome) {
     return { roomCol: ROOM_COL_W, dayMin: DAY_COL_MIN_W };
@@ -65,7 +65,7 @@ export function resolveGanttDayGridOptions(
   compactChrome: boolean,
   isPortrait: boolean,
   dayMin: string,
-  dayCount: number
+  dayCount: number,
 ): GanttDayGridOptions | undefined {
   if (compactChrome && isPortrait) {
     return { dayMin, fixed: dayCount > 7 };
@@ -75,13 +75,7 @@ export function resolveGanttDayGridOptions(
 
 const GANTT_DAY_CELL = "gantt-day-cell min-w-0";
 
-export type InlineZoomChoice =
-  | "today"
-  | "days7"
-  | "days15"
-  | "days30"
-  | "month"
-  | "quarter";
+export type InlineZoomChoice = "today" | "days7" | "days15" | "days30" | "month" | "quarter";
 
 export function ToolbarFilterIcon({ className }: { className?: string }) {
   return (
@@ -130,7 +124,7 @@ export function normalizeZoomChoice(zoom: string): InlineZoomChoice {
 
 export function periodStepMeta(
   zoom: InlineZoomChoice,
-  tCommon: (key: string) => string
+  tCommon: (key: string) => string,
 ): { label: string; aria: string } {
   switch (zoom) {
     case "today":
@@ -148,10 +142,7 @@ export function periodStepMeta(
   }
 }
 
-export function ganttDayGridStyle(
-  dayCount: number,
-  options?: GanttDayGridOptions
-): CSSProperties {
+export function ganttDayGridStyle(dayCount: number, options?: GanttDayGridOptions): CSSProperties {
   if (options?.fixed && options.dayMin) {
     return {
       gridTemplateColumns: `repeat(${dayCount}, minmax(${options.dayMin}, 1fr))`,
@@ -182,7 +173,7 @@ type GanttTableLayout = {
 /** Table always fills viewport; scroll only when timeline min width exceeds screen. */
 export function resolveGanttTableLayout(
   dayCount: number,
-  metrics: GanttColumnMetrics
+  metrics: GanttColumnMetrics,
 ): GanttTableLayout {
   const timeline = ganttTimelineWidth(dayCount, metrics.dayMin);
   return {
@@ -199,7 +190,7 @@ function dayCellClass(
   touch: boolean,
   options?: {
     turnover?: boolean;
-  }
+  },
 ) {
   return [
     GANTT_DAY_CELL,
@@ -217,7 +208,7 @@ function dayCellClass(
 /** Day header — ticks come from CSS; no full-day zone hatch */
 export function dayHeaderCellClass(
   col: { isWeekend: boolean; isToday: boolean; isPast: boolean },
-  compact: boolean
+  compact: boolean,
 ) {
   return [
     "gantt-day-header-cell min-w-0",
@@ -267,17 +258,15 @@ export function DayGrid({
         const hasTurnover =
           turnoverIsos?.has(col.iso) ||
           (weekEndIso != null &&
-            [...(turnoverIsos ?? [])].some(
-              (iso) => iso >= col.iso && iso <= weekEndIso
-            ));
+            [...(turnoverIsos ?? [])].some((iso) => iso >= col.iso && iso <= weekEndIso));
         return (
-        <div
-          key={col.iso}
-          className={dayCellClass(col, compact, touch, {
-            turnover: hasTurnover,
-          })}
-        />
-      );
+          <div
+            key={col.iso}
+            className={dayCellClass(col, compact, touch, {
+              turnover: hasTurnover,
+            })}
+          />
+        );
       })}
     </div>
   );

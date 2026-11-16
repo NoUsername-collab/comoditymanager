@@ -45,13 +45,7 @@ describe("dayIndexFromPointerX", () => {
 // intervalFromDayIndices
 // ---------------------------------------------------------------------------
 describe("intervalFromDayIndices", () => {
-  const days = [
-    "2025-06-10",
-    "2025-06-11",
-    "2025-06-12",
-    "2025-06-13",
-    "2025-06-14",
-  ];
+  const days = ["2025-06-10", "2025-06-11", "2025-06-12", "2025-06-13", "2025-06-14"];
 
   it("returns correct checkIn/checkOut for a normal range", () => {
     const result = intervalFromDayIndices(days, 1, 3);
@@ -111,7 +105,7 @@ describe("ghostBarFromDayIndices", () => {
       rangeStart,
       rangeEnd,
       checkInTime,
-      checkOutTime
+      checkOutTime,
     );
     expect(result).not.toBeNull();
     // 14:00 on day 0 of 10 days = 14h / 240h
@@ -128,7 +122,7 @@ describe("ghostBarFromDayIndices", () => {
       rangeStart,
       rangeEnd,
       checkInTime,
-      checkOutTime
+      checkOutTime,
     );
     expect(result).not.toBeNull();
     // 14:00 on 2 Jun → 11:00 on 5 Jun (checkout morning of the day after last night)
@@ -142,7 +136,7 @@ describe("ghostBarFromDayIndices", () => {
 
   it("returns null for an empty day list", () => {
     expect(
-      ghostBarFromDayIndices([], 0, 0, rangeStart, rangeEnd, checkInTime, checkOutTime)
+      ghostBarFromDayIndices([], 0, 0, rangeStart, rangeEnd, checkInTime, checkOutTime),
     ).toBeNull();
   });
 });

@@ -29,8 +29,7 @@ export function RoomOptionFields({
   const resolved = useMemo(() => {
     return options.map((option) => {
       const mode = policyModeForOption(policies, option.id);
-      const typeDefault =
-        selectedType?.default_option_ids.includes(option.id) ?? false;
+      const typeDefault = selectedType?.default_option_ids.includes(option.id) ?? false;
       const roomSelected = (optionIds ?? selectedOptionIds).includes(option.id);
       const state = resolveOptionEnabled(mode, roomSelected, typeDefault);
       return { option, mode, ...state };
@@ -38,11 +37,7 @@ export function RoomOptionFields({
   }, [options, policies, selectedType, selectedOptionIds, optionIds]);
 
   if (options.length === 0) {
-    return (
-      <p className="text-sm text-zinc-500">
-        {tOptions("noOptionsInCatalog")}
-      </p>
-    );
+    return <p className="text-sm text-zinc-500">{tOptions("noOptionsInCatalog")}</p>;
   }
 
   return (
@@ -59,11 +54,7 @@ export function RoomOptionFields({
               name="option_ids"
               value={option.id}
               defaultChecked={enabled}
-              onChange={
-                onToggle
-                  ? (e) => onToggle(option.id, e.target.checked)
-                  : undefined
-              }
+              onChange={onToggle ? (e) => onToggle(option.id, e.target.checked) : undefined}
             />
           ) : enabled ? (
             <input type="hidden" name="option_ids" value={option.id} />
@@ -71,10 +62,7 @@ export function RoomOptionFields({
           <span>
             {option.name}
             {option.price_per_night_addon > 0 && (
-              <span className="text-zinc-500">
-                {" "}
-                (+{option.price_per_night_addon} RON/noapte)
-              </span>
+              <span className="text-zinc-500"> (+{option.price_per_night_addon} RON/noapte)</span>
             )}
           </span>
           <span className="text-xs text-zinc-400">

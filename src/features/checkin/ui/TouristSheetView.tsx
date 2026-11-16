@@ -19,11 +19,7 @@ function formatSheetDate(iso: string): string {
   }
 }
 
-export function TouristSheetView({
-  data,
-  onClose,
-  showPlatformBranding = true,
-}: Props) {
+export function TouristSheetView({ data, onClose, showPlatformBranding = true }: Props) {
   const t = useTranslations("admin.checkIn.touristSheet");
 
   function printSheet() {
@@ -98,9 +94,7 @@ export function TouristSheetView({
             <div className="tourist-sheet__fields">
               <SheetField label={t("pensionName")} value={data.pensionName} />
               <SheetField label={t("propertyAddress")} value={data.propertyAddress} wide />
-              {data.ownerCui ? (
-                <SheetField label={t("ownerCui")} value={data.ownerCui} />
-              ) : null}
+              {data.ownerCui ? <SheetField label={t("ownerCui")} value={data.ownerCui} /> : null}
               {data.tourismLicense ? (
                 <SheetField label={t("tourismLicense")} value={data.tourismLicense} />
               ) : null}
@@ -155,9 +149,7 @@ export function TouristSheetView({
               </div>
             </div>
             {showPlatformBranding ? (
-              <p className="tourist-sheet__brand">
-                {t("poweredBy", { brand: PLATFORM_NAME })}
-              </p>
+              <p className="tourist-sheet__brand">{t("poweredBy", { brand: PLATFORM_NAME })}</p>
             ) : null}
           </footer>
         </div>
@@ -177,10 +169,7 @@ function SheetField({
 }) {
   return (
     <div
-      className={[
-        "tourist-sheet__field",
-        wide && "tourist-sheet__field--wide",
-      ]
+      className={["tourist-sheet__field", wide && "tourist-sheet__field--wide"]
         .filter(Boolean)
         .join(" ")}
     >

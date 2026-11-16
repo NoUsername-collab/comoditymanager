@@ -4,7 +4,7 @@ import { PUBLIC_LOCALES } from "./types";
 export function pickLocalized(
   value: LocalizedText | string | null | undefined,
   locale: string,
-  fallbacks: string[] = []
+  fallbacks: string[] = [],
 ): string {
   if (typeof value === "string") return value.trim();
   if (!value || typeof value !== "object") {
@@ -95,9 +95,7 @@ export function writeLocalizedMap(
   values: Partial<Record<PublicLocale, string>>,
 ): LocalizedText {
   const source: LocalizedText =
-    typeof previous === "string"
-      ? { ro: previous, en: previous, bg: previous }
-      : {};
+    typeof previous === "string" ? { ro: previous, en: previous, bg: previous } : {};
   if (previous && typeof previous === "object") {
     for (const locale of PUBLIC_LOCALES) {
       const text = previous[locale];

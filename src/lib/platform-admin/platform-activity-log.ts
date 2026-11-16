@@ -17,9 +17,7 @@ type PlatformActivityInput = {
 };
 
 /** Cross-tenant audit row — written by platform operators into tenant activity log. */
-export async function logPlatformAdminActivity(
-  input: PlatformActivityInput
-): Promise<void> {
+export async function logPlatformAdminActivity(input: PlatformActivityInput): Promise<void> {
   try {
     const supabase = createPublicAdminClient();
     const { error } = await supabase.from("admin_activity_log").insert({

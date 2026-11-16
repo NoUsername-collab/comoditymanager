@@ -175,9 +175,7 @@ const COUNTRY_FISCAL_PROFILES: Record<TenantCountry, CountryFiscalProfile> = {
   },
 };
 
-export function getCountryFiscalProfile(
-  country: string | null | undefined
-): CountryFiscalProfile {
+export function getCountryFiscalProfile(country: string | null | undefined): CountryFiscalProfile {
   if (country === "BG" || country === "MD") {
     return COUNTRY_FISCAL_PROFILES[country];
   }
@@ -186,7 +184,7 @@ export function getCountryFiscalProfile(
 
 export function resolveInvoiceVatRate(
   country: TenantCountry,
-  configuredRate: number | null | undefined
+  configuredRate: number | null | undefined,
 ): number {
   if (configuredRate != null && Number.isFinite(configuredRate)) {
     return Math.min(100, Math.max(0, configuredRate));
@@ -206,7 +204,7 @@ type VatBreakdown = {
 export function computeVatBreakdown(
   amount: number,
   ratePercent: number,
-  options: { enabled: boolean; pricesIncludeVat: boolean }
+  options: { enabled: boolean; pricesIncludeVat: boolean },
 ): VatBreakdown {
   const rounded = Math.round(amount * 100) / 100;
   if (!options.enabled || ratePercent <= 0) {
@@ -255,8 +253,6 @@ type FiscalSellerSnapshot = {
   tourismLicense: string | null;
 };
 
-export function isFiscalSellerComplete(
-  seller: FiscalSellerSnapshot
-): boolean {
+export function isFiscalSellerComplete(seller: FiscalSellerSnapshot): boolean {
   return Boolean(seller.taxId?.trim() && seller.address?.trim());
 }

@@ -1,19 +1,13 @@
 /* mobile-stays.css — stays, guests, reception mobile compat (split from mobile-admin.css) */
 
-
-
 html[data-layout-chrome="compact"] .stay-card {
   grid-template-columns: minmax(0, 1fr) !important;
 }
-
-
 
 html[data-layout-chrome="compact"] .stay-card--stacked {
   display: flex;
   flex-direction: column;
 }
-
-
 
 html[data-layout-chrome="compact"] .stay-card .sm\:min-w-\[140px\],
 html[data-layout-chrome="compact"] .stay-card .sm\:min-w-\[270px\] {
@@ -21,19 +15,13 @@ html[data-layout-chrome="compact"] .stay-card .sm\:min-w-\[270px\] {
   width: 100%;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-profile-page__grid {
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-grid--hero {
   grid-template-columns: minmax(0, 1fr) !important;
 }
-
-
 
 /* Tablet portrait gutter: mobile-layout-alignment.css */
 
@@ -44,60 +32,42 @@ html[data-layout-chrome="compact"] .stay-card {
   contain-intrinsic-size: auto 4.5rem;
 }
 
-
-
 /* ── Guests (admin-guests.css @media) ── */
 html[data-layout-chrome="compact"] .guest-page {
   padding: 0.85rem 1rem 1.5rem;
   max-width: 100%;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-search {
   flex-direction: column;
   align-items: stretch;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-grid {
   grid-template-columns: minmax(0, 1fr) !important;
 }
-
-
 
 html[data-layout-chrome="compact"] .guest-profile-page {
   padding: 0.85rem 1rem 1.5rem;
   max-width: 100%;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-profile-page__profile,
 html[data-layout-chrome="wide"][data-layout-mode="tablet"] .guest-profile-page__profile {
   order: -1;
 }
 
-
-
 html[data-layout-chrome="wide"][data-layout-mode="tablet"] .guest-profile-page__grid {
   grid-template-columns: minmax(0, 1fr);
 }
-
-
 
 html[data-layout-chrome="compact"] .guest-notes-grid {
   grid-template-columns: minmax(0, 1fr);
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-hero {
   padding: 1rem;
 }
-
-
 
 /* statistics charts in XP windows: mobile-layout-flawless.css */
 
@@ -106,8 +76,6 @@ html[data-layout-chrome="compact"] .guest-rebook-page {
   padding: 0.85rem 1rem 1.5rem !important;
   max-width: 100%;
 }
-
-
 
 /* ═══ mobile-layout-admin-pages.css ═══ */
 /**
@@ -120,8 +88,6 @@ html[data-layout-chrome="compact"] .admin-settings-summary {
   padding: 0 !important;
 }
 
-
-
 /* statistics touch + bar chart: mobile-layout-flawless.css */
 
 /* ── Cazări ── */
@@ -131,8 +97,6 @@ html[data-layout-chrome="compact"] .stay-card .stay-card__actions a {
   font-size: 0.8125rem;
 }
 
-
-
 /* ── Receptie / phone booking ── */
 html[data-layout-chrome="compact"] .phone-booking-form input,
 html[data-layout-chrome="compact"] .phone-booking-form select,
@@ -141,8 +105,6 @@ html[data-layout-chrome="compact"] .phone-booking-form button[type="submit"] {
   font-size: 16px;
   min-height: var(--ml-touch-min, 2.75rem);
 }
-
-
 
 /* simulation: mobile-layout-flawless.css */
 
@@ -160,14 +122,10 @@ html[data-layout-chrome="compact"] .public-staff-preview-skeleton {
   contain-intrinsic-size: auto 14rem;
 }
 
-
-
 /* ── Bookings / requests ── */
 html[data-layout-chrome="compact"] .request-list {
   gap: 0.55rem;
 }
-
-
 
 html[data-layout-chrome="compact"] .request-item__head {
   grid-template-columns: minmax(0, 1fr);
@@ -175,21 +133,15 @@ html[data-layout-chrome="compact"] .request-item__head {
   padding: 0.6rem 0.65rem 0.5rem;
 }
 
-
-
 html[data-layout-chrome="compact"] .request-item__name {
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-
-
 html[data-layout-chrome="compact"] .request-item__dates {
   overflow-wrap: anywhere;
 }
-
-
 
 html[data-layout-chrome="compact"] .request-item__action {
   min-height: var(--ml-touch-min, 2.75rem);
@@ -202,20 +154,14 @@ html[data-layout-chrome="compact"] .request-item__action {
   font-size: 0.8125rem !important;
 }
 
-
-
 html[data-layout-chrome="compact"] .request-item__body {
   padding: 0.45rem 0.65rem 0.5rem;
 }
-
-
 
 html[data-layout-chrome="compact"] .request-item__profile-link {
   min-height: var(--ml-touch-min, 2.75rem);
   padding-inline: 0.15rem;
 }
-
-
 
 html[data-layout-chrome="compact"] .request-item__email {
   white-space: normal;
@@ -223,20 +169,14 @@ html[data-layout-chrome="compact"] .request-item__email {
   word-break: break-word;
 }
 
-
-
 /* ── Cazări ── */
 html[data-layout-chrome="compact"] .stays-page > .grid {
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
-
-
 html[data-layout-chrome="compact"] .stay-card {
   gap: 0.65rem !important;
 }
-
-
 
 html[data-layout-chrome="compact"] .stay-card a,
 html[data-layout-chrome="compact"] .stay-card button {
@@ -245,20 +185,14 @@ html[data-layout-chrome="compact"] .stay-card button {
   padding-block: 0.5rem !important;
 }
 
-
-
 html[data-layout-chrome="compact"] .stays-view-filters {
   gap: 0.3rem;
 }
-
-
 
 html[data-layout-chrome="compact"] .stays-view-filter {
   min-height: var(--ml-touch-min, 2.75rem);
   font-size: 0.72rem;
 }
-
-
 
 /* ── Receptie + confirm ── */
 html[data-layout-chrome="compact"] .reception-page,
@@ -266,8 +200,6 @@ html[data-layout-chrome="compact"] .public-confirm-page {
   padding: 0.85rem 0.85rem 1.5rem !important;
   max-width: 100%;
 }
-
-
 
 /* ── Cazări touch ── */
 html[data-layout-chrome="compact"] .stays-horizon a {
@@ -279,8 +211,6 @@ html[data-layout-chrome="compact"] .stays-horizon a {
   font-size: 0.8125rem !important;
 }
 
-
-
 /* ── Receptie quick panel ── */
 html[data-layout-chrome="compact"] .admin-quick-panel__confirm-link {
   min-height: var(--ml-touch-min, 2.75rem) !important;
@@ -290,23 +220,16 @@ html[data-layout-chrome="compact"] .admin-quick-panel__confirm-link {
   font-size: 0.8125rem !important;
 }
 
-
-
 /* ── Recepție page ── */
 html[data-layout-chrome="compact"] .reception-page {
-  padding: 0.85rem max(0.85rem, var(--ml-safe-left, 0px))
-    calc(1.5rem + var(--ml-safe-bottom, 0px)) !important;
+  padding: 0.85rem max(0.85rem, var(--ml-safe-left, 0px)) calc(1.5rem + var(--ml-safe-bottom, 0px)) !important;
 }
-
-
 
 html[data-layout-chrome="compact"] .reception-page__back-admin {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
 }
-
-
 
 /* ── Pass 3: guest profile, booking detail, HUD, tiles ── */
 html[data-layout-chrome="compact"] .guest-profile-tabs {
@@ -316,13 +239,9 @@ html[data-layout-chrome="compact"] .guest-profile-tabs {
   scrollbar-width: none;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-profile-tabs::-webkit-scrollbar {
   display: none;
 }
-
-
 
 html[data-layout-chrome="compact"] .guest-profile-tabs__item {
   min-height: var(--ml-touch-min, 2.75rem);
@@ -332,15 +251,11 @@ html[data-layout-chrome="compact"] .guest-profile-tabs__item {
   padding: 0.4rem 0.85rem;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-profile-page__back {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
 }
-
-
 
 html[data-layout-chrome="compact"] .guest-history__detail-link,
 html[data-layout-chrome="compact"] .guest-history-compact__link,
@@ -350,22 +265,16 @@ html[data-layout-chrome="compact"] .guest-rebook-collapse__trigger {
   align-items: center;
 }
 
-
-
 html[data-layout-chrome="compact"] .reception-page__nav a {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
 }
 
-
-
 html[data-layout-chrome="compact"] .stays-search-form {
   flex-direction: column;
   align-items: stretch;
 }
-
-
 
 html[data-layout-chrome="compact"] .stays-search-form input[type="search"] {
   width: 100%;
@@ -374,15 +283,11 @@ html[data-layout-chrome="compact"] .stays-search-form input[type="search"] {
   min-height: var(--ml-touch-min, 2.75rem);
 }
 
-
-
 html[data-layout-chrome="compact"] .stays-search-form button {
   flex: 1 1 100%;
   min-height: var(--ml-touch-min, 2.75rem);
   font-size: max(16px, 0.875rem);
 }
-
-
 
 html[data-layout-chrome="compact"] .stay-quick-ops {
   display: grid;
@@ -391,8 +296,6 @@ html[data-layout-chrome="compact"] .stay-quick-ops {
   width: 100%;
   justify-content: stretch;
 }
-
-
 
 html[data-layout-chrome="compact"] .stay-quick-ops button,
 html[data-layout-chrome="compact"] .stay-quick-ops a {
@@ -403,22 +306,16 @@ html[data-layout-chrome="compact"] .stay-quick-ops a {
   padding-inline: 0.5rem;
 }
 
-
-
 html[data-layout-chrome="compact"] .stay-history-link {
   min-height: var(--ml-touch-min, 2.75rem);
   padding-inline: 0.25rem;
 }
-
-
 
 html[data-layout-chrome="compact"] .stays-load-more,
 html[data-layout-chrome="compact"] .requests-load-more {
   width: 100%;
   justify-content: center;
 }
-
-
 
 /* Cazări / cereri long lists: skip off-screen paint on compact */
 html[data-layout-chrome="compact"] .stays-page .stay-card,
@@ -427,8 +324,6 @@ html[data-layout-chrome="compact"] .request-item {
   contain: layout style;
   contain-intrinsic-size: auto 4.5rem;
 }
-
-
 
 /* ── Pass 16: Platform forms, reception checkbox, FAQ, drawer safe-area ── */
 
@@ -440,13 +335,9 @@ html[data-layout-chrome="compact"] .platform-log-filter {
   touch-action: manipulation;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-rebook-page__back {
   padding-inline: 0.15rem;
 }
-
-
 
 html[data-layout-chrome="compact"] .guest-rebook-form input,
 html[data-layout-chrome="compact"] .guest-rebook-form select,
@@ -457,14 +348,10 @@ html[data-layout-chrome="compact"] .guest-rebook-form textarea {
   max-width: 100%;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-rebook-form__actions {
   flex-direction: column;
   align-items: stretch;
 }
-
-
 
 html[data-layout-chrome="compact"] .guest-rebook-form__actions button {
   width: 100%;
@@ -472,29 +359,21 @@ html[data-layout-chrome="compact"] .guest-rebook-form__actions button {
   justify-content: center;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-notes-form__trigger {
   min-height: var(--ml-touch-min, 2.75rem);
   width: 100%;
   justify-content: center;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-notes-form__textarea {
   font-size: max(16px, 0.875rem);
   min-height: 8rem;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-notes-form__actions {
   flex-direction: column;
   align-items: stretch;
 }
-
-
 
 html[data-layout-chrome="compact"] .guest-notes-form__cancel,
 html[data-layout-chrome="compact"] .guest-notes-form__save {
@@ -503,15 +382,11 @@ html[data-layout-chrome="compact"] .guest-notes-form__save {
   justify-content: center;
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-profile-controls-form__field input,
 html[data-layout-chrome="compact"] .guest-profile-controls-form__field select {
   font-size: max(16px, 0.875rem);
   min-height: var(--ml-touch-min, 2.75rem);
 }
-
-
 
 html[data-layout-chrome="compact"] .guest-profile-controls-form button,
 html[data-layout-chrome="compact"] .guest-profile-controls-form .admin-requests-fill {
@@ -520,14 +395,10 @@ html[data-layout-chrome="compact"] .guest-profile-controls-form .admin-requests-
   font-size: max(16px, 0.875rem);
 }
 
-
-
 html[data-layout-chrome="compact"] .guest-rebook-buttons {
   flex-direction: column;
   align-items: stretch;
 }
-
-
 
 html[data-layout-chrome="compact"] .guest-rebook-buttons__submit {
   width: 100%;
@@ -537,8 +408,6 @@ html[data-layout-chrome="compact"] .guest-rebook-buttons__submit {
   touch-action: manipulation;
 }
 
-
-
 html[data-layout-chrome="compact"] .reception-page__back-site {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
@@ -546,8 +415,6 @@ html[data-layout-chrome="compact"] .reception-page__back-site {
   padding-inline: 0.15rem;
   touch-action: manipulation;
 }
-
-
 
 /* ── Pass 31: MRZ fullscreen camera, settings accordion, gantt cap touch ── */
 
@@ -567,8 +434,6 @@ html[data-layout-chrome="compact"] .mrz-scan-modal.admin-floating-panel--modal {
   overflow: hidden;
 }
 
-
-
 html[data-layout-chrome="compact"] .mrz-scan-modal .admin-floating-panel__body {
   flex: 1;
   min-height: 0;
@@ -578,21 +443,15 @@ html[data-layout-chrome="compact"] .mrz-scan-modal .admin-floating-panel__body {
   padding-bottom: max(0.75rem, var(--ml-safe-bottom, 0px));
 }
 
-
-
 html[data-layout-chrome="compact"] .stay-quick-ops {
   /* Grid + display:contents groups — admin-stays-cards.css */
   gap: 0.4rem;
 }
 
-
-
 html[data-layout-chrome="compact"] .stay-quick-ops button,
 html[data-layout-chrome="compact"] .stay-quick-ops a {
   justify-content: center;
 }
-
-
 
 @media (display-mode: standalone) {
   html[data-layout-chrome="compact"] .ml-bottom-nav--admin {
@@ -609,8 +468,6 @@ html[data-layout-chrome="compact"] .stay-quick-ops a {
   }
 }
 
-
-
 /* UX: sticky cazări filters + horizon on compact */
 html[data-layout-chrome="compact"] .stays-sticky-toolbar {
   position: sticky;
@@ -625,15 +482,11 @@ html[data-layout-chrome="compact"] .stays-sticky-toolbar {
   gap: 0.55rem;
 }
 
-
-
 html[data-layout-chrome="compact"] .stays-view-filter {
   min-height: var(--ml-touch-min, 2.75rem);
   padding: 0.45rem 0.55rem;
   font-size: 0.75rem;
 }
-
-
 
 html[data-layout-chrome="compact"] .stays-horizon__pill {
   min-height: var(--ml-touch-min, 2.75rem);
@@ -642,8 +495,6 @@ html[data-layout-chrome="compact"] .stays-horizon__pill {
   padding: 0.35rem 0.65rem;
   font-size: 0.75rem;
 }
-
-
 
 /* UX: pinned cereri section — clear separation */
 html[data-layout-chrome="compact"] .stays-pinned-requests {
@@ -654,13 +505,9 @@ html[data-layout-chrome="compact"] .stays-pinned-requests {
   padding-left: 0.5rem;
 }
 
-
-
 html[data-layout-chrome="compact"] .stays-pinned-requests .admin-panel__titlebar {
   background: color-mix(in srgb, var(--admin-tint-warning-bg, #fffbeb) 75%, transparent);
 }
-
-
 
 html[data-layout-chrome="compact"] .guest-search {
   position: sticky;
@@ -671,8 +518,6 @@ html[data-layout-chrome="compact"] .guest-search {
   background: color-mix(in srgb, var(--admin-surface-bg, #fff) 94%, transparent);
   backdrop-filter: blur(8px);
 }
-
-
 
 /* Pass 31: cazări horizon — horizontal pill scroll, no wrap overflow */
 html[data-layout-chrome="compact"] .stays-horizon {
@@ -689,27 +534,19 @@ html[data-layout-chrome="compact"] .stays-horizon {
   scrollbar-width: none;
 }
 
-
-
 html[data-layout-chrome="compact"] .stays-horizon::-webkit-scrollbar {
   display: none;
 }
 
-
-
 html[data-layout-chrome="compact"] .stays-horizon__label {
   flex-shrink: 0;
 }
-
-
 
 html[data-layout-chrome="compact"] .stays-horizon a,
 html[data-layout-chrome="compact"] .stays-horizon__pill {
   flex-shrink: 0;
   scroll-snap-align: start;
 }
-
-
 
 html[data-layout-chrome="compact"] .stays-sticky-toolbar {
   margin-inline: 0;
@@ -719,8 +556,6 @@ html[data-layout-chrome="compact"] .stays-sticky-toolbar {
   box-sizing: border-box;
 }
 
-
-
 /* Pass 31: list paint isolation */
 html[data-layout-chrome="compact"] .stay-list > li,
 html[data-layout-chrome="compact"] .stay-card {
@@ -728,8 +563,6 @@ html[data-layout-chrome="compact"] .stay-card {
   contain: layout style;
   contain-intrinsic-size: auto 7rem;
 }
-
-
 
 @media (prefers-reduced-motion: reduce) {
   html[data-layout-chrome="compact"] .stays-sticky-toolbar,
@@ -739,8 +572,6 @@ html[data-layout-chrome="compact"] .stay-card {
   }
 }
 
-
-
 html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap {
   aspect-ratio: auto;
   width: 100%;
@@ -749,15 +580,11 @@ html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap {
   border-radius: 0;
 }
 
-
-
 html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap video {
   object-fit: cover;
   width: 100%;
   height: 100%;
 }
-
-
 
 html[data-layout-chrome="compact"] .request-item,
 html[data-layout-chrome="compact"] .platform-tenant-card,
@@ -767,8 +594,6 @@ html[data-layout-chrome="compact"] .statistics-page .statistics-card {
   contain-intrinsic-size: auto 5rem;
 }
 
-
-
 /* Cazări: shorter cards, actions contained */
 html[data-layout-chrome="compact"] .stay-card {
   contain-intrinsic-size: auto 4rem;
@@ -776,8 +601,6 @@ html[data-layout-chrome="compact"] .stay-card {
   gap: 0.45rem !important;
   padding-block: 0.5rem !important;
 }
-
-
 
 /* MRZ: camera fills modal body */
 html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap {
@@ -789,14 +612,10 @@ html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap {
   border-radius: 0.5rem;
 }
 
-
-
 html[data-layout-chrome="compact"] .mrz-scan-modal .admin-floating-panel__body {
   display: flex;
   flex-direction: column;
 }
-
-
 
 @media (pointer: coarse) {
   /*

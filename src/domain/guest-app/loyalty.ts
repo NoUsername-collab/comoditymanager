@@ -26,7 +26,10 @@ export const DEFAULT_GUEST_LOYALTY_PROGRAM: GuestLoyaltyProgram = {
 };
 
 export function normalizeLoyaltyReference(raw: string): string {
-  const compact = raw.trim().toUpperCase().replace(/[^0-9A-Z]/g, "");
+  const compact = raw
+    .trim()
+    .toUpperCase()
+    .replace(/[^0-9A-Z]/g, "");
   let out = "";
   for (const ch of compact) {
     out += NORMALIZE_MAP[ch] ?? ch;
@@ -46,18 +49,12 @@ export function formatLoyaltyReference(raw: string): string {
   return `${code.slice(0, 4)}-${code.slice(4)}`;
 }
 
-export function loyaltyPerkUnlocked(
-  totalNights: number,
-  nightsForPerk: number,
-): boolean {
+export function loyaltyPerkUnlocked(totalNights: number, nightsForPerk: number): boolean {
   if (nightsForPerk <= 0) return false;
   return totalNights >= nightsForPerk;
 }
 
-export function loyaltyNightsRemaining(
-  totalNights: number,
-  nightsForPerk: number,
-): number {
+export function loyaltyNightsRemaining(totalNights: number, nightsForPerk: number): number {
   if (nightsForPerk <= 0) return 0;
   return Math.max(0, nightsForPerk - totalNights);
 }
@@ -72,12 +69,9 @@ export function mapGuestLoyaltyProgram(raw: unknown): GuestLoyaltyProgram {
       Number.isFinite(nights) && nights >= 0
         ? Math.min(365, Math.round(nights))
         : DEFAULT_GUEST_LOYALTY_PROGRAM.nightsForPerk,
-    perkTitle:
-      typeof row.perkTitle === "string" ? row.perkTitle.slice(0, 120) : "",
+    perkTitle: typeof row.perkTitle === "string" ? row.perkTitle.slice(0, 120) : "",
     perkDescription:
-      typeof row.perkDescription === "string"
-        ? row.perkDescription.slice(0, 2000)
-        : "",
+      typeof row.perkDescription === "string" ? row.perkDescription.slice(0, 2000) : "",
   };
 }
 

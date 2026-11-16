@@ -110,7 +110,8 @@ export function BookingSettingsEditor() {
               value={draft.bookingNavPosition}
               onChange={(e) =>
                 patchDraft({
-                  bookingNavPosition: e.target.value as PublicSiteSettingsInput["bookingNavPosition"],
+                  bookingNavPosition: e.target
+                    .value as PublicSiteSettingsInput["bookingNavPosition"],
                 })
               }
             >

@@ -41,9 +41,7 @@ export function TenantSyncPlanModulesButton({
       >
         {isPending ? t("syncing") : t("syncModules")}
       </button>
-      {feedback && (
-        <span className="text-[10px] text-neutral-400">{feedback}</span>
-      )}
+      {feedback && <span className="text-[10px] text-neutral-400">{feedback}</span>}
     </div>
   );
 }

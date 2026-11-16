@@ -44,16 +44,13 @@ export function buildGuestStayMilestones(input: {
   checkedInAt: string | null;
 }): GuestStayMilestoneStep[] {
   const phase = resolveGuestStayPhase(input);
-  const current: GuestStayMilestoneId = isGuestDepartureDay(input)
-    ? "checked_out"
-    : phase;
+  const current: GuestStayMilestoneId = isGuestDepartureDay(input) ? "checked_out" : phase;
   const currentIdx = ORDER.indexOf(current);
 
   return ORDER.map((id, idx) => ({
     id,
     label: LABELS[id],
-    state:
-      idx < currentIdx ? "done" : idx === currentIdx ? "current" : "upcoming",
+    state: idx < currentIdx ? "done" : idx === currentIdx ? "current" : "upcoming",
   }));
 }
 

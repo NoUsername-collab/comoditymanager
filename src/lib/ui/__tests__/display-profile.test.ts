@@ -6,11 +6,11 @@ import {
 } from "@/lib/ui/display-profile";
 
 describe("resolveDisplayProfile", () => {
-  it("classifies 15.6\" 1920×1080 as wide", () => {
+  it('classifies 15.6" 1920×1080 as wide', () => {
     expect(resolveDisplayProfile(1920, 1080)).toBe("wide");
   });
 
-  it("classifies 14\" 1366×768 as compact-laptop", () => {
+  it('classifies 14" 1366×768 as compact-laptop', () => {
     expect(resolveDisplayProfile(1366, 768)).toBe("compact-laptop");
   });
 

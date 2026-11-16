@@ -34,9 +34,7 @@ export function GuestStayMilestoneStrip({ steps }: Props) {
             <span className="guest-stay-milestones__marker" aria-hidden>
               {step.state === "done" ? "✓" : index + 1}
             </span>
-            <span className="guest-stay-milestones__label">
-              {t(MILESTONE_KEYS[step.id])}
-            </span>
+            <span className="guest-stay-milestones__label">{t(MILESTONE_KEYS[step.id])}</span>
             {index < steps.length - 1 ? (
               <span className="guest-stay-milestones__connector" aria-hidden />
             ) : null}

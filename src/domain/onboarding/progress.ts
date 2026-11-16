@@ -28,17 +28,13 @@ export interface OnboardingProgress {
   nextStep: OnboardingStep | null;
 }
 
-export function computeOnboardingProgress(
-  snapshot: OnboardingSnapshot
-): OnboardingProgress {
+export function computeOnboardingProgress(snapshot: OnboardingSnapshot): OnboardingProgress {
   const steps: StepStatus[] = ONBOARDING_STEPS.map((step) => ({
     step,
     completed: step.isComplete(snapshot),
   }));
 
-  const completedRequired = steps.filter(
-    (s) => !s.step.optional && s.completed
-  ).length;
+  const completedRequired = steps.filter((s) => !s.step.optional && s.completed).length;
 
   const completedCount = steps.filter((s) => s.completed).length;
   const percentage = Math.round((completedRequired / REQUIRED_STEP_COUNT) * 100);

@@ -16,6 +16,8 @@
     "test:mobile": "vitest run src/layout/mobile/__tests__/",
     "test:watch": "vitest",
     "lint": "eslint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "env:check": "node scripts/check-env.mjs",
     "env:check:staging": "node scripts/check-env.mjs --file=.env.staging.local --profile=staging",
     "env:check:prod": "node scripts/check-env.mjs --profile=production",
@@ -60,6 +62,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "prettier": "^3.10.1",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.7"

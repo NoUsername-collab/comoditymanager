@@ -7,7 +7,15 @@ describe("buildPricingExample", () => {
       pricingWeekendEnabled: true,
       pricingWeekendMultiplier: 1.2,
       pricingSeasons: [
-        { id: "s", name: "Vară", startMonth: 6, startDay: 1, endMonth: 8, endDay: 31, multiplier: 1.5 },
+        {
+          id: "s",
+          name: "Vară",
+          startMonth: 6,
+          startDay: 1,
+          endMonth: 8,
+          endDay: 31,
+          multiplier: 1.5,
+        },
       ],
     });
     expect(example.weekend).toBe(240);

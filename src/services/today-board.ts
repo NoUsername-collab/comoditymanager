@@ -13,10 +13,7 @@ import {
 import type { PaymentStatus } from "@/domain/checkin/types";
 import type { GuestFlagLevel, GuestIdentityStatus } from "@/domain/guest/types";
 import type { BookingRow } from "@/services/bookings";
-import {
-  DEFAULT_CHECKIN_SETTINGS,
-  getCheckinSettings,
-} from "@/services/checkin";
+import { DEFAULT_CHECKIN_SETTINGS, getCheckinSettings } from "@/services/checkin";
 import { todayIso } from "@/lib/stay-dates";
 
 type RoomToClean = {
@@ -143,10 +140,7 @@ async function loadGuestIdentityStatuses(
   if (error) throw new Error(error.message);
 
   for (const row of data ?? []) {
-    map.set(
-      row.id as string,
-      (row.identity_status as GuestIdentityStatus | null) ?? "draft",
-    );
+    map.set(row.id as string, (row.identity_status as GuestIdentityStatus | null) ?? "draft");
   }
 
   return map;
@@ -190,7 +184,7 @@ async function loadTodayBoardImpl(
   tenantId: string,
   today: string,
   checkInTime: string,
-  checkOutTime: string
+  checkOutTime: string,
 ): Promise<TodayBoard> {
   const supabase = createPublicAdminClient();
 
@@ -206,7 +200,7 @@ async function loadTodayBoardImpl(
         room_id,
         rooms ( name, buildings ( name ) )
       )
-    `
+    `,
     )
     .eq("tenant_id", tenantId)
     .eq("status", "confirmata")
@@ -235,14 +229,10 @@ async function loadTodayBoardImpl(
         const r = line.rooms;
         const room = Array.isArray(r) ? r[0] : r;
         const bld = room?.buildings;
-        const building_name = Array.isArray(bld)
-          ? bld[0]?.name
-          : bld?.name ?? "";
+        const building_name = Array.isArray(bld) ? bld[0]?.name : (bld?.name ?? "");
         return {
           room_id: line.room_id,
-          rooms: room
-            ? { name: room.name, building_name }
-            : null,
+          rooms: room ? { name: room.name, building_name } : null,
         };
       }),
     });
@@ -255,7 +245,7 @@ async function loadTodayBoardImpl(
       const guestLabel = formatGuestGanttLabel(
         raw.guest_last_name,
         raw.guest_first_name,
-        raw.guest_name
+        raw.guest_name,
       );
       for (const line of br) {
         const key = line.room_id;
@@ -264,9 +254,7 @@ async function loadTodayBoardImpl(
         const r = line.rooms;
         const room = Array.isArray(r) ? r[0] : r;
         const bld = room?.buildings;
-        const building_name = Array.isArray(bld)
-          ? bld[0]?.name ?? ""
-          : bld?.name ?? "";
+        const building_name = Array.isArray(bld) ? (bld[0]?.name ?? "") : (bld?.name ?? "");
         roomsToClean.push({
           room_id: line.room_id,
           room_name: room?.name ?? "Room",
@@ -286,11 +274,7 @@ async function loadTodayBoardImpl(
   completedCheckInsToday = arrivals.length - pendingArrivals.length;
 
   const guestIds = [
-    ...new Set(
-      pendingArrivals
-        .map((row) => row.guest_id)
-        .filter(Boolean) as string[],
-    ),
+    ...new Set(pendingArrivals.map((row) => row.guest_id).filter(Boolean) as string[]),
   ];
   const pendingBookingIds = pendingArrivals.map((row) => row.id);
 
@@ -307,7 +291,7 @@ async function loadTodayBoardImpl(
 
   for (const row of pendingArrivals) {
     const guestIdentityStatus = row.guest_id
-      ? identityByGuest.get(row.guest_id) ?? "draft"
+      ? (identityByGuest.get(row.guest_id) ?? "draft")
       : "draft";
     const payment = paymentByBooking.get(row.id);
     const paymentStatus = payment?.payment_status ?? null;
@@ -318,11 +302,7 @@ async function loadTodayBoardImpl(
       guestName: row.guest_name,
       guestLastName: row.guest_last_name,
       guestFirstName: row.guest_first_name,
-      guestLabel: formatGuestGanttLabel(
-        row.guest_last_name,
-        row.guest_first_name,
-        row.guest_name,
-      ),
+      guestLabel: formatGuestGanttLabel(row.guest_last_name, row.guest_first_name, row.guest_name),
       guestPhone: row.guest_phone,
       guestEmail: row.guest_email,
       guestIdentityStatus,
@@ -363,27 +343,21 @@ const getCachedTodayBoard = (
   tenantId: string,
   today: string,
   checkInTime: string,
-  checkOutTime: string
+  checkOutTime: string,
 ) =>
   unstable_cache(
     () => loadTodayBoardImpl(tenantId, today, checkInTime, checkOutTime),
     ["today-board", tenantId, today, checkInTime, checkOutTime],
     {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-      ],
+      tags: [CACHE_TAGS.bookingCounts, tenantTag(tenantId, CACHE_TAGS.bookingCounts)],
       revalidate: 30,
-    }
+    },
   );
 
 /** Per-request dedupe + 30s cross-request cache (busted via bookingCounts tag). */
 export const loadTodayBoard = cache(
   async (checkInTime: string, checkOutTime: string): Promise<TodayBoard> => {
-    const [today, { tenantId }] = await Promise.all([
-      todayIso(),
-      getTenantScope(),
-    ]);
+    const [today, { tenantId }] = await Promise.all([todayIso(), getTenantScope()]);
     return getCachedTodayBoard(tenantId, today, checkInTime, checkOutTime)();
-  }
+  },
 );

@@ -1,14 +1,6 @@
-import type {
-  GanttCreateDraftRequest,
-  GanttCreateTarget,
-} from "@/domain/gantt/context-menu";
+import type { GanttCreateDraftRequest, GanttCreateTarget } from "@/domain/gantt/context-menu";
 
-export const GANTT_CREATE_ACTION_IDS = [
-  "request",
-  "direct",
-  "hold",
-  "block",
-] as const;
+export const GANTT_CREATE_ACTION_IDS = ["request", "direct", "hold", "block"] as const;
 
 export type GanttCreateActionId = (typeof GANTT_CREATE_ACTION_IDS)[number];
 
@@ -16,7 +8,7 @@ export type GanttCreateActionDisabled = Record<GanttCreateActionId, boolean>;
 
 export function ganttCreateActionsDisabled(
   menu: Pick<GanttCreateTarget, "roomId" | "roomIds" | "hasConflict">,
-  pending: boolean
+  pending: boolean,
 ): GanttCreateActionDisabled {
   const isMultiRoom = (menu.roomIds?.length ?? 0) > 1;
   const blocked = !menu.roomId || pending || menu.hasConflict;
@@ -31,7 +23,7 @@ export function ganttCreateActionsDisabled(
 export function ganttCreateDraftFromMenu(
   menu: GanttCreateTarget,
   mode: GanttCreateActionId,
-  fallbackRoomName: string
+  fallbackRoomName: string,
 ): GanttCreateDraftRequest | null {
   if (!menu.roomId) return null;
   return {

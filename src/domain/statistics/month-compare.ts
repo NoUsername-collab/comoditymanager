@@ -49,30 +49,20 @@ function snapshotForMonth(
   year: number,
   month: number,
   bookings: StatBooking[],
-  rooms: ActiveRoomSnapshot[]
+  rooms: ActiveRoomSnapshot[],
 ): MonthCompareSnapshot {
   const { start, end } = monthBounds(year, month);
   const nights = nightsBetween(start, end);
   const roomIds = rooms.map((r) => r.id);
   const capacityRoomNights = roomIds.length * nights.length;
-  const occupiedRoomNights = countOccupiedRoomNights(
-    roomIds,
-    nights,
-    bookings,
-    true
-  );
+  const occupiedRoomNights = countOccupiedRoomNights(roomIds, nights, bookings, true);
   const occupancyPct =
-    capacityRoomNights > 0
-      ? Math.round((occupiedRoomNights / capacityRoomNights) * 100)
-      : 0;
+    capacityRoomNights > 0 ? Math.round((occupiedRoomNights / capacityRoomNights) * 100) : 0;
 
   const monthStart = nights[0];
   const monthEnd = nights[nights.length - 1];
   const inMonth = bookings.filter(
-    (b) =>
-      b.status === "confirmata" &&
-      b.check_in <= monthEnd &&
-      b.check_out > monthStart
+    (b) => b.status === "confirmata" && b.check_in <= monthEnd && b.check_out > monthStart,
   );
   const confirmedStays = inMonth.length;
 
@@ -112,7 +102,7 @@ function snapshotForMonth(
 export function buildMonthComparison(
   bookings: StatBooking[],
   rooms: ActiveRoomSnapshot[],
-  refIso: string = todayIso()
+  refIso: string = todayIso(),
 ): MonthComparison {
   const y = Number(refIso.slice(0, 4));
   const m = Number(refIso.slice(5, 7)) - 1;
@@ -121,12 +111,9 @@ export function buildMonthComparison(
   const hasPrev = bookings.some(
     (b) =>
       b.status === "confirmata" &&
-      (b.check_in.startsWith(String(prevYear)) ||
-        b.confirmed_at?.startsWith(String(prevYear)))
+      (b.check_in.startsWith(String(prevYear)) || b.confirmed_at?.startsWith(String(prevYear))),
   );
-  const previousYear = hasPrev
-    ? snapshotForMonth(prevYear, m, bookings, rooms)
-    : null;
+  const previousYear = hasPrev ? snapshotForMonth(prevYear, m, bookings, rooms) : null;
 
   const occupancyDeltaPct =
     previousYear && previousYear.occupancyPct > 0
@@ -143,8 +130,7 @@ export function buildMonthComparison(
     previousYear.revenueRon > 0
   ) {
     revenueDeltaPct = Math.round(
-      ((current.revenueRon - previousYear.revenueRon) / previousYear.revenueRon) *
-        100
+      ((current.revenueRon - previousYear.revenueRon) / previousYear.revenueRon) * 100,
     );
   }
 

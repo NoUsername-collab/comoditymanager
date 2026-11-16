@@ -16,15 +16,9 @@ import {
 } from "@/services/email-identity";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getTenantById } from "@/services/tenants";
-import {
-  DEFAULT_CHECK_IN_TIME,
-  DEFAULT_CHECK_OUT_TIME,
-} from "@/lib/constants";
+import { DEFAULT_CHECK_IN_TIME, DEFAULT_CHECK_OUT_TIME } from "@/lib/constants";
 import { getPlanConfig } from "@/core/config/plans";
-import {
-  planAllowsEmailKind,
-  type TenantEmailKind,
-} from "@/domain/email/plan-email-scope";
+import { planAllowsEmailKind, type TenantEmailKind } from "@/domain/email/plan-email-scope";
 
 type EmailNotifyFlag =
   | "email_notify_new_request"
@@ -117,18 +111,17 @@ export async function notifyOwnerNewRequest(data: {
       adminUrl: `${data.baseUrl}/admin/bookings/${data.bookingId}`,
     });
 
-    const result = await sendForCurrentTenant({
-      from: identity.fromAddress,
-      to: data.ownerEmail,
-      subject: template.subject,
-      html: template.html,
-      text: template.text,
-      replyTo: pickReplyTo(
-        identity,
-        data.emailSettings?.email_reply_to,
-        data.guestEmail,
-      ),
-    }, "staff");
+    const result = await sendForCurrentTenant(
+      {
+        from: identity.fromAddress,
+        to: data.ownerEmail,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+        replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to, data.guestEmail),
+      },
+      "staff",
+    );
 
     logEmailResult("notifyOwnerNewRequest", result);
   } catch (error) {
@@ -168,14 +161,17 @@ export async function notifyGuestConfirmed(data: {
       guestAppUrl: data.guestAppUrl,
     });
 
-    const result = await sendForCurrentTenant({
-      from: identity.fromAddress,
-      to: data.guestEmail,
-      subject: template.subject,
-      html: template.html,
-      text: template.text,
-      replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to),
-    }, "confirmation");
+    const result = await sendForCurrentTenant(
+      {
+        from: identity.fromAddress,
+        to: data.guestEmail,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+        replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to),
+      },
+      "confirmation",
+    );
 
     logEmailResult("notifyGuestConfirmed", result);
   } catch (error) {
@@ -209,14 +205,17 @@ export async function notifyGuestAppLink(data: {
       checkOutTime: data.checkOutTime,
     });
 
-    const result = await sendForCurrentTenant({
-      from: identity.fromAddress,
-      to: data.guestEmail,
-      subject: template.subject,
-      html: template.html,
-      text: template.text,
-      replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to),
-    }, "stay");
+    const result = await sendForCurrentTenant(
+      {
+        from: identity.fromAddress,
+        to: data.guestEmail,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+        replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to),
+      },
+      "stay",
+    );
 
     logEmailResult("notifyGuestAppLink", result);
   } catch (error) {
@@ -246,14 +245,17 @@ export async function notifyGuestCancelled(data: {
       reason: data.reason,
     });
 
-    const result = await sendForCurrentTenant({
-      from: identity.fromAddress,
-      to: data.guestEmail,
-      subject: template.subject,
-      html: template.html,
-      text: template.text,
-      replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to),
-    }, "stay");
+    const result = await sendForCurrentTenant(
+      {
+        from: identity.fromAddress,
+        to: data.guestEmail,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+        replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to),
+      },
+      "stay",
+    );
 
     logEmailResult("notifyGuestCancelled", result);
   } catch (error) {
@@ -283,10 +285,7 @@ export async function notifyOwnerDailySummary(data: {
       getTenantById(data.tenantId),
     ]);
     const template = dailySummaryToOwner(data.summary);
-    if (
-      tenant &&
-      !planAllowsEmailKind(getPlanConfig(tenant.plan_id).emailScope, "stay")
-    ) {
+    if (tenant && !planAllowsEmailKind(getPlanConfig(tenant.plan_id).emailScope, "stay")) {
       return;
     }
 

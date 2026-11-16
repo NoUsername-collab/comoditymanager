@@ -27,7 +27,7 @@ export const STAY_CARD_VIRTUAL_ROW_H = 148;
 /** Non-today buckets start collapsed unless the user is searching. */
 export function isConfirmedBucketExpandedByDefault(
   key: ConfirmedBucketKey,
-  hasQuery: boolean
+  hasQuery: boolean,
 ): boolean {
   if (hasQuery) return true;
   return key === "today";
@@ -35,7 +35,7 @@ export function isConfirmedBucketExpandedByDefault(
 
 export function groupConfirmedStays<T extends ConfirmedStayLike>(
   items: T[],
-  today = todayIso()
+  today = todayIso(),
 ): ConfirmedBucketGroup<T>[] {
   const weekStart = startOfWeekIso(today);
   const weekEnd = endOfWeekIso(today);

@@ -3,7 +3,10 @@
 import { useTranslations } from "next-intl";
 import { titleWithName } from "@/features/public-site/domain/seo";
 import { PublicSiteImageField } from "@/features/public-site/editor/ui/PublicSiteImageField";
-import { EditorField, usePublicSiteEditor } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
+import {
+  EditorField,
+  usePublicSiteEditor,
+} from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 
 /*
  * The pages around the homepage, each opened on its own screen from the

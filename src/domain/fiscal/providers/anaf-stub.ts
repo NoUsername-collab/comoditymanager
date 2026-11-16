@@ -67,8 +67,6 @@ function buildAnafProvider(config: AnafProviderRuntimeConfig): FiscalProvider {
   };
 }
 
-export function createAnafFiscalProvider(
-  config: AnafProviderRuntimeConfig
-): FiscalProvider {
+export function createAnafFiscalProvider(config: AnafProviderRuntimeConfig): FiscalProvider {
   return buildAnafProvider(config);
 }

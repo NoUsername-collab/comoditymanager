@@ -1,9 +1,6 @@
 import { cache } from "react";
 import { headers } from "next/headers";
-import {
-  tenantDomainFromHost,
-  tenantSlugFromHost,
-} from "@/lib/tenant/host";
+import { tenantDomainFromHost, tenantSlugFromHost } from "@/lib/tenant/host";
 import {
   getTenantByDomain,
   getTenantBySlug,
@@ -21,11 +18,7 @@ export class TenantNotFoundError extends Error {
 }
 
 function requestHost(headerStore: Headers): string {
-  return (
-    headerStore.get("x-forwarded-host") ??
-    headerStore.get("host") ??
-    ""
-  );
+  return headerStore.get("x-forwarded-host") ?? headerStore.get("host") ?? "";
 }
 
 /** Tenant from subdomain/custom domain headers (set in proxy.ts) or Host. */

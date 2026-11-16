@@ -1,10 +1,7 @@
 import { cache } from "react";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
-import type {
-  AnafEnvironment,
-  FiscalProviderType,
-} from "@/domain/fiscal/fiscal-provider";
+import type { AnafEnvironment, FiscalProviderType } from "@/domain/fiscal/fiscal-provider";
 import type { TenantFiscalSettingsRecord } from "@/lib/fiscal/anaf-config";
 
 const DEFAULT_SETTINGS: Omit<TenantFiscalSettingsRecord, "tenantId"> = {
@@ -23,10 +20,7 @@ function parseAnafEnv(value: unknown): AnafEnvironment {
   return value === "prod" ? "prod" : "test";
 }
 
-function mapRow(
-  tenantId: string,
-  row: Record<string, unknown> | null
-): TenantFiscalSettingsRecord {
+function mapRow(tenantId: string, row: Record<string, unknown> | null): TenantFiscalSettingsRecord {
   if (!row) {
     return { tenantId, ...DEFAULT_SETTINGS };
   }
@@ -55,11 +49,8 @@ export const getTenantFiscalSettings = cache(
 
     if (error) throw new Error(error.message);
 
-    return mapRow(
-      resolvedTenantId,
-      data as unknown as Record<string, unknown> | null,
-    );
-  }
+    return mapRow(resolvedTenantId, data as unknown as Record<string, unknown> | null);
+  },
 );
 
 type UpdateTenantFiscalSettingsInput = {
@@ -71,7 +62,7 @@ type UpdateTenantFiscalSettingsInput = {
 
 export async function updateTenantFiscalSettings(
   input: UpdateTenantFiscalSettingsInput,
-  tenantId?: string
+  tenantId?: string,
 ): Promise<TenantFiscalSettingsRecord> {
   const resolvedTenantId = tenantId ?? (await resolveTenantIdForData());
   const current = await getTenantFiscalSettings(resolvedTenantId);
@@ -79,10 +70,7 @@ export async function updateTenantFiscalSettings(
     tenant_id: resolvedTenantId,
     provider: input.provider ?? current.provider,
     anaf_enabled: input.anafEnabled ?? current.anafEnabled,
-    anaf_cif:
-      input.anafCif !== undefined
-        ? input.anafCif?.trim() || null
-        : current.anafCif,
+    anaf_cif: input.anafCif !== undefined ? input.anafCif?.trim() || null : current.anafCif,
     anaf_env: input.anafEnv ?? current.anafEnv,
     anaf_credentials: current.anafCredentials,
   };
@@ -100,7 +88,7 @@ export async function updateTenantFiscalSettings(
 }
 
 export async function getTenantFiscalSettingsForTenant(
-  tenantId: string
+  tenantId: string,
 ): Promise<TenantFiscalSettingsRecord> {
   return getTenantFiscalSettings(tenantId);
 }

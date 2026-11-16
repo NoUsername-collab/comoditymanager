@@ -37,10 +37,7 @@ export function PublicSiteLocaleTabs({
             role="tab"
             aria-selected={selected}
             disabled={disabled}
-            className={[
-              "pub-locale-tabs__tab",
-              selected && "pub-locale-tabs__tab--active",
-            ]
+            className={["pub-locale-tabs__tab", selected && "pub-locale-tabs__tab--active"]
               .filter(Boolean)
               .join(" ")}
             onClick={() => onChange(locale)}

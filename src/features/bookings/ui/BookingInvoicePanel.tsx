@@ -10,15 +10,9 @@ import {
 } from "@/features/bookings/invoice-actions";
 import { IssuedInvoiceView } from "@/features/bookings/ui/IssuedInvoiceView";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
-import {
-  formatInvoiceMoney,
-  type IssuedInvoiceDocument,
-} from "@/domain/invoice/issued-invoice";
+import { formatInvoiceMoney, type IssuedInvoiceDocument } from "@/domain/invoice/issued-invoice";
 import type { FiscalSubmissionStatus } from "@/domain/fiscal/fiscal-provider";
-import {
-  invoiceKindLabelKey,
-  type InvoiceKind,
-} from "@/domain/invoice/invoice-allocation";
+import { invoiceKindLabelKey, type InvoiceKind } from "@/domain/invoice/invoice-allocation";
 
 export type BookingInvoiceListItem = {
   id: string;
@@ -110,13 +104,7 @@ export function BookingInvoicePanel({
     } else if (canIssueProforma) {
       setView("proforma-next");
     }
-  }, [
-    initialDocument,
-    initialInvoices,
-    initialProformas,
-    canIssueNext,
-    canIssueProforma,
-  ]);
+  }, [initialDocument, initialInvoices, initialProformas, canIssueNext, canIssueProforma]);
 
   const dateTag = locale === "ro" ? "ro-RO" : locale === "bg" ? "bg-BG" : "en-GB";
   const formatMoney = (amount: number, currency = document.currency) =>
@@ -125,25 +113,24 @@ export function BookingInvoicePanel({
   const isProformaView = view.startsWith("proforma");
   const selectedInvoice =
     view.startsWith("fiscal-") && view !== "fiscal-next"
-      ? invoices.find((inv) => view === `fiscal-${inv.id}`) ?? null
+      ? (invoices.find((inv) => view === `fiscal-${inv.id}`) ?? null)
       : null;
   const selectedProforma =
     view.startsWith("proforma-") && view !== "proforma-next"
-      ? proformas.find((pf) => view === `proforma-${pf.id}`) ?? null
+      ? (proformas.find((pf) => view === `proforma-${pf.id}`) ?? null)
       : null;
 
   const viewDocument =
     selectedInvoice?.document ??
     selectedProforma?.document ??
-    (isProformaView ? proformaPreview ?? document : document);
+    (isProformaView ? (proformaPreview ?? document) : document);
 
   const viewingIssued = Boolean(selectedInvoice || selectedProforma);
-  const viewingConvertedProforma =
-    selectedProforma?.converted_to_invoice_id != null;
+  const viewingConvertedProforma = selectedProforma?.converted_to_invoice_id != null;
 
   const selectedAnafStatus =
     selectedInvoice && fiscalProvider === "anaf"
-      ? fiscalStatusByInvoiceId[selectedInvoice.id] ?? null
+      ? (fiscalStatusByInvoiceId[selectedInvoice.id] ?? null)
       : null;
 
   async function handleIssue() {
@@ -181,10 +168,7 @@ export function BookingInvoicePanel({
   async function handleConvert() {
     if (!selectedProforma) return;
     setConverting(true);
-    const result = await convertProformaToInvoiceAction(
-      selectedProforma.id,
-      bookingId
-    );
+    const result = await convertProformaToInvoiceAction(selectedProforma.id, bookingId);
     setConverting(false);
     if (!result.ok) {
       showToast({
@@ -212,18 +196,13 @@ export function BookingInvoicePanel({
                 <button
                   type="button"
                   className={`booking-invoice-panel__list-btn${
-                    view === `fiscal-${inv.id}`
-                      ? " booking-invoice-panel__list-btn--active"
-                      : ""
+                    view === `fiscal-${inv.id}` ? " booking-invoice-panel__list-btn--active" : ""
                   }`}
                   onClick={() => setView(`fiscal-${inv.id}`)}
                 >
-                  <span className="booking-invoice-panel__list-number">
-                    {inv.display_number}
-                  </span>
+                  <span className="booking-invoice-panel__list-number">{inv.display_number}</span>
                   <span className="booking-invoice-panel__list-meta">
-                    {t(invoiceKindLabelKey(inv.invoice_kind))} ·{" "}
-                    {formatMoney(inv.total)}
+                    {t(invoiceKindLabelKey(inv.invoice_kind))} · {formatMoney(inv.total)}
                   </span>
                 </button>
               </li>
@@ -233,9 +212,7 @@ export function BookingInvoicePanel({
                 <button
                   type="button"
                   className={`booking-invoice-panel__list-btn${
-                    view === "fiscal-next"
-                      ? " booking-invoice-panel__list-btn--active"
-                      : ""
+                    view === "fiscal-next" ? " booking-invoice-panel__list-btn--active" : ""
                   }`}
                   onClick={() => setView("fiscal-next")}
                 >
@@ -263,15 +240,11 @@ export function BookingInvoicePanel({
               <button
                 type="button"
                 className={`booking-invoice-panel__list-btn${
-                  view === `proforma-${pf.id}`
-                    ? " booking-invoice-panel__list-btn--active"
-                    : ""
+                  view === `proforma-${pf.id}` ? " booking-invoice-panel__list-btn--active" : ""
                 }`}
                 onClick={() => setView(`proforma-${pf.id}`)}
               >
-                <span className="booking-invoice-panel__list-number">
-                  {pf.display_number}
-                </span>
+                <span className="booking-invoice-panel__list-number">{pf.display_number}</span>
                 <span className="booking-invoice-panel__list-meta">
                   {t("kindProforma")}
                   {pf.converted_to_invoice_id ? ` · ${t("converted")}` : ""}
@@ -286,9 +259,7 @@ export function BookingInvoicePanel({
               <button
                 type="button"
                 className={`booking-invoice-panel__list-btn${
-                  view === "proforma-next"
-                    ? " booking-invoice-panel__list-btn--active"
-                    : ""
+                  view === "proforma-next" ? " booking-invoice-panel__list-btn--active" : ""
                 }`}
                 onClick={() => setView("proforma-next")}
               >
@@ -349,13 +320,9 @@ export function BookingInvoicePanel({
               ? t("issueNextInvoice")
               : t("issueInvoice")
         }
-        canConvert={
-          Boolean(selectedProforma?.canConvert) && !viewingConvertedProforma
-        }
+        canConvert={Boolean(selectedProforma?.canConvert) && !viewingConvertedProforma}
         onConvert={
-          selectedProforma?.canConvert && !viewingConvertedProforma
-            ? handleConvert
-            : undefined
+          selectedProforma?.canConvert && !viewingConvertedProforma ? handleConvert : undefined
         }
         converting={converting}
         convertLabel={t("convertToAdvance")}

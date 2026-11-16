@@ -17,7 +17,8 @@ const LEAVE_MS = 180;
 function isEditableTarget(target: EventTarget | null): boolean {
   return (
     target instanceof HTMLElement &&
-    (target.isContentEditable || target.closest("input, textarea, select, [role='dialog']") !== null)
+    (target.isContentEditable ||
+      target.closest("input, textarea, select, [role='dialog']") !== null)
   );
 }
 
@@ -76,9 +77,12 @@ export function PublicSiteStudio({
     leavingRef.current = true;
     setLeaving(true);
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.setTimeout(() => {
-      router.push("/admin/settings");
-    }, reduceMotion ? 0 : LEAVE_MS);
+    window.setTimeout(
+      () => {
+        router.push("/admin/settings");
+      },
+      reduceMotion ? 0 : LEAVE_MS,
+    );
   }
 
   // Reads the current pane on every key without re-subscribing.
@@ -109,17 +113,17 @@ export function PublicSiteStudio({
       data-wide={wideForm ? "1" : undefined}
     >
       <header className="pub-site-studio__chrome">
-        <button
-          type="button"
-          className="pub-site-studio__back-settings"
-          onClick={leaveStudio}
-        >
+        <button type="button" className="pub-site-studio__back-settings" onClick={leaveStudio}>
           ← {t("studioBackSettings")}
         </button>
 
         {localeTabs}
 
-        <div className="pub-site-studio__devices" role="radiogroup" aria-label={t("studioCanvasAria")}>
+        <div
+          className="pub-site-studio__devices"
+          role="radiogroup"
+          aria-label={t("studioCanvasAria")}
+        >
           {DEVICES.map((option) => (
             <button
               key={option}
@@ -185,11 +189,7 @@ export function PublicSiteStudio({
 
         <section className="pub-site-studio__canvas" aria-label={t("studioAria")}>
           <div className="pub-site-studio__toolbar">
-            <button
-              type="button"
-              className="pub-site-studio__back"
-              onClick={() => setPane("edit")}
-            >
+            <button type="button" className="pub-site-studio__back" onClick={() => setPane("edit")}>
               {t("studioEdit")}
             </button>
 

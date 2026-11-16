@@ -14,10 +14,7 @@ import {
 } from "@/domain/fiscal/country-fiscal-profile";
 import type { BookingRulesSettings } from "@/domain/settings/booking-rules";
 import type { TenantFiscalSettingsRecord } from "@/lib/fiscal/anaf-config";
-import {
-  settingsPartialChanged,
-  useSettingsSaveFeedback,
-} from "@/hooks/useSettingsSaveFeedback";
+import { settingsPartialChanged, useSettingsSaveFeedback } from "@/hooks/useSettingsSaveFeedback";
 import { useSettingsDraft, type SettingsSaveResult } from "@/hooks/useSettingsDraft";
 import { SettingsDraftSaveBar } from "@/components/admin/settings/SettingsDraftSaveBar";
 import { SettingRow } from "@/components/admin/settings/SettingRow";
@@ -52,7 +49,7 @@ function buildDraft(
   bookingRules: BookingRulesSettings,
   checkinSettings: CheckinSettings,
   country: TenantCountry,
-  tenantFiscalSettings: TenantFiscalSettingsRecord
+  tenantFiscalSettings: TenantFiscalSettingsRecord,
 ): FiscalDraft {
   const profile = getCountryFiscalProfile(country);
   return {
@@ -61,9 +58,7 @@ function buildDraft(
     tourismLicense: checkinSettings.fisa_tourism_license ?? "",
     invoiceSeries: bookingRules.invoiceSeries,
     vatEnabled: bookingRules.invoiceVatEnabled,
-    vatRate: String(
-      bookingRules.invoiceVatRate ?? profile.defaultAccommodationVatRate
-    ),
+    vatRate: String(bookingRules.invoiceVatRate ?? profile.defaultAccommodationVatRate),
     pricesIncludeVat: bookingRules.invoicePricesIncludeVat,
     fiscalProvider: tenantFiscalSettings.provider,
     anafEnabled: tenantFiscalSettings.anafEnabled,
@@ -89,8 +84,7 @@ export function FiscalBillingSettingsPanel({
   const editing = !readOnly;
   const [bookingRules, setBookingRules] = useState(initialBooking);
   const [checkinSettings, setCheckinSettings] = useState(initialCheckin);
-  const [tenantFiscalSettings, setTenantFiscalSettings] =
-    useState(initialTenantFiscal);
+  const [tenantFiscalSettings, setTenantFiscalSettings] = useState(initialTenantFiscal);
   const saved = buildDraft(bookingRules, checkinSettings, country, tenantFiscalSettings);
   /** Switch positions shown while their save is on the way. */
   const [pendingControls, setPendingControls] = useState<Partial<FiscalDraft>>({});
@@ -105,10 +99,7 @@ export function FiscalBillingSettingsPanel({
     tourismLicense: checkinSettings.fisa_tourism_license,
   });
 
-  const effectiveVatRate = resolveInvoiceVatRate(
-    country,
-    bookingRules.invoiceVatRate
-  );
+  const effectiveVatRate = resolveInvoiceVatRate(country, bookingRules.invoiceVatRate);
 
   /** Saves whatever in `draft` differs from what is stored. */
   async function persist(draft: FiscalDraft): Promise<SettingsSaveResult> {
@@ -124,11 +115,8 @@ export function FiscalBillingSettingsPanel({
     if (draft.vatEnabled !== bookingRules.invoiceVatEnabled) {
       nextBooking.invoiceVatEnabled = draft.vatEnabled;
     }
-    const parsedRate = draft.vatRate.trim()
-      ? Number(draft.vatRate)
-      : null;
-    const currentRate =
-      bookingRules.invoiceVatRate ?? profile.defaultAccommodationVatRate;
+    const parsedRate = draft.vatRate.trim() ? Number(draft.vatRate) : null;
+    const currentRate = bookingRules.invoiceVatRate ?? profile.defaultAccommodationVatRate;
     if (parsedRate !== currentRate) {
       nextBooking.invoiceVatRate = parsedRate;
     }
@@ -139,10 +127,7 @@ export function FiscalBillingSettingsPanel({
     if (draft.taxId.trim() !== (checkinSettings.fisa_owner_cui ?? "")) {
       nextCheckin.fisa_owner_cui = draft.taxId.trim() || null;
     }
-    if (
-      draft.tourismLicense.trim() !==
-      (checkinSettings.fisa_tourism_license ?? "")
-    ) {
+    if (draft.tourismLicense.trim() !== (checkinSettings.fisa_tourism_license ?? "")) {
       nextCheckin.fisa_tourism_license = draft.tourismLicense.trim() || null;
     }
 
@@ -187,14 +172,11 @@ export function FiscalBillingSettingsPanel({
     if (nextBooking.invoiceVatRate !== undefined) {
       fd.set(
         "invoice_vat_rate",
-        nextBooking.invoiceVatRate != null ? String(nextBooking.invoiceVatRate) : ""
+        nextBooking.invoiceVatRate != null ? String(nextBooking.invoiceVatRate) : "",
       );
     }
     if (nextBooking.invoicePricesIncludeVat !== undefined) {
-      fd.set(
-        "invoice_prices_include_vat",
-        nextBooking.invoicePricesIncludeVat ? "true" : "false"
-      );
+      fd.set("invoice_prices_include_vat", nextBooking.invoicePricesIncludeVat ? "true" : "false");
     }
     if (nextCheckin.fisa_owner_cui !== undefined) {
       fd.set("fisa_owner_cui", nextCheckin.fisa_owner_cui ?? "");
@@ -336,9 +318,7 @@ export function FiscalBillingSettingsPanel({
           </div>
           <div className="fiscal-settings__summary-row">
             <dt>{t("pricesIncludeVat")}</dt>
-            <dd>
-              {bookingRules.invoicePricesIncludeVat ? t("yes") : t("no")}
-            </dd>
+            <dd>{bookingRules.invoicePricesIncludeVat ? t("yes") : t("no")}</dd>
           </div>
           {country === "RO" ? (
             <>
@@ -395,9 +375,7 @@ export function FiscalBillingSettingsPanel({
             <input
               className="checkin-field__input"
               value={draft.tourismLicense}
-              onChange={(e) =>
-                text.set("tourismLicense", e.target.value)
-              }
+              onChange={(e) => text.set("tourismLicense", e.target.value)}
             />
           </SettingRow>
 
@@ -415,9 +393,7 @@ export function FiscalBillingSettingsPanel({
               className="checkin-field__input checkin-field__input--narrow"
               value={draft.invoiceSeries}
               maxLength={12}
-              onChange={(e) =>
-                text.set("invoiceSeries", e.target.value.toUpperCase())
-              }
+              onChange={(e) => text.set("invoiceSeries", e.target.value.toUpperCase())}
             />
           </SettingRow>
 
@@ -426,9 +402,7 @@ export function FiscalBillingSettingsPanel({
               <input
                 type="checkbox"
                 checked={draft.vatEnabled}
-                onChange={(e) =>
-                  saveControl({ vatEnabled: e.target.checked })
-                }
+                onChange={(e) => saveControl({ vatEnabled: e.target.checked })}
               />
               <span className="checkin-toggle__slider" />
             </label>
@@ -451,9 +425,7 @@ export function FiscalBillingSettingsPanel({
                     step={0.01}
                     className="checkin-field__input checkin-field__input--narrow"
                     value={draft.vatRate}
-                    onChange={(e) =>
-                      text.set("vatRate", e.target.value)
-                    }
+                    onChange={(e) => text.set("vatRate", e.target.value)}
                   />
                   <span>%</span>
                 </div>
@@ -463,9 +435,7 @@ export function FiscalBillingSettingsPanel({
                   <input
                     type="checkbox"
                     checked={draft.pricesIncludeVat}
-                    onChange={(e) =>
-                      saveControl({ pricesIncludeVat: e.target.checked })
-                    }
+                    onChange={(e) => saveControl({ pricesIncludeVat: e.target.checked })}
                   />
                   <span className="checkin-toggle__slider" />
                 </label>
@@ -481,62 +451,59 @@ export function FiscalBillingSettingsPanel({
           {!anafAvailable ? (
             <p className="checkin-settings__note">{t("eFacturaManualNote")}</p>
           ) : (
-          <>
-          <p className="checkin-settings__note">{t("eFacturaDesc")}</p>
-          <SettingRow label={t("fiscalProvider")} description={t("fiscalProviderDesc")}>
-            <select
-              className="checkin-field__input"
-              value={draft.fiscalProvider}
-              onChange={(e) =>
-                saveControl({
-                  fiscalProvider:
-                    e.target.value === "anaf" ? "anaf" : "internal_pdf",
-                })
-              }
-            >
-              <option value="internal_pdf">{t("provider.internal_pdf")}</option>
-              <option value="anaf">{t("provider.anaf")}</option>
-            </select>
-          </SettingRow>
-          {draft.fiscalProvider === "anaf" ? (
             <>
-              <SettingRow label={t("anafEnabled")} description={t("anafEnabledDesc")}>
-                <label className="checkin-toggle">
-                  <input
-                    type="checkbox"
-                    checked={draft.anafEnabled}
-                    onChange={(e) =>
-                      saveControl({ anafEnabled: e.target.checked })
-                    }
-                  />
-                  <span className="checkin-toggle__slider" />
-                </label>
-              </SettingRow>
-              <SettingRow label={t("anafEnvironment")} description={t("anafEnvDesc")}>
+              <p className="checkin-settings__note">{t("eFacturaDesc")}</p>
+              <SettingRow label={t("fiscalProvider")} description={t("fiscalProviderDesc")}>
                 <select
-                  className="checkin-field__input checkin-field__input--narrow"
-                  value={draft.anafEnv}
+                  className="checkin-field__input"
+                  value={draft.fiscalProvider}
                   onChange={(e) =>
                     saveControl({
-                      anafEnv: e.target.value === "prod" ? "prod" : "test",
+                      fiscalProvider: e.target.value === "anaf" ? "anaf" : "internal_pdf",
                     })
                   }
                 >
-                  <option value="test">{t("anafEnv.test")}</option>
-                  <option value="prod">{t("anafEnv.prod")}</option>
+                  <option value="internal_pdf">{t("provider.internal_pdf")}</option>
+                  <option value="anaf">{t("provider.anaf")}</option>
                 </select>
               </SettingRow>
-              <SettingRow label={t("anafCif")} description={t("anafCifDesc")}>
-                <input
-                  className="checkin-field__input"
-                  value={draft.anafCif}
-                  placeholder={checkinSettings.fisa_owner_cui ?? ""}
-                  onChange={(e) => text.set("anafCif", e.target.value)}
-                />
-              </SettingRow>
+              {draft.fiscalProvider === "anaf" ? (
+                <>
+                  <SettingRow label={t("anafEnabled")} description={t("anafEnabledDesc")}>
+                    <label className="checkin-toggle">
+                      <input
+                        type="checkbox"
+                        checked={draft.anafEnabled}
+                        onChange={(e) => saveControl({ anafEnabled: e.target.checked })}
+                      />
+                      <span className="checkin-toggle__slider" />
+                    </label>
+                  </SettingRow>
+                  <SettingRow label={t("anafEnvironment")} description={t("anafEnvDesc")}>
+                    <select
+                      className="checkin-field__input checkin-field__input--narrow"
+                      value={draft.anafEnv}
+                      onChange={(e) =>
+                        saveControl({
+                          anafEnv: e.target.value === "prod" ? "prod" : "test",
+                        })
+                      }
+                    >
+                      <option value="test">{t("anafEnv.test")}</option>
+                      <option value="prod">{t("anafEnv.prod")}</option>
+                    </select>
+                  </SettingRow>
+                  <SettingRow label={t("anafCif")} description={t("anafCifDesc")}>
+                    <input
+                      className="checkin-field__input"
+                      value={draft.anafCif}
+                      placeholder={checkinSettings.fisa_owner_cui ?? ""}
+                      onChange={(e) => text.set("anafCif", e.target.value)}
+                    />
+                  </SettingRow>
+                </>
+              ) : null}
             </>
-          ) : null}
-          </>
           )}
         </section>
       ) : null}

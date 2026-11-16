@@ -39,16 +39,14 @@ export const ENV_MANIFEST = [
     key: "ZALMOX_ADMIN_EMAILS",
     requirement: "runtime",
     recommendedInProduction: true,
-    description:
-      "Email-uri platform admin (virgulă) — acces /platform-admin.",
+    description: "Email-uri platform admin (virgulă) — acces /platform-admin.",
   },
   {
     key: "NEXT_PUBLIC_PLATFORM_DOMAIN",
     requirement: "optional",
     public: true,
     recommendedInProduction: true,
-    description:
-      "Apex platform domain (zalmox.app; test.zalmox.app pe staging)",
+    description: "Apex platform domain (zalmox.app; test.zalmox.app pe staging)",
   },
   {
     key: "NEXT_PUBLIC_SITE_URL",
@@ -61,8 +59,7 @@ export const ENV_MANIFEST = [
     key: "RESEND_API_KEY",
     requirement: "optional",
     recommendedInProduction: true,
-    description:
-      "Cheie API Resend (re_...) — fără ea emailurile sunt noop (dev OK)",
+    description: "Cheie API Resend (re_...) — fără ea emailurile sunt noop (dev OK)",
   },
   {
     key: "RESEND_MAIL_DOMAIN",
@@ -74,8 +71,7 @@ export const ENV_MANIFEST = [
     key: "CRON_SECRET",
     requirement: "optional",
     recommendedInProduction: true,
-    description:
-      "Secret pentru /api/cron/* — Vercel Cron îl injectează automat pe Production",
+    description: "Secret pentru /api/cron/* — Vercel Cron îl injectează automat pe Production",
   },
   {
     key: "ADMIN_EMAIL",
@@ -127,8 +123,7 @@ export const ENV_MANIFEST = [
   {
     key: "ALPHA_GATE_PASSWORD",
     requirement: "optional",
-    description:
-      "Parolă acces site în alpha — dacă e setată, toate paginile publice cer parola",
+    description: "Parolă acces site în alpha — dacă e setată, toate paginile publice cer parola",
   },
 ];
 

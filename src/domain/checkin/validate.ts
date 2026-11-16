@@ -3,20 +3,14 @@
  * Implements the pseudocode from dev spec section 06.
  */
 
-import {
-  guestsCollectingIdentity,
-  guestsReceivingRooms,
-} from "./guest-layout";
+import { guestsCollectingIdentity, guestsReceivingRooms } from "./guest-layout";
 import {
   evaluateCnpRule,
   guestFullName,
   guestHasValidCnp,
   isRomanianNationality,
 } from "./identity-rules";
-import {
-  guestHasDocumentExpiry,
-  guestRequiresDocumentExpiry,
-} from "./document-rules";
+import { guestHasDocumentExpiry, guestRequiresDocumentExpiry } from "./document-rules";
 import { canHandKeysForRoom } from "./key-rules";
 import type {
   CheckinFlag,
@@ -57,21 +51,14 @@ export function validateCheckin(
   // ── DATE CHECK ─────────────────────────────────────────────
   // Prima sosire: doar în ziua planificată; continuare incrementală: și ulterior.
   if (today && booking.check_in && today !== booking.check_in) {
-    const continuing =
-      !!booking.actual_check_in_at ||
-      (booking.checked_in_rooms?.length ?? 0) > 0;
+    const continuing = !!booking.actual_check_in_at || (booking.checked_in_rooms?.length ?? 0) > 0;
     if (!continuing) {
-      blockers.push(
-        `Check-in posibil doar in data de ${booking.check_in}`,
-      );
+      blockers.push(`Check-in posibil doar in data de ${booking.check_in}`);
     }
   }
 
   // ── CNP / identitate (ANAF + reguli proprietar) ───────────
-  const cnpEval = evaluateCnpRule(
-    activeGuests,
-    settings.checkin_cnp_rule ?? "required",
-  );
+  const cnpEval = evaluateCnpRule(activeGuests, settings.checkin_cnp_rule ?? "required");
   blockers.push(...cnpEval.blockers);
   for (const f of cnpEval.flags) {
     if (!flags.includes(f)) flags.push(f);
@@ -113,15 +100,11 @@ export function validateCheckin(
 
   if (totalDue > 0) {
     if (settings.checkin_payment_rule === "full" && paid < totalDue) {
-      blockers.push(
-        `Plata integrala obligatorie (restant: ${totalDue - paid})`,
-      );
+      blockers.push(`Plata integrala obligatorie (restant: ${totalDue - paid})`);
     } else if (settings.checkin_payment_rule === "partial") {
       const paidPct = totalDue > 0 ? (paid / totalDue) * 100 : 100;
       if (paidPct < settings.checkin_min_payment_pct) {
-        blockers.push(
-          `Minim ${settings.checkin_min_payment_pct}% din total obligatoriu`,
-        );
+        blockers.push(`Minim ${settings.checkin_min_payment_pct}% din total obligatoriu`);
       }
     } else if (paid < totalDue) {
       // payment_rule = "at_checkout" — just a flag, not blocked
@@ -133,13 +116,7 @@ export function validateCheckin(
   const keysHandedRooms = data.keys_handed_rooms ?? [];
   if (keysHandedRooms.length > 0 && settings.checkin_key_rule !== "always") {
     for (const room of keysHandedRooms) {
-      const eligibility = canHandKeysForRoom(
-        room,
-        data.guests,
-        settings,
-        paid,
-        totalDue,
-      );
+      const eligibility = canHandKeysForRoom(room, data.guests, settings, paid, totalDue);
       if (!eligibility.allowed && eligibility.reason) {
         if (!flags.includes(eligibility.reason)) {
           flags.push(eligibility.reason);
@@ -150,18 +127,14 @@ export function validateCheckin(
 
   // ── WALK-IN CHECK ─────────────────────────────────────────
   if (data.type === "walkin" && !settings.walkin_allowed) {
-    blockers.push(
-      "Check-in direct nedisponibil pentru aceasta proprietate",
-    );
+    blockers.push("Check-in direct nedisponibil pentru aceasta proprietate");
   }
 
   // ── EARLY CHECK-IN (time-based) ───────────────────────────
   // On the check-in day, block if before the configured check-in hour.
   if (currentHour && settings.checkin_time_from) {
     if (currentHour < settings.checkin_time_from) {
-      blockers.push(
-        `Check-in posibil de la ora ${settings.checkin_time_from}`,
-      );
+      blockers.push(`Check-in posibil de la ora ${settings.checkin_time_from}`);
     }
   }
 

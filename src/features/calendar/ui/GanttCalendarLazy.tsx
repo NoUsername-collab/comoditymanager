@@ -13,11 +13,9 @@ const GanttCalendarDynamic = dynamic(
   {
     ssr: false,
     loading: () => <AdminGanttSkeleton />,
-  }
+  },
 );
 
-export function GanttCalendarLazy(
-  props: ComponentProps<typeof GanttCalendar>
-) {
+export function GanttCalendarLazy(props: ComponentProps<typeof GanttCalendar>) {
   return <GanttCalendarDynamic {...props} />;
 }

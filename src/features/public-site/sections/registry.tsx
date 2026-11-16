@@ -47,7 +47,10 @@ const SECTION_RENDERERS: { [T in PublicSectionType]: Renderer<T> } = {
 };
 
 /** A section's markup, or null when it is hidden or has nothing to show. */
-export function renderPublicSection(section: PublicSiteSection, ctx: SectionRenderContext): ReactNode {
+export function renderPublicSection(
+  section: PublicSiteSection,
+  ctx: SectionRenderContext,
+): ReactNode {
   if (!section.visible) return null;
   const render = SECTION_RENDERERS[section.sectionType] as (
     s: PublicSiteSection,

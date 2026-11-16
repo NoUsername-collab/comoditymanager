@@ -22,17 +22,13 @@ function roomLabelsMatch(a: string, b: string): boolean {
   return normalizeRoomLabel(a) === normalizeRoomLabel(b);
 }
 
-export function isRoomCheckedIn(
-  roomName: string,
-  checkedInRooms: string[],
-): boolean {
+export function isRoomCheckedIn(roomName: string, checkedInRooms: string[]): boolean {
   return checkedInRooms.some((checked) => roomLabelsMatch(checked, roomName));
 }
 
 /** Camere distincte din rezervare (fără placeholder „—”). */
 export function bookingRoomNames(roomNames: string[] | undefined): string[] {
-  const names =
-    roomNames?.map((n) => n.trim()).filter((n) => n && n !== "—") ?? [];
+  const names = roomNames?.map((n) => n.trim()).filter((n) => n && n !== "—") ?? [];
   return names.length > 0 ? [...new Set(names)] : [];
 }
 
@@ -41,8 +37,7 @@ export function computeRoomCheckinProgress(
   checkedInRooms: string[] | undefined,
 ): RoomCheckinProgress {
   const rooms = bookingRoomNames(roomNames);
-  const checkedRaw =
-    checkedInRooms?.map((r) => r.trim()).filter(Boolean) ?? [];
+  const checkedRaw = checkedInRooms?.map((r) => r.trim()).filter(Boolean) ?? [];
 
   if (rooms.length === 0) {
     const hasAny = checkedRaw.length > 0;
@@ -92,7 +87,5 @@ export function shouldShowRoomCheckinProgress(
   progress: RoomCheckinProgress,
 ): boolean {
   if (progress.checked > 0) return true;
-  return (
-    isOperativeCheckInDay(plannedCheckIn, today) && progress.isMultiRoom
-  );
+  return isOperativeCheckInDay(plannedCheckIn, today) && progress.isMultiRoom;
 }

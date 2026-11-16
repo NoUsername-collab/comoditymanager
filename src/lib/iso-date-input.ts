@@ -1,7 +1,5 @@
 /** Normalize DB / free-text values for `<input type="date">` (YYYY-MM-DD). */
-export function normalizeIsoDateInput(
-  value: string | null | undefined,
-): string {
+export function normalizeIsoDateInput(value: string | null | undefined): string {
   if (!value?.trim()) return "";
   const trimmed = value.trim();
   const iso = trimmed.match(/^(\d{4}-\d{2}-\d{2})/);

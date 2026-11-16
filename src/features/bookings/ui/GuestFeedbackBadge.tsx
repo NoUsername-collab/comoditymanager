@@ -38,9 +38,7 @@ export function GuestFeedbackBadge({ feedback }: Props) {
           {new Date(feedback.submitted_at).toLocaleDateString("ro-RO")}
         </span>
       </div>
-      {feedback.comment.trim() ? (
-        <p className="bd-feedback__comment">{feedback.comment}</p>
-      ) : null}
+      {feedback.comment.trim() ? <p className="bd-feedback__comment">{feedback.comment}</p> : null}
     </div>
   );
 }

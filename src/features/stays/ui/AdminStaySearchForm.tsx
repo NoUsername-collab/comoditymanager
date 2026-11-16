@@ -21,10 +21,7 @@ import { useStaySearchHistory } from "@/hooks/useStaySearchHistory";
 import { filterVisibleSearchHistory } from "@/lib/stays/search-history-storage";
 import { buildStaysPageHref, type StayHorizonKey, type StayListView } from "@/domain/stays/horizon";
 
-function buildStaysHref(
-  q: string,
-  preserve?: { view?: StayListView; h?: StayHorizonKey },
-): string {
+function buildStaysHref(q: string, preserve?: { view?: StayListView; h?: StayHorizonKey }): string {
   return buildStaysPageHref({
     q: q || undefined,
     view: preserve?.view,
@@ -51,12 +48,15 @@ export function AdminStaySearchForm({
   const [historyOpen, setHistoryOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
 
-  const { items: historyItems, add: addHistory, remove: removeHistory, clear: clearHistory } =
-    useStaySearchHistory();
+  const {
+    items: historyItems,
+    add: addHistory,
+    remove: removeHistory,
+    clear: clearHistory,
+  } = useStaySearchHistory();
 
   const visibleHistory = filterVisibleSearchHistory(historyItems, query);
-  const showHistory =
-    historyOpen && visibleHistory.length > 0 && !pending;
+  const showHistory = historyOpen && visibleHistory.length > 0 && !pending;
 
   useEffect(() => {
     setQuery(defaultQuery ?? "");
@@ -115,17 +115,13 @@ export function AdminStaySearchForm({
 
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setActiveIndex((prev) =>
-        prev < visibleHistory.length - 1 ? prev + 1 : 0,
-      );
+      setActiveIndex((prev) => (prev < visibleHistory.length - 1 ? prev + 1 : 0));
       return;
     }
 
     if (e.key === "ArrowUp") {
       e.preventDefault();
-      setActiveIndex((prev) =>
-        prev > 0 ? prev - 1 : visibleHistory.length - 1,
-      );
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : visibleHistory.length - 1));
       return;
     }
 
@@ -144,14 +140,8 @@ export function AdminStaySearchForm({
   }
 
   return (
-    <form
-      className="stays-search-form flex flex-wrap gap-2"
-      onSubmit={onSubmit}
-    >
-      <div
-        ref={fieldRef}
-        className="stays-search-field relative min-w-0 w-full flex-1"
-      >
+    <form className="stays-search-form flex flex-wrap gap-2" onSubmit={onSubmit}>
+      <div ref={fieldRef} className="stays-search-field relative min-w-0 w-full flex-1">
         <AdminInput
           ref={inputRef}
           name="q"
@@ -173,9 +163,7 @@ export function AdminStaySearchForm({
           aria-controls={showHistory ? listboxId : undefined}
           aria-autocomplete="list"
           aria-activedescendant={
-            showHistory && activeIndex >= 0
-              ? `${listboxId}-option-${activeIndex}`
-              : undefined
+            showHistory && activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined
           }
         />
 
@@ -187,9 +175,7 @@ export function AdminStaySearchForm({
             aria-label={t("searchHistoryTitle")}
           >
             <div className="stays-search-history__header">
-              <span className="stays-search-history__title">
-                {t("searchHistoryTitle")}
-              </span>
+              <span className="stays-search-history__title">{t("searchHistoryTitle")}</span>
               <button
                 type="button"
                 className="stays-search-history__clear"

@@ -5,10 +5,7 @@ import { useTranslations } from "next-intl";
 import "@/features/checkin/ui/import-checkin-styles";
 import { updateCheckinSettingsAction } from "@/features/checkin/actions";
 import type { CheckinSettings } from "@/domain/checkin/types";
-import {
-  settingsPartialChanged,
-  useSettingsSaveFeedback,
-} from "@/hooks/useSettingsSaveFeedback";
+import { settingsPartialChanged, useSettingsSaveFeedback } from "@/hooks/useSettingsSaveFeedback";
 import { useSettingsDraft } from "@/hooks/useSettingsDraft";
 import { SettingsDraftSaveBar } from "@/components/admin/settings/SettingsDraftSaveBar";
 import { SettingRow } from "@/components/admin/settings/SettingRow";
@@ -69,9 +66,7 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
   }, [initial]);
 
   const savePartial = useCallback(
-    async (
-      partial: Partial<CheckinSettings>
-    ): Promise<{ ok: boolean; error?: string }> => {
+    async (partial: Partial<CheckinSettings>): Promise<{ ok: boolean; error?: string }> => {
       const current = settingsRef.current;
       if (!settingsPartialChanged(current, partial)) {
         return { ok: true };
@@ -105,7 +100,7 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         return { ok: false, error: message };
       }
     },
-    [notifyError, notifySuccess, t]
+    [notifyError, notifySuccess, t],
   );
 
   const persist = useCallback(
@@ -119,7 +114,7 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         }
       })();
     },
-    [savePartial]
+    [savePartial],
   );
 
   /** Amounts and percentages wait for the Save button in the bottom bar. */
@@ -194,7 +189,6 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
             <option value="optional">{t("ruleOptional")}</option>
           </select>
         </SettingRow>
-
       </div>
 
       {/* ── Plată ───────────────────────────────────────────── */}
@@ -231,10 +225,7 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           </SettingRow>
         )}
 
-        <SettingRow
-          label={t("checkoutBlockUnpaid")}
-          description={t("checkoutBlockUnpaidDesc")}
-        >
+        <SettingRow label={t("checkoutBlockUnpaid")} description={t("checkoutBlockUnpaidDesc")}>
           <label className="checkin-toggle">
             <input
               type="checkbox"
@@ -285,17 +276,12 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           </label>
         </SettingRow>
 
-        <SettingRow
-          label={t("earlyCheckinAllowed")}
-          description={t("earlyCheckinAllowedDesc")}
-        >
+        <SettingRow label={t("earlyCheckinAllowed")} description={t("earlyCheckinAllowedDesc")}>
           <label className="checkin-toggle">
             <input
               type="checkbox"
               checked={settings.early_checkin_allowed}
-              onChange={(e) =>
-                persist({ early_checkin_allowed: e.target.checked })
-              }
+              onChange={(e) => persist({ early_checkin_allowed: e.target.checked })}
             />
             <span className="checkin-toggle__slider" />
           </label>
@@ -311,17 +297,12 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           </SettingRow>
         )}
 
-        <SettingRow
-          label={t("earlyCheckoutAllowed")}
-          description={t("earlyCheckoutAllowedDesc")}
-        >
+        <SettingRow label={t("earlyCheckoutAllowed")} description={t("earlyCheckoutAllowedDesc")}>
           <label className="checkin-toggle">
             <input
               type="checkbox"
               checked={settings.early_checkout_allowed}
-              onChange={(e) =>
-                persist({ early_checkout_allowed: e.target.checked })
-              }
+              onChange={(e) => persist({ early_checkout_allowed: e.target.checked })}
             />
             <span className="checkin-toggle__slider" />
           </label>
@@ -337,17 +318,12 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           </SettingRow>
         )}
 
-        <SettingRow
-          label={t("lateCheckoutAllowed")}
-          description={t("lateCheckoutAllowedDesc")}
-        >
+        <SettingRow label={t("lateCheckoutAllowed")} description={t("lateCheckoutAllowedDesc")}>
           <label className="checkin-toggle">
             <input
               type="checkbox"
               checked={settings.late_checkout_allowed}
-              onChange={(e) =>
-                persist({ late_checkout_allowed: e.target.checked })
-              }
+              onChange={(e) => persist({ late_checkout_allowed: e.target.checked })}
             />
             <span className="checkin-toggle__slider" />
           </label>
@@ -427,9 +403,7 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
             <input
               type="checkbox"
               checked={settings.allow_post_checkout_edits}
-              onChange={(e) =>
-                persist({ allow_post_checkout_edits: e.target.checked })
-              }
+              onChange={(e) => persist({ allow_post_checkout_edits: e.target.checked })}
             />
             <span className="checkin-toggle__slider" />
           </label>

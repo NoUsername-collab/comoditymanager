@@ -1,8 +1,5 @@
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
-import {
-  getTenantScope,
-  withTenantId,
-} from "@/lib/tenant/scope";
+import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { addDays } from "@/lib/stay-dates";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 
@@ -56,11 +53,7 @@ export async function createRoomHolds(input: {
     throw new Error("room_holds.invalid_interval_min_one_night");
   }
 
-  await assertRoomsAvailableForOccupancy(
-    input.checkIn,
-    input.checkOut,
-    roomIds
-  );
+  await assertRoomsAvailableForOccupancy(input.checkIn, input.checkOut, roomIds);
 
   const expiresAt =
     input.expiresHours != null && input.expiresHours > 0
@@ -76,13 +69,10 @@ export async function createRoomHolds(input: {
       reason: input.reason?.trim() || null,
       expires_at: expiresAt,
       created_by: input.createdBy ?? null,
-    })
+    }),
   );
 
-  const { data, error } = await supabase
-    .from("room_holds")
-    .insert(rows)
-    .select("id");
+  const { data, error } = await supabase.from("room_holds").insert(rows).select("id");
 
   if (error) throw new Error(error.message);
   return (data ?? []).map((r) => r.id as string);
@@ -90,7 +80,7 @@ export async function createRoomHolds(input: {
 
 export async function releaseRoomHolds(
   holdIds: string[],
-  releasedBy?: string | null
+  releasedBy?: string | null,
 ): Promise<void> {
   const ids = [...new Set(holdIds.filter(Boolean))];
   if (ids.length === 0) return;
@@ -151,11 +141,9 @@ export async function extendRoomHoldOneNight(holdId: string): Promise<string> {
   if (!hold) throw new Error("room_holds.not_found");
 
   const newCheckOut = addDays(hold.check_out as string, 1);
-  await assertRoomsAvailableForOccupancy(
-    hold.check_out as string,
-    newCheckOut,
-    [hold.room_id as string]
-  );
+  await assertRoomsAvailableForOccupancy(hold.check_out as string, newCheckOut, [
+    hold.room_id as string,
+  ]);
 
   const { error } = await supabase
     .from("room_holds")

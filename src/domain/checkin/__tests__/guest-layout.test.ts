@@ -88,11 +88,7 @@ describe("guestsCollectingIdentity", () => {
   });
 
   test("keys_only rooms persist without identity", () => {
-    const guests = buildCheckinGuestSlotsForRooms(
-      booking,
-      ["Camera 1", "Camera 2"],
-      "per_room",
-    );
+    const guests = buildCheckinGuestSlotsForRooms(booking, ["Camera 1", "Camera 2"], "per_room");
     expect(guests[1].keys_only).toBe(true);
     expect(guestsCollectingIdentity(guests)).toHaveLength(1);
     expect(guestsReceivingRooms(guests)).toHaveLength(2);
@@ -109,11 +105,7 @@ describe("buildCheckinGuestSlotsForRooms", () => {
 
   test("expandGuestsForPersistence duplicates rep across rooms", () => {
     const rep = buildCheckinGuestSlotsForRooms(booking, ["7"], "rep")[0];
-    const expanded = expandGuestsForPersistence(
-      [rep],
-      "rep",
-      ["7", "1", "10"],
-    );
+    const expanded = expandGuestsForPersistence([rep], "rep", ["7", "1", "10"]);
     expect(expanded).toHaveLength(3);
     expect(expanded.map((g) => g.room_label)).toEqual(["7", "1", "10"]);
   });

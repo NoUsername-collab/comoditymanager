@@ -1,8 +1,5 @@
 import { cache } from "react";
-import {
-  getTenantContext,
-  TenantContextMissingError,
-} from "@/core/tenant/context";
+import { getTenantContext, TenantContextMissingError } from "@/core/tenant/context";
 import { resolveRequestTenant, TenantNotFoundError } from "@/lib/tenant/active";
 
 class TenantHostRequiredError extends Error {

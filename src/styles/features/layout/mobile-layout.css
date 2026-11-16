@@ -272,7 +272,9 @@ html[data-layout-chrome="compact"] .ml-mobile-menu__bars span {
   background: currentColor;
 }
 
-html[data-layout-chrome="compact"] .public-header__nav .public-header__link:not(.public-header__cta),
+html[data-layout-chrome="compact"]
+  .public-header__nav
+  .public-header__link:not(.public-header__cta),
 html[data-layout-chrome="compact"] .public-header__nav .public-header__group {
   display: none;
 }
@@ -465,8 +467,7 @@ html[data-layout-chrome="compact"] .admin-floating-panel--modal {
   animation: ml-sheet-slide-up var(--ml-duration-overlay) var(--ml-ease-out) both;
 }
 
-html[data-layout-chrome="compact"]
-  .admin-floating-panel:not(.admin-floating-panel--modal) {
+html[data-layout-chrome="compact"] .admin-floating-panel:not(.admin-floating-panel--modal) {
   animation: ml-popover-fade-in var(--ml-duration-overlay) var(--ml-ease-out) both;
 }
 

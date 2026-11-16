@@ -74,7 +74,9 @@
   color: var(--site-muted, #b7af9a);
   text-decoration: none;
   border-radius: 0.5rem;
-  transition: color 0.2s ease, background 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
 }
 
 .platform-header__link:hover {
@@ -99,7 +101,9 @@
   background: var(--site-accent, #d6b55a);
   border-radius: 0.625rem;
   text-decoration: none;
-  transition: opacity 0.2s ease, transform 0.15s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.15s ease;
 }
 
 .platform-header__cta:hover {

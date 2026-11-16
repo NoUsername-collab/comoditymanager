@@ -1,8 +1,5 @@
 import { MFA_SETUP_PATH } from "@/lib/auth/admin-path";
-import {
-  hasVerifiedTotpFactor,
-  isMfaRecommendedForUser,
-} from "@/lib/auth/mfa-policy";
+import { hasVerifiedTotpFactor, isMfaRecommendedForUser } from "@/lib/auth/mfa-policy";
 import { isPlatformAdminEmail } from "@/lib/auth/require-platform-admin";
 import type { TenantMemberRole } from "@/domain/tenant/types";
 import { ONBOARDING_PATH } from "@/domain/onboarding/steps";
@@ -23,9 +20,7 @@ export function shouldResolveSetupIssues(opts: {
   email?: string | null;
   memberRole?: TenantMemberRole | null;
 }): boolean {
-  return (
-    isMfaRecommendedForUser(opts) || canReceiveOnboardingSetupIssues(opts)
-  );
+  return isMfaRecommendedForUser(opts) || canReceiveOnboardingSetupIssues(opts);
 }
 
 export function hasConfiguredContactEmail(opts: {

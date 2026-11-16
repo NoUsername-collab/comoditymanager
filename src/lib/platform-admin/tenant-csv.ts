@@ -39,7 +39,7 @@ export function tenantsToCsv(tenants: PlatformTenantSummary[]): string {
       tenant.created_at,
     ]
       .map(escapeCsvCell)
-      .join(",")
+      .join(","),
   );
 
   return [headers.join(","), ...rows].join("\n");

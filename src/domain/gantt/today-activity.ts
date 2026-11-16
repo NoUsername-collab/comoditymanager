@@ -20,7 +20,7 @@ export type StayTodayHighlight = "arrival" | "departure" | "turnover" | null;
 export function summarizeGanttToday(
   bookings: BookingRow[],
   dayIsos: string[],
-  today: string = todayIso()
+  today: string = todayIso(),
 ): GanttTodaySummary {
   const active = bookings.filter((b) => b.status !== "anulata");
 
@@ -29,16 +29,14 @@ export function summarizeGanttToday(
     inView: dayIsos.includes(today),
     arrivals: active.filter((b) => b.check_in === today),
     departures: active.filter((b) => b.check_out === today),
-    stayingTonight: active.filter((b) =>
-      nightOccupied(today, b.check_in, b.check_out)
-    ).length,
+    stayingTonight: active.filter((b) => nightOccupied(today, b.check_in, b.check_out)).length,
   };
 }
 
 /** Precompute turnover days per room — O(bookings × days), once per Gantt render. */
 export function roomsTurnoverDays(
   bookings: BookingRow[],
-  dayIsos: string[]
+  dayIsos: string[],
 ): Map<string, Set<string>> {
   const byRoom = new Map<string, BookingRow[]>();
   for (const booking of bookings) {
@@ -65,7 +63,7 @@ export function roomsTurnoverDays(
 
 export function stayTodayHighlight(
   booking: BookingRow,
-  today: string = todayIso()
+  today: string = todayIso(),
 ): StayTodayHighlight {
   if (booking.status === "anulata") return null;
   const inDay = booking.check_in === today;

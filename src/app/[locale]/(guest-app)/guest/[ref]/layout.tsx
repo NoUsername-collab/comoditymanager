@@ -7,19 +7,16 @@ import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
 import { resolveGuestAppThemeStyle } from "@/features/guest-app/themes/loader";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [{ pensionSettings, guestSettings, publicConfig }, t, tLoyalty] =
-    await Promise.all([
-      loadGuestStayMetadata(),
-      getTranslations("guestApp.meta"),
-      getTranslations("guestApp.loyalty"),
-    ]);
+  const [{ pensionSettings, guestSettings, publicConfig }, t, tLoyalty] = await Promise.all([
+    loadGuestStayMetadata(),
+    getTranslations("guestApp.meta"),
+    getTranslations("guestApp.loyalty"),
+  ]);
   const pensionName = pensionSettings?.display_name ?? t("fallbackName");
-  const appearance =
-    guestSettings?.appearance ?? DEFAULT_GUEST_APP_SETTINGS.appearance;
+  const appearance = guestSettings?.appearance ?? DEFAULT_GUEST_APP_SETTINGS.appearance;
   const publicThemeId = publicConfig?.themeId ?? "noir";
   const themeStyle = resolveGuestAppThemeStyle(appearance, publicThemeId);
-  const themeColor =
-    themeStyle["--guest-primary"] ?? themeStyle.backgroundColor ?? "#0f0e14";
+  const themeColor = themeStyle["--guest-primary"] ?? themeStyle.backgroundColor ?? "#0f0e14";
 
   return {
     title: tLoyalty("metaTitle", { name: pensionName }),
@@ -41,13 +38,8 @@ export default async function GuestLoyaltyRefLayout({
   params: Promise<{ ref: string }>;
 }) {
   const { ref } = await params;
-  const {
-    pensionName,
-    publicThemeId,
-    shellAppearance,
-    receptionPhone,
-    loyalty,
-  } = await loadGuestLoyaltyLayout(ref);
+  const { pensionName, publicThemeId, shellAppearance, receptionPhone, loyalty } =
+    await loadGuestLoyaltyLayout(ref);
   const t = await getTranslations("guestApp.loyalty");
   const tAccess = await getTranslations("guestApp.access");
 

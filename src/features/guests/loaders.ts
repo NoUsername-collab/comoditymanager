@@ -32,15 +32,12 @@ export async function loadGuestsListPage(sp: {
   const filter = firstValue(sp.filter);
   const page = normalizePage(firstValue(sp.page));
   const selected = firstValue(sp.selected);
-  const hasSearchCriteria =
-    q.length > 0 || (filter && filter !== "all" && filter !== "");
+  const hasSearchCriteria = q.length > 0 || (filter && filter !== "all" && filter !== "");
 
   try {
     const [searchResult, highlightsResult, selectedResult] = await Promise.all([
       searchGuests({ query: q, filter, page, pageSize: 20 }),
-      hasSearchCriteria
-        ? Promise.resolve(null)
-        : listGuestHighlights().catch(() => null),
+      hasSearchCriteria ? Promise.resolve(null) : listGuestHighlights().catch(() => null),
       selected ? getGuestById(selected).catch(() => null) : Promise.resolve(null),
     ]);
     return {
@@ -54,9 +51,7 @@ export async function loadGuestsListPage(sp: {
       selectedGuest: selectedResult,
     };
   } catch (e) {
-    const selectedGuest = selected
-      ? await getGuestById(selected).catch(() => null)
-      : null;
+    const selectedGuest = selected ? await getGuestById(selected).catch(() => null) : null;
     return {
       ok: false as const,
       q,
@@ -86,9 +81,7 @@ export async function loadGuestDetailPage(guestId: string) {
     guest
       ? findDedupCandidates(dedupInputFromGuest(guest)).catch(() => [])
       : baseGuestPromise.then((base) =>
-          base
-            ? findDedupCandidates(dedupInputFromGuest(base)).catch(() => [])
-            : [],
+          base ? findDedupCandidates(dedupInputFromGuest(base)).catch(() => []) : [],
         ),
   );
 
@@ -111,9 +104,7 @@ export async function loadGuestDetailPage(guestId: string) {
     todayIso(),
     historyPromise.then((result) =>
       result.ok && result.data[0]
-        ? loadGuestRebookPanelPayload(guestId, result.data[0].id).catch(
-            () => null,
-          )
+        ? loadGuestRebookPanelPayload(guestId, result.data[0].id).catch(() => null)
         : null,
     ),
     getLoyaltyRefForGuest(guestId).catch(() => null),

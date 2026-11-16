@@ -51,11 +51,7 @@ export default async function SettingsOverviewPage({
 
   if (!settings || !appearance) {
     return (
-      <SettingsPageLayout
-        alerts={alerts}
-        title={t("navOverview")}
-        description={t("notConfigured")}
-      >
+      <SettingsPageLayout alerts={alerts} title={t("navOverview")} description={t("notConfigured")}>
         <p className="settings-empty">{t("notConfigured")}</p>
       </SettingsPageLayout>
     );
@@ -101,11 +97,7 @@ export default async function SettingsOverviewPage({
     : null;
 
   return (
-    <SettingsPageLayout
-      alerts={alerts}
-      title={t("navOverview")}
-      description={t("overviewIntro")}
-    >
+    <SettingsPageLayout alerts={alerts} title={t("navOverview")} description={t("overviewIntro")}>
       <SettingsOverview
         role={role}
         memberRole={memberRole ?? "operator"}

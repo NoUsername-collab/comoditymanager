@@ -22,15 +22,9 @@ export default async function LocationAdminPage({
   ]);
 
   const alerts: SettingsAlert[] = [
-    params.unlocked === "1"
-      ? { tone: "success", message: tPage("unlockedForTwoHours") }
-      : null,
-    params.locked === "1"
-      ? { tone: "info", message: tPage("unlock.ownerLockClosed") }
-      : null,
-    params.extraBeds === "1"
-      ? { tone: "success", message: tPage("extraBeds.saved") }
-      : null,
+    params.unlocked === "1" ? { tone: "success", message: tPage("unlockedForTwoHours") } : null,
+    params.locked === "1" ? { tone: "info", message: tPage("unlock.ownerLockClosed") } : null,
+    params.extraBeds === "1" ? { tone: "success", message: tPage("extraBeds.saved") } : null,
   ].filter((alert): alert is SettingsAlert => alert !== null);
 
   return (
@@ -59,20 +53,25 @@ export default async function LocationAdminPage({
         </div>
       </div>
 
-      <SettingsSection
-        title={tPage("structure.title")}
-        description={tPage("structure.subtitle")}
-      >
+      <SettingsSection title={tPage("structure.title")} description={tPage("structure.subtitle")}>
         <div className="settings-form-stack">
           <p className="admin-settings-hint">{tPage("structure.hint")}</p>
           <div className="settings-overview__grid">
             <Link href="/admin/settings/location/structure" className="settings-overview-card">
-              <span className="settings-overview-card__title">{tPage("structure.cardStructureTitle")}</span>
-              <span className="settings-overview-card__desc">{tPage("structure.cardStructureBody")}</span>
+              <span className="settings-overview-card__title">
+                {tPage("structure.cardStructureTitle")}
+              </span>
+              <span className="settings-overview-card__desc">
+                {tPage("structure.cardStructureBody")}
+              </span>
             </Link>
             <Link href="/admin/settings/location/setup" className="settings-overview-card">
-              <span className="settings-overview-card__title">{tPage("structure.cardModularTitle")}</span>
-              <span className="settings-overview-card__desc">{tPage("structure.cardModularBody")}</span>
+              <span className="settings-overview-card__title">
+                {tPage("structure.cardModularTitle")}
+              </span>
+              <span className="settings-overview-card__desc">
+                {tPage("structure.cardModularBody")}
+              </span>
             </Link>
           </div>
           <Link href="/admin/rooms" className="settings-overview-card">

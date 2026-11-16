@@ -5,10 +5,7 @@ vi.stubEnv("NEXT_PUBLIC_PLATFORM_DOMAIN", "zalmox.app");
 vi.stubEnv("NEXT_PUBLIC_PLATFORM_HOSTS", "");
 vi.stubEnv("NEXT_PUBLIC_SITE_URL", "");
 
-const {
-  parseTenantFromHost,
-  isPlatformRequestHost,
-} = await import("@/lib/tenant/host");
+const { parseTenantFromHost, isPlatformRequestHost } = await import("@/lib/tenant/host");
 
 describe("parseTenantFromHost", () => {
   it("returns platform for localhost", () => {

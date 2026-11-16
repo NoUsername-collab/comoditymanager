@@ -1,12 +1,47 @@
 /** County abbreviations used on Romanian addresses, for a map search to understand them. */
 const RO_COUNTIES: Record<string, string> = {
-  AB: "Alba", AR: "Arad", AG: "Argeș", BC: "Bacău", BH: "Bihor", BN: "Bistrița-Năsăud",
-  BT: "Botoșani", BV: "Brașov", BR: "Brăila", B: "București", BZ: "Buzău", CS: "Caraș-Severin",
-  CL: "Călărași", CJ: "Cluj", CT: "Constanța", CV: "Covasna", DB: "Dâmbovița", DJ: "Dolj",
-  GL: "Galați", GR: "Giurgiu", GJ: "Gorj", HR: "Harghita", HD: "Hunedoara", IL: "Ialomița",
-  IS: "Iași", IF: "Ilfov", MM: "Maramureș", MH: "Mehedinți", MS: "Mureș", NT: "Neamț",
-  OT: "Olt", PH: "Prahova", SM: "Satu Mare", SJ: "Sălaj", SB: "Sibiu", SV: "Suceava",
-  TR: "Teleorman", TM: "Timiș", TL: "Tulcea", VS: "Vaslui", VL: "Vâlcea", VN: "Vrancea",
+  AB: "Alba",
+  AR: "Arad",
+  AG: "Argeș",
+  BC: "Bacău",
+  BH: "Bihor",
+  BN: "Bistrița-Năsăud",
+  BT: "Botoșani",
+  BV: "Brașov",
+  BR: "Brăila",
+  B: "București",
+  BZ: "Buzău",
+  CS: "Caraș-Severin",
+  CL: "Călărași",
+  CJ: "Cluj",
+  CT: "Constanța",
+  CV: "Covasna",
+  DB: "Dâmbovița",
+  DJ: "Dolj",
+  GL: "Galați",
+  GR: "Giurgiu",
+  GJ: "Gorj",
+  HR: "Harghita",
+  HD: "Hunedoara",
+  IL: "Ialomița",
+  IS: "Iași",
+  IF: "Ilfov",
+  MM: "Maramureș",
+  MH: "Mehedinți",
+  MS: "Mureș",
+  NT: "Neamț",
+  OT: "Olt",
+  PH: "Prahova",
+  SM: "Satu Mare",
+  SJ: "Sălaj",
+  SB: "Sibiu",
+  SV: "Suceava",
+  TR: "Teleorman",
+  TM: "Timiș",
+  TL: "Tulcea",
+  VS: "Vaslui",
+  VL: "Vâlcea",
+  VN: "Vrancea",
 };
 
 function expandCounty(part: string): string {
@@ -32,11 +67,15 @@ function plainStreet(street: string): string {
 export function geocodeQueries(address: string): { query: string; approximate: boolean }[] {
   const text = address.trim();
   if (text.length < 3) return [];
-  const parts = text.split(",").map((part) => part.trim()).filter(Boolean);
+  const parts = text
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
   const out: { query: string; approximate: boolean }[] = [];
   const add = (query: string, approximate: boolean) => {
     const q = query.replace(/\s+/g, " ").trim();
-    if (q.length >= 3 && !out.some((existing) => existing.query === q)) out.push({ query: q, approximate });
+    if (q.length >= 3 && !out.some((existing) => existing.query === q))
+      out.push({ query: q, approximate });
   };
 
   add(text, false);

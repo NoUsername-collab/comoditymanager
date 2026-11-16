@@ -4,10 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { useLocale, useTranslations } from "next-intl";
 import { useAdminPendingOptional } from "@/components/admin/feedback/AdminPendingProvider";
 import { useGanttContextMenu } from "@/features/calendar/ui/GanttContextMenuContext";
-import {
-  LONG_PRESS_MS,
-  LONG_PRESS_MOVE_PX,
-} from "@/domain/gantt/context-menu";
+import { LONG_PRESS_MS, LONG_PRESS_MOVE_PX } from "@/domain/gantt/context-menu";
 import {
   clearGanttRoomDragSpan,
   findGanttRoomAtPoint,
@@ -23,10 +20,7 @@ import {
 import { findOccupancyConflicts } from "@/domain/occupancy/conflict";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
-import {
-  DEFAULT_CHECK_IN_TIME,
-  DEFAULT_CHECK_OUT_TIME,
-} from "@/lib/constants";
+import { DEFAULT_CHECK_IN_TIME, DEFAULT_CHECK_OUT_TIME } from "@/lib/constants";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 
 const BLOCK_INTERACTION_SELECTOR = "[data-gantt-block-interaction]";
@@ -55,9 +49,7 @@ type DragState = {
 };
 
 function blocksDragCreate(target: EventTarget | null): boolean {
-  return (
-    target instanceof Element && !!target.closest(BLOCK_INTERACTION_SELECTOR)
-  );
+  return target instanceof Element && !!target.closest(BLOCK_INTERACTION_SELECTOR);
 }
 
 function nightCountFromIndices(startIdx: number, endIdx: number): number {
@@ -67,7 +59,7 @@ function nightCountFromIndices(startIdx: number, endIdx: number): number {
 function roomIdsBetween(
   orderedRoomIds: string[],
   startRoomId: string,
-  endRoomId: string
+  endRoomId: string,
 ): string[] {
   const startIndex = orderedRoomIds.indexOf(startRoomId);
   const endIndex = orderedRoomIds.indexOf(endRoomId);
@@ -127,25 +119,20 @@ export function GanttDragCreateLayer({
     (checkIn: string, checkOut: string, roomIds: string[]) => {
       for (const rid of roomIds) {
         const occ = occupancyByRoom.get(rid) ?? [];
-        const conflicts = findOccupancyConflicts(
-          [rid],
-          checkIn,
-          checkOut,
-          occ,
-          undefined,
-          { checkIn: checkInTime, checkOut: checkOutTime }
-        );
+        const conflicts = findOccupancyConflicts([rid], checkIn, checkOut, occ, undefined, {
+          checkIn: checkInTime,
+          checkOut: checkOutTime,
+        });
         if (conflicts.length > 0) return true;
       }
       return false;
     },
-    [occupancyByRoom, checkInTime, checkOutTime]
+    [occupancyByRoom, checkInTime, checkOutTime],
   );
 
   const evalConflict = useCallback(
-    (checkIn: string, checkOut: string) =>
-      evalConflictForRooms(checkIn, checkOut, [roomId]),
-    [roomId, evalConflictForRooms]
+    (checkIn: string, checkOut: string) => evalConflictForRooms(checkIn, checkOut, [roomId]),
+    [roomId, evalConflictForRooms],
   );
 
   const clearLongPress = useCallback(() => {
@@ -173,7 +160,7 @@ export function GanttDragCreateLayer({
         roomIds: [roomId],
       });
     },
-    [dayIsos, roomId, roomName, evalConflict, openMenu, onRangePin]
+    [dayIsos, roomId, roomName, evalConflict, openMenu, onRangePin],
   );
 
   const dayIdxAt = useCallback(
@@ -183,7 +170,7 @@ export function GanttDragCreateLayer({
       const rect = row.getBoundingClientRect();
       return dayIndexFromPointerX(clientX, rect.left, rect.width, dayCount);
     },
-    [dayCount]
+    [dayCount],
   );
 
   const finishDrag = useCallback(
@@ -199,21 +186,14 @@ export function GanttDragCreateLayer({
         clientY: y,
         roomId,
         roomIds: uniqueRooms,
-        roomName:
-          uniqueRooms.length > 1
-            ? `${uniqueRooms.length} ${tCommon("rooms")}`
-            : roomName,
+        roomName: uniqueRooms.length > 1 ? `${uniqueRooms.length} ${tCommon("rooms")}` : roomName,
         checkIn: interval.checkIn,
         checkOut: interval.checkOut,
-        hasConflict: evalConflictForRooms(
-          interval.checkIn,
-          interval.checkOut,
-          uniqueRooms
-        ),
+        hasConflict: evalConflictForRooms(interval.checkIn, interval.checkOut, uniqueRooms),
       });
       clearGanttRoomDragSpan();
     },
-    [dayIsos, roomId, roomName, evalConflictForRooms, openMenu, tCommon, onRangePin]
+    [dayIsos, roomId, roomName, evalConflictForRooms, openMenu, tCommon, onRangePin],
   );
 
   const updateDragAt = useCallback(
@@ -222,12 +202,7 @@ export function GanttDragCreateLayer({
       const row = rowRef.current;
       if (!row || !dragRef.current || dayCount === 0) return;
       const rect = row.getBoundingClientRect();
-      let endIdx = dayIndexFromPointerX(
-        clientX,
-        rect.left,
-        rect.width,
-        dayCount
-      );
+      let endIdx = dayIndexFromPointerX(clientX, rect.left, rect.width, dayCount);
       const startIdx = dragRef.current.startIdx;
       if (endIdx < startIdx) endIdx = startIdx;
       const hitRoom = findGanttRoomAtPoint(clientX, clientY);
@@ -238,7 +213,7 @@ export function GanttDragCreateLayer({
           : roomIdsBetween(
               dragRef.current.orderedRoomIds,
               dragRef.current.startRoomId,
-              currentRoomId
+              currentRoomId,
             );
       const interval = intervalFromDayIndices(dayIsos, startIdx, endIdx);
       const hasConflict = interval
@@ -251,7 +226,7 @@ export function GanttDragCreateLayer({
         viewRange.rangeStart,
         viewRange.rangeEnd,
         checkInTime,
-        checkOutTime
+        checkOutTime,
       );
       if (ghost) {
         setGanttRoomDragSpan(roomIds, {
@@ -276,16 +251,19 @@ export function GanttDragCreateLayer({
         selectionMode: dragRef.current.selectionMode,
       });
     },
-    [dayCount, dayIsos, evalConflictForRooms, viewRange.rangeStart, viewRange.rangeEnd, checkInTime, checkOutTime]
+    [
+      dayCount,
+      dayIsos,
+      evalConflictForRooms,
+      viewRange.rangeStart,
+      viewRange.rangeEnd,
+      checkInTime,
+      checkOutTime,
+    ],
   );
 
   const beginDrag = useCallback(
-    (
-      startIdx: number,
-      clientX: number,
-      clientY: number,
-      selectionMode: "range" | "ctrl"
-    ) => {
+    (startIdx: number, clientX: number, clientY: number, selectionMode: "range" | "ctrl") => {
       const ghost = ghostBarFromDayIndices(
         dayIsos,
         startIdx,
@@ -293,7 +271,7 @@ export function GanttDragCreateLayer({
         viewRange.rangeStart,
         viewRange.rangeEnd,
         checkInTime,
-        checkOutTime
+        checkOutTime,
       );
       const orderedRoomIds = listGanttRoomIdsInDomOrder();
       dragRef.current = {
@@ -302,8 +280,7 @@ export function GanttDragCreateLayer({
         startRoomId: roomId,
         currentRoomId: roomId,
         selectedRoomIds: [roomId],
-        orderedRoomIds:
-          orderedRoomIds.length > 0 ? orderedRoomIds : [roomId],
+        orderedRoomIds: orderedRoomIds.length > 0 ? orderedRoomIds : [roomId],
         selectionMode,
       };
       setDrag({
@@ -324,7 +301,16 @@ export function GanttDragCreateLayer({
       }
       updateDragAt(clientX, clientY);
     },
-    [dayCount, dayIsos, roomId, updateDragAt, viewRange.rangeStart, viewRange.rangeEnd, checkInTime, checkOutTime]
+    [
+      dayCount,
+      dayIsos,
+      roomId,
+      updateDragAt,
+      viewRange.rangeStart,
+      viewRange.rangeEnd,
+      checkInTime,
+      checkOutTime,
+    ],
   );
 
   const endDrag = useCallback(() => {
@@ -411,7 +397,7 @@ export function GanttDragCreateLayer({
         e.preventDefault();
       }
     },
-    [dayCount, dayIdxAt, clearLongPress, openEmptyMenu, pendingCtx?.pending, touch]
+    [dayCount, dayIdxAt, clearLongPress, openEmptyMenu, pendingCtx?.pending, touch],
   );
 
   const onPointerUpRow = useCallback(
@@ -441,7 +427,7 @@ export function GanttDragCreateLayer({
         return;
       }
     },
-    [clearLongPress, endDrag]
+    [clearLongPress, endDrag],
   );
 
   const onPointerMoveRow = useCallback(
@@ -457,20 +443,20 @@ export function GanttDragCreateLayer({
               armedStartIdxRef.current ?? dayIdxAt(origin.x),
               e.clientX,
               e.clientY,
-              armedSelectionModeRef.current
+              armedSelectionModeRef.current,
             );
           }
         }
       }
     },
-    [beginDrag, clearLongPress, dayIdxAt, touch]
+    [beginDrag, clearLongPress, dayIdxAt, touch],
   );
 
   const onPointerCancelRow = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       onPointerUpRow(e);
     },
-    [onPointerUpRow]
+    [onPointerUpRow],
   );
 
   const ghost =
@@ -482,17 +468,14 @@ export function GanttDragCreateLayer({
           viewRange.rangeStart,
           viewRange.rangeEnd,
           checkInTime,
-          checkOutTime
+          checkOutTime,
         )
       : null;
 
   const dragInterval =
-    drag && dayCount > 0
-      ? intervalFromDayIndices(dayIsos, drag.startIdx, drag.endIdx)
-      : null;
+    drag && dayCount > 0 ? intervalFromDayIndices(dayIsos, drag.startIdx, drag.endIdx) : null;
 
-  const nights =
-    drag != null ? nightCountFromIndices(drag.startIdx, drag.endIdx) : 0;
+  const nights = drag != null ? nightCountFromIndices(drag.startIdx, drag.endIdx) : 0;
 
   const dragPeriod =
     dragInterval != null
@@ -504,7 +487,7 @@ export function GanttDragCreateLayer({
       ref={rowRef}
       data-gantt-room-drag-layer={roomId}
       className={[
-          "gantt-drag-row relative w-full overflow-visible bg-white",
+        "gantt-drag-row relative w-full overflow-visible bg-white",
         touch && "gantt-drag-row--touch",
         drag && "gantt-drag-row--active",
       ]
@@ -526,9 +509,7 @@ export function GanttDragCreateLayer({
         <div
           className={[
             "gantt-drag-preview pointer-events-none absolute z-[50] flex min-w-0 items-center overflow-hidden",
-            drag.hasConflict
-              ? "gantt-drag-preview--conflict"
-              : "gantt-drag-preview--free",
+            drag.hasConflict ? "gantt-drag-preview--conflict" : "gantt-drag-preview--free",
           ].join(" ")}
           style={{
             left: `${ghost.leftPct}%`,

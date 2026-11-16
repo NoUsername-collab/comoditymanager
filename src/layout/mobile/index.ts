@@ -1,8 +1,5 @@
 export { LAYOUT_BREAKPOINTS, type LayoutBreakpointName } from "./breakpoints";
-export {
-  isCompactLayoutChrome,
-  resolveLayoutChrome,
-} from "./chrome";
+export { isCompactLayoutChrome, resolveLayoutChrome } from "./chrome";
 export {
   isDesktopLayoutMode,
   isMobileLayoutMode,
@@ -11,10 +8,7 @@ export {
   resolveLayoutMode,
   resolveLayoutOrientation,
 } from "./resolve";
-export {
-  applyDocumentLayout,
-  scheduleApplyDocumentLayout,
-} from "./apply-document-layout";
+export { applyDocumentLayout, scheduleApplyDocumentLayout } from "./apply-document-layout";
 export {
   resolveAutoDisplayProfile,
   resolveDocumentLayout,
@@ -28,10 +22,7 @@ export {
   readLayoutModeFromDom,
   readLayoutOrientationFromDom,
 } from "./dom";
-export {
-  getLayoutViewportSize,
-  LAYOUT_RESIZE_DEBOUNCE_MS,
-} from "./viewport";
+export { getLayoutViewportSize, LAYOUT_RESIZE_DEBOUNCE_MS } from "./viewport";
 export {
   subscribeLayoutViewportChanges,
   type LayoutViewportSubscriptionOptions,

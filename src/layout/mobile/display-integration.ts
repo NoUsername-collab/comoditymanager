@@ -1,7 +1,4 @@
-import type {
-  DisplayLayoutPreference,
-  DisplayProfileId,
-} from "@/lib/ui/display-layout-preference";
+import type { DisplayLayoutPreference, DisplayProfileId } from "@/lib/ui/display-layout-preference";
 import { resolveLayoutChrome } from "./chrome";
 import { resolveLayoutMode, resolveLayoutOrientation } from "./resolve";
 import type { LayoutChrome, LayoutOrientation, LayoutMode } from "./types";
@@ -9,10 +6,7 @@ import type { LayoutChrome, LayoutOrientation, LayoutMode } from "./types";
 /**
  * Display profile from viewport — phones (min side < 640) → narrow when auto.
  */
-export function resolveAutoDisplayProfile(
-  width: number,
-  height: number
-): DisplayProfileId {
+export function resolveAutoDisplayProfile(width: number, height: number): DisplayProfileId {
   const minSide = Math.min(width, height);
   if (minSide < 640) return "narrow";
   if (width >= 1680) return "wide";
@@ -30,7 +24,7 @@ export function resolveAutoDisplayProfile(
 export function resolveEffectiveLayoutChrome(
   preference: DisplayLayoutPreference,
   width: number,
-  height: number
+  height: number,
 ): LayoutChrome {
   const minSide = Math.min(width, height);
   /* Phones always use compact shell — wide prefs apply on larger viewports only */
@@ -47,7 +41,7 @@ export function resolveEffectiveLayoutChrome(
 export function resolveEffectiveDisplayProfile(
   preference: DisplayLayoutPreference,
   width: number,
-  height: number
+  height: number,
 ): DisplayProfileId {
   if (preference !== "auto") return preference;
   return resolveAutoDisplayProfile(width, height);
@@ -67,7 +61,7 @@ type ResolvedDocumentLayout = {
 export function resolveDocumentLayout(
   preference: DisplayLayoutPreference,
   width: number,
-  height: number
+  height: number,
 ): ResolvedDocumentLayout {
   const mode = resolveLayoutMode(width, height);
   const orientation = resolveLayoutOrientation(width, height);

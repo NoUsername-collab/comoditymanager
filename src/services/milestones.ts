@@ -17,20 +17,13 @@ async function countConfirmedStaysImpl(tenantId: string): Promise<number> {
 }
 
 const getCachedConfirmedStaysCount = (tenantId: string) =>
-  unstable_cache(
-    () => countConfirmedStaysImpl(tenantId),
-    ["confirmed-stays-count", tenantId],
-    {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-      ],
-      revalidate: 60,
-    }
-  );
+  unstable_cache(() => countConfirmedStaysImpl(tenantId), ["confirmed-stays-count", tenantId], {
+    tags: [CACHE_TAGS.bookingCounts, tenantTag(tenantId, CACHE_TAGS.bookingCounts)],
+    revalidate: 60,
+  });
 
 const loadConfirmedStaysCount = cache((tenantId: string) =>
-  getCachedConfirmedStaysCount(tenantId)()
+  getCachedConfirmedStaysCount(tenantId)(),
 );
 
 export async function countConfirmedStays(): Promise<number> {

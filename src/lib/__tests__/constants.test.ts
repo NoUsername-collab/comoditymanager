@@ -38,7 +38,7 @@ describe("resolvePensionStayTimes", () => {
       resolvePensionStayTimes({
         default_check_in_time: "15:00",
         default_check_out_time: "12:00",
-      })
+      }),
     ).toEqual({ checkIn: "15:00", checkOut: "12:00" });
   });
 });
@@ -51,7 +51,7 @@ describe("resolveStayWindowTimes", () => {
         checkoutTimeUntil: "10:00",
         defaultCheckInTime: "14:00",
         defaultCheckOutTime: "11:00",
-      })
+      }),
     ).toEqual({ checkIn: "16:00", checkOut: "10:00" });
   });
 
@@ -59,7 +59,7 @@ describe("resolveStayWindowTimes", () => {
     expect(
       resolveStayWindowTimes({
         defaultCheckOutTime: "12:00",
-      })
+      }),
     ).toEqual({
       checkIn: DEFAULT_CHECK_IN_TIME,
       checkOut: "12:00",

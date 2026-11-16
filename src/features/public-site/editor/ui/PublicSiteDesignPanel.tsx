@@ -136,7 +136,11 @@ export function PublicSiteDesignPanel() {
         <BrandColorGroup />
 
         <EditorGroup title={te("fontTitle")} description={te("fontDesc")}>
-          <div className="pub-editor-choices pub-editor-choices--fonts" role="radiogroup" aria-label={te("fontTitle")}>
+          <div
+            className="pub-editor-choices pub-editor-choices--fonts"
+            role="radiogroup"
+            aria-label={te("fontTitle")}
+          >
             {PUBLIC_FONT_OPTIONS.map((option) => (
               <button
                 key={option}
@@ -261,7 +265,10 @@ function BrandColorGroup() {
         </label>
       </div>
 
-      <div className="pub-brand__sample" style={resolvePublicSiteStyle(draft.themeId, { accentColor: brand })}>
+      <div
+        className="pub-brand__sample"
+        style={resolvePublicSiteStyle(draft.themeId, { accentColor: brand })}
+      >
         <span className="pub-brand__sample-btn">{te("brandSampleButton")}</span>
         <span className="pub-brand__sample-mark">{te("brandSampleMark")}</span>
       </div>

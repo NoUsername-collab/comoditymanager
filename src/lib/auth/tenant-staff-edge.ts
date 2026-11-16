@@ -9,8 +9,7 @@ function tenantMemberRoleToStaffRole(role: TenantMemberRole): StaffRole {
 }
 
 type TenantHostRef =
-  | { slug: string; customDomain?: undefined }
-  | { slug?: undefined; customDomain: string };
+  { slug: string; customDomain?: undefined } | { slug?: undefined; customDomain: string };
 
 function edgeAnonConfig(): { url: string; key: string } | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
@@ -29,7 +28,7 @@ function edgeServiceConfig(): { url: string; key: string } | null {
 async function supabaseRpc<T>(
   fn: string,
   args: Record<string, unknown>,
-  authKey: string
+  authKey: string,
 ): Promise<T | null> {
   const cfg = edgeAnonConfig();
   if (!cfg) return null;
@@ -57,7 +56,7 @@ export async function resolveTenantIdOnEdge(ref: TenantHostRef): Promise<string 
     const rows = await supabaseRpc<{ tenant_id: string }[]>(
       "resolve_tenant_by_slug",
       { p_slug: ref.slug },
-      anon.key
+      anon.key,
     );
     return rows?.[0]?.tenant_id ?? null;
   }
@@ -65,7 +64,7 @@ export async function resolveTenantIdOnEdge(ref: TenantHostRef): Promise<string 
   const rows = await supabaseRpc<{ tenant_id: string }[]>(
     "resolve_tenant_by_domain",
     { p_domain: ref.customDomain },
-    anon.key
+    anon.key,
   );
   return rows?.[0]?.tenant_id ?? null;
 }
@@ -73,7 +72,7 @@ export async function resolveTenantIdOnEdge(ref: TenantHostRef): Promise<string 
 async function getTenantMemberRoleViaSession(
   sessionClient: SupabaseClient,
   tenantId: string,
-  userId: string
+  userId: string,
 ): Promise<TenantMemberRole | null> {
   const { data, error } = await sessionClient
     .from("tenant_members")
@@ -93,7 +92,7 @@ async function getTenantMemberRoleViaSession(
 
 async function getTenantMemberRoleOnEdge(
   tenantId: string,
-  userId: string
+  userId: string,
 ): Promise<TenantMemberRole | null> {
   const service = edgeServiceConfig();
   if (!service) return null;
@@ -101,7 +100,7 @@ async function getTenantMemberRoleOnEdge(
   const role = await supabaseRpc<string | null>(
     "get_tenant_member_role",
     { p_tenant_id: tenantId, p_user_id: userId },
-    service.key
+    service.key,
   );
   if (role === "owner" || role === "admin" || role === "operator") {
     return role;
@@ -112,17 +111,13 @@ async function getTenantMemberRoleOnEdge(
 export async function resolveTenantMemberRoleOnTenantHost(
   userId: string,
   ref: TenantHostRef,
-  sessionClient?: SupabaseClient
+  sessionClient?: SupabaseClient,
 ): Promise<TenantMemberRole | null> {
   const tenantId = await resolveTenantIdOnEdge(ref);
   if (!tenantId) return null;
 
   if (sessionClient) {
-    const sessionRole = await getTenantMemberRoleViaSession(
-      sessionClient,
-      tenantId,
-      userId
-    );
+    const sessionRole = await getTenantMemberRoleViaSession(sessionClient, tenantId, userId);
     if (sessionRole) return sessionRole;
   }
 
@@ -133,17 +128,13 @@ export async function resolveTenantMemberRoleOnTenantHost(
 export async function resolveStaffRoleOnTenantHost(
   userId: string,
   ref: TenantHostRef,
-  sessionClient?: SupabaseClient
+  sessionClient?: SupabaseClient,
 ): Promise<StaffRole | null> {
   const tenantId = await resolveTenantIdOnEdge(ref);
   if (!tenantId) return null;
 
   if (sessionClient) {
-    const sessionRole = await getTenantMemberRoleViaSession(
-      sessionClient,
-      tenantId,
-      userId
-    );
+    const sessionRole = await getTenantMemberRoleViaSession(sessionClient, tenantId, userId);
     if (sessionRole) return tenantMemberRoleToStaffRole(sessionRole);
   }
 

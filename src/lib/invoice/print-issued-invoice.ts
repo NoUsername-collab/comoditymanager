@@ -166,10 +166,7 @@ function printInCurrentWindow(sheet: HTMLElement): void {
  * Prints only the invoice sheet via a hidden iframe (no popup tab).
  * Avoids admin shell overflow issues and noopener blank-tab bugs in Chrome.
  */
-export function printIssuedInvoiceSheet(
-  sheet: HTMLElement,
-  title: string
-): void {
+export function printIssuedInvoiceSheet(sheet: HTMLElement, title: string): void {
   const html = buildPrintHtml(sheet.outerHTML, title);
   const iframe = document.createElement("iframe");
   iframe.setAttribute("aria-hidden", "true");

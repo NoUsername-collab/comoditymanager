@@ -21,41 +21,73 @@ import {
 } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminAlertDialog } from "@/components/admin/overlay/AdminAlertDialog";
 import { MrzScanDialog } from "@/features/checkin/ui/MrzScanDialog";
-import {
-  mrzToGuestProfileFields,
-  type MrzMappedIdentity,
-} from "@/domain/guest/mrz";
+import { mrzToGuestProfileFields, type MrzMappedIdentity } from "@/domain/guest/mrz";
 import { normalizeIsoDateInput } from "@/lib/iso-date-input";
 import { docTypeUsesRomanianNationalId } from "@/domain/checkin/doc-type";
 
 type DocType = "ci" | "passport" | "foreign_id" | "other" | "";
 
 const ROMANIAN_COUNTIES = [
-  "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani",
-  "Brăila", "Brașov", "București", "Buzău", "Călărași", "Caraș-Severin",
-  "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu",
-  "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș",
-  "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Sălaj", "Satu Mare",
-  "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vâlcea", "Vaslui",
+  "Alba",
+  "Arad",
+  "Argeș",
+  "Bacău",
+  "Bihor",
+  "Bistrița-Năsăud",
+  "Botoșani",
+  "Brăila",
+  "Brașov",
+  "București",
+  "Buzău",
+  "Călărași",
+  "Caraș-Severin",
+  "Cluj",
+  "Constanța",
+  "Covasna",
+  "Dâmbovița",
+  "Dolj",
+  "Galați",
+  "Giurgiu",
+  "Gorj",
+  "Harghita",
+  "Hunedoara",
+  "Ialomița",
+  "Iași",
+  "Ilfov",
+  "Maramureș",
+  "Mehedinți",
+  "Mureș",
+  "Neamț",
+  "Olt",
+  "Prahova",
+  "Sălaj",
+  "Satu Mare",
+  "Sibiu",
+  "Suceava",
+  "Teleorman",
+  "Timiș",
+  "Tulcea",
+  "Vâlcea",
+  "Vaslui",
   "Vrancea",
 ];
 
 /** Mapping from country to default national ID type */
 const COUNTRY_TO_ID_TYPE: Record<string, NationalIdType> = {
-  "România": "cnp",
-  "Romania": "cnp",
-  "RO": "cnp",
-  "Moldova": "idnp",
+  România: "cnp",
+  Romania: "cnp",
+  RO: "cnp",
+  Moldova: "idnp",
   "Republica Moldova": "idnp",
-  "MD": "idnp",
-  "Bulgaria": "egn",
-  "BG": "egn",
-  "Grecia": "amka",
-  "Greece": "amka",
-  "GR": "amka",
-  "Ungaria": "amka",
-  "Hungary": "szemelyi_szam",
-  "HU": "szemelyi_szam",
+  MD: "idnp",
+  Bulgaria: "egn",
+  BG: "egn",
+  Grecia: "amka",
+  Greece: "amka",
+  GR: "amka",
+  Ungaria: "amka",
+  Hungary: "szemelyi_szam",
+  HU: "szemelyi_szam",
 };
 
 function inferNationalIdType(country: string, nationality: string): NationalIdType {
@@ -74,38 +106,25 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
   const [docSeries, setDocSeries] = useState(guest.doc_series ?? "");
   const [docNumber, setDocNumber] = useState(guest.doc_number ?? "");
   const [docIssuedBy, setDocIssuedBy] = useState(guest.doc_issued_by ?? "");
-  const [docIssueDate, setDocIssueDate] = useState(
-    normalizeIsoDateInput(guest.doc_issue_date),
-  );
-  const [docExpiryDate, setDocExpiryDate] = useState(
-    normalizeIsoDateInput(guest.doc_expiry_date),
-  );
+  const [docIssueDate, setDocIssueDate] = useState(normalizeIsoDateInput(guest.doc_issue_date));
+  const [docExpiryDate, setDocExpiryDate] = useState(normalizeIsoDateInput(guest.doc_expiry_date));
 
   const initialNationalId = guest.national_id ?? guest.cnp ?? "";
   const initialNationalIdType = (guest.national_id_type as NationalIdType) ?? "cnp";
-  const initialExtracted = extractIdentityFromNationalId(
-    initialNationalIdType,
-    initialNationalId
-  );
+  const initialExtracted = extractIdentityFromNationalId(initialNationalIdType, initialNationalId);
 
   // National ID
-  const [nationalIdType, setNationalIdType] = useState<NationalIdType>(
-    initialNationalIdType
-  );
+  const [nationalIdType, setNationalIdType] = useState<NationalIdType>(initialNationalIdType);
   const [nationalId, setNationalId] = useState(initialNationalId);
 
-  const [birthDate, setBirthDate] = useState(
-    initialExtracted?.birthDate ?? guest.birth_date ?? ""
-  );
+  const [birthDate, setBirthDate] = useState(initialExtracted?.birthDate ?? guest.birth_date ?? "");
   const [birthPlace, setBirthPlace] = useState(guest.birth_place ?? "");
   const [nationality, setNationality] = useState(guest.nationality ?? "România");
   const [address, setAddress] = useState(guest.address ?? "");
   const [city, setCity] = useState(guest.city ?? "");
   const [county, setCounty] = useState(guest.county ?? "");
   const [country, setCountry] = useState(guest.country ?? "România");
-  const [sex, setSex] = useState<"M" | "F" | "">(
-    initialExtracted?.sex ?? guest.sex ?? ""
-  );
+  const [sex, setSex] = useState<"M" | "F" | "">(initialExtracted?.sex ?? guest.sex ?? "");
   const [phone, setPhone] = useState(guest.phone ?? "");
 
   const [idError, setIdError] = useState<string | null>(null);
@@ -117,21 +136,18 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
 
   const expectedLength = NATIONAL_ID_LENGTH[nationalIdType];
 
-  const applyExtractedIdentity = useCallback(
-    (type: NationalIdType, raw: string) => {
-      const extracted = extractIdentityFromNationalId(type, raw);
-      if (!extracted) {
-        setIdAutoFilled(false);
-        return false;
-      }
-      if (extracted.birthDate) setBirthDate(extracted.birthDate);
-      if (extracted.sex) setSex(extracted.sex);
-      setIdAutoFilled(true);
-      setIdError(null);
-      return true;
-    },
-    []
-  );
+  const applyExtractedIdentity = useCallback((type: NationalIdType, raw: string) => {
+    const extracted = extractIdentityFromNationalId(type, raw);
+    if (!extracted) {
+      setIdAutoFilled(false);
+      return false;
+    }
+    if (extracted.birthDate) setBirthDate(extracted.birthDate);
+    if (extracted.sex) setSex(extracted.sex);
+    setIdAutoFilled(true);
+    setIdError(null);
+    return true;
+  }, []);
 
   const handleNationalIdChange = useCallback(
     (raw: string) => {
@@ -147,7 +163,7 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
         setIdAutoFilled(false);
       }
     },
-    [nationalIdType, expectedLength, t, applyExtractedIdentity]
+    [nationalIdType, expectedLength, t, applyExtractedIdentity],
   );
 
   const handleNationalIdTypeChange = useCallback(
@@ -164,14 +180,18 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
       // Auto-set country based on ID type
       const idCountry = NATIONAL_ID_COUNTRY[newType];
       const countryNames: Record<string, string> = {
-        RO: "România", MD: "Republica Moldova", BG: "Bulgaria", GR: "Grecia", HU: "Ungaria",
+        RO: "România",
+        MD: "Republica Moldova",
+        BG: "Bulgaria",
+        GR: "Grecia",
+        HU: "Ungaria",
       };
       if (idCountry && countryNames[idCountry]) {
         setCountry(countryNames[idCountry]);
         setNationality(countryNames[idCountry]);
       }
     },
-    [applyExtractedIdentity, nationalId]
+    [applyExtractedIdentity, nationalId],
   );
 
   function applyMrzScan(data: MrzMappedIdentity) {
@@ -297,9 +317,7 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
             <div className="guest-identity-form__row guest-identity-form__row--multi">
               {cnpInCiSection ? (
                 <label className="guest-identity-form__field guest-identity-form__field--wide">
-                  <span className="guest-identity-form__label">
-                    {t("nationalIdTypes.cnp")} *
-                  </span>
+                  <span className="guest-identity-form__label">{t("nationalIdTypes.cnp")} *</span>
                   <input
                     type="text"
                     value={nationalId}
@@ -316,9 +334,7 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
                       .filter(Boolean)
                       .join(" ")}
                   />
-                  {idError ? (
-                    <span className="guest-identity-form__error">{idError}</span>
-                  ) : null}
+                  {idError ? <span className="guest-identity-form__error">{idError}</span> : null}
                 </label>
               ) : null}
               {showCiFields && (
@@ -400,43 +416,43 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
           </div>
 
           {showNationalIdPickerSection ? (
-          <div className="guest-identity-form__row guest-identity-form__row--multi">
-            <label className="guest-identity-form__field guest-identity-form__field--small">
-              <span className="guest-identity-form__label">{t("nationalIdType")}</span>
-              <NationalIdTypePicker
-                value={nationalIdType}
-                onChange={handleNationalIdTypeChange}
-                disabled={pending}
-                labelForType={(type) => t(`nationalIdTypes.${type}`)}
-              />
-            </label>
-            <label className="guest-identity-form__field">
-              <span className="guest-identity-form__label">
-                {idTypeLabel}
-                {idAutoFilled && (
-                  <span className="guest-identity-form__auto-tag">{t("autoFilled")}</span>
-                )}
-              </span>
-              <input
-                type="text"
-                value={nationalId}
-                onChange={(e) => handleNationalIdChange(e.target.value)}
-                placeholder={t("nationalIdPlaceholder", { digits: expectedLength })}
-                maxLength={expectedLength + 2}
-                inputMode="numeric"
-                className={[
-                  "guest-identity-form__input",
-                  idError && "guest-identity-form__input--error",
-                ].filter(Boolean).join(" ")}
-              />
-              {idError && (
-                <span className="guest-identity-form__error">{idError}</span>
-              )}
-              <span className="guest-identity-form__hint">
-                {t("nationalIdHint", { type: idTypeLabel, digits: expectedLength })}
-              </span>
-            </label>
-          </div>
+            <div className="guest-identity-form__row guest-identity-form__row--multi">
+              <label className="guest-identity-form__field guest-identity-form__field--small">
+                <span className="guest-identity-form__label">{t("nationalIdType")}</span>
+                <NationalIdTypePicker
+                  value={nationalIdType}
+                  onChange={handleNationalIdTypeChange}
+                  disabled={pending}
+                  labelForType={(type) => t(`nationalIdTypes.${type}`)}
+                />
+              </label>
+              <label className="guest-identity-form__field">
+                <span className="guest-identity-form__label">
+                  {idTypeLabel}
+                  {idAutoFilled && (
+                    <span className="guest-identity-form__auto-tag">{t("autoFilled")}</span>
+                  )}
+                </span>
+                <input
+                  type="text"
+                  value={nationalId}
+                  onChange={(e) => handleNationalIdChange(e.target.value)}
+                  placeholder={t("nationalIdPlaceholder", { digits: expectedLength })}
+                  maxLength={expectedLength + 2}
+                  inputMode="numeric"
+                  className={[
+                    "guest-identity-form__input",
+                    idError && "guest-identity-form__input--error",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                />
+                {idError && <span className="guest-identity-form__error">{idError}</span>}
+                <span className="guest-identity-form__hint">
+                  {t("nationalIdHint", { type: idTypeLabel, digits: expectedLength })}
+                </span>
+              </label>
+            </div>
           ) : null}
 
           <div className="guest-identity-form__row guest-identity-form__row--multi">
@@ -555,9 +571,7 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
 
         {/* Actions */}
         <div className="guest-identity-form__actions">
-          {success && (
-            <span className="guest-identity-form__success">{t("savedOk")}</span>
-          )}
+          {success && <span className="guest-identity-form__success">{t("savedOk")}</span>}
           <button
             type="button"
             onClick={() => void handleSubmit()}
@@ -576,11 +590,7 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
         onClose={() => setError(null)}
       />
 
-      <MrzScanDialog
-        open={mrzOpen}
-        onClose={() => setMrzOpen(false)}
-        onApply={applyMrzScan}
-      />
+      <MrzScanDialog open={mrzOpen} onClose={() => setMrzOpen(false)} onApply={applyMrzScan} />
     </>
   );
 }

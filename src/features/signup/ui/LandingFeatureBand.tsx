@@ -30,9 +30,7 @@ export function LandingFeatureBand({
 
   const copy = (
     <div className="lp-feat-section__copy">
-      {eyebrow ? (
-        <span className="lp-badge lp-badge--violet">{eyebrow}</span>
-      ) : null}
+      {eyebrow ? <span className="lp-badge lp-badge--violet">{eyebrow}</span> : null}
       <h2 className="lp-feat-section__title">{title}</h2>
       <p className="lp-feat-section__desc">{description}</p>
       {items && items.length > 0 ? (
@@ -45,9 +43,7 @@ export function LandingFeatureBand({
     </div>
   );
 
-  const visual = hasVisual ? (
-    <div className="lp-feat-section__visual">{children}</div>
-  ) : null;
+  const visual = hasVisual ? <div className="lp-feat-section__visual">{children}</div> : null;
 
   return (
     <section

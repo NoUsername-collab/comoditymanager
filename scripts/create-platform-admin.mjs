@@ -29,21 +29,17 @@ const emails = process.env.ZALMOX_ADMIN_EMAILS?.trim();
 const password = process.env.ADMIN_INITIAL_PASSWORD;
 
 if (!url || !serviceKey) {
-  console.error(
-    `Lipseste NEXT_PUBLIC_SUPABASE_URL sau SUPABASE_SERVICE_ROLE_KEY in ${envFile}`
-  );
+  console.error(`Lipseste NEXT_PUBLIC_SUPABASE_URL sau SUPABASE_SERVICE_ROLE_KEY in ${envFile}`);
   process.exit(1);
 }
 if (!emails) {
-  console.error(
-    `Adauga ZALMOX_ADMIN_EMAILS in ${envFile} (ex: admin@zalmox.app)`
-  );
+  console.error(`Adauga ZALMOX_ADMIN_EMAILS in ${envFile} (ex: admin@zalmox.app)`);
   process.exit(1);
 }
 if (!password) {
   console.error(
     `Adauga ADMIN_INITIAL_PASSWORD in ${envFile}, apoi ruleaza din nou.\n` +
-      `STERGE parola din .env.local dupa ce contul e creat!`
+      `STERGE parola din .env.local dupa ce contul e creat!`,
   );
   process.exit(1);
 }
@@ -56,9 +52,7 @@ const adminEmails = emails.split(",").map((e) => e.trim().toLowerCase());
 
 for (const email of adminEmails) {
   const { data: list } = await supabase.auth.admin.listUsers({ perPage: 500 });
-  const existing = list?.users?.find(
-    (u) => u.email?.toLowerCase() === email
-  );
+  const existing = list?.users?.find((u) => u.email?.toLowerCase() === email);
 
   if (existing) {
     const { error } = await supabase.auth.admin.updateUserById(existing.id, {
@@ -89,6 +83,4 @@ for (const email of adminEmails) {
   }
 }
 
-console.log(
-  "\nGata! STERGE ADMIN_INITIAL_PASSWORD din .env.local acum."
-);
+console.log("\nGata! STERGE ADMIN_INITIAL_PASSWORD din .env.local acum.");

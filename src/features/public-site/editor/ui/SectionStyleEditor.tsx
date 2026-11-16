@@ -30,15 +30,23 @@ export function SectionStyleEditor({ section }: { section: SectionDraft }) {
   const te = useTranslations("admin.pages.publicSite.editor.sectionStyle");
   const ed = useSectionEditing(section);
   const style = styleFromSettings(section.settings);
-  const changed = (Object.keys(OPTIONS) as (keyof SectionStyle)[]).filter((key) => style[key] !== "auto");
+  const changed = (Object.keys(OPTIONS) as (keyof SectionStyle)[]).filter(
+    (key) => style[key] !== "auto",
+  );
 
   return (
-    <EditorAdvanced label={changed.length > 0 ? te("titleChanged", { count: changed.length }) : te("title")}>
+    <EditorAdvanced
+      label={changed.length > 0 ? te("titleChanged", { count: changed.length }) : te("title")}
+    >
       <p className="pub-section-style__hint">{te("hint")}</p>
       {(Object.keys(OPTIONS) as (keyof SectionStyle)[]).map((key) => (
         <fieldset key={key} className="pub-section-style__group">
           <legend>{te(`${key}.label`)}</legend>
-          <div className="pub-section-style__options" role="radiogroup" aria-label={te(`${key}.label`)}>
+          <div
+            className="pub-section-style__options"
+            role="radiogroup"
+            aria-label={te(`${key}.label`)}
+          >
             {OPTIONS[key].map((option) => (
               <button
                 key={option}
@@ -50,7 +58,10 @@ export function SectionStyleEditor({ section }: { section: SectionDraft }) {
                 onClick={() => ed.setSetting(styleSettingKey(key))(option)}
               >
                 {key === "background" && option !== "auto" ? (
-                  <i className={`pub-section-style__swatch pub-section-style__swatch--${option}`} aria-hidden />
+                  <i
+                    className={`pub-section-style__swatch pub-section-style__swatch--${option}`}
+                    aria-hidden
+                  />
                 ) : null}
                 {te(`${key}.${option}`)}
               </button>

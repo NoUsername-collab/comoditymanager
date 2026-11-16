@@ -76,9 +76,7 @@ export function StaffStayRoomPicker({
     const q = filter.trim().toLowerCase();
     if (!q) return rooms;
     return rooms.filter(
-      (room) =>
-        room.name.toLowerCase().includes(q) ||
-        room.building_name.toLowerCase().includes(q),
+      (room) => room.name.toLowerCase().includes(q) || room.building_name.toLowerCase().includes(q),
     );
   }, [rooms, filter]);
 
@@ -91,14 +89,21 @@ export function StaffStayRoomPicker({
 
   if (previewError) {
     return (
-      <p className={reception ? "text-sm text-red-300" : "admin-banner admin-banner--danger"} role="alert">
+      <p
+        className={reception ? "text-sm text-red-300" : "admin-banner admin-banner--danger"}
+        role="alert"
+      >
         {previewError}
       </p>
     );
   }
 
   if (pending && rooms.length === 0) {
-    return <p className={reception ? "text-xs text-zinc-400" : "text-sm text-zinc-500"}>{t("roomsLoading")}</p>;
+    return (
+      <p className={reception ? "text-xs text-zinc-400" : "text-sm text-zinc-500"}>
+        {t("roomsLoading")}
+      </p>
+    );
   }
 
   if (!quote.canFulfill || rooms.length === 0) {
@@ -117,10 +122,7 @@ export function StaffStayRoomPicker({
             ? tConfirm("noRoomInRequestedRange")
             : tConfirm("capacityDoesNotCoverGuests", {
                 count: rooms.length,
-                rooms:
-                  rooms.length === 1
-                    ? tCommon("room")
-                    : tCommon("rooms").toLowerCase(),
+                rooms: rooms.length === 1 ? tCommon("room") : tCommon("rooms").toLowerCase(),
                 guests: quote.guestCount,
               })}
         </p>
@@ -129,7 +131,11 @@ export function StaffStayRoomPicker({
   }
 
   return (
-    <div className={["staff-stay-rooms", reception && "staff-stay-rooms--reception"].filter(Boolean).join(" ")}>
+    <div
+      className={["staff-stay-rooms", reception && "staff-stay-rooms--reception"]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <div className="staff-stay-rooms__meta">
         <span>
           {quote.guestCount} {tCommon("persons")}
@@ -156,7 +162,9 @@ export function StaffStayRoomPicker({
                 key={row.id}
                 type="button"
                 onClick={() => applySuggestion(row)}
-                className={["staff-stay-suggestion", on && "staff-stay-suggestion--on"].filter(Boolean).join(" ")}
+                className={["staff-stay-suggestion", on && "staff-stay-suggestion--on"]
+                  .filter(Boolean)
+                  .join(" ")}
                 aria-pressed={on}
               >
                 <span className="staff-stay-suggestion__kind">{kindLabel}</span>
@@ -219,7 +227,9 @@ export function StaffStayRoomPicker({
                       key={room.id}
                       type="button"
                       onClick={() => onToggle(room.id)}
-                      className={["staff-stay-rooms__row", on && "staff-stay-rooms__row--on"].filter(Boolean).join(" ")}
+                      className={["staff-stay-rooms__row", on && "staff-stay-rooms__row--on"]
+                        .filter(Boolean)
+                        .join(" ")}
                       aria-pressed={on}
                     >
                       <span className="staff-stay-rooms__row-name">{room.name}</span>
@@ -240,9 +250,7 @@ export function StaffStayRoomPicker({
                       <span className="staff-stay-rooms__sep" aria-hidden="true">
                         ·
                       </span>
-                      <span>
-                        {formatCurrency(room.price_per_night, locale)} RON
-                      </span>
+                      <span>{formatCurrency(room.price_per_night, locale)} RON</span>
                     </button>
                   );
                 })}
@@ -253,7 +261,10 @@ export function StaffStayRoomPicker({
       ) : null}
 
       {quote.selected.length > 0 && !quote.hostsGuests ? (
-        <p className={reception ? "text-sm text-amber-200" : "admin-banner admin-banner--warning"} role="alert">
+        <p
+          className={reception ? "text-sm text-amber-200" : "admin-banner admin-banner--warning"}
+          role="alert"
+        >
           {tParty("selectionDoesNotFit", { guests: quote.guestCount })}
         </p>
       ) : null}

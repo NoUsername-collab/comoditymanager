@@ -101,7 +101,9 @@ describe("public site studio draft", () => {
       { sectionType: "stays", visible: true, payload: { showPrices: true } },
       { sectionType: "place", visible: true },
     ]);
-    expect(input.sections.find((section) => section.sectionType === "intro")?.payload.title).toEqual({
+    expect(
+      input.sections.find((section) => section.sectionType === "intro")?.payload.title,
+    ).toEqual({
       ro: "RO intro",
       en: "EN intro",
     });
@@ -192,13 +194,20 @@ describe("public site studio draft", () => {
   it("drops a dragged section on another one's place, closing band still last", () => {
     const withCta: PublicSiteConfig = {
       ...config,
-      sections: [...config.sections, { id: "cta-1", sectionType: "cta", sortOrder: 20, visible: true, payload: {} }],
+      sections: [
+        ...config.sections,
+        { id: "cta-1", sectionType: "cta", sortOrder: 20, visible: true, payload: {} },
+      ],
     };
     const sections = buildPublicSiteStudioDraft(withCta, "ro").sections;
     const place = findSectionDraft(sections, "place")!;
     const intro = findSectionDraft(sections, "intro")!;
     expect(moveSectionDraftTo(sections, place.key, intro.key).map((s) => s.type)).toEqual([
-      "place", "intro", "gallery", "stays", "cta",
+      "place",
+      "intro",
+      "gallery",
+      "stays",
+      "cta",
     ]);
     expect(moveSectionDraftTo(sections, place.key, "cta-1")).toBe(sections);
   });
@@ -230,13 +239,17 @@ describe("public site studio draft", () => {
     let draft = buildPublicSiteStudioDraft(allKinds, "ro");
     for (const type of TITLED_TYPES) draft = editSection(draft, type, "title", `RO ${type}`);
 
-    const saved = mergeStudioToInput({ config: allKinds, draft }).sections.map((section, index) => ({
-      ...section,
-      id: `saved-${index}`,
-    })) as PublicSiteConfig["sections"];
+    const saved = mergeStudioToInput({ config: allKinds, draft }).sections.map(
+      (section, index) => ({
+        ...section,
+        id: `saved-${index}`,
+      }),
+    ) as PublicSiteConfig["sections"];
     const reloaded = buildPublicSiteStudioDraft({ ...allKinds, sections: saved }, "ro");
     for (const type of TITLED_TYPES) {
-      expect(sectionField(findSectionDraft(reloaded.sections, type), "ro", "title")).toBe(`RO ${type}`);
+      expect(sectionField(findSectionDraft(reloaded.sections, type), "ro", "title")).toBe(
+        `RO ${type}`,
+      );
     }
   });
 
@@ -255,8 +268,13 @@ describe("public site studio draft", () => {
     expect(saved.payload.imageAlt).toEqual({ ro: "Casa văzută din grădină" });
     expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
 
-    const removed = patchStudioSection(draft, intro.key, (s) => ({ ...s, settings: { ...s.settings, imageUrl: "" } }));
-    const after = mergeStudioToInput({ config, draft: removed }).sections.find((s) => s.sectionType === "intro")!;
+    const removed = patchStudioSection(draft, intro.key, (s) => ({
+      ...s,
+      settings: { ...s.settings, imageUrl: "" },
+    }));
+    const after = mergeStudioToInput({ config, draft: removed }).sections.find(
+      (s) => s.sectionType === "intro",
+    )!;
     expect(after.payload.imageUrl).toBeUndefined();
   });
 
@@ -277,7 +295,12 @@ describe("public site studio draft", () => {
     expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
 
     const reloaded = buildPublicSiteStudioDraft(
-      { ...config, sections: [{ id: "s", sectionType: "stays", sortOrder: 1, visible: true, payload: saved!.payload }] },
+      {
+        ...config,
+        sections: [
+          { id: "s", sectionType: "stays", sortOrder: 1, visible: true, payload: saved!.payload },
+        ],
+      },
       "ro",
     );
     expect(findSectionDraft(reloaded.sections, "stays")!.items[0]?.id).toBe("type-double");
@@ -289,16 +312,30 @@ describe("public site studio draft", () => {
     const draft = patchStudioSection(base, gallery.key, (section) => ({
       ...section,
       visible: true,
-      settings: { ...section.settings, albums: "food,exterior,nope", layout: "carousel", limit: "12" },
+      settings: {
+        ...section.settings,
+        albums: "food,exterior,nope",
+        layout: "carousel",
+        limit: "12",
+      },
     }));
     const input = mergeStudioToInput({ config, draft });
     const saved = input.sections.find((s) => s.sectionType === "gallery")!;
-    expect(saved.payload).toMatchObject({ albums: ["exterior", "food"], layout: "carousel", limit: 12 });
+    expect(saved.payload).toMatchObject({
+      albums: ["exterior", "food"],
+      layout: "carousel",
+      limit: 12,
+    });
     expect(saved.visible).toBe(true);
     expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
 
     const reloaded = buildPublicSiteStudioDraft(
-      { ...config, sections: [{ id: "g", sectionType: "gallery", sortOrder: 1, visible: true, payload: saved.payload }] },
+      {
+        ...config,
+        sections: [
+          { id: "g", sectionType: "gallery", sortOrder: 1, visible: true, payload: saved.payload },
+        ],
+      },
       "ro",
     );
     expect(findSectionDraft(reloaded.sections, "gallery")!.settings).toMatchObject({
@@ -311,7 +348,11 @@ describe("public site studio draft", () => {
   it("adds each new kind once, saves it and lets it be removed", () => {
     let draft = buildPublicSiteStudioDraft(config, "ro");
     for (const type of ["reviews", "faq", "amenities", "attractions", "video"] as const) {
-      const sections = addSectionDraft(draft.sections, type, `00000000-0000-4000-8000-00000000000${type.length}`);
+      const sections = addSectionDraft(
+        draft.sections,
+        type,
+        `00000000-0000-4000-8000-00000000000${type.length}`,
+      );
       expect(sections).not.toBeNull();
       draft = { ...draft, sections: sections! };
       // One of each on a page.
@@ -319,12 +360,20 @@ describe("public site studio draft", () => {
     }
     const faq = findSectionDraft(draft.sections, "faq")!;
     draft = patchStudioSection(draft, faq.key, (section) =>
-      setItemField(setItemField(section, "ro", section.items[0]!.id, "question", "Animale?"), "ro", section.items[0]!.id, "answer", "Da, **mici**."),
+      setItemField(
+        setItemField(section, "ro", section.items[0]!.id, "question", "Animale?"),
+        "ro",
+        section.items[0]!.id,
+        "answer",
+        "Da, **mici**.",
+      ),
     );
     const input = mergeStudioToInput({ config, draft });
     expect(parsePublicSiteSettingsInput(input).ok).toBe(true);
     const saved = input.sections.find((section) => section.sectionType === "faq");
-    expect(saved?.payload.items).toEqual([{ question: { ro: "Animale?" }, answer: { ro: "Da, **mici**." } }]);
+    expect(saved?.payload.items).toEqual([
+      { question: { ro: "Animale?" }, answer: { ro: "Da, **mici**." } },
+    ]);
     // Built-in kinds such as the closing band are not added by the operator.
     expect(addSectionDraft(draft.sections, "cta", "x")).toBeNull();
   });
@@ -345,9 +394,12 @@ describe("public site studio draft", () => {
 describe("merging after a version conflict", () => {
   it("keeps the operator's edits and takes the colleague's everywhere else", () => {
     const base = buildPublicSiteStudioDraft(config, "ro");
-    const mine = patchStudioCopy({ ...base, showCheckTimes: !base.showCheckTimes }, {
-      heroSubtitle: "Al meu",
-    });
+    const mine = patchStudioCopy(
+      { ...base, showCheckTimes: !base.showCheckTimes },
+      {
+        heroSubtitle: "Al meu",
+      },
+    );
     const theirs = editSection({ ...base, themeId: "forest" }, "intro", "lead", "Al colegului");
 
     const merged = mergeStudioDrafts(base, mine, theirs);

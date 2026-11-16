@@ -87,15 +87,7 @@ export function GanttCheckTimeDialog({
         actualCheckInAt,
         actualCheckOutAt,
       }),
-    [
-      mode,
-      intent,
-      status,
-      plannedCheckIn,
-      effectiveToday,
-      actualCheckInAt,
-      actualCheckOutAt,
-    ]
+    [mode, intent, status, plannedCheckIn, effectiveToday, actualCheckInAt, actualCheckOutAt],
   );
 
   const datetimeBounds = useMemo(
@@ -103,15 +95,14 @@ export function GanttCheckTimeDialog({
       mode === "checkin" && intent === "set"
         ? operativeCheckInDatetimeBounds(plannedCheckIn)
         : null,
-    [mode, intent, plannedCheckIn]
+    [mode, intent, plannedCheckIn],
   );
 
   useEffect(() => {
     if (!open) return;
     if (mode === "checkin" && intent === "set" && datetimeBounds) {
       const now = datetimeLocalNow();
-      const inBounds =
-        now >= datetimeBounds.min && now <= datetimeBounds.max;
+      const inBounds = now >= datetimeBounds.min && now <= datetimeBounds.max;
       setAtLocal(inBounds ? now : `${plannedCheckIn}T12:00`);
       return;
     }
@@ -124,9 +115,7 @@ export function GanttCheckTimeDialog({
         actualCheckOutAt,
       })
     ) {
-      setAtLocal(
-        defaultOperativeCheckoutDatetime(plannedCheckOut, checkoutTimeUntil)
-      );
+      setAtLocal(defaultOperativeCheckoutDatetime(plannedCheckOut, checkoutTimeUntil));
       return;
     }
     setAtLocal(datetimeLocalNow());
@@ -157,7 +146,7 @@ export function GanttCheckTimeDialog({
     document.documentElement.classList.add("admin-modal-open");
     const raf = requestAnimationFrame(() => {
       const input = dialogRef.current?.querySelector<HTMLInputElement>(
-        'input[type="datetime-local"]'
+        'input[type="datetime-local"]',
       );
       input?.focus();
     });
@@ -170,13 +159,9 @@ export function GanttCheckTimeDialog({
   if (!open) return null;
 
   const title =
-    mode === "checkin"
-      ? tGantt("checkTime.confirmCheckIn")
-      : tGantt("checkTime.confirmCheckOut");
+    mode === "checkin" ? tGantt("checkTime.confirmCheckIn") : tGantt("checkTime.confirmCheckOut");
   const cta =
-    mode === "checkin"
-      ? tGantt("checkTime.confirmCheckIn")
-      : tGantt("checkTime.confirmCheckOut");
+    mode === "checkin" ? tGantt("checkTime.confirmCheckIn") : tGantt("checkTime.confirmCheckOut");
 
   function submit(at?: string) {
     if (
@@ -296,12 +281,7 @@ export function GanttCheckTimeDialog({
           >
             {tCommon("now")}
           </AdminButton>
-          <AdminButton
-            variant="ghost"
-            size="sm"
-            disabled={pending}
-            onClick={onClose}
-          >
+          <AdminButton variant="ghost" size="sm" disabled={pending} onClick={onClose}>
             {tCommon("cancel")}
           </AdminButton>
         </div>

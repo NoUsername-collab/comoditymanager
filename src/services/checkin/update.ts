@@ -8,10 +8,7 @@ import type {
   CheckinStatus,
 } from "@/domain/checkin/types";
 import { mapCheckinDocTypeForDb } from "@/domain/checkin/doc-type";
-import {
-  expandGuestsForPersistence,
-  guestsToPersist,
-} from "@/domain/checkin/guest-layout";
+import { expandGuestsForPersistence, guestsToPersist } from "@/domain/checkin/guest-layout";
 import type { CheckinIdentityScope } from "@/domain/checkin/types";
 import { guestFullName } from "@/domain/checkin/identity-rules";
 import { mapBookingToForCheckin } from "@/domain/checkin/map-booking";
@@ -46,30 +43,21 @@ export async function updateCheckin(
   let activeBooking = booking;
 
   if (data.transfer_booking_to_guest_id) {
-    await reassignBookingHolder(
-      data.booking_id,
-      data.transfer_booking_to_guest_id,
-    );
+    await reassignBookingHolder(data.booking_id, data.transfer_booking_to_guest_id);
     const refreshed = await getBookingById(data.booking_id);
     if (!refreshed) throw new Error("booking.not_found");
     activeBooking = mapBookingToForCheckin(refreshed);
   }
 
-  const identityResult = await assertCheckinIdentityIntegrity(
-    data.guests,
-    activeBooking,
-  );
+  const identityResult = await assertCheckinIdentityIntegrity(data.guests, activeBooking);
   if (identityResult.blockers.length > 0) {
     throw new Error(`checkin.blocked: ${identityResult.blockers.join("; ")}`);
   }
   if (identityResult.transferOffer && !data.transfer_booking_to_guest_id) {
-    throw new Error(
-      encodeCheckinTransferRequired(identityResult.transferOffer),
-    );
+    throw new Error(encodeCheckinTransferRequired(identityResult.transferOffer));
   }
 
-  const checkinStatus: CheckinStatus =
-    validation.status === "warning" ? "incomplete" : "complete";
+  const checkinStatus: CheckinStatus = validation.status === "warning" ? "incomplete" : "complete";
 
   const { tenantId, supabase } = await getTenantScope();
 
@@ -135,16 +123,9 @@ export async function updateCheckin(
 
   const scope: CheckinIdentityScope = data.identity_scope ?? "per_room";
   const receptionRooms = data.reception_rooms ?? [];
-  const expandedGuests = expandGuestsForPersistence(
-    data.guests,
-    scope,
-    receptionRooms,
-  );
+  const expandedGuests = expandGuestsForPersistence(data.guests, scope, receptionRooms);
   const identityGuests = expandedGuests.filter((g) => !g.keys_only);
-  const syncedIdentity = await syncCheckinGuestsToClientProfiles(
-    identityGuests,
-    activeBooking,
-  );
+  const syncedIdentity = await syncCheckinGuestsToClientProfiles(identityGuests, activeBooking);
   let syncIdx = 0;
   const mergedGuests = expandedGuests.map((g) => {
     if (g.keys_only) return g;
@@ -173,17 +154,12 @@ export async function updateCheckin(
       }),
     );
 
-    const { error: guestErr } = await supabase
-      .from("checkin_guests")
-      .insert(guestRows);
+    const { error: guestErr } = await supabase.from("checkin_guests").insert(guestRows);
 
     if (guestErr) throw new Error(guestErr.message);
   }
 
-  const flagSummary =
-    validation.flags.length > 0
-      ? ` [${validation.flags.join(", ")}]`
-      : "";
+  const flagSummary = validation.flags.length > 0 ? ` [${validation.flags.join(", ")}]` : "";
 
   await logAdminActivityFromSession({
     action: "checkin.updated",

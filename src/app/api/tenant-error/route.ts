@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { captureTenantError } from "@/services/dev-logs";
-import {
-  isTenantRequestHost,
-  shouldSkipTenantErrorLog,
-} from "@/lib/tenant/error-safeguard";
+import { isTenantRequestHost, shouldSkipTenantErrorLog } from "@/lib/tenant/error-safeguard";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
 type Body = {
@@ -20,9 +17,7 @@ export async function POST(request: Request) {
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "";
 
   const devTenantSlug =
-    process.env.NODE_ENV === "development"
-      ? process.env.DEV_TENANT_SLUG?.trim()
-      : null;
+    process.env.NODE_ENV === "development" ? process.env.DEV_TENANT_SLUG?.trim() : null;
   if (!isTenantRequestHost(host) && !devTenantSlug) {
     return NextResponse.json({ ok: false }, { status: 404 });
   }

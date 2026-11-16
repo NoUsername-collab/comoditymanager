@@ -26,10 +26,7 @@ export default async function AdminAvailabilityPage({
       description={t("description")}
       className="mx-auto max-w-[1600px]"
     >
-      <AvailabilityDashboardShell
-        searchParams={params}
-        basePath="/admin/disponibilitate"
-      />
+      <AvailabilityDashboardShell searchParams={params} basePath="/admin/disponibilitate" />
     </AdminPageFrame>
   );
 }

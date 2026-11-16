@@ -39,11 +39,7 @@ function resolveTab(input: string | undefined): GuestDetailTab {
   return "overview";
 }
 
-function buildGuestDetailHref(input: {
-  id: string;
-  from?: string;
-  tab?: GuestDetailTab;
-}): string {
+function buildGuestDetailHref(input: { id: string; from?: string; tab?: GuestDetailTab }): string {
   const params = new URLSearchParams();
   if (input.from?.trim()) params.set("from", input.from.trim());
   if (input.tab && input.tab !== "overview") params.set("tab", input.tab);
@@ -58,15 +54,7 @@ export default async function GuestDetailPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ from?: string; tab?: string }>;
 }) {
-  const [
-    tPage,
-    tCommon,
-    tGuests,
-    tFlow,
-    { id },
-    { from, tab },
-    data,
-  ] = await Promise.all([
+  const [tPage, tCommon, tGuests, tFlow, { id }, { from, tab }, data] = await Promise.all([
     getTranslations("admin.pages.guestDetail"),
     getTranslations("admin.common"),
     getTranslations("admin.guests"),
@@ -225,195 +213,200 @@ export default async function GuestDetailPage({
           </nav>
 
           <div className="guest-profile-page__tab-panel">
-          {activeTab === "overview" && (
-            <>
-              <GuestProfileSection title={tPage("guestReview")}>
-                <GuestProfileCards profile={guest.profile} showDetails={false} />
-              </GuestProfileSection>
-              <GuestProfileSection title={tGuests("loyalty.sectionTitle")}>
-                <GuestLoyaltyRefPanel
-                  guestId={guest.id}
-                  reference={loyaltyRef}
-                  programEnabled={loyaltyEnabled}
-                />
-              </GuestProfileSection>
-              {dedupCandidates.length > 0 && (
-                <GuestProfileSection title={tPage("similarProfiles")}>
-                  <GuestDedupWarning
-                    candidates={dedupCandidates}
-                    currentGuestId={guest.id}
+            {activeTab === "overview" && (
+              <>
+                <GuestProfileSection title={tPage("guestReview")}>
+                  <GuestProfileCards profile={guest.profile} showDetails={false} />
+                </GuestProfileSection>
+                <GuestProfileSection title={tGuests("loyalty.sectionTitle")}>
+                  <GuestLoyaltyRefPanel
+                    guestId={guest.id}
+                    reference={loyaltyRef}
+                    programEnabled={loyaltyEnabled}
                   />
                 </GuestProfileSection>
-              )}
-            </>
-          )}
+                {dedupCandidates.length > 0 && (
+                  <GuestProfileSection title={tPage("similarProfiles")}>
+                    <GuestDedupWarning candidates={dedupCandidates} currentGuestId={guest.id} />
+                  </GuestProfileSection>
+                )}
+              </>
+            )}
 
-          {activeTab === "identity" && (
-            <>
-              <GuestProfileSection title={tPage("identityData")}>
-                <GuestIdentityForm
-                  key={`identity-${guest.id}-${guest.updated_at}`}
-                  guest={guest}
-                />
-              </GuestProfileSection>
-              <GuestProfileSection title={tGuests("privacy.title")}>
-                <GuestPrivacyPanel
-                  guestId={guest.id}
-                  isOwner={memberRole === "owner"}
-                  erasedAt={guest.erased_at ?? null}
-                />
-              </GuestProfileSection>
-            </>
-          )}
-
-          {activeTab === "profile" && (
-            <>
-              <GuestProfileSection title={tPage("operatorAdjustments")}>
-                <GuestProfileControlsForm
-                  key={`profile-controls-${guest.id}-${guest.profile?.updated_at ?? "none"}`}
-                  guestId={guest.id}
-                  profile={guest.profile}
-                />
-              </GuestProfileSection>
-              {(duplicates.length > 0 || duplicatesError) && (
-                <GuestProfileSection title={tPage("similarProfiles")}>
-                  {duplicatesError ? (
-                    <p className="guest-panel__warn">{duplicatesError}</p>
-                  ) : (
-                    <div className="space-y-3">
-                      <p className="guest-panel__hint">{tPage("similarProfilesHelp")}</p>
-                      <GuestMergeForm guestId={guest.id} duplicates={duplicates} />
-                    </div>
-                  )}
+            {activeTab === "identity" && (
+              <>
+                <GuestProfileSection title={tPage("identityData")}>
+                  <GuestIdentityForm
+                    key={`identity-${guest.id}-${guest.updated_at}`}
+                    guest={guest}
+                  />
                 </GuestProfileSection>
-              )}
-            </>
-          )}
+                <GuestProfileSection title={tGuests("privacy.title")}>
+                  <GuestPrivacyPanel
+                    guestId={guest.id}
+                    isOwner={memberRole === "owner"}
+                    erasedAt={guest.erased_at ?? null}
+                  />
+                </GuestProfileSection>
+              </>
+            )}
 
-          {activeTab === "notes" && (
-            <GuestProfileSection title={tPage("notesContext")}>
-              <div className="guest-notes-grid">
-                <div className="guest-note-box">
-                  <p className="guest-note-box__label">{tPage("profileNote")}</p>
-                  <p className="guest-note-box__text">
-                    {guest.profile?.manual_note?.trim() || tPage("noProfileNote")}
-                  </p>
-                </div>
-                <div className="guest-note-box">
-                  <p className="guest-note-box__label">{tPage("generalNotes")}</p>
-                  <p className="guest-note-box__text">
-                    {guest.notes?.trim() || tPage("noGeneralNotes")}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-3">
-                <GuestNotesForm
-                  key={`guest-notes-${guest.id}-${guest.updated_at}-${guest.notes ?? ""}`}
-                  guestId={guest.id}
-                  initialNotes={guest.notes ?? ""}
-                />
-              </div>
-            </GuestProfileSection>
-          )}
-
-          {activeTab === "history" && (
-            <GuestProfileSection title={tPage("historyTitle", { count: history.length })}>
-              {historyError ? (
-                <p className="guest-panel__warn">{historyError}</p>
-              ) : history.length === 0 ? (
-                <p className="guest-panel__hint">{tPage("noLinkedStays")}</p>
-              ) : (
-                <div className="guest-history">
-                  <div className="guest-history__summary">
-                    <span className="guest-history__pill">
-                      {tPage("staysCount", { count: history.length })}
-                    </span>
-                    <span className="guest-history__pill">
-                      {tPage("reviewsCount", { count: reviewedHistoryCount })}
-                    </span>
-                    {latestStay && (
-                      <span className="guest-history__latest">
-                        {tPage("latestStay", {
-                          period: formatStayPeriod(latestStay.check_in, latestStay.check_out, true),
-                        })}
-                      </span>
+            {activeTab === "profile" && (
+              <>
+                <GuestProfileSection title={tPage("operatorAdjustments")}>
+                  <GuestProfileControlsForm
+                    key={`profile-controls-${guest.id}-${guest.profile?.updated_at ?? "none"}`}
+                    guestId={guest.id}
+                    profile={guest.profile}
+                  />
+                </GuestProfileSection>
+                {(duplicates.length > 0 || duplicatesError) && (
+                  <GuestProfileSection title={tPage("similarProfiles")}>
+                    {duplicatesError ? (
+                      <p className="guest-panel__warn">{duplicatesError}</p>
+                    ) : (
+                      <div className="space-y-3">
+                        <p className="guest-panel__hint">{tPage("similarProfilesHelp")}</p>
+                        <GuestMergeForm guestId={guest.id} duplicates={duplicates} />
+                      </div>
                     )}
+                  </GuestProfileSection>
+                )}
+              </>
+            )}
+
+            {activeTab === "notes" && (
+              <GuestProfileSection title={tPage("notesContext")}>
+                <div className="guest-notes-grid">
+                  <div className="guest-note-box">
+                    <p className="guest-note-box__label">{tPage("profileNote")}</p>
+                    <p className="guest-note-box__text">
+                      {guest.profile?.manual_note?.trim() || tPage("noProfileNote")}
+                    </p>
                   </div>
-                  <ul className="guest-history__list">
-                    {history.map((stay) => (
-                      <li key={stay.id} className="guest-history__item">
-                        <div className="guest-history__item-top">
-                          <div>
-                            <p className="guest-history__period">
-                              <span className="guest-history__period-text">
-                                {formatStayPeriod(stay.check_in, stay.check_out, true)}
-                              </span>
-                              {stay.review && stay.review.stars > 0 ? (
-                                <GuestStayStarsInline value={stay.review.stars} />
+                  <div className="guest-note-box">
+                    <p className="guest-note-box__label">{tPage("generalNotes")}</p>
+                    <p className="guest-note-box__text">
+                      {guest.notes?.trim() || tPage("noGeneralNotes")}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <GuestNotesForm
+                    key={`guest-notes-${guest.id}-${guest.updated_at}-${guest.notes ?? ""}`}
+                    guestId={guest.id}
+                    initialNotes={guest.notes ?? ""}
+                  />
+                </div>
+              </GuestProfileSection>
+            )}
+
+            {activeTab === "history" && (
+              <GuestProfileSection title={tPage("historyTitle", { count: history.length })}>
+                {historyError ? (
+                  <p className="guest-panel__warn">{historyError}</p>
+                ) : history.length === 0 ? (
+                  <p className="guest-panel__hint">{tPage("noLinkedStays")}</p>
+                ) : (
+                  <div className="guest-history">
+                    <div className="guest-history__summary">
+                      <span className="guest-history__pill">
+                        {tPage("staysCount", { count: history.length })}
+                      </span>
+                      <span className="guest-history__pill">
+                        {tPage("reviewsCount", { count: reviewedHistoryCount })}
+                      </span>
+                      {latestStay && (
+                        <span className="guest-history__latest">
+                          {tPage("latestStay", {
+                            period: formatStayPeriod(
+                              latestStay.check_in,
+                              latestStay.check_out,
+                              true,
+                            ),
+                          })}
+                        </span>
+                      )}
+                    </div>
+                    <ul className="guest-history__list">
+                      {history.map((stay) => (
+                        <li key={stay.id} className="guest-history__item">
+                          <div className="guest-history__item-top">
+                            <div>
+                              <p className="guest-history__period">
+                                <span className="guest-history__period-text">
+                                  {formatStayPeriod(stay.check_in, stay.check_out, true)}
+                                </span>
+                                {stay.review && stay.review.stars > 0 ? (
+                                  <GuestStayStarsInline value={stay.review.stars} />
+                                ) : null}
+                              </p>
+                              <p className="guest-history__meta">
+                                {statusLabel(stay.status, tFlow)}
+                                {stay.room_names.length > 0
+                                  ? ` · ${stay.room_names.join(", ")}`
+                                  : ""}
+                                {stay.total_price != null ? ` · ${stay.total_price} RON` : ""}
+                              </p>
+                              <p className="guest-history__ref">{formatBookingRef(stay.id)}</p>
+                              {stay.review ? (
+                                <div className="guest-history__review">
+                                  <p
+                                    className={[
+                                      "guest-history__review-note",
+                                      stay.review.polarity === "positive"
+                                        ? "guest-history__review-note--positive"
+                                        : "guest-history__review-note--negative",
+                                    ].join(" ")}
+                                  >
+                                    {stay.review.polarity === "positive"
+                                      ? tGuests("review.positiveTone")
+                                      : tGuests("review.negativeTone")}
+                                    {` · ${tGuests("review.intensityValue", { value: stay.review.intensity })}`}
+                                    : {stay.review.note}
+                                  </p>
+                                </div>
                               ) : null}
-                            </p>
-                            <p className="guest-history__meta">
-                              {statusLabel(stay.status, tFlow)}
-                              {stay.room_names.length > 0 ? ` · ${stay.room_names.join(", ")}` : ""}
-                              {stay.total_price != null ? ` · ${stay.total_price} RON` : ""}
-                            </p>
-                            <p className="guest-history__ref">{formatBookingRef(stay.id)}</p>
-                            {stay.review ? (
-                              <div className="guest-history__review">
-                                <p
-                                  className={[
-                                    "guest-history__review-note",
-                                    stay.review.polarity === "positive"
-                                      ? "guest-history__review-note--positive"
-                                      : "guest-history__review-note--negative",
-                                  ].join(" ")}
-                                >
-                                  {stay.review.polarity === "positive"
-                                    ? tGuests("review.positiveTone")
-                                    : tGuests("review.negativeTone")}
-                                  {` · ${tGuests("review.intensityValue", { value: stay.review.intensity })}`}
-                                  : {stay.review.note}
-                                </p>
-                              </div>
-                            ) : null}
+                            </div>
+                            <Link
+                              href={`/admin/bookings/${stay.id}`}
+                              className="guest-history__detail-link"
+                            >
+                              {tCommon("details")} →
+                            </Link>
                           </div>
-                          <Link
-                            href={`/admin/bookings/${stay.id}`}
-                            className="guest-history__detail-link"
-                          >
-                            {tCommon("details")} →
-                          </Link>
-                        </div>
-                        <GuestRebookStayCollapse
-                          guestId={guest.id}
-                          bookingId={stay.id}
-                          today={today}
-                        />
-                        {stay.segments.length > 1 && (
-                          <ul className="guest-history__segments">
-                            {stay.segments.map((seg) => (
-                              <li key={seg.id}>
-                                {tPage("segmentLabel")}{" "}
-                                {formatStayPeriod(seg.segment_start, seg.segment_end, true)}
-                                {seg.nightly_rate != null ? ` · ${seg.nightly_rate} ${tPage("ronPerNight")}` : ""}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                        {stay.status === "confirmata" && stay.check_out < today && (
-                          <GuestStayReviewForm
+                          <GuestRebookStayCollapse
                             guestId={guest.id}
                             bookingId={stay.id}
-                            review={stay.review}
+                            today={today}
                           />
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </GuestProfileSection>
-          )}
+                          {stay.segments.length > 1 && (
+                            <ul className="guest-history__segments">
+                              {stay.segments.map((seg) => (
+                                <li key={seg.id}>
+                                  {tPage("segmentLabel")}{" "}
+                                  {formatStayPeriod(seg.segment_start, seg.segment_end, true)}
+                                  {seg.nightly_rate != null
+                                    ? ` · ${seg.nightly_rate} ${tPage("ronPerNight")}`
+                                    : ""}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                          {stay.status === "confirmata" && stay.check_out < today && (
+                            <GuestStayReviewForm
+                              guestId={guest.id}
+                              bookingId={stay.id}
+                              review={stay.review}
+                            />
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </GuestProfileSection>
+            )}
           </div>
         </div>
       </div>

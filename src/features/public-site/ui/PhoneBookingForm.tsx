@@ -2,11 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { createStaffStayAction, type StaffStayIntent } from "@/features/bookings/staff-stay-actions";
 import {
-  BookingIdentityPanel,
-  useBookingIdentity,
-} from "@/features/bookings/ui/identity";
+  createStaffStayAction,
+  type StaffStayIntent,
+} from "@/features/bookings/staff-stay-actions";
+import { BookingIdentityPanel, useBookingIdentity } from "@/features/bookings/ui/identity";
 import {
   StaffStayIntentToggle,
   StaffStayRoomPicker,
@@ -16,12 +16,7 @@ import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
 import { DEFAULT_PARTY_ADULTS } from "@/lib/constants";
 import { buildParty, type Party } from "@/domain/availability/party";
 import { PartyFields } from "@/features/bookings/ui/party/PartyFields";
-import {
-  addDays,
-  clampCheckInDate,
-  defaultNewStayDates,
-  todayIso,
-} from "@/lib/stay-dates";
+import { addDays, clampCheckInDate, defaultNewStayDates, todayIso } from "@/lib/stay-dates";
 
 export function PhoneBookingForm({
   checkInTime,
@@ -120,11 +115,7 @@ export function PhoneBookingForm({
       <p className="text-xs text-zinc-500">
         {t("receptionHours", { checkIn: checkInTime, checkOut: checkOutTime })}
       </p>
-      <StaffStayIntentToggle
-        value={intent}
-        onChange={setIntent}
-        appearance="reception"
-      />
+      <StaffStayIntentToggle value={intent} onChange={setIntent} appearance="reception" />
       <div className="grid grid-cols-2 gap-2">
         <label>
           {tForm("checkIn").replace(" *", "")}
@@ -177,10 +168,7 @@ export function PhoneBookingForm({
       <button
         type="submit"
         disabled={
-          pending ||
-          stayPreview.pending ||
-          !identity.canSubmit ||
-          !stayPreview.quote.hostsGuests
+          pending || stayPreview.pending || !identity.canSubmit || !stayPreview.quote.hostsGuests
         }
         className="phone-booking-form__submit min-h-[var(--ml-touch-min,2.75rem)] w-full rounded-lg bg-zinc-800 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
       >

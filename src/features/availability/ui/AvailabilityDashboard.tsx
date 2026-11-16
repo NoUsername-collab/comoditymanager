@@ -10,10 +10,7 @@ import { minFreeAcrossDays } from "@/domain/availability/compute";
 import { mondayOfWeekIso } from "@/domain/availability/week-range";
 import { formatDateWithDay } from "@/lib/ro-calendar";
 import { todayIso, addDays } from "@/lib/stay-dates";
-import type {
-  AvailabilityDashboard,
-  DayAvailabilityDetail,
-} from "@/services/availability-month";
+import type { AvailabilityDashboard, DayAvailabilityDetail } from "@/services/availability-month";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
@@ -26,17 +23,14 @@ import {
   type AvailabilityDisplayMode,
 } from "./AvailabilityHeatCells";
 import { AvailabilityKpiStrip } from "./AvailabilityKpiStrip";
-import {
-  DayDetailPanelError,
-  DayDetailPanelSkeleton,
-} from "./AvailabilityDayDetailPanel";
+import { DayDetailPanelError, DayDetailPanelSkeleton } from "./AvailabilityDayDetailPanel";
 
 const DayDetailPanel = dynamic(
   () =>
     import("./AvailabilityDayDetailPanel").then((m) => ({
       default: m.DayDetailPanel,
     })),
-  { ssr: false }
+  { ssr: false },
 );
 
 export function AvailabilityDashboard({
@@ -115,9 +109,7 @@ export function AvailabilityDashboard({
 
   const weekendAccentColor = useMemo(() => {
     if (!buildingId) return null;
-    return (
-      dashboard.buildings.find((b) => b.id === buildingId)?.display_color ?? null
-    );
+    return dashboard.buildings.find((b) => b.id === buildingId)?.display_color ?? null;
   }, [buildingId, dashboard.buildings]);
 
   const weekendSlots = useMemo(() => {
@@ -125,12 +117,11 @@ export function AvailabilityDashboard({
     if (picks.length > 0) return picks;
     return dashboard.next_weekend ? [dashboard.next_weekend] : [];
   }, [dashboard.weekend_picks, dashboard.next_weekend]);
-  const weekMonday =
-    initialWeekStart ?? mondayOfWeekIso(selectedIso ?? effectiveToday);
+  const weekMonday = initialWeekStart ?? mondayOfWeekIso(selectedIso ?? effectiveToday);
 
   const prefixedKey = useCallback(
     (key: string) => (queryPrefix ? `${queryPrefix}${key}` : key),
-    [queryPrefix]
+    [queryPrefix],
   );
 
   const buildQuery = useCallback(
@@ -158,12 +149,12 @@ export function AvailabilityDashboard({
 
       return p.toString();
     },
-    [searchParams, prefixedKey, extraQueryParams]
+    [searchParams, prefixedKey, extraQueryParams],
   );
 
   const buildTargetHref = useCallback(
     (query: string) => `${basePath}?${query}${anchorHash}`,
-    [anchorHash, basePath]
+    [anchorHash, basePath],
   );
 
   const pushParams = useCallback(
@@ -189,7 +180,7 @@ export function AvailabilityDashboard({
       prefixedKey,
       buildQuery,
       buildTargetHref,
-    ]
+    ],
   );
 
   const requestIdRef = useRef(0);
@@ -200,14 +191,9 @@ export function AvailabilityDashboard({
         dashboard.days.find((d) => d.iso === iso) ??
         dashboard.scan_days.find((d) => d.iso === iso) ??
         null;
-      void fetchDayAvailabilityDetailAction(
-        iso,
-        buildingId,
-        featureFilter,
-        knownDay
-      );
+      void fetchDayAvailabilityDetailAction(iso, buildingId, featureFilter, knownDay);
     },
-    [buildingId, dashboard.days, dashboard.scan_days, featureFilter]
+    [buildingId, dashboard.days, dashboard.scan_days, featureFilter],
   );
 
   const selectDay = useCallback(
@@ -228,7 +214,7 @@ export function AvailabilityDashboard({
           iso,
           buildingId,
           featureFilter,
-          knownDay
+          knownDay,
         );
         if (thisRequest !== requestIdRef.current) return;
         if (!data) {
@@ -247,7 +233,7 @@ export function AvailabilityDashboard({
         }
       }
     },
-    [buildingId, dashboard.days, dashboard.scan_days, featureFilter]
+    [buildingId, dashboard.days, dashboard.scan_days, featureFilter],
   );
 
   const handleDayClick = (iso: string, shift: boolean) => {
@@ -278,10 +264,7 @@ export function AvailabilityDashboard({
     return dashboard.days.filter((d) => d.iso >= a && d.iso <= b);
   }, [rangeStart, rangeEnd, dashboard.days]);
 
-  const rangeStats = useMemo(
-    () => minFreeAcrossDays(rangeDays),
-    [rangeDays]
-  );
+  const rangeStats = useMemo(() => minFreeAcrossDays(rangeDays), [rangeDays]);
 
   const monthCells = useMemo(() => {
     const blanks = Array.from({ length: dashboard.leading_blanks }, (_, i) => ({
@@ -297,8 +280,7 @@ export function AvailabilityDashboard({
   }, [dashboard]);
 
   const weekSlots = useMemo(() => {
-    const pool =
-      dashboard.scan_days.length > 0 ? dashboard.scan_days : dashboard.days;
+    const pool = dashboard.scan_days.length > 0 ? dashboard.scan_days : dashboard.days;
     return Array.from({ length: 7 }, (_, i) => {
       const iso = addDays(weekMonday, i);
       return pool.find((d) => d.iso === iso) ?? null;
@@ -331,7 +313,7 @@ export function AvailabilityDashboard({
       occupiedTitle: tAvail("occupiedTitle"),
       focusGanttWeek: tAvail("focusGanttWeek"),
     }),
-    [tCommon, tAvail]
+    [tCommon, tAvail],
   );
 
   const inRange = (iso: string) => {
@@ -343,11 +325,12 @@ export function AvailabilityDashboard({
 
   const copyIntervalText = () => {
     if (rangeDays.length === 0) return;
-    const [a, b] = rangeStart && rangeEnd
-      ? rangeStart <= rangeEnd
-        ? [rangeStart, rangeEnd]
-        : [rangeEnd, rangeStart]
-      : [rangeStart!, rangeStart!];
+    const [a, b] =
+      rangeStart && rangeEnd
+        ? rangeStart <= rangeEnd
+          ? [rangeStart, rangeEnd]
+          : [rangeEnd, rangeStart]
+        : [rangeStart!, rangeStart!];
     const text = `${tAvail("clipboardPrefix")}: ${formatDateWithDay(a!, locale)} – ${formatDateWithDay(b!, locale)} · ${tCommon("min")} ${rangeStats.min} ${tAvail("freeRooms").toLowerCase()} / ${tCommon("night")}`;
     void navigator.clipboard.writeText(text);
   };
@@ -377,10 +360,7 @@ export function AvailabilityDashboard({
         <div className="avail-view-tabs">
           <button
             type="button"
-            className={[
-              "avail-view-tab",
-              view === "month" && "avail-view-tab--active",
-            ]
+            className={["avail-view-tab", view === "month" && "avail-view-tab--active"]
               .filter(Boolean)
               .join(" ")}
             onClick={() => pushParams({ view: "month", ws: undefined })}
@@ -389,10 +369,7 @@ export function AvailabilityDashboard({
           </button>
           <button
             type="button"
-            className={[
-              "avail-view-tab",
-              view === "week" && "avail-view-tab--active",
-            ]
+            className={["avail-view-tab", view === "week" && "avail-view-tab--active"]
               .filter(Boolean)
               .join(" ")}
             onClick={() =>
@@ -419,21 +396,18 @@ export function AvailabilityDashboard({
       <div className="avail-building-chips">
         <button
           type="button"
-          className={[
-            "avail-building-chip",
-            !buildingId && "avail-building-chip--active",
-          ]
+          className={["avail-building-chip", !buildingId && "avail-building-chip--active"]
             .filter(Boolean)
             .join(" ")}
           style={{ "--chip-color": "var(--text-muted)" } as React.CSSProperties}
           onClick={() =>
             router.push(
-                buildTargetHref(
-                  buildQuery(dashboard.year, dashboard.month, {
-                    view,
-                    day: selectedIso ?? undefined,
-                  })
-                )
+              buildTargetHref(
+                buildQuery(dashboard.year, dashboard.month, {
+                  view,
+                  day: selectedIso ?? undefined,
+                }),
+              ),
             )
           }
         >
@@ -443,10 +417,7 @@ export function AvailabilityDashboard({
           <button
             key={b.id}
             type="button"
-            className={[
-              "avail-building-chip",
-              buildingId === b.id && "avail-building-chip--active",
-            ]
+            className={["avail-building-chip", buildingId === b.id && "avail-building-chip--active"]
               .filter(Boolean)
               .join(" ")}
             style={{ "--chip-color": b.display_color } as React.CSSProperties}
@@ -458,15 +429,12 @@ export function AvailabilityDashboard({
                     view,
                     day: selectedIso ?? undefined,
                     ws: view === "week" ? weekMonday : undefined,
-                  })
-                )
+                  }),
+                ),
               )
             }
           >
-            <span
-              className="h-2.5 w-2.5 rounded-full"
-              style={{ background: b.display_color }}
-            />
+            <span className="h-2.5 w-2.5 rounded-full" style={{ background: b.display_color }} />
             {b.name} ({b.room_count})
           </button>
         ))}
@@ -506,7 +474,8 @@ export function AvailabilityDashboard({
           <p className="text-sm font-medium text-zinc-800">
             {tCommon("interval")} {formatDateWithDay(rangeDays[0]!.iso, locale)} →{" "}
             {formatDateWithDay(rangeDays[rangeDays.length - 1]!.iso, locale)} · minim{" "}
-            <strong>{rangeStats.min}</strong> {tAvail("freeRooms").toLowerCase()} / {tCommon("night")}
+            <strong>{rangeStats.min}</strong> {tAvail("freeRooms").toLowerCase()} /{" "}
+            {tCommon("night")}
           </p>
           <div className="avail-interval-bar__actions flex gap-2">
             <AdminButton
@@ -532,127 +501,118 @@ export function AvailabilityDashboard({
         </div>
       )}
 
-      <p className="text-[11px] text-zinc-500">
-        {tAvail("shiftClickHint")}
-      </p>
+      <p className="text-[11px] text-zinc-500">{tAvail("shiftClickHint")}</p>
 
       <AdminPanel title={`${tCommon("availability")} — ${dashboard.title}`}>
-      <div className="availability-layout">
-        <div className="availability-grid-panel min-w-0">
-          {view === "month" ? (
-            <>
-              <div className="availability-month-matrix">
+        <div className="availability-layout">
+          <div className="availability-grid-panel min-w-0">
+            {view === "month" ? (
+              <>
+                <div className="availability-month-matrix">
+                  <div className="availability-month-grid availability-month-grid--calendar">
+                    {weekHeaders.map((h) => (
+                      <div key={h} className="availability-month-header">
+                        {h}
+                      </div>
+                    ))}
+                    {monthCells.map((cell) =>
+                      cell.type === "blank" ? (
+                        <div key={cell.key} className="availability-month-blank" aria-hidden />
+                      ) : (
+                        <div key={cell.key} className="availability-day-cell-slot">
+                          <HeatDayCell
+                            day={cell.day}
+                            selected={selectedIso === cell.day.iso}
+                            inRange={inRange(cell.day.iso)}
+                            displayMode={displayMode}
+                            onSelect={handleDayClick}
+                            onDayHover={prefetchDayDetail}
+                            labels={heatCellLabels}
+                            locale={locale}
+                            today={effectiveToday}
+                          />
+                        </div>
+                      ),
+                    )}
+                  </div>
+
+                  <AvailabilityHeatLegend displayMode={displayMode} labels={heatLegendLabels} />
+                </div>
+              </>
+            ) : (
+              <div className="availability-week-matrix">
                 <div className="availability-month-grid availability-month-grid--calendar">
                   {weekHeaders.map((h) => (
-                    <div key={h} className="availability-month-header">
+                    <div key={`w-${h}`} className="availability-month-header">
                       {h}
                     </div>
                   ))}
-                  {monthCells.map((cell) =>
-                    cell.type === "blank" ? (
-                      <div
-                        key={cell.key}
-                        className="availability-month-blank"
-                        aria-hidden
-                      />
-                    ) : (
-                      <div key={cell.key} className="availability-day-cell-slot">
-                        <HeatDayCell
-                          day={cell.day}
-                          selected={selectedIso === cell.day.iso}
-                          inRange={inRange(cell.day.iso)}
-                          displayMode={displayMode}
-                          onSelect={handleDayClick}
-                          onDayHover={prefetchDayDetail}
-                          labels={heatCellLabels}
-                          locale={locale}
-                          today={effectiveToday}
-                        />
-                      </div>
-                    )
+                  {weekSlots.every((d) => d === null) ? (
+                    <p className="availability-week-empty">{tAvail("navigateToWeekMonth")}</p>
+                  ) : (
+                    weekSlots.map((d, i) => {
+                      const iso = addDays(weekMonday, i);
+                      if (!d) {
+                        return (
+                          <div
+                            key={iso}
+                            className="availability-day-cell-slot availability-day-cell-slot--week availability-day-cell-slot--empty"
+                            aria-hidden
+                          />
+                        );
+                      }
+                      return (
+                        <div
+                          key={d.iso}
+                          className="availability-day-cell-slot availability-day-cell-slot--week"
+                        >
+                          <HeatDayCell
+                            day={d}
+                            selected={selectedIso === d.iso}
+                            inRange={inRange(d.iso)}
+                            displayMode={displayMode}
+                            onSelect={handleDayClick}
+                            onDayHover={prefetchDayDetail}
+                            labels={heatCellLabels}
+                            locale={locale}
+                            today={effectiveToday}
+                          />
+                        </div>
+                      );
+                    })
                   )}
                 </div>
-
                 <AvailabilityHeatLegend displayMode={displayMode} labels={heatLegendLabels} />
+                <div className="availability-week-nav">
+                  <button
+                    type="button"
+                    className="availability-week-nav__prev text-xs font-semibold text-emerald-700"
+                    onClick={() =>
+                      pushParams({
+                        view: "week",
+                        ws: addDays(weekMonday, -7),
+                      })
+                    }
+                  >
+                    ← {tAvail("previousWeek")}
+                  </button>
+                  <button
+                    type="button"
+                    className="availability-week-nav__next text-xs font-semibold text-emerald-700"
+                    onClick={() =>
+                      pushParams({
+                        view: "week",
+                        ws: addDays(weekMonday, 7),
+                      })
+                    }
+                  >
+                    {tAvail("nextWeek")} →
+                  </button>
+                </div>
               </div>
-            </>
-          ) : (
-            <div className="availability-week-matrix">
-              <div className="availability-month-grid availability-month-grid--calendar">
-                {weekHeaders.map((h) => (
-                  <div key={`w-${h}`} className="availability-month-header">
-                    {h}
-                  </div>
-                ))}
-              {weekSlots.every((d) => d === null) ? (
-                <p className="availability-week-empty">
-                  {tAvail("navigateToWeekMonth")}
-                </p>
-              ) : (
-                weekSlots.map((d, i) => {
-                  const iso = addDays(weekMonday, i);
-                  if (!d) {
-                    return (
-                      <div
-                        key={iso}
-                        className="availability-day-cell-slot availability-day-cell-slot--week availability-day-cell-slot--empty"
-                        aria-hidden
-                      />
-                    );
-                  }
-                  return (
-                    <div
-                      key={d.iso}
-                      className="availability-day-cell-slot availability-day-cell-slot--week"
-                    >
-                      <HeatDayCell
-                        day={d}
-                        selected={selectedIso === d.iso}
-                        inRange={inRange(d.iso)}
-                        displayMode={displayMode}
-                        onSelect={handleDayClick}
-                        onDayHover={prefetchDayDetail}
-                        labels={heatCellLabels}
-                        locale={locale}
-                        today={effectiveToday}
-                      />
-                    </div>
-                  );
-                })
-              )}
-              </div>
-              <AvailabilityHeatLegend displayMode={displayMode} labels={heatLegendLabels} />
-              <div className="availability-week-nav">
-                <button
-                  type="button"
-                  className="availability-week-nav__prev text-xs font-semibold text-emerald-700"
-                  onClick={() =>
-                    pushParams({
-                      view: "week",
-                      ws: addDays(weekMonday, -7),
-                    })
-                  }
-                >
-                  ← {tAvail("previousWeek")}
-                </button>
-                <button
-                  type="button"
-                  className="availability-week-nav__next text-xs font-semibold text-emerald-700"
-                  onClick={() =>
-                    pushParams({
-                      view: "week",
-                      ws: addDays(weekMonday, 7),
-                    })
-                  }
-                >
-                  {tAvail("nextWeek")} →
-                </button>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-
-      </div>
       </AdminPanel>
 
       <AdminFloatingPanel

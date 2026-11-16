@@ -1,22 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import {
-  readPwaInstallContext,
-  type BeforeInstallPromptEvent,
-} from "@/lib/pwa/install";
+import { readPwaInstallContext, type BeforeInstallPromptEvent } from "@/lib/pwa/install";
 
-export type PwaInstallMode =
-  | "prompt"
-  | "ios"
-  | "android-manual"
-  | "desktop-manual"
-  | null;
+export type PwaInstallMode = "prompt" | "ios" | "android-manual" | "desktop-manual" | null;
 
 export function usePwaInstall() {
-  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(
-    null
-  );
+  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
   const [isIosSafari, setIsIosSafari] = useState(false);
   const [isMobile, setIsMobile] = useState(false);

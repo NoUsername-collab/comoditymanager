@@ -5,10 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { LandingHeroShowcase } from "@/features/signup/ui/LandingHeroShowcase";
 import { LandingFeatureBand } from "@/features/signup/ui/LandingFeatureBand";
 import { PricingGrid } from "@/features/signup/ui/PricingGrid";
-import {
-  BookingFormMockup,
-  GuestAppMockup,
-} from "@/features/signup/ui/LandingMockups";
+import { BookingFormMockup, GuestAppMockup } from "@/features/signup/ui/LandingMockups";
 import { PLATFORM_CONTACT_EMAIL } from "@/lib/platform/branding";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
@@ -30,17 +27,10 @@ export async function generateMetadata({
   };
 }
 
-export default async function LandingPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+export default async function LandingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [t, tp] = await Promise.all([
-    getTranslations("landing"),
-    getTranslations("pricing"),
-  ]);
+  const [t, tp] = await Promise.all([getTranslations("landing"), getTranslations("pricing")]);
 
   const demoHref = `mailto:${PLATFORM_CONTACT_EMAIL}?subject=${encodeURIComponent(t("demoEmailSubject"))}`;
   const bookingLabels = {
@@ -65,9 +55,7 @@ export default async function LandingPage({
             <p className="lp-badge lp-badge--violet">{t("heroBadge")}</p>
             <h1 className="lp-hero__title" id="lp-hero-title">
               {t.rich("heroTitle", {
-                accent: (chunks) => (
-                  <span className="lp-hero__title-accent">{chunks}</span>
-                ),
+                accent: (chunks) => <span className="lp-hero__title-accent">{chunks}</span>,
               })}
             </h1>
             <p className="lp-hero__subtitle">{t("heroSubtitle")}</p>
@@ -184,11 +172,7 @@ export default async function LandingPage({
         </ol>
       </section>
 
-      <section
-        className="lp-pricing-section"
-        id="preturi"
-        aria-labelledby="lp-pricing-title"
-      >
+      <section className="lp-pricing-section" id="preturi" aria-labelledby="lp-pricing-title">
         <h2 className="lp-section-title" id="lp-pricing-title">
           {tp("gridTitle")}
         </h2>
@@ -217,8 +201,7 @@ export default async function LandingPage({
       </section>
 
       <p className="lp-assurance">
-        {t("trustSectionLead")}{" "}
-        <Link href="/confidentialitate">{t("trustLegalLink")}</Link>
+        {t("trustSectionLead")} <Link href="/confidentialitate">{t("trustLegalLink")}</Link>
         {t("trustLegalSuffix")}
       </p>
 
@@ -226,9 +209,7 @@ export default async function LandingPage({
         <div className="lp-final-cta__inner">
           <h2 className="lp-final-cta__title" id="lp-final-title">
             {t.rich("finalCtaTitle", {
-              accent: (chunks) => (
-                <span className="lp-final-cta__title-accent">{chunks}</span>
-              ),
+              accent: (chunks) => <span className="lp-final-cta__title-accent">{chunks}</span>,
             })}
           </h2>
           <p className="lp-final-cta__text">{t("finalCtaText")}</p>

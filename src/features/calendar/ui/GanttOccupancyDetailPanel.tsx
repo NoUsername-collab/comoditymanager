@@ -6,10 +6,7 @@ import {
   useAdminPending,
   useRunAdminAction,
 } from "@/components/admin/feedback/AdminPendingProvider";
-import {
-  deleteRoomBlockAction,
-  releaseRoomHoldAction,
-} from "@/features/calendar/actions";
+import { deleteRoomBlockAction, releaseRoomHoldAction } from "@/features/calendar/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
@@ -64,7 +61,7 @@ export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
       }
       notifyCancel(
         isHold ? tGantt("occupancy.holdReleased") : tGantt("occupancy.blockDeleted"),
-        `${roomName} · ${period}`
+        `${roomName} · ${period}`,
       );
       removeGanttLiveSegment(segment.id);
       onClose();
@@ -100,12 +97,7 @@ export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
           <p className="text-sm text-zinc-500">{tGantt("occupancy.noAutoExpire")}</p>
         ) : null}
 
-        <AdminButton
-          variant="primary"
-          fullWidth
-          disabled={pending}
-          onClick={releaseOrDelete}
-        >
+        <AdminButton variant="primary" fullWidth disabled={pending} onClick={releaseOrDelete}>
           {isHold ? tGantt("occupancy.releaseHold") : tGantt("occupancy.deleteBlock")}
         </AdminButton>
 

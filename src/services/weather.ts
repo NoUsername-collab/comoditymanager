@@ -15,10 +15,7 @@ type DayForecast = {
   code: number;
 };
 
-export async function fetchWeather(
-  lat: number,
-  lng: number,
-): Promise<WeatherData | null> {
+export async function fetchWeather(lat: number, lng: number): Promise<WeatherData | null> {
   try {
     const params = new URLSearchParams({
       latitude: String(lat),

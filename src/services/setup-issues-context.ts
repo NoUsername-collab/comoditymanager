@@ -23,9 +23,7 @@ async function loadOnboardingIssueContextUncached(
   const [pensionResult, publicSiteResult, roomsResult] = await Promise.all([
     supabase
       .from("pension_settings")
-      .select(
-        "contact_email, display_name, email_reply_to, email_from_name, email_from_address",
-      )
+      .select("contact_email, display_name, email_reply_to, email_from_name, email_from_address")
       .eq("tenant_id", tenantId)
       .maybeSingle(),
     supabase
@@ -33,10 +31,7 @@ async function loadOnboardingIssueContextUncached(
       .select("contact, use_primary_contact")
       .eq("tenant_id", tenantId)
       .maybeSingle(),
-    supabase
-      .from("rooms")
-      .select("id", { count: "exact", head: true })
-      .eq("tenant_id", tenantId),
+    supabase.from("rooms").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId),
   ]);
 
   const pensionRow = pensionResult.data;
@@ -47,21 +42,15 @@ async function loadOnboardingIssueContextUncached(
       : null;
 
   return {
-    displayName:
-      typeof pensionRow?.display_name === "string" ? pensionRow.display_name : null,
-    pensionEmail:
-      typeof pensionRow?.contact_email === "string" ? pensionRow.contact_email : null,
-    publicSiteEmail:
-      typeof publicContact?.email === "string" ? publicContact.email : null,
+    displayName: typeof pensionRow?.display_name === "string" ? pensionRow.display_name : null,
+    pensionEmail: typeof pensionRow?.contact_email === "string" ? pensionRow.contact_email : null,
+    publicSiteEmail: typeof publicContact?.email === "string" ? publicContact.email : null,
     usePrimaryContact: publicSiteRow?.use_primary_contact !== false,
-    emailReplyTo:
-      typeof pensionRow?.email_reply_to === "string" ? pensionRow.email_reply_to : null,
+    emailReplyTo: typeof pensionRow?.email_reply_to === "string" ? pensionRow.email_reply_to : null,
     emailFromName:
       typeof pensionRow?.email_from_name === "string" ? pensionRow.email_from_name : null,
     emailFromAddress:
-      typeof pensionRow?.email_from_address === "string"
-        ? pensionRow.email_from_address
-        : null,
+      typeof pensionRow?.email_from_address === "string" ? pensionRow.email_from_address : null,
     roomCount: roomsResult.count ?? 0,
   };
 }

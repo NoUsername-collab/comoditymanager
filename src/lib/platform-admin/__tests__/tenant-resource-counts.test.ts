@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  aggregateRowsByTenant,
-  getTenantResourceCounts,
-} from "../tenant-resource-counts";
+import { aggregateRowsByTenant, getTenantResourceCounts } from "../tenant-resource-counts";
 import { EMPTY_TENANT_RESOURCE_COUNTS } from "../platform-scale";
 
 describe("tenant-resource-counts", () => {

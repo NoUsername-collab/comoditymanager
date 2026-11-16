@@ -29,9 +29,7 @@ export function TenantOperatorPanel({
     startCache(async () => {
       const result = await revalidateTenantCacheAction(tenantId);
       setCacheMessage(
-        result.success
-          ? tSupport("cacheSuccess")
-          : (result.error ?? tSupport("cacheFailed"))
+        result.success ? tSupport("cacheSuccess") : (result.error ?? tSupport("cacheFailed")),
       );
     });
   };
@@ -51,9 +49,7 @@ export function TenantOperatorPanel({
 
   return (
     <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5 space-y-3">
-      <h2 className="text-sm font-semibold uppercase text-neutral-500">
-        {tQuick("title")}
-      </h2>
+      <h2 className="text-sm font-semibold uppercase text-neutral-500">{tQuick("title")}</h2>
 
       <div className="space-y-2 border-b border-neutral-800 pb-3">
         <p className="text-xs text-neutral-500">{tSupport("magicHint")}</p>
@@ -76,16 +72,9 @@ export function TenantOperatorPanel({
             )}
             {magicLink && (
               <div className="space-y-2 rounded-md border border-neutral-700 bg-neutral-800/50 p-2">
-                <p className="break-all font-mono text-[11px] text-neutral-300">
-                  {magicLink}
-                </p>
-                <CopyTextButton
-                  text={magicLink}
-                  label={tSupport("copyMagicLink")}
-                />
-                <p className="text-[11px] text-amber-400">
-                  {tSupport("magicWarning")}
-                </p>
+                <p className="break-all font-mono text-[11px] text-neutral-300">{magicLink}</p>
+                <CopyTextButton text={magicLink} label={tSupport("copyMagicLink")} />
+                <p className="text-[11px] text-amber-400">{tSupport("magicWarning")}</p>
               </div>
             )}
           </>

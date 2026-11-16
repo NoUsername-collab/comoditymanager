@@ -39,14 +39,28 @@ describe("resolvePublicNavItems", () => {
     navBook: { en: "Book" },
   };
   const site = (extra: Partial<PublicSiteConfig>) =>
-    ({ chrome, bookingEnabled: true, bookingNavPosition: "nav", sections: [], sitePages: [], ...extra }) as PublicSiteConfig;
+    ({
+      chrome,
+      bookingEnabled: true,
+      bookingNavPosition: "nav",
+      sections: [],
+      sitePages: [],
+      ...extra,
+    }) as PublicSiteConfig;
 
   it("lists the menu, then the booking button", () => {
-    expect(resolvePublicNavItems(site({}), "en").map((item) => item.key)).toEqual(["home", "privacy", "book"]);
+    expect(resolvePublicNavItems(site({}), "en").map((item) => item.key)).toEqual([
+      "home",
+      "privacy",
+      "book",
+    ]);
   });
 
   it("omits an item whose label is empty in this locale", () => {
-    const items = resolvePublicNavItems(site({ chrome: { ...chrome, navHome: { ro: "Stored" } } }), "en");
+    const items = resolvePublicNavItems(
+      site({ chrome: { ...chrome, navHome: { ro: "Stored" } } }),
+      "en",
+    );
     expect(items.map((item) => item.key)).toEqual(["privacy", "book"]);
   });
 

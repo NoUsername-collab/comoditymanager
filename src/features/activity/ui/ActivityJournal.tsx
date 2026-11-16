@@ -33,10 +33,7 @@ export function ActivityJournal({ entries }: { entries: ActivityLogEntry[] }) {
   const locale = useLocale();
   const tActivity = useTranslations("admin.activity");
   const tCommon = useTranslations("admin.common");
-  const { rezervari, admin } = useMemo(
-    () => splitActivityByCategory(entries),
-    [entries]
-  );
+  const { rezervari, admin } = useMemo(() => splitActivityByCategory(entries), [entries]);
 
   const counts = { rezervari: rezervari.length, admin: admin.length };
   const lists = { rezervari, admin };
@@ -105,9 +102,7 @@ export function ActivityJournal({ entries }: { entries: ActivityLogEntry[] }) {
               <span className="activity-journal__tab-body">
                 <span className="activity-journal__tab-row">
                   <span className="activity-journal__tab-label">{tab.label}</span>
-                  <span className="activity-journal__tab-count">
-                    {counts[tab.id]}
-                  </span>
+                  <span className="activity-journal__tab-count">{counts[tab.id]}</span>
                 </span>
                 <span className="activity-journal__tab-hint">{tab.hint}</span>
                 <span className="activity-journal__tab-last">

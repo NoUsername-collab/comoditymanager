@@ -5,7 +5,7 @@ import { todayIso } from "@/lib/stay-dates";
 export function occupancyPhase(
   checkIn: string,
   checkOut: string,
-  referenceDate = todayIso()
+  referenceDate = todayIso(),
 ): OccupancyPhase {
   if (checkOut < referenceDate) return "past";
   if (checkIn <= referenceDate && checkOut >= referenceDate) return "active";

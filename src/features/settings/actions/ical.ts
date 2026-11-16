@@ -39,7 +39,8 @@ export async function addIcalFeedAction(input: {
 }): Promise<{ ok: true; syncError?: string } | Fail<AddFeedError | "plan_not_allowed">> {
   const blocked = await guard();
   if (blocked) return blocked;
-  const name = input.name?.trim() || suggestIcalFeedName(input.url.trim().replace(/^webcals?:/i, "https:"));
+  const name =
+    input.name?.trim() || suggestIcalFeedName(input.url.trim().replace(/^webcals?:/i, "https:"));
   const added = await addRoomIcalFeed({ roomId: input.roomId, name, url: input.url });
   if (!added.ok) return added;
 

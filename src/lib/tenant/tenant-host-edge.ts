@@ -8,8 +8,7 @@ type TenantHostEdgeLookup = {
 };
 
 type TenantHostRef =
-  | { slug: string; customDomain?: undefined }
-  | { slug?: undefined; customDomain: string };
+  { slug: string; customDomain?: undefined } | { slug?: undefined; customDomain: string };
 
 function edgeServiceConfig(): { url: string; key: string } | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
@@ -19,11 +18,14 @@ function edgeServiceConfig(): { url: string; key: string } | null {
 }
 
 /** A host's property for a minute (ten seconds when there is none): the proxy asks on every request. */
-const tenantHostMemo = createEdgeMemo<TenantHostEdgeLookup>({ foundTtlMs: 60_000, missingTtlMs: 10_000 });
+const tenantHostMemo = createEdgeMemo<TenantHostEdgeLookup>({
+  foundTtlMs: 60_000,
+  missingTtlMs: 10_000,
+});
 
 /** The property, null when there is none, undefined when the lookup failed. */
 async function fetchTenantHostRows(
-  query: string
+  query: string,
 ): Promise<TenantHostEdgeLookup | null | undefined> {
   const service = edgeServiceConfig();
   if (!service) return undefined;
@@ -66,19 +68,21 @@ async function fetchTenantHostRows(
 
 /** The host's property; null when there is none, undefined when the lookup failed. */
 export async function lookupTenantHostOnEdge(
-  ref: TenantHostRef
+  ref: TenantHostRef,
 ): Promise<TenantHostEdgeLookup | null | undefined> {
   if (ref.slug) {
     const slug = ref.slug;
     return tenantHostMemo(`slug:${slug}`, () =>
-      fetchTenantHostRows(`tenants?slug=eq.${encodeURIComponent(slug)}&select=id,slug,status&limit=1`)
+      fetchTenantHostRows(
+        `tenants?slug=eq.${encodeURIComponent(slug)}&select=id,slug,status&limit=1`,
+      ),
     );
   }
 
   const domain = ref.customDomain!;
   return tenantHostMemo(`domain:${domain}`, () =>
     fetchTenantHostRows(
-      `tenant_domains?domain=eq.${encodeURIComponent(domain)}&select=tenant_id,tenants(id,slug,status)&limit=1`
-    )
+      `tenant_domains?domain=eq.${encodeURIComponent(domain)}&select=tenant_id,tenants(id,slug,status)&limit=1`,
+    ),
   );
 }

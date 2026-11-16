@@ -2,9 +2,7 @@ import { describe, expect, it } from "vitest";
 import { tenantsToCsv } from "../tenant-csv";
 import type { PlatformTenantSummary } from "@/services/platform-admin";
 
-function sampleTenant(
-  partial: Partial<PlatformTenantSummary> = {}
-): PlatformTenantSummary {
+function sampleTenant(partial: Partial<PlatformTenantSummary> = {}): PlatformTenantSummary {
   return {
     id: "00000000-0000-4000-8000-000000000001",
     slug: "casa-emil",
@@ -45,9 +43,7 @@ describe("tenantsToCsv", () => {
   });
 
   it("escapes commas and quotes in display name", () => {
-    const csv = tenantsToCsv([
-      sampleTenant({ display_name: 'Pensiunea "Valea", SRL' }),
-    ]);
+    const csv = tenantsToCsv([sampleTenant({ display_name: 'Pensiunea "Valea", SRL' })]);
     expect(csv).toContain('"Pensiunea ""Valea"", SRL"');
   });
 

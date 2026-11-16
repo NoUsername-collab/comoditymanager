@@ -59,7 +59,9 @@ function setStyle(draft: PublicSiteStudioDraft, style: Record<string, string>) {
     ...section,
     settings: {
       ...section.settings,
-      ...Object.fromEntries(Object.entries(style).map(([k, v]) => [styleSettingKey(k as "look"), v])),
+      ...Object.fromEntries(
+        Object.entries(style).map(([k, v]) => [styleSettingKey(k as "look"), v]),
+      ),
     },
   }));
 }
@@ -77,7 +79,12 @@ const introPayload = (input: ReturnType<typeof mergeStudioToInput>) =>
 
 describe("section style", () => {
   it("reads unknown or missing values as following the page", () => {
-    expect(readSectionStyle(undefined)).toEqual({ look: "auto", background: "auto", width: "auto", align: "auto" });
+    expect(readSectionStyle(undefined)).toEqual({
+      look: "auto",
+      background: "auto",
+      width: "auto",
+      align: "auto",
+    });
     expect(readSectionStyle({ look: "editorial", background: "neon", width: 3 })).toEqual({
       look: "editorial",
       background: "auto",
@@ -100,7 +107,12 @@ describe("section style", () => {
   });
 
   it("goes through the editor settings unchanged", () => {
-    const style = readSectionStyle({ look: "immersive", background: "contrast", width: "full", align: "start" });
+    const style = readSectionStyle({
+      look: "immersive",
+      background: "contrast",
+      width: "full",
+      align: "start",
+    });
     expect(styleFromSettings(styleToSettings(style))).toEqual(style);
   });
 
@@ -111,7 +123,11 @@ describe("section style", () => {
       width: "narrow",
     });
     const { input, reloaded } = saveAndReload(draft);
-    expect(introPayload(input).style).toEqual({ look: "editorial", background: "soft", width: "narrow" });
+    expect(introPayload(input).style).toEqual({
+      look: "editorial",
+      background: "soft",
+      width: "narrow",
+    });
 
     const intro = findSectionDraft(reloaded.sections, "intro")!;
     expect(styleFromSettings(intro.settings)).toEqual({
@@ -123,7 +139,9 @@ describe("section style", () => {
   });
 
   it("drops the stored style when every choice goes back to the page", () => {
-    const styled = saveAndReload(setStyle(buildPublicSiteStudioDraft(config, "ro"), { background: "accent" }));
+    const styled = saveAndReload(
+      setStyle(buildPublicSiteStudioDraft(config, "ro"), { background: "accent" }),
+    );
     const reset = setStyle(styled.reloaded, { background: "auto" });
     const { input } = saveAndReload(reset, styled.saved);
     expect(introPayload(input)).not.toHaveProperty("style");

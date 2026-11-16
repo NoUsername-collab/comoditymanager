@@ -13,7 +13,7 @@ import { getTranslations } from "next-intl/server";
 import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 
 export async function updateFiscalBillingSettingsAction(
-  formData: FormData
+  formData: FormData,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const t = await getTranslations("admin.serverActions");
 
@@ -44,8 +44,7 @@ export async function updateFiscalBillingSettingsAction(
     atomicUpdate.invoice_seller_reg_com = raw || null;
   }
   if (formData.has("invoice_vat_enabled")) {
-    atomicUpdate.invoice_vat_enabled =
-      String(formData.get("invoice_vat_enabled")) === "true";
+    atomicUpdate.invoice_vat_enabled = String(formData.get("invoice_vat_enabled")) === "true";
   }
   if (formData.has("invoice_vat_rate")) {
     const raw = String(formData.get("invoice_vat_rate") ?? "").trim();
@@ -57,10 +56,7 @@ export async function updateFiscalBillingSettingsAction(
   }
 
   // The property address is edited in Identity, not here.
-  for (const key of [
-    "fisa_owner_cui",
-    "fisa_tourism_license",
-  ] as const) {
+  for (const key of ["fisa_owner_cui", "fisa_tourism_license"] as const) {
     if (formData.has(key)) {
       const raw = String(formData.get(key) ?? "").trim();
       atomicUpdate[key] = raw || null;

@@ -72,12 +72,8 @@ export function GuestAppShell({
           appearance={appearance}
         />
         <main className="guest-app__main mx-auto max-w-lg px-4 py-6">{children}</main>
-        {withNav ? (
-          <GuestAppBottomNav accessCode={accessCode} features={features} />
-        ) : null}
-        {receptionPhone?.trim() ? (
-          <GuestReceptionFab phone={receptionPhone} />
-        ) : null}
+        {withNav ? <GuestAppBottomNav accessCode={accessCode} features={features} /> : null}
+        {receptionPhone?.trim() ? <GuestReceptionFab phone={receptionPhone} /> : null}
       </div>
     </GuestAppToastProvider>
   );

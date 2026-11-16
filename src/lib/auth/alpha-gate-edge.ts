@@ -7,9 +7,5 @@ export function isAlphaGateEnabled(): boolean {
 }
 
 export function isAlphaGateExemptPath(path: string): boolean {
-  return (
-    path === "/alpha-gate" ||
-    path === "/tenant-suspended" ||
-    path.startsWith("/api/")
-  );
+  return path === "/alpha-gate" || path === "/tenant-suspended" || path.startsWith("/api/");
 }

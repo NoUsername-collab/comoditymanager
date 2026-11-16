@@ -70,7 +70,13 @@ export function PensionIdentityForm({ identity }: Props) {
       return;
     }
     setSaved(true);
-    initialSnapshot.current = JSON.stringify({ displayName, logoUrl, contact, addressParts, location });
+    initialSnapshot.current = JSON.stringify({
+      displayName,
+      logoUrl,
+      contact,
+      addressParts,
+      location,
+    });
   }
 
   return (
@@ -268,24 +274,26 @@ export function PensionIdentityForm({ identity }: Props) {
             </div>
           </section>
 
-      <SettingsSaveBar
-        status={pending ? "saving" : saved ? "success" : error ? "error" : dirty ? "idle" : "idle"}
-        statusMessage={
-          pending
-            ? t("saving")
-            : saved
-              ? t("saved")
-              : error
-                ? error
-                : dirty
-                  ? tSettings("unsavedChanges")
-                  : tSettings("allSaved")
-        }
-      >
-        <AdminSubmitButton type="submit" variant="primary" size="lg" disabled={pending}>
-          {pending ? t("saving") : t("save")}
-        </AdminSubmitButton>
-      </SettingsSaveBar>
+          <SettingsSaveBar
+            status={
+              pending ? "saving" : saved ? "success" : error ? "error" : dirty ? "idle" : "idle"
+            }
+            statusMessage={
+              pending
+                ? t("saving")
+                : saved
+                  ? t("saved")
+                  : error
+                    ? error
+                    : dirty
+                      ? tSettings("unsavedChanges")
+                      : tSettings("allSaved")
+            }
+          >
+            <AdminSubmitButton type="submit" variant="primary" size="lg" disabled={pending}>
+              {pending ? t("saving") : t("save")}
+            </AdminSubmitButton>
+          </SettingsSaveBar>
         </form>
       }
     />

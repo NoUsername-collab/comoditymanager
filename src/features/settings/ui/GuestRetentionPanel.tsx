@@ -11,7 +11,9 @@ export function GuestRetentionPanel({ months }: { months: number }) {
   const [value, setValue] = useState(months);
   const [status, setStatus] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const choices: number[] = GUEST_RETENTION_CHOICES.includes(months as (typeof GUEST_RETENTION_CHOICES)[number])
+  const choices: number[] = GUEST_RETENTION_CHOICES.includes(
+    months as (typeof GUEST_RETENTION_CHOICES)[number],
+  )
     ? [...GUEST_RETENTION_CHOICES]
     : [...GUEST_RETENTION_CHOICES, months].sort((a, b) => a - b);
 

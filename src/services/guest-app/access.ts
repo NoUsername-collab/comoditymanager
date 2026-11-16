@@ -7,16 +7,9 @@ import {
   isGuestAccessBookingStatusValid,
   isGuestAccessDateValid,
 } from "@/domain/guest-app/access-rules";
-import type {
-  GuestAccessBookingSnapshot,
-  GuestAccessResult,
-} from "@/domain/guest-app/types";
+import type { GuestAccessBookingSnapshot, GuestAccessResult } from "@/domain/guest-app/types";
 import { todayIso } from "@/lib/stay-dates";
-import {
-  enforceRateLimit,
-  getClientIp,
-  RATE_LIMIT_GUEST_ACCESS,
-} from "@/lib/rate-limit";
+import { enforceRateLimit, getClientIp, RATE_LIMIT_GUEST_ACCESS } from "@/lib/rate-limit";
 import { runInPublicBookingMode } from "@/lib/tenant/scope";
 import { withTenantId } from "@/lib/tenant/scope";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
@@ -63,7 +56,11 @@ async function loadBookingSnapshot(
   // The booked room types' photos from the photo library, each photo once.
   const library = await roomTypePhotosForTenant(tenantId).catch(() => new Map());
   const roomImageUrls = [
-    ...new Set(roomTypeIds.flatMap((typeId) => (library.get(typeId) ?? []).map((photo: { url: string }) => photo.url))),
+    ...new Set(
+      roomTypeIds.flatMap((typeId) =>
+        (library.get(typeId) ?? []).map((photo: { url: string }) => photo.url),
+      ),
+    ),
   ];
 
   let checkedInAt: string | null = null;
@@ -93,8 +90,7 @@ async function loadBookingSnapshot(
   }
 
   const totalRaw = data.total_price;
-  const totalPrice =
-    totalRaw != null && Number(totalRaw) > 0 ? Number(totalRaw) : null;
+  const totalPrice = totalRaw != null && Number(totalRaw) > 0 ? Number(totalRaw) : null;
 
   return {
     id: String(data.id),
@@ -118,9 +114,7 @@ async function loadBookingSnapshot(
  * Emite (sau re-emite) codul de acces pentru o rezervare confirmată.
  * Apelat la confirmare — un cod activ per booking.
  */
-export async function issueGuestAccessForBooking(
-  bookingId: string,
-): Promise<string | null> {
+export async function issueGuestAccessForBooking(bookingId: string): Promise<string | null> {
   const { tenantId, supabase } = await getGuestAppPublicDb();
   const settings = await getGuestAppSettings();
   if (!settings.enabled) return null;
@@ -225,9 +219,7 @@ export const resolveGuestAccessByCode = cache(async function resolveGuestAccessB
 });
 
 /** Revocă accesul (ex. anulare rezervare). */
-export async function revokeGuestAccessForBooking(
-  bookingId: string,
-): Promise<void> {
+export async function revokeGuestAccessForBooking(bookingId: string): Promise<void> {
   const { tenantId, supabase } = await getGuestAppPublicDb();
   await supabase
     .from("booking_guest_access")
@@ -238,9 +230,7 @@ export async function revokeGuestAccessForBooking(
 }
 
 /** Cod activ pentru o rezervare (null dacă lipsește sau e revocat). */
-async function getGuestAccessCodeForBooking(
-  bookingId: string,
-): Promise<string | null> {
+async function getGuestAccessCodeForBooking(bookingId: string): Promise<string | null> {
   const { tenantId, supabase } = await getGuestAppPublicDb();
   const { data, error } = await supabase
     .from("booking_guest_access")

@@ -42,11 +42,7 @@ export const StayListItem = memo(function StayListItem({
         operativeToday={operativeToday}
       />
       {variant === "cancelled" ? (
-        <RefusedStayActions
-          stay={stay as CancelledStay}
-          labels={labels}
-          returnTo={returnTo}
-        />
+        <RefusedStayActions stay={stay as CancelledStay} labels={labels} returnTo={returnTo} />
       ) : variant === "requests" ? (
         <StayRequestActions
           stay={stay as OperationalStay}
@@ -64,11 +60,7 @@ export const StayListItem = memo(function StayListItem({
           }}
         />
       ) : (
-        <StayActions
-          stay={stay as OperationalStay}
-          returnTo={returnTo}
-          labels={labels}
-        />
+        <StayActions stay={stay as OperationalStay} returnTo={returnTo} labels={labels} />
       )}
     </li>
   );

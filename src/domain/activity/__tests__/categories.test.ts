@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  activityJournalCategory,
-  splitActivityByCategory,
-} from "@/domain/activity/categories";
+import { activityJournalCategory, splitActivityByCategory } from "@/domain/activity/categories";
 import type { ActivityAction, ActivityLogEntry } from "@/domain/activity/types";
 
 // ---------------------------------------------------------------------------
@@ -27,10 +24,7 @@ describe("activityJournalCategory", () => {
   });
 
   it('classifies checkin.* actions as "rezervari"', () => {
-    const checkinActions: ActivityAction[] = [
-      "checkin.created",
-      "checkin.updated",
-    ];
+    const checkinActions: ActivityAction[] = ["checkin.created", "checkin.updated"];
     for (const action of checkinActions) {
       expect(activityJournalCategory(action)).toBe("rezervari");
     }
@@ -93,10 +87,7 @@ describe("splitActivityByCategory", () => {
   });
 
   it("puts all booking entries into rezervari when no admin entries exist", () => {
-    const entries = [
-      makeEntry("booking.confirmed"),
-      makeEntry("booking.shifted"),
-    ];
+    const entries = [makeEntry("booking.confirmed"), makeEntry("booking.shifted")];
     const result = splitActivityByCategory(entries);
     expect(result.rezervari).toHaveLength(2);
     expect(result.admin).toHaveLength(0);

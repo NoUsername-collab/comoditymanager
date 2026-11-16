@@ -17,7 +17,7 @@ export function bookingCalendarHref(checkInIso: string): string {
 /** check-in din metadata jurnal sau din rezervare cunoscută */
 export function activityCalendarHref(
   entry: ActivityLogEntry,
-  fallbackCheckIn?: string | null
+  fallbackCheckIn?: string | null,
 ): string | null {
   if (entry.entity_type !== "booking") return null;
 

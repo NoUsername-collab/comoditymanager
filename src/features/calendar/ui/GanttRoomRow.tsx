@@ -98,10 +98,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
   const tLayers = useTranslations("admin.gantt.layers");
   const dayCount = viewRange.days.length;
 
-  const roomColor = resolveGanttBuildingColor(
-    room.building_color,
-    room.building_ac_mode
-  );
+  const roomColor = resolveGanttBuildingColor(room.building_color, room.building_ac_mode);
   const sidebarMarkerColor = resolveGanttAcMarkerColor(room.building_ac_mode, {
     roomHasAc: room.has_ac,
   });
@@ -188,7 +185,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
               viewRange.rangeEnd,
               dayCount,
               checkInTime,
-              checkOutTime
+              checkOutTime,
             );
             if (!pos || pos.widthPct <= 0) return null;
             const label =
@@ -231,27 +228,23 @@ export const GanttRoomRow = memo(function GanttRoomRow({
               viewRange.rangeEnd,
               dayCount,
               checkInTime,
-              checkOutTime
+              checkOutTime,
             );
             if (!pos || pos.widthPct <= 0) return null;
             const isRequest = b.status === "cerere_noua";
             const ganttLabel = formatGuestGanttLabel(
               b.guest_last_name,
               b.guest_first_name,
-              b.guest_name
+              b.guest_name,
             );
             const compactLabel = formatGuestGanttCompactLabel(
               b.guest_last_name,
               b.guest_first_name,
-              b.guest_name
+              b.guest_name,
             );
             const guests = guestPartyTotal(b.num_adults, b.num_children);
             const todayHl = stayTodayHighlight(b, today);
-            const initials = guestInitials(
-              b.guest_last_name,
-              b.guest_first_name,
-              b.guest_name
-            );
+            const initials = guestInitials(b.guest_last_name, b.guest_first_name, b.guest_name);
             const phase = seg.phase ?? occupancyPhase(seg.checkIn, seg.checkOut, today);
             const canMoveRoom =
               (b.status === "confirmata" || b.status === "cerere_noua") && phase !== "past";
@@ -291,11 +284,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
                 roomIds={b.room_ids ?? []}
                 guestId={b.guest_id}
                 moveRoomDraft={moveDraft}
-                onMoveRoom={
-                  moveDraft
-                    ? () => onMoveRoom(moveDraft)
-                    : undefined
-                }
+                onMoveRoom={moveDraft ? () => onMoveRoom(moveDraft) : undefined}
                 actualCheckInAt={b.actual_check_in_at}
                 actualCheckOutAt={b.actual_check_out_at}
                 today={today}
@@ -325,9 +314,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
                   guestPhone: b.guest_phone,
                   totalPrice: b.total_price,
                   canMoveRoom,
-                  onMoveRoom: moveDraft
-                    ? () => onMoveRoom(moveDraft)
-                    : undefined,
+                  onMoveRoom: moveDraft ? () => onMoveRoom(moveDraft) : undefined,
                 }}
               />
             );

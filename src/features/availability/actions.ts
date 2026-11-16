@@ -11,15 +11,11 @@ export async function fetchDayAvailabilityDetailAction(
   iso: string,
   buildingId: string | null = null,
   featureFilter: "all" | "ac" | "fridge" = "all",
-  knownDay?: DayAvailability | null
+  knownDay?: DayAvailability | null,
 ) {
   await requireAnyStaff();
   if (knownDay && knownDay.iso === iso) {
-    return loadDayAvailabilityDetailWithKnownDay(
-      knownDay,
-      buildingId,
-      featureFilter
-    );
+    return loadDayAvailabilityDetailWithKnownDay(knownDay, buildingId, featureFilter);
   }
   return loadDayAvailabilityDetail(iso, buildingId, featureFilter);
 }

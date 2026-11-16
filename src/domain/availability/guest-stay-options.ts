@@ -10,11 +10,7 @@ import {
   type SharedInventory,
 } from "@/domain/availability/stay-capacity";
 import { quoteStay } from "@/domain/availability/stay-quote";
-import {
-  partyHeadcount,
-  type ChildPolicy,
-  type Party,
-} from "@/domain/availability/party";
+import { partyHeadcount, type ChildPolicy, type Party } from "@/domain/availability/party";
 import type { StayPricingRules } from "@/domain/settings/booking-rules";
 import { stayNightCount } from "@/lib/stay-dates";
 
@@ -150,7 +146,6 @@ export function computeGuestStayOptions(args: {
     free_room_count: freeRooms.length,
     can_host: options.length > 0,
     options,
-    reason:
-      options.length > 0 ? null : freeRooms.length === 0 ? "no_free_rooms" : "no_fit",
+    reason: options.length > 0 ? null : freeRooms.length === 0 ? "no_free_rooms" : "no_fit",
   };
 }

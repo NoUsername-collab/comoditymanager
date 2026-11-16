@@ -1,9 +1,7 @@
 import { z } from "zod";
 import { GUEST_RECEPTION_REQUEST_MAX } from "@/domain/guest-app/reception-request";
 
-const isoDateSchema = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "invalid_date");
+const isoDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "invalid_date");
 
 export const guestPrecheckinInputSchema = z.object({
   accessCode: z.string().min(8).max(32),

@@ -29,7 +29,8 @@ describe("checking a form's token", () => {
     vi.unstubAllEnvs();
     vi.unstubAllGlobals();
   });
-  const answer = (body: unknown, ok = true) => fetchMock.mockResolvedValue({ ok, json: async () => body });
+  const answer = (body: unknown, ok = true) =>
+    fetchMock.mockResolvedValue({ ok, json: async () => body });
 
   it("is off without keys, or on a host the widget does not cover", async () => {
     vi.stubEnv("TURNSTILE_SECRET_KEY", "");

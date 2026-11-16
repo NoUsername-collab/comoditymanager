@@ -1,7 +1,4 @@
-import type {
-  FiscalSubmissionStatus,
-  FiscalSubmitResult,
-} from "./fiscal-provider";
+import type { FiscalSubmissionStatus, FiscalSubmitResult } from "./fiscal-provider";
 
 const TERMINAL_FISCAL_STATUSES: readonly FiscalSubmissionStatus[] = [
   "accepted",
@@ -9,10 +6,7 @@ const TERMINAL_FISCAL_STATUSES: readonly FiscalSubmissionStatus[] = [
   "failed",
 ] as const;
 
-const ACTIVE_FISCAL_STATUSES: readonly FiscalSubmissionStatus[] = [
-  "pending",
-  "submitted",
-] as const;
+const ACTIVE_FISCAL_STATUSES: readonly FiscalSubmissionStatus[] = ["pending", "submitted"] as const;
 
 export function buildIdempotencyKey(tenantId: string, invoiceId: string): string {
   return `fiscal:${tenantId}:${invoiceId}`;
@@ -56,7 +50,7 @@ export function canPollFiscalJob(status: FiscalSubmissionStatus): boolean {
 
 export function canTransitionFiscalStatus(
   from: FiscalSubmissionStatus,
-  to: FiscalSubmissionStatus
+  to: FiscalSubmissionStatus,
 ): boolean {
   if (from === to) return true;
   const allowed: Record<FiscalSubmissionStatus, FiscalSubmissionStatus[]> = {
@@ -69,9 +63,7 @@ export function canTransitionFiscalStatus(
   return allowed[from].includes(to);
 }
 
-export function resolveStatusAfterSubmit(
-  result: FiscalSubmitResult
-): FiscalSubmissionStatus {
+export function resolveStatusAfterSubmit(result: FiscalSubmitResult): FiscalSubmissionStatus {
   if (
     result.status === "submitted" ||
     result.status === "accepted" ||

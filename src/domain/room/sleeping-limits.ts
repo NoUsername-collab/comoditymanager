@@ -13,8 +13,7 @@ export function parseRoomSleepingLimits(form: { get(name: string): unknown }): R
   const rawOccupancy = String(form.get("max_occupancy") ?? "").trim();
   const occupancy = rawOccupancy === "" ? null : Number(rawOccupancy);
   return {
-    max_cots:
-      Number.isInteger(cots) ? Math.min(MAX_COTS_PER_ROOM, Math.max(0, cots)) : 0,
+    max_cots: Number.isInteger(cots) ? Math.min(MAX_COTS_PER_ROOM, Math.max(0, cots)) : 0,
     max_occupancy:
       occupancy != null && Number.isInteger(occupancy) && occupancy >= 1
         ? Math.min(MAX_ROOM_OCCUPANCY, occupancy)

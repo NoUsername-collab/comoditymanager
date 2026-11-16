@@ -34,13 +34,23 @@ describe("a notice to the property's team", () => {
   });
 
   it("goes out when the month's allowance is used up", async () => {
-    resolve.mockResolvedValue({ canSend: false, skipReason: "monthly_cap_exceeded", monthlyCap: 300, apiKey: "k" });
+    resolve.mockResolvedValue({
+      canSend: false,
+      skipReason: "monthly_cap_exceeded",
+      monthlyCap: 300,
+      apiKey: "k",
+    });
     await sendTenantEmail("t1", "casa", message, { countsTowardCap: false });
     expect(send).toHaveBeenCalledTimes(1);
   });
 
   it("stays off when the property turned email off", async () => {
-    resolve.mockResolvedValue({ canSend: false, skipReason: "tenant_email_disabled", monthlyCap: 300, apiKey: null });
+    resolve.mockResolvedValue({
+      canSend: false,
+      skipReason: "tenant_email_disabled",
+      monthlyCap: 300,
+      apiKey: null,
+    });
     await sendTenantEmail("t1", "casa", message, { countsTowardCap: false });
     expect(send).not.toHaveBeenCalled();
   });

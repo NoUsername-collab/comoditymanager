@@ -22,37 +22,27 @@ export function AdminPendingProvider({ children }: { children: ReactNode }) {
   const lockRef = useRef(false);
   const [pending, setPending] = useState(false);
 
-  const runAdminAction = useCallback(
-    async <T,>(fn: () => Promise<T> | T): Promise<T> => {
-      if (lockRef.current) {
-        return undefined as T;
+  const runAdminAction = useCallback(async <T,>(fn: () => Promise<T> | T): Promise<T> => {
+    if (lockRef.current) {
+      return undefined as T;
+    }
+    lockRef.current = true;
+    depthRef.current += 1;
+    setPending(true);
+    try {
+      return await fn();
+    } finally {
+      depthRef.current = Math.max(0, depthRef.current - 1);
+      if (depthRef.current === 0) {
+        setPending(false);
+        lockRef.current = false;
       }
-      lockRef.current = true;
-      depthRef.current += 1;
-      setPending(true);
-      try {
-        return await fn();
-      } finally {
-        depthRef.current = Math.max(0, depthRef.current - 1);
-        if (depthRef.current === 0) {
-          setPending(false);
-          lockRef.current = false;
-        }
-      }
-    },
-    []
-  );
+    }
+  }, []);
 
-  const value = useMemo(
-    () => ({ pending, runAdminAction }),
-    [pending, runAdminAction]
-  );
+  const value = useMemo(() => ({ pending, runAdminAction }), [pending, runAdminAction]);
 
-  return (
-    <AdminPendingContext.Provider value={value}>
-      {children}
-    </AdminPendingContext.Provider>
-  );
+  return <AdminPendingContext.Provider value={value}>{children}</AdminPendingContext.Provider>;
 }
 
 export function useAdminPending() {
@@ -73,7 +63,7 @@ export function useRunAdminAction() {
       }
       return fn();
     },
-    [ctx]
+    [ctx],
   );
 }
 

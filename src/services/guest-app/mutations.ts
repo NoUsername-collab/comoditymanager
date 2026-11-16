@@ -26,9 +26,7 @@ export async function upsertGuestAppSettingsImpl(
   if (error) throw new Error(error.message);
 }
 
-export async function ensureGuestAppSettingsRow(
-  tenantId: string,
-): Promise<GuestAppSettings> {
+export async function ensureGuestAppSettingsRow(tenantId: string): Promise<GuestAppSettings> {
   const { supabase } = await getGuestAppPublicDb();
   const { data, error } = await supabase
     .from("guest_app_settings")

@@ -4,10 +4,7 @@ const GANTT_STAY_SLANT_R = 14;
 const GANTT_STAY_SLANT_JOIN = 3;
 
 /** CSS border-radius: tl tr br bl */
-export function ganttStaySlantRadius(
-  continuesBefore: boolean,
-  continuesAfter: boolean
-): string {
+export function ganttStaySlantRadius(continuesBefore: boolean, continuesAfter: boolean): string {
   const tl = continuesBefore ? GANTT_STAY_SLANT_JOIN : 0;
   const bl = continuesBefore ? GANTT_STAY_SLANT_JOIN : GANTT_STAY_SLANT_R;
   const tr = continuesAfter ? GANTT_STAY_SLANT_JOIN : GANTT_STAY_SLANT_R;

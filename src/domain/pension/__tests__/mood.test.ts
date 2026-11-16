@@ -8,7 +8,7 @@ describe("computePensionMood", () => {
         requestCount: 0,
         unpaidInHouseCount: 0,
         pendingCheckIns: 0,
-      })
+      }),
     ).toBe("calm");
   });
 
@@ -18,7 +18,7 @@ describe("computePensionMood", () => {
         requestCount: 2,
         unpaidInHouseCount: 0,
         pendingCheckIns: 0,
-      })
+      }),
     ).toBe("active");
 
     expect(
@@ -26,7 +26,7 @@ describe("computePensionMood", () => {
         requestCount: 0,
         unpaidInHouseCount: 0,
         pendingCheckIns: 1,
-      })
+      }),
     ).toBe("active");
   });
 
@@ -36,7 +36,7 @@ describe("computePensionMood", () => {
         requestCount: 5,
         unpaidInHouseCount: 1,
         pendingCheckIns: 3,
-      })
+      }),
     ).toBe("alert");
   });
 });

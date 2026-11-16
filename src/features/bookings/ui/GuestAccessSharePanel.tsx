@@ -17,11 +17,7 @@ type Props = {
   isConfirmed: boolean;
 };
 
-export function GuestAccessSharePanel({
-  bookingId,
-  guestEmail,
-  isConfirmed,
-}: Props) {
+export function GuestAccessSharePanel({ bookingId, guestEmail, isConfirmed }: Props) {
   const t = useTranslations("admin.pages.guestApp.share");
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -102,17 +98,11 @@ export function GuestAccessSharePanel({
       <p className="bd-card__title">{t("title")}</p>
       <p className="mb-3 text-xs text-zinc-500">{t("hint")}</p>
 
-      {pending && !url ? (
-        <p className="text-sm text-zinc-500">{t("loading")}</p>
-      ) : null}
+      {pending && !url ? <p className="text-sm text-zinc-500">{t("loading")}</p> : null}
 
       {url ? (
         <div className="space-y-2">
-          <AdminInput
-            readOnly
-            value={url}
-            fieldSize="sm"
-          />
+          <AdminInput readOnly value={url} fieldSize="sm" />
           <div className="flex flex-wrap gap-2">
             <AdminButton variant="primary" size="sm" onClick={copyUrl}>
               {t("copy")}
@@ -129,9 +119,7 @@ export function GuestAccessSharePanel({
         </div>
       ) : null}
 
-      {message ? (
-        <p className="mt-2 text-xs text-emerald-700">{message}</p>
-      ) : null}
+      {message ? <p className="mt-2 text-xs text-emerald-700">{message}</p> : null}
       {error ? (
         <div className="mt-2 space-y-2">
           <p className="text-xs text-red-600">{error}</p>

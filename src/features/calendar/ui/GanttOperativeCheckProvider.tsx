@@ -16,10 +16,7 @@ export function GanttOperativeCheckProvider({
   canEditAfterCheckout?: boolean;
 }) {
   return (
-    <OperativeCheckProvider
-      today={today}
-      canEditAfterCheckout={canEditAfterCheckout}
-    >
+    <OperativeCheckProvider today={today} canEditAfterCheckout={canEditAfterCheckout}>
       {children}
     </OperativeCheckProvider>
   );

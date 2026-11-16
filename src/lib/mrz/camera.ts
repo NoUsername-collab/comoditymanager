@@ -171,10 +171,7 @@ export function hasTorchSupport(stream: MediaStream): boolean {
   return Boolean(capabilities?.torch);
 }
 
-export async function setTorchEnabled(
-  stream: MediaStream,
-  enabled: boolean,
-): Promise<boolean> {
+export async function setTorchEnabled(stream: MediaStream, enabled: boolean): Promise<boolean> {
   const track = stream.getVideoTracks()[0];
   if (!track?.applyConstraints) return false;
 

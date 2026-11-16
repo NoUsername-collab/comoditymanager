@@ -18,7 +18,7 @@ export function platformHomeRedirect(request: NextRequest): NextResponse {
 export function redirectToPath(
   request: NextRequest,
   pathname: string,
-  params: Record<string, string> = {}
+  params: Record<string, string> = {},
 ): NextResponse {
   const url = request.nextUrl.clone();
   url.pathname = pathname;

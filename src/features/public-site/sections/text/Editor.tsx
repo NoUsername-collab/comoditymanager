@@ -15,14 +15,22 @@ export function TextEditor({ section }: SectionEditorProps) {
   return (
     <>
       <div className="admin-settings-fields">
-        <EditorField label={te("sectionTitle")} value={ed.field("title")} onChange={ed.setField("title")} />
+        <EditorField
+          label={te("sectionTitle")}
+          value={ed.field("title")}
+          onChange={ed.setField("title")}
+        />
         <EditorField
           rows={2}
           label={te("sectionLead")}
           value={ed.field("lead")}
           onChange={ed.setField("lead")}
         />
-        <RichTextField label={te("textBody")} value={ed.field("body")} onChange={ed.setField("body")} />
+        <RichTextField
+          label={te("textBody")}
+          value={ed.field("body")}
+          onChange={ed.setField("body")}
+        />
         <SectionPhotoField editing={ed} />
       </div>
     </>

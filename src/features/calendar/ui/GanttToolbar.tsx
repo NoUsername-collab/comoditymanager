@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { useState } from "react";
-import { useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import type { GanttFilter, GanttFeatureFilter } from "@/domain/gantt/filters";
@@ -65,10 +65,7 @@ export function SegmentGroup<T extends string>({
           <button
             key={opt.value}
             type="button"
-            className={[
-              "gantt-seg__btn",
-              value === opt.value && "gantt-seg__btn--active",
-            ]
+            className={["gantt-seg__btn", value === opt.value && "gantt-seg__btn--active"]
               .filter(Boolean)
               .join(" ")}
             aria-pressed={value === opt.value}
@@ -181,21 +178,15 @@ export function GanttToolbar({
       m: patch.m ?? month,
       view: patch.view ?? view,
       building:
-        patch.building !== undefined
-          ? patch.building ?? undefined
-          : buildingId || undefined,
-      room:
-        patch.room !== undefined ? patch.room ?? undefined : roomId || undefined,
+        patch.building !== undefined ? (patch.building ?? undefined) : buildingId || undefined,
+      room: patch.room !== undefined ? (patch.room ?? undefined) : roomId || undefined,
       zoom: patch.zoom ?? zoom,
-      ws: patch.ws !== undefined ? patch.ws ?? undefined : ws,
+      ws: patch.ws !== undefined ? (patch.ws ?? undefined) : ws,
       q: patch.q ?? quarter,
       filter: patch.filter ?? filter,
       feat: patch.feat ?? feat,
       layer: patch.layer ?? layer,
-      fd:
-        patch.fd !== undefined
-          ? patch.fd ?? undefined
-          : focusDay || undefined,
+      fd: patch.fd !== undefined ? (patch.fd ?? undefined) : focusDay || undefined,
     });
     router.push(`/admin/calendar?${q}`);
   }
@@ -211,20 +202,16 @@ export function GanttToolbar({
     });
   }
 
-  const roomsForBuilding = buildingId
-    ? rooms.filter((r) => r.building_id === buildingId)
-    : rooms;
+  const roomsForBuilding = buildingId ? rooms.filter((r) => r.building_id === buildingId) : rooms;
 
   const metaParts: string[] = [];
   if (filter === "free") {
     metaParts.push(
-      focusDay ? tCommon("freeOnDay", { day: focusDay }) : tCommon("freeOnFocusedDay")
+      focusDay ? tCommon("freeOnDay", { day: focusDay }) : tCommon("freeOnFocusedDay"),
     );
   } else if (filter === "occupied") {
     metaParts.push(
-      focusDay
-        ? tCommon("occupiedOnDay", { day: focusDay })
-        : tCommon("occupiedOnFocusedDay")
+      focusDay ? tCommon("occupiedOnDay", { day: focusDay }) : tCommon("occupiedOnFocusedDay"),
     );
   }
   if (feat === "ac") metaParts.push(tCommon("withAc"));
@@ -233,13 +220,13 @@ export function GanttToolbar({
     metaParts.push(
       tCommon("displayLayer", {
         layer: layerFilterLabel(layer, (key) => tLayers(key)),
-      })
+      }),
     );
   }
   if (view === "all") metaParts.push(`${rooms.length} ${tCommon("roomsShort")}`);
   else if (view === "building") {
     metaParts.push(
-      `${roomsForBuilding.length} ${tCommon("roomsShort")} · ${buildings.find((b) => b.id === buildingId)?.name ?? ""}`
+      `${roomsForBuilding.length} ${tCommon("roomsShort")} · ${buildings.find((b) => b.id === buildingId)?.name ?? ""}`,
     );
   } else {
     const r = rooms.find((x) => x.id === roomId);
@@ -271,8 +258,16 @@ export function GanttToolbar({
               onChange={(l) => push({ layer: l })}
               options={[
                 { value: "all", label: tLayers("all"), shortLabel: tLayers("all") },
-                { value: "requests", label: tLayers("requests"), shortLabel: tCommon("requestsShort") },
-                { value: "confirmed", label: tLayers("confirmed"), shortLabel: tCommon("confirmedShort") },
+                {
+                  value: "requests",
+                  label: tLayers("requests"),
+                  shortLabel: tCommon("requestsShort"),
+                },
+                {
+                  value: "confirmed",
+                  label: tLayers("confirmed"),
+                  shortLabel: tCommon("confirmedShort"),
+                },
                 { value: "in_house", label: tLayers("in_house"), shortLabel: tCommon("inShort") },
                 { value: "past", label: tLayers("past"), shortLabel: tCommon("pastShort") },
                 { value: "hold", label: tLayers("hold"), shortLabel: tLayers("hold") },
@@ -340,9 +335,7 @@ export function GanttToolbar({
           </div>
         </div>
 
-        {requestCount > 0 ? (
-          <GanttRequestsQueue requests={requests} embedded />
-        ) : null}
+        {requestCount > 0 ? <GanttRequestsQueue requests={requests} embedded /> : null}
 
         <div className="gantt-toolbar__row gantt-toolbar__row--nav">
           <div className="gantt-toolbar__nav-strip">
@@ -410,18 +403,14 @@ export function GanttToolbar({
                   →
                 </Link>
               </div>
-              <p className="gantt-toolbar__period-hint">
-                {tCommon("periodSelectorHint")}
-              </p>
+              <p className="gantt-toolbar__period-hint">{tCommon("periodSelectorHint")}</p>
             </div>
 
             <div className="gantt-toolbar__actions gantt-toolbar__actions--nav">
               <button
                 type="button"
                 className="gantt-toolbar__today"
-                onClick={() =>
-                  window.dispatchEvent(new CustomEvent("gantt:scroll-today"))
-                }
+                onClick={() => window.dispatchEvent(new CustomEvent("gantt:scroll-today"))}
               >
                 {tCommon("todayPanel")}
               </button>
@@ -440,9 +429,7 @@ export function GanttToolbar({
               {view === "building" && buildings.length > 0 && (
                 <select
                   value={buildingId || buildings[0]?.id || ""}
-                  onChange={(e) =>
-                    push({ view: "building", building: e.target.value })
-                  }
+                  onChange={(e) => push({ view: "building", building: e.target.value })}
                   className="gantt-toolbar__select"
                   aria-label={tCommon("buildingLabel")}
                 >
@@ -480,9 +467,7 @@ export function GanttToolbar({
           </div>
         </div>
 
-        {metaParts.length > 0 && (
-          <p className="gantt-toolbar__meta">{metaParts.join(" · ")}</p>
-        )}
+        {metaParts.length > 0 && <p className="gantt-toolbar__meta">{metaParts.join(" · ")}</p>}
 
         <div className="gantt-toolbar__legend" aria-label={tCommon("legend")}>
           <span className="gantt-toolbar__legend-item">

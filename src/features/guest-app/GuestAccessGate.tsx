@@ -57,8 +57,7 @@ export function GuestAccessGate({
   const t = useTranslations("guestApp.access");
   const locale = useLocale();
   const phone = receptionPhone?.trim() || null;
-  const isScheduled =
-    reason === "before_check_in" || reason === "after_check_out";
+  const isScheduled = reason === "before_check_in" || reason === "after_check_out";
 
   if (isScheduled && schedule) {
     const title =
@@ -100,9 +99,7 @@ export function GuestAccessGate({
 
   const text =
     message ??
-    (reason in ERROR_KEYS
-      ? t(ERROR_KEYS[reason as keyof typeof ERROR_KEYS])
-      : t("errors.generic"));
+    (reason in ERROR_KEYS ? t(ERROR_KEYS[reason as keyof typeof ERROR_KEYS]) : t("errors.generic"));
   const hintKey = ERROR_HINT_KEYS[reason];
   const hint = hintKey ? t(hintKey) : null;
 

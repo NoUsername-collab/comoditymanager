@@ -2,10 +2,7 @@
 export const PLACEHOLDER_GUEST_EMAIL = "reception@no-email.local";
 
 /** Legacy rows created before tenant-agnostic placeholder. */
-const LEGACY_PLACEHOLDER_EMAILS = new Set([
-  "receptie@casaemil.local",
-  "reception@casaemil.local",
-]);
+const LEGACY_PLACEHOLDER_EMAILS = new Set(["receptie@casaemil.local", "reception@casaemil.local"]);
 
 export function normalizeEmail(raw: string | null | undefined): string | null {
   const s = (raw ?? "").trim().toLowerCase();
@@ -25,16 +22,7 @@ export function staffBookingEmail(raw: string | null | undefined): string {
 }
 
 /** Normalizează telefon românesc spre E.164 (+40…). */
-const PHONE_PLACEHOLDER_VALUES = new Set([
-  "",
-  "—",
-  "-",
-  "–",
-  "n/a",
-  "na",
-  "null",
-  ".",
-]);
+const PHONE_PLACEHOLDER_VALUES = new Set(["", "—", "-", "–", "n/a", "na", "null", "."]);
 
 /** Telefon valid (normalizabil), fără placeholder-e admin. */
 export function isValidGuestPhone(raw: string | null | undefined): boolean {
@@ -82,10 +70,7 @@ export function normalizePhone(raw: string | null | undefined): string | null {
   return `+${digitsOnly}`;
 }
 
-export function hasGuestIdentity(input: {
-  guest_email: string;
-  guest_phone: string;
-}): boolean {
+export function hasGuestIdentity(input: { guest_email: string; guest_phone: string }): boolean {
   const email = normalizeEmail(input.guest_email);
   const phone = normalizePhone(input.guest_phone);
   if (phone) return true;

@@ -63,7 +63,7 @@ type TenantFilterOption = {
 function attachResourceCounts<T extends { id: string }>(
   tenants: T[],
   resourceCounts: Awaited<ReturnType<typeof loadTenantResourceCounts>>,
-  domainMap: Map<string, string[]>
+  domainMap: Map<string, string[]>,
 ): Array<
   T & {
     member_count: number;
@@ -85,7 +85,7 @@ function attachResourceCounts<T extends { id: string }>(
 }
 
 async function loadTenantDomainMap(
-  supabase: ReturnType<typeof createPublicAdminClient>
+  supabase: ReturnType<typeof createPublicAdminClient>,
 ): Promise<Map<string, string[]>> {
   const { data: domainRows, error } = await supabase
     .from("tenant_domains")
@@ -170,7 +170,7 @@ async function loadPlatformTodayMetrics() {
         .from("bookings")
         .select("id", { count: "exact", head: true })
         .gte("created_at", `${today}T00:00:00.000Z`)
-        .lt("created_at", `${today}T23:59:59.999Z`)
+        .lt("created_at", `${today}T23:59:59.999Z`),
     ),
     safeCount(
       supabase
@@ -178,14 +178,14 @@ async function loadPlatformTodayMetrics() {
         .select("id", { count: "exact", head: true })
         .lte("check_in", today)
         .gt("check_out", today)
-        .neq("status", "anulata")
+        .neq("status", "anulata"),
     ),
     safeCount(
       supabase
         .from("dev_logs")
         .select("id", { count: "exact", head: true })
         .eq("level", "error")
-        .gte("created_at", since24h)
+        .gte("created_at", since24h),
     ),
   ]);
 
@@ -198,10 +198,7 @@ async function loadPlatformTodayMetrics() {
 
 /** Aggregate platform statistics. */
 export const getPlatformStats = cache(async (): Promise<PlatformStats> => {
-  const [tenants, todayMetrics] = await Promise.all([
-    listAllTenants(),
-    loadPlatformTodayMetrics(),
-  ]);
+  const [tenants, todayMetrics] = await Promise.all([listAllTenants(), loadPlatformTodayMetrics()]);
 
   const planDistribution: Record<string, number> = {};
   let mrr = 0;
@@ -242,67 +239,67 @@ export const getPlatformStats = cache(async (): Promise<PlatformStats> => {
 });
 
 /** Get a single tenant by ID with full details. */
-export const getPlatformTenantById = cache(async (
-  tenantId: string
-): Promise<PlatformTenantSummary | null> => {
-  const supabase = createPublicAdminClient();
+export const getPlatformTenantById = cache(
+  async (tenantId: string): Promise<PlatformTenantSummary | null> => {
+    const supabase = createPublicAdminClient();
 
-  const { data: tenant, error } = await supabase
-    .from("tenants")
-    .select(TENANT_ROW_SELECT)
-    .eq("id", tenantId)
-    .single();
+    const { data: tenant, error } = await supabase
+      .from("tenants")
+      .select(TENANT_ROW_SELECT)
+      .eq("id", tenantId)
+      .single();
 
-  if (error || !tenant) return null;
+    if (error || !tenant) return null;
 
-  const [members, rooms, bookings, domains] = await Promise.all([
-    safeCount(
-      supabase
-        .from("tenant_members")
-        .select("id", { count: "exact", head: true })
-        .eq("tenant_id", tenantId)
-        .eq("is_active", true)
-    ),
-    safeCount(
-      supabase
-        .from("rooms")
-        .select("id", { count: "exact", head: true })
-        .eq("tenant_id", tenantId)
-    ),
-    safeCount(
-      supabase
-        .from("bookings")
-        .select("id", { count: "exact", head: true })
-        .eq("tenant_id", tenantId)
-    ),
-    loadTenantDomainsForTenant(supabase, tenantId),
-  ]);
+    const [members, rooms, bookings, domains] = await Promise.all([
+      safeCount(
+        supabase
+          .from("tenant_members")
+          .select("id", { count: "exact", head: true })
+          .eq("tenant_id", tenantId)
+          .eq("is_active", true),
+      ),
+      safeCount(
+        supabase
+          .from("rooms")
+          .select("id", { count: "exact", head: true })
+          .eq("tenant_id", tenantId),
+      ),
+      safeCount(
+        supabase
+          .from("bookings")
+          .select("id", { count: "exact", head: true })
+          .eq("tenant_id", tenantId),
+      ),
+      loadTenantDomainsForTenant(supabase, tenantId),
+    ]);
 
-  const summary = {
-    ...tenant,
-    member_count: members,
-    room_count: rooms,
-    booking_count: bookings,
-    domain_hosts: domains,
-  };
+    const summary = {
+      ...tenant,
+      member_count: members,
+      room_count: rooms,
+      booking_count: bookings,
+      domain_hosts: domains,
+    };
 
-  const emailAlerts = await loadTenantEmailListAlerts([
-    { id: tenantId, plan_id: tenant.plan_id },
-  ]);
-  const email = emailAlerts.get(tenantId);
+    const emailAlerts = await loadTenantEmailListAlerts([
+      { id: tenantId, plan_id: tenant.plan_id },
+    ]);
+    const email = emailAlerts.get(tenantId);
 
-  return {
-    ...summary,
-    email_sent_month: email?.sentCount ?? 0,
-    email_cap_month: email?.cap ?? null,
-    email_alert: email?.alert ?? "unlimited",
-    setup_incomplete: quickSetupIncomplete(summary),
-  } as PlatformTenantSummary;
-});
+    return {
+      ...summary,
+      email_sent_month: email?.sentCount ?? 0,
+      email_cap_month: email?.cap ?? null,
+      email_alert: email?.alert ?? "unlimited",
+      setup_incomplete: quickSetupIncomplete(summary),
+    } as PlatformTenantSummary;
+  },
+);
 
 async function loadTenantDomainsForTenant(
   supabase: ReturnType<typeof createPublicAdminClient>,
-  tenantId: string
+  tenantId: string,
 ): Promise<string[]> {
   const { data, error } = await supabase
     .from("tenant_domains")
@@ -314,9 +311,7 @@ async function loadTenantDomainsForTenant(
 }
 
 /** Lightweight read before platform-admin mutations (no counts / domain scan). */
-export async function getTenantMutationSnapshot(
-  tenantId: string
-): Promise<{
+export async function getTenantMutationSnapshot(tenantId: string): Promise<{
   plan_id: string | null;
   status: string;
   is_paying: boolean | null;
@@ -334,42 +329,42 @@ export async function getTenantMutationSnapshot(
 }
 
 /** Most recent admin_activity_log entry for a tenant. */
-export const getTenantLastActivity = cache(async (
-  tenantId: string
-): Promise<TenantLastActivity> => {
-  const supabase = createPublicAdminClient();
+export const getTenantLastActivity = cache(
+  async (tenantId: string): Promise<TenantLastActivity> => {
+    const supabase = createPublicAdminClient();
 
-  const { data, error } = await supabase
-    .from("admin_activity_log")
-    .select("action, actor_email, created_at")
-    .eq("tenant_id", tenantId)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    const { data, error } = await supabase
+      .from("admin_activity_log")
+      .select("action, actor_email, created_at")
+      .eq("tenant_id", tenantId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-  throwIfDbError("admin_activity_log (last activity)", error);
+    throwIfDbError("admin_activity_log (last activity)", error);
 
-  if (!data) {
+    if (!data) {
+      return {
+        lastActivityAt: null,
+        lastAction: null,
+        lastActorEmail: null,
+      };
+    }
+
     return {
-      lastActivityAt: null,
-      lastAction: null,
-      lastActorEmail: null,
+      lastActivityAt: data.created_at,
+      lastAction: data.action,
+      lastActorEmail: data.actor_email ?? null,
     };
-  }
-
-  return {
-    lastActivityAt: data.created_at,
-    lastAction: data.action,
-    lastActorEmail: data.actor_email ?? null,
-  };
-});
+  },
+);
 
 // ─── Mutations ──────────────────────────────────────────────────
 
 /** Update a tenant's plan. */
 export async function updateTenantPlan(
   tenantId: string,
-  planId: PlanId
+  planId: PlanId,
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createPublicAdminClient();
 
@@ -385,7 +380,7 @@ export async function updateTenantPlan(
 /** Update a tenant's status. */
 export async function updateTenantStatus(
   tenantId: string,
-  status: "active" | "trial" | "suspended" | "cancelled"
+  status: "active" | "trial" | "suspended" | "cancelled",
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createPublicAdminClient();
 
@@ -416,7 +411,7 @@ export async function updateTenantStatus(
 /** Update a tenant's active modules. */
 export async function updateTenantModules(
   tenantId: string,
-  modules: string[]
+  modules: string[],
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createPublicAdminClient();
 
@@ -435,7 +430,7 @@ export async function updateTenantModules(
 /** Update a tenant's billing flag. */
 export async function updateTenantBilling(
   tenantId: string,
-  isPaying: boolean
+  isPaying: boolean,
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createPublicAdminClient();
 
@@ -450,4 +445,3 @@ export async function updateTenantBilling(
   if (error) return { success: false, error: error.message };
   return { success: true };
 }
-

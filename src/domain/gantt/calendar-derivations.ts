@@ -1,14 +1,14 @@
 import type { BookingRow } from "@/domain/booking/row";
 import type { GanttFilter } from "@/domain/gantt/filters";
 import { focusDayInRange } from "@/domain/gantt/filters";
-import {
-  filterOccupancyForLayer,
-  type GanttLayerFilter,
-} from "@/domain/gantt/occupancy-layer";
+import { filterOccupancyForLayer, type GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import type { GanttRoom } from "@/domain/gantt/types";
 import type { RoomTodayFlags } from "@/domain/gantt/today-activity";
-import { computeDailyFreeCounts, aggregateWeeklyFreeCounts } from "@/domain/gantt/daily-free-counts";
+import {
+  computeDailyFreeCounts,
+  aggregateWeeklyFreeCounts,
+} from "@/domain/gantt/daily-free-counts";
 import { filterBookingsForOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { summarizeGanttToday } from "@/domain/gantt/today-activity";
 import { nightOccupied } from "@/lib/stay-dates";
@@ -29,9 +29,7 @@ export function deriveActiveBookings(bookings: BookingRow[]): BookingRow[] {
   return bookings.filter((booking) => booking.status !== "anulata");
 }
 
-function deriveBookingsByRoom(
-  activeBookings: BookingRow[]
-): Map<string, BookingRow[]> {
+function deriveBookingsByRoom(activeBookings: BookingRow[]): Map<string, BookingRow[]> {
   const map = new Map<string, BookingRow[]>();
   for (const booking of activeBookings) {
     for (const roomId of booking.room_ids) {
@@ -43,9 +41,7 @@ function deriveBookingsByRoom(
   return map;
 }
 
-function deriveOccupancyByRoom(
-  occupancy: OccupancySegment[]
-): Map<string, OccupancySegment[]> {
+function deriveOccupancyByRoom(occupancy: OccupancySegment[]): Map<string, OccupancySegment[]> {
   const map = new Map<string, OccupancySegment[]>();
   for (const segment of occupancy) {
     const list = map.get(segment.roomId);
@@ -58,20 +54,15 @@ function deriveOccupancyByRoom(
 function deriveDisplaySegmentsByRoom(
   occupancy: OccupancySegment[],
   layerFilter: GanttLayerFilter,
-  effectiveToday: string
+  effectiveToday: string,
 ): {
   stay: Map<string, OccupancySegment[]>;
   overlay: Map<string, OccupancySegment[]>;
 } {
   const stay = new Map<string, OccupancySegment[]>();
   const overlay = new Map<string, OccupancySegment[]>();
-  for (const segment of filterOccupancyForLayer(
-    occupancy,
-    layerFilter,
-    effectiveToday
-  )) {
-    const target =
-      segment.kind === "request" || segment.kind === "stay" ? stay : overlay;
+  for (const segment of filterOccupancyForLayer(occupancy, layerFilter, effectiveToday)) {
+    const target = segment.kind === "request" || segment.kind === "stay" ? stay : overlay;
     const list = target.get(segment.roomId);
     if (list) list.push(segment);
     else target.set(segment.roomId, [segment]);
@@ -82,24 +73,18 @@ function deriveDisplaySegmentsByRoom(
 function deriveOccupiedRoomIdsOnFocus(
   focusIso: string,
   bookingsByRoom: Map<string, BookingRow[]>,
-  occupancyByRoom: Map<string, OccupancySegment[]>
+  occupancyByRoom: Map<string, OccupancySegment[]>,
 ): Set<string> {
   const occupied = new Set<string>();
   for (const [roomId, roomBookings] of bookingsByRoom) {
     if (
-      roomBookings.some((booking) =>
-        nightOccupied(focusIso, booking.check_in, booking.check_out)
-      )
+      roomBookings.some((booking) => nightOccupied(focusIso, booking.check_in, booking.check_out))
     ) {
       occupied.add(roomId);
     }
   }
   for (const [roomId, segments] of occupancyByRoom) {
-    if (
-      segments.some((segment) =>
-        nightOccupied(focusIso, segment.checkIn, segment.checkOut)
-      )
-    ) {
+    if (segments.some((segment) => nightOccupied(focusIso, segment.checkIn, segment.checkOut))) {
       occupied.add(roomId);
     }
   }
@@ -109,20 +94,20 @@ function deriveOccupiedRoomIdsOnFocus(
 export function deriveFilteredRooms(
   rooms: GanttRoom[],
   filter: GanttFilter,
-  occupiedRoomIdsOnFocus: Set<string>
+  occupiedRoomIdsOnFocus: Set<string>,
 ): GanttRoom[] {
   if (filter === "all") return rooms;
   return rooms.filter((room) =>
     filter === "occupied"
       ? occupiedRoomIdsOnFocus.has(room.id)
-      : !occupiedRoomIdsOnFocus.has(room.id)
+      : !occupiedRoomIdsOnFocus.has(room.id),
   );
 }
 
 function deriveTodayFlagsByRoom(
   rooms: GanttRoom[],
   bookingsByRoom: Map<string, BookingRow[]>,
-  todayIso: string
+  todayIso: string,
 ): Map<string, RoomTodayFlags> {
   const map = new Map<string, RoomTodayFlags>();
   for (const room of rooms) {
@@ -131,7 +116,7 @@ function deriveTodayFlagsByRoom(
       arrival: roomBookings.some((booking) => booking.check_in === todayIso),
       departure: roomBookings.some((booking) => booking.check_out === todayIso),
       occupiedTonight: roomBookings.some((booking) =>
-        nightOccupied(todayIso, booking.check_in, booking.check_out)
+        nightOccupied(todayIso, booking.check_in, booking.check_out),
       ),
     });
   }
@@ -142,7 +127,7 @@ function deriveBuildingGroups(
   filteredRooms: GanttRoom[],
   groupByBuilding: boolean,
   buildingFallbackLabel: string,
-  buildings: { id: string; sort_order: number }[] = []
+  buildings: { id: string; sort_order: number }[] = [],
 ): GanttBuildingGroup[] {
   if (!groupByBuilding) return [];
 
@@ -152,7 +137,7 @@ function deriveBuildingGroups(
       list.push(room);
       map.set(room.building_id, list);
       return map;
-    }, new Map<string, GanttRoom[]>())
+    }, new Map<string, GanttRoom[]>()),
   ).map(([buildingId, buildingRooms]) => ({
     buildingId,
     buildingName: buildingRooms[0]?.building_name ?? buildingFallbackLabel,
@@ -165,7 +150,7 @@ function deriveBuildingGroups(
   if (!buildings.length) return groups;
 
   const buildingRank = new Map(
-    buildings.map((building) => [building.id, building.sort_order] as const)
+    buildings.map((building) => [building.id, building.sort_order] as const),
   );
 
   return groups.sort((a, b) => {
@@ -181,7 +166,7 @@ export function deriveGanttFocusIso(
   dayIsos: string[],
   effectiveToday: string,
   filter: GanttFilter,
-  focusDay: string | null
+  focusDay: string | null,
 ): string {
   const defaultFocusIso = focusDayInRange(dayIsos, effectiveToday);
   return filter !== "all" && focusDay ? focusDay : defaultFocusIso;
@@ -214,53 +199,45 @@ export function deriveGanttCalendarData(input: {
   const displaySegmentsByRoom = deriveDisplaySegmentsByRoom(
     input.occupancy,
     input.layerFilter,
-    input.effectiveToday
+    input.effectiveToday,
   );
   const focusIso = deriveGanttFocusIso(
     focusDayIsos,
     input.effectiveToday,
     input.filter,
-    input.focusDay
+    input.focusDay,
   );
   const occupiedRoomIdsOnFocus = deriveOccupiedRoomIdsOnFocus(
     focusIso,
     bookingsByRoom,
-    occupancyByRoom
+    occupancyByRoom,
   );
-  const filteredRooms = deriveFilteredRooms(
-    input.rooms,
-    input.filter,
-    occupiedRoomIdsOnFocus
-  );
+  const filteredRooms = deriveFilteredRooms(input.rooms, input.filter, occupiedRoomIdsOnFocus);
   const dailyCountsRaw = computeDailyFreeCounts(
     input.rooms,
     activeBookings,
     input.occupancy,
-    rangeDayIsos
+    rangeDayIsos,
   );
   const dailyFreeCounts =
     input.columnGranularity === "week"
       ? aggregateWeeklyFreeCounts(dailyCountsRaw, input.dayIsos)
       : dailyCountsRaw;
-  const todaySummary = summarizeGanttToday(
-    activeBookings,
-    rangeDayIsos,
-    input.effectiveToday
-  );
+  const todaySummary = summarizeGanttToday(activeBookings, rangeDayIsos, input.effectiveToday);
   const operativeCheckInEligible = filterBookingsForOperativeCheckIn(
     activeBookings,
-    input.effectiveToday
+    input.effectiveToday,
   );
   const todayFlagsByRoom = deriveTodayFlagsByRoom(
     input.rooms,
     bookingsByRoom,
-    todaySummary.todayIso
+    todaySummary.todayIso,
   );
   const buildingGroups = deriveBuildingGroups(
     filteredRooms,
     input.groupByBuilding,
     input.buildingFallbackLabel,
-    input.buildings ?? []
+    input.buildings ?? [],
   );
 
   return {

@@ -18,10 +18,7 @@ import {
 import { DEFAULT_PARTY_ADULTS } from "@/lib/constants";
 import { buildParty, type Party } from "@/domain/availability/party";
 import { PartyFields } from "@/features/bookings/ui/party/PartyFields";
-import {
-  publishGanttLiveBooking,
-  removeGanttLiveBooking,
-} from "@/lib/gantt/live-bookings";
+import { publishGanttLiveBooking, removeGanttLiveBooking } from "@/lib/gantt/live-bookings";
 import { buildSyntheticGanttBookingRow } from "@/services/bookings/synthetic-gantt-row";
 import {
   GanttRoomOccupantIdentities,
@@ -61,13 +58,9 @@ export function StayBody({
   const { showToast } = useAdminFx();
   const identity = useBookingIdentity();
   const [enterGuestsPerRoom, setEnterGuestsPerRoom] = useState(false);
-  const [occupantValues, setOccupantValues] = useState<OccupantIdentityValue[]>(
-    []
-  );
+  const [occupantValues, setOccupantValues] = useState<OccupantIdentityValue[]>([]);
   const [occupantsReady, setOccupantsReady] = useState(false);
-  const [intent, setIntent] = useState<StaffStayIntent>(
-    mode === "direct" ? "direct" : "request",
-  );
+  const [intent, setIntent] = useState<StaffStayIntent>(mode === "direct" ? "direct" : "request");
   useEffect(() => {
     if (mode === "request" || mode === "direct") setIntent(mode);
   }, [mode]);
@@ -91,18 +84,12 @@ export function StayBody({
         (id === draft?.roomId ? draft.roomName : id),
     }));
   }, [stayPreview.selectedIds, stayPreview.rooms, rooms, draft]);
-  const usePerRoomIdentities =
-    enterGuestsPerRoom && selectedCreateRooms.length > 1;
-  const identityReady = usePerRoomIdentities
-    ? occupantsReady
-    : identity.canSubmit;
-  const handleOccupantValues = useCallback(
-    (values: OccupantIdentityValue[], allReady: boolean) => {
-      setOccupantValues(values);
-      setOccupantsReady(allReady);
-    },
-    []
-  );
+  const usePerRoomIdentities = enterGuestsPerRoom && selectedCreateRooms.length > 1;
+  const identityReady = usePerRoomIdentities ? occupantsReady : identity.canSubmit;
+  const handleOccupantValues = useCallback((values: OccupantIdentityValue[], allReady: boolean) => {
+    setOccupantValues(values);
+    setOccupantsReady(allReady);
+  }, []);
   const hasMultiRoomDraft = (draft?.roomIds?.length ?? 0) > 1;
 
   function handleIntentChange(next: StaffStayIntent) {
@@ -186,20 +173,14 @@ export function StayBody({
         kind: "success",
         title: kind === "request" ? tGantt("quick.requestCreated") : tGantt("quick.directCreated"),
         message:
-          kind === "request"
-            ? tGantt("quick.requestAppears")
-            : tGantt("quick.bookingAppears"),
+          kind === "request" ? tGantt("quick.requestAppears") : tGantt("quick.bookingAppears"),
       });
     });
   }
 
   return (
     <>
-      <StaffStayIntentToggle
-        value={intent}
-        onChange={handleIntentChange}
-        appearance="admin"
-      />
+      <StaffStayIntentToggle value={intent} onChange={handleIntentChange} appearance="admin" />
       <PartyFields value={party} onChange={setParty} appearance="admin" />
       <StaffStayRoomPicker
         rooms={stayPreview.rooms}

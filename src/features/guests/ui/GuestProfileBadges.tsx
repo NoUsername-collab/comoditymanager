@@ -27,7 +27,7 @@ export function GuestProfileBadges({
   if (!profile && (!alertLevel || alertLevel === "normal")) return null;
 
   const effectiveLevel =
-    alertLevel && alertLevel !== "normal" ? alertLevel : profile?.flag_level ?? "normal";
+    alertLevel && alertLevel !== "normal" ? alertLevel : (profile?.flag_level ?? "normal");
 
   const riskTone =
     effectiveLevel === "blacklist"
@@ -40,9 +40,7 @@ export function GuestProfileBadges({
     return (
       <div className="guest-badges guest-badges--request">
         <span className="guest-badges--request__stat guest-badges--request__stat--neutral">
-          <span className="guest-badges--request__label">
-            {tGuests("profileBadges.rating")}
-          </span>
+          <span className="guest-badges--request__label">{tGuests("profileBadges.rating")}</span>
           <GuestStarsCompact
             value={profile.stars_avg}
             count={profile.review_count}
@@ -59,14 +57,10 @@ export function GuestProfileBadges({
               : "guest-badges--request__stat--amber",
           ].join(" ")}
         >
-          <span className="guest-badges--request__label">
-            {tGuests("profileBadges.state")}
-          </span>
+          <span className="guest-badges--request__label">{tGuests("profileBadges.state")}</span>
           <strong>{riskTone}</strong>
         </span>
-        {alertNote ? (
-          <p className="guest-badges--request__alert">{alertNote}</p>
-        ) : null}
+        {alertNote ? <p className="guest-badges--request__alert">{alertNote}</p> : null}
       </div>
     );
   }
@@ -92,9 +86,7 @@ export function GuestProfileBadges({
         <span
           className={[
             "guest-badge-chip",
-            effectiveLevel === "normal"
-              ? "guest-badge-chip--neutral"
-              : "guest-badge-chip--amber",
+            effectiveLevel === "normal" ? "guest-badge-chip--neutral" : "guest-badge-chip--amber",
           ].join(" ")}
         >
           {riskTone}
@@ -130,7 +122,9 @@ export function GuestProfileBadges({
                 : tGuests("profileBadges.noReviewYet")}
             </span>
           </div>
-          <div className={`guest-badge ${effectiveLevel === "normal" ? "guest-badge--neutral" : "guest-badge--amber"}`}>
+          <div
+            className={`guest-badge ${effectiveLevel === "normal" ? "guest-badge--neutral" : "guest-badge--amber"}`}
+          >
             <span className="guest-badge__label">{tGuests("profileBadges.state")}</span>
             <span className="guest-badge__value">{riskTone}</span>
             <span className="guest-badge__sub">
@@ -143,9 +137,7 @@ export function GuestProfileBadges({
           </div>
         </>
       )}
-      {alertNote && (
-        <span className="guest-badges__alert">{alertNote}</span>
-      )}
+      {alertNote && <span className="guest-badges__alert">{alertNote}</span>}
     </div>
   );
 }

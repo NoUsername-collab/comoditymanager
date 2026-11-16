@@ -170,15 +170,9 @@ function collectTd1Candidates(text: string): string[][] {
     .map(normalizeMrzLine)
     .filter((line) => line.length >= TD1_MIN - 2);
 
-  const lines = mergeBrokenMrzLines(rawLines).filter((line) =>
-    looksLikeMrzLine(line, TD1_MIN - 2),
-  );
+  const lines = mergeBrokenMrzLines(rawLines).filter((line) => looksLikeMrzLine(line, TD1_MIN - 2));
 
-  return [
-    ...collectExactBlocks(lines),
-    ...collectFuzzyTd1(lines),
-    ...collectContinuousTd1(text),
-  ];
+  return [...collectExactBlocks(lines), ...collectFuzzyTd1(lines), ...collectContinuousTd1(text)];
 }
 
 function pickBestBlock(candidates: string[][]): string[] | null {
@@ -284,9 +278,7 @@ export function extractMrzLinesFromOcrText(text: string): string[] | null {
     .split(/\r?\n/)
     .map(normalizeMrzLine)
     .filter((line) => line.length >= TD1_MIN - 2);
-  const lines = mergeBrokenMrzLines(rawLines).filter((line) =>
-    looksLikeMrzLine(line, TD1_MIN - 2),
-  );
+  const lines = mergeBrokenMrzLines(rawLines).filter((line) => looksLikeMrzLine(line, TD1_MIN - 2));
 
   return pickBestBlock([
     ...collectExactBlocks(lines),

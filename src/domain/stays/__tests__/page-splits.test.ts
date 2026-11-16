@@ -43,7 +43,7 @@ describe("page-splits", () => {
         confirmedRecentHistory: [],
         cancelledHistory: [],
       },
-      "maria"
+      "maria",
     );
 
     expect(result.filteredStays).toHaveLength(1);
@@ -70,7 +70,7 @@ describe("page-splits", () => {
         },
       ],
       "2026-06-09",
-      "2026-07-09"
+      "2026-07-09",
     );
 
     expect(result.requests).toHaveLength(1);
@@ -101,11 +101,7 @@ describe("page-splits", () => {
       },
     ]);
 
-    expect(sorted.map((s) => s.check_in)).toEqual([
-      "2026-06-10",
-      "2026-06-25",
-      "2026-06-20",
-    ]);
+    expect(sorted.map((s) => s.check_in)).toEqual(["2026-06-10", "2026-06-25", "2026-06-20"]);
   });
 
   it("pins requests above confirmed only on the default confirmed view", () => {

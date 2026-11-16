@@ -22,16 +22,8 @@ export default async function PlatformAdminDashboard() {
           value={stats.activeTenants}
           accent="text-emerald-400"
         />
-        <StatCard
-          label={t("trialTenants")}
-          value={stats.trialTenants}
-          accent="text-amber-400"
-        />
-        <StatCard
-          label={t("signupsLast7d")}
-          value={stats.signupsLast7d}
-          accent="text-lime-400"
-        />
+        <StatCard label={t("trialTenants")} value={stats.trialTenants} accent="text-amber-400" />
+        <StatCard label={t("signupsLast7d")} value={stats.signupsLast7d} accent="text-lime-400" />
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -54,9 +46,7 @@ export default async function PlatformAdminDashboard() {
         <StatCard
           label={t("suspendedTenants")}
           value={stats.suspendedTenants}
-          accent={
-            stats.suspendedTenants > 0 ? "text-red-400" : "text-neutral-500"
-          }
+          accent={stats.suspendedTenants > 0 ? "text-red-400" : "text-neutral-500"}
         />
         <StatCard
           label={t("cancelledTenants")}
@@ -66,14 +56,9 @@ export default async function PlatformAdminDashboard() {
         <StatCard
           label={t("errors24h")}
           value={stats.recentErrors24h}
-          accent={
-            stats.recentErrors24h > 0 ? "text-red-400" : "text-neutral-500"
-          }
+          accent={stats.recentErrors24h > 0 ? "text-red-400" : "text-neutral-500"}
         />
-        <StatCard
-          label={t("planTypes")}
-          value={Object.keys(stats.planDistribution).length}
-        />
+        <StatCard label={t("planTypes")} value={Object.keys(stats.planDistribution).length} />
       </div>
 
       <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
@@ -84,9 +69,7 @@ export default async function PlatformAdminDashboard() {
               key={plan}
               className="rounded-md border border-neutral-700 bg-neutral-800 px-4 py-2"
             >
-              <span className="text-sm font-medium capitalize text-neutral-200">
-                {plan}
-              </span>
+              <span className="text-sm font-medium capitalize text-neutral-200">{plan}</span>
               <span className="ml-2 text-lg font-bold text-white">{count}</span>
             </div>
           ))}
@@ -123,9 +106,7 @@ function StatCard({
   return (
     <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3">
       <p className="text-xs text-neutral-500">{label}</p>
-      <p className={`mt-0.5 text-xl font-bold ${accent ?? "text-white"}`}>
-        {value}
-      </p>
+      <p className={`mt-0.5 text-xl font-bold ${accent ?? "text-white"}`}>{value}</p>
     </div>
   );
 }

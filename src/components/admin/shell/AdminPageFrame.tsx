@@ -25,14 +25,11 @@ export async function AdminPageFrame({
   bodyClassName?: string;
 }) {
   const tCommon = await getTranslations("admin.common");
-  const plainDescription =
-    typeof description === "string" || typeof description === "number";
+  const plainDescription = typeof description === "string" || typeof description === "number";
 
   return (
     <main
-      className={["ml-content admin-page p-3 sm:p-4 lg:p-4", className]
-        .filter(Boolean)
-        .join(" ")}
+      className={["ml-content admin-page p-3 sm:p-4 lg:p-4", className].filter(Boolean).join(" ")}
     >
       {backHref && (
         <Link href={backHref} className="admin-page-back mb-2 inline-block">
@@ -52,13 +49,9 @@ export async function AdminPageFrame({
           <div className="admin-page-toolbar mb-2 flex flex-wrap items-start justify-between gap-2">
             {description ? (
               plainDescription ? (
-                <p className="admin-page-desc max-w-2xl text-sm leading-snug">
-                  {description}
-                </p>
+                <p className="admin-page-desc max-w-2xl text-sm leading-snug">{description}</p>
               ) : (
-                <div className="admin-page-desc min-w-0 flex-1">
-                  {description}
-                </div>
+                <div className="admin-page-desc min-w-0 flex-1">{description}</div>
               )
             ) : (
               <span />

@@ -38,9 +38,7 @@ const BOOKING_RULES_SELECT = [
   "cot_fee",
 ].join(", ");
 
-async function loadBookingRulesUncached(
-  tenantId: string
-): Promise<BookingRulesSettings> {
+async function loadBookingRulesUncached(tenantId: string): Promise<BookingRulesSettings> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("pension_settings")
@@ -50,28 +48,20 @@ async function loadBookingRulesUncached(
 
   if (error) throw new Error(error.message);
 
-  return parseBookingRulesRow(
-    data as Record<string, unknown> | null | undefined
-  );
+  return parseBookingRulesRow(data as Record<string, unknown> | null | undefined);
 }
 
 const getCachedBookingRules = (tenantId: string) =>
-  unstable_cache(
-    () => loadBookingRulesUncached(tenantId),
-    ["booking-rules", tenantId],
-    {
-      tags: [
-        CACHE_TAGS.pensionSettings,
-        tenantTag(tenantId, CACHE_TAGS.pensionSettings),
-        `tenant-${tenantId}-settings`,
-      ],
-      revalidate: 300,
-    }
-  );
+  unstable_cache(() => loadBookingRulesUncached(tenantId), ["booking-rules", tenantId], {
+    tags: [
+      CACHE_TAGS.pensionSettings,
+      tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+      `tenant-${tenantId}-settings`,
+    ],
+    revalidate: 300,
+  });
 
-const loadBookingRules = cache((tenantId: string) =>
-  getCachedBookingRules(tenantId)()
-);
+const loadBookingRules = cache((tenantId: string) => getCachedBookingRules(tenantId)());
 
 export async function getBookingRulesSettings(): Promise<BookingRulesSettings> {
   const tenantId = await resolveTenantIdForData();
@@ -89,7 +79,7 @@ export async function getChildPolicy(): Promise<ChildPolicy> {
 }
 
 export async function updateBookingRulesSettings(
-  input: Partial<BookingRulesSettings>
+  input: Partial<BookingRulesSettings>,
 ): Promise<void> {
   const tenantId = await resolveTenantIdForData();
   const supabase = createPublicAdminClient();

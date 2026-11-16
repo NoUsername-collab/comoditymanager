@@ -14,7 +14,7 @@ export function resolveMovePivot(
   segmentStart: string,
   segmentEnd: string,
   requestedPivot?: string,
-  today: string = todayIso()
+  today: string = todayIso(),
 ): string {
   let pivot = requestedPivot && requestedPivot > today ? requestedPivot : today;
   if (pivot <= segmentStart) {
@@ -32,9 +32,6 @@ export function resolveMovePivot(
   return pivot;
 }
 
-export function segmentNightCount(seg: {
-  segment_start: string;
-  segment_end: string;
-}): number {
+export function segmentNightCount(seg: { segment_start: string; segment_end: string }): number {
   return stayNightCount(seg.segment_start, seg.segment_end);
 }

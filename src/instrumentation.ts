@@ -4,9 +4,7 @@ export async function register() {
     assertServerEnvAtBoot();
     await import("../sentry.server.config");
 
-    const { registerTenantProcessErrorHandlers } = await import(
-      "@/lib/tenant/error-safeguard"
-    );
+    const { registerTenantProcessErrorHandlers } = await import("@/lib/tenant/error-safeguard");
     registerTenantProcessErrorHandlers();
   }
 
@@ -21,18 +19,13 @@ export const onRequestError = async (
   const [error, request, context] = args;
 
   try {
-    const rawHost =
-      request.headers["x-forwarded-host"] ?? request.headers["host"] ?? null;
-    const host = Array.isArray(rawHost) ? rawHost[0] ?? null : rawHost;
+    const rawHost = request.headers["x-forwarded-host"] ?? request.headers["host"] ?? null;
+    const host = Array.isArray(rawHost) ? (rawHost[0] ?? null) : rawHost;
 
-    const { isTenantRequestHost, shouldSkipTenantErrorLog } = await import(
-      "@/lib/tenant/error-safeguard"
-    );
+    const { isTenantRequestHost, shouldSkipTenantErrorLog } =
+      await import("@/lib/tenant/error-safeguard");
 
-    if (
-      isTenantRequestHost(host) &&
-      !shouldSkipTenantErrorLog(error)
-    ) {
+    if (isTenantRequestHost(host) && !shouldSkipTenantErrorLog(error)) {
       const { captureTenantError } = await import("@/services/dev-logs");
       const digest =
         typeof error === "object" &&

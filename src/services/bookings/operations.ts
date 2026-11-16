@@ -11,32 +11,23 @@ import { getCheckinByBookingId } from "@/services/checkin/queries";
 import { getCheckinSettings } from "@/services/checkin/settings";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso } from "@/lib/stay-dates";
-import {
-  logAdminActivity,
-  logAdminActivityFromSession,
-} from "@/services/activity-log";
+import { logAdminActivity, logAdminActivityFromSession } from "@/services/activity-log";
 import {
   bookingHasSplitSegments,
   shiftAllSegmentsByDays,
   syncBookingRoomSegments,
 } from "@/services/booking-segments";
-import {
-  assertValidGuestPhone,
-  isValidGuestPhone,
-  normalizePhone,
-} from "@/domain/guest/normalize";
+import { assertValidGuestPhone, isValidGuestPhone, normalizePhone } from "@/domain/guest/normalize";
 import { resolveGuestForBooking } from "@/services/guest-booking-resolve";
-import {
-  listGuestProfileSummaries,
-  resolveGuestAlertSnapshot,
-} from "@/services/guest-profiles";
-import {
-  assertRoomsAvailableForOccupancy,
-} from "@/services/room-occupancy";
+import { listGuestProfileSummaries, resolveGuestAlertSnapshot } from "@/services/guest-profiles";
+import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 import { getStaffUser } from "@/lib/auth/require-admin";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp, isoToDatetimeLocal } from "@/lib/operational-check";
-import { assertPostCheckoutEditAllowed, assertBookingPostCheckoutEditAllowed } from "./post-checkout-guard";
+import {
+  assertPostCheckoutEditAllowed,
+  assertBookingPostCheckoutEditAllowed,
+} from "./post-checkout-guard";
 
 import { getBookingById } from "./queries";
 
@@ -82,10 +73,7 @@ async function ensureBookingPhoneForCheckIn(bookingId: string): Promise<void> {
   throw new Error("booking.phone_required_for_checkin");
 }
 
-export async function updateBookingGuestPhone(
-  bookingId: string,
-  rawPhone: string
-): Promise<void> {
+export async function updateBookingGuestPhone(bookingId: string, rawPhone: string): Promise<void> {
   assertValidGuestPhone(rawPhone);
   const [booking, { tenantId, supabase }] = await Promise.all([
     getBookingById(bookingId),
@@ -125,10 +113,7 @@ export async function updateBookingGuestPhone(
   });
 }
 
-export async function setBookingCheckIn(
-  bookingId: string,
-  at?: string | null
-): Promise<void> {
+export async function setBookingCheckIn(bookingId: string, at?: string | null): Promise<void> {
   await ensureBookingPhoneForCheckIn(bookingId);
   const booking = await requireConfirmedBooking(bookingId);
   if (booking.actual_check_in_at) {
@@ -144,10 +129,7 @@ export async function setBookingCheckIn(
   }
 
   const ts = parseOperationalTimestamp(at);
-  const [user, { tenantId, supabase }] = await Promise.all([
-    getStaffUser(),
-    getTenantScope(),
-  ]);
+  const [user, { tenantId, supabase }] = await Promise.all([getStaffUser(), getTenantScope()]);
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -173,10 +155,7 @@ export async function setBookingCheckIn(
   });
 }
 
-export async function setBookingCheckOut(
-  bookingId: string,
-  at?: string | null
-): Promise<void> {
+export async function setBookingCheckOut(bookingId: string, at?: string | null): Promise<void> {
   const [booking, settings, checkin] = await Promise.all([
     requireConfirmedBooking(bookingId),
     getCheckinSettings(),
@@ -189,12 +168,7 @@ export async function setBookingCheckOut(
     throw new Error("booking.checkout_already_recorded");
   }
 
-  if (
-    shouldBlockCheckoutForUnpaid(
-      settings,
-      checkin?.payment_status ?? null
-    )
-  ) {
+  if (shouldBlockCheckoutForUnpaid(settings, checkin?.payment_status ?? null)) {
     throw new Error("booking.checkout_blocked_unpaid");
   }
 
@@ -205,10 +179,7 @@ export async function setBookingCheckOut(
     throw new Error("booking.checkout_before_checkin_not_allowed");
   }
 
-  const [user, { tenantId, supabase }] = await Promise.all([
-    getStaffUser(),
-    getTenantScope(),
-  ]);
+  const [user, { tenantId, supabase }] = await Promise.all([getStaffUser(), getTenantScope()]);
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -244,10 +215,7 @@ export async function setBookingCheckOut(
   });
 }
 
-export async function editBookingCheckIn(
-  bookingId: string,
-  at?: string | null
-): Promise<void> {
+export async function editBookingCheckIn(bookingId: string, at?: string | null): Promise<void> {
   const booking = await requireConfirmedBooking(bookingId);
   if (!booking.actual_check_in_at) {
     throw new Error("booking.checkin_not_recorded");
@@ -266,10 +234,7 @@ export async function editBookingCheckIn(
     }
   }
 
-  const [user, { tenantId, supabase }] = await Promise.all([
-    getStaffUser(),
-    getTenantScope(),
-  ]);
+  const [user, { tenantId, supabase }] = await Promise.all([getStaffUser(), getTenantScope()]);
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -295,10 +260,7 @@ export async function editBookingCheckIn(
   });
 }
 
-export async function editBookingCheckOut(
-  bookingId: string,
-  at?: string | null
-): Promise<void> {
+export async function editBookingCheckOut(bookingId: string, at?: string | null): Promise<void> {
   await assertPostCheckoutEditAllowed(bookingId);
   const booking = await requireConfirmedBooking(bookingId);
   if (!booking.actual_check_in_at) {
@@ -317,10 +279,7 @@ export async function editBookingCheckOut(
 
   const settings = await getCheckinSettings();
 
-  const [user, { tenantId, supabase }] = await Promise.all([
-    getStaffUser(),
-    getTenantScope(),
-  ]);
+  const [user, { tenantId, supabase }] = await Promise.all([getStaffUser(), getTenantScope()]);
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -365,9 +324,7 @@ export async function undoBookingCheckIn(bookingId: string): Promise<void> {
   ]);
   const { getCheckinByBookingId } = await import("@/services/checkin/queries");
   const { deleteCheckinsForBooking } = await import("@/services/checkin/sync");
-  const existingWizardCheckin = await getCheckinByBookingId(bookingId).catch(
-    () => null,
-  );
+  const existingWizardCheckin = await getCheckinByBookingId(bookingId).catch(() => null);
 
   if (!booking.actual_check_in_at && !existingWizardCheckin) {
     throw new Error("booking.checkin_not_recorded");

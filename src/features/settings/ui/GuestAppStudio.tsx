@@ -49,9 +49,12 @@ export function GuestAppStudio({
     leavingRef.current = true;
     setLeaving(true);
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.setTimeout(() => {
-      router.push("/admin/settings");
-    }, reduceMotion ? 0 : LEAVE_MS);
+    window.setTimeout(
+      () => {
+        router.push("/admin/settings");
+      },
+      reduceMotion ? 0 : LEAVE_MS,
+    );
   }
 
   useEffect(() => {
@@ -109,11 +112,7 @@ export function GuestAppStudio({
 
         <section className="pub-site-studio__canvas" aria-label={t("studioAria")}>
           <div className="pub-site-studio__toolbar">
-            <button
-              type="button"
-              className="pub-site-studio__back"
-              onClick={() => setPane("edit")}
-            >
+            <button type="button" className="pub-site-studio__back" onClick={() => setPane("edit")}>
               {t("studioEdit")}
             </button>
           </div>

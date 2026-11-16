@@ -388,6 +388,10 @@
 }
 
 .phone-app__hero {
-  background: linear-gradient(135deg, color-mix(in srgb, #3d5aab 42%, #12141c), color-mix(in srgb, #7aa2ff 22%, #12141c));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #3d5aab 42%, #12141c),
+    color-mix(in srgb, #7aa2ff 22%, #12141c)
+  );
   border: 1px solid color-mix(in srgb, #7aa2ff 28%, transparent);
 }

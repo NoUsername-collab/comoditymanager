@@ -50,10 +50,7 @@ export async function loadGuestStayMetadata() {
     guestSettings: guestSettings
       ? {
           ...guestSettings,
-          appearance: appearanceWithLogo(
-            guestSettings.appearance,
-            publicConfig?.chrome.logoUrl,
-          ),
+          appearance: appearanceWithLogo(guestSettings.appearance, publicConfig?.chrome.logoUrl),
         }
       : guestSettings,
     publicConfig,
@@ -61,14 +58,13 @@ export async function loadGuestStayMetadata() {
 }
 
 export async function loadGuestStayLayout(code: string) {
-  const [pensionSettings, publicConfig, guestSettings, today, session] =
-    await Promise.all([
-      getPensionSettings().catch(() => null),
-      getPublicSiteConfig().catch(() => null),
-      getGuestAppSettingsPublic().catch(() => null),
-      todayIso(),
-      resolveGuestSessionSafe(code),
-    ]);
+  const [pensionSettings, publicConfig, guestSettings, today, session] = await Promise.all([
+    getPensionSettings().catch(() => null),
+    getPublicSiteConfig().catch(() => null),
+    getGuestAppSettingsPublic().catch(() => null),
+    todayIso(),
+    resolveGuestSessionSafe(code),
+  ]);
 
   const pensionName = pensionSettings?.display_name ?? "Stay";
   const publicThemeId = publicConfig?.themeId ?? "noir";
@@ -77,15 +73,13 @@ export async function loadGuestStayLayout(code: string) {
     publicConfig?.chrome.logoUrl,
   );
   const receptionPhone =
-    guestSettings?.content.hotel?.phone?.trim() ||
-    publicConfig?.contact.phone?.trim() ||
-    null;
+    guestSettings?.content.hotel?.phone?.trim() || publicConfig?.contact.phone?.trim() || null;
 
   let loyaltyRedirectRef: string | null = null;
   if (!session.ok && session.reason === "after_check_out") {
-    const loyalty = await resolveLoyaltyFromStayAccessCode(code).catch(
-      (): { ok: false } => ({ ok: false }),
-    );
+    const loyalty = await resolveLoyaltyFromStayAccessCode(code).catch((): { ok: false } => ({
+      ok: false,
+    }));
     if (loyalty.ok) loyaltyRedirectRef = loyalty.snapshot.reference;
   }
 
@@ -127,27 +121,20 @@ export async function loadGuestStayFeature(code: string, locale: string) {
   if (!session.ok) {
     return { ok: false as const, today, session };
   }
-  const ctx = await resolveGuestAppContext(
-    session.settings,
-    session.booking,
-    locale,
-  );
+  const ctx = await resolveGuestAppContext(session.settings, session.booking, locale);
   return { ok: true as const, today, session, ctx };
 }
 
 export async function loadGuestLoyaltyLayout(reference: string) {
-  const [pensionSettings, publicConfig, guestSettings, loyalty] =
-    await Promise.all([
-      getPensionSettings().catch(() => null),
-      getPublicSiteConfig().catch(() => null),
-      getGuestAppSettingsPublic().catch(() => null),
-      resolveLoyaltyByReference(reference).catch(
-        (): { ok: false; reason: "not_found" } => ({
-          ok: false,
-          reason: "not_found",
-        }),
-      ),
-    ]);
+  const [pensionSettings, publicConfig, guestSettings, loyalty] = await Promise.all([
+    getPensionSettings().catch(() => null),
+    getPublicSiteConfig().catch(() => null),
+    getGuestAppSettingsPublic().catch(() => null),
+    resolveLoyaltyByReference(reference).catch((): { ok: false; reason: "not_found" } => ({
+      ok: false,
+      reason: "not_found",
+    })),
+  ]);
 
   const pensionName = pensionSettings?.display_name ?? "Stay";
   const publicThemeId = publicConfig?.themeId ?? "noir";
@@ -156,9 +143,7 @@ export async function loadGuestLoyaltyLayout(reference: string) {
     publicConfig?.chrome.logoUrl,
   );
   const receptionPhone =
-    guestSettings?.content.hotel?.phone?.trim() ||
-    publicConfig?.contact.phone?.trim() ||
-    null;
+    guestSettings?.content.hotel?.phone?.trim() || publicConfig?.contact.phone?.trim() || null;
 
   return {
     pensionName,
@@ -168,4 +153,3 @@ export async function loadGuestLoyaltyLayout(reference: string) {
     loyalty,
   };
 }
-

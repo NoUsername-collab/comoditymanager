@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import dynamic from "next/dynamic";
@@ -22,7 +15,7 @@ const BookingCheckoutPanel = dynamic(
     import("@/features/bookings/ui/BookingCheckoutPanel").then((m) => ({
       default: m.BookingCheckoutPanel,
     })),
-  { ssr: false }
+  { ssr: false },
 );
 
 export type OperativeCheckRequest = {
@@ -68,10 +61,8 @@ export function OperativeCheckProvider({
   const tGantt = useTranslations("admin.gantt");
   const tServer = useTranslations("admin.serverActions");
   const [checkinBookingId, setCheckinBookingId] = useState<string | null>(null);
-  const [checkinWizardMode, setCheckinWizardMode] =
-    useState<CheckinWizardMode>("create");
-  const [checkoutDialog, setCheckoutDialog] =
-    useState<CheckoutDialogState | null>(null);
+  const [checkinWizardMode, setCheckinWizardMode] = useState<CheckinWizardMode>("create");
+  const [checkoutDialog, setCheckoutDialog] = useState<CheckoutDialogState | null>(null);
 
   const openCheckInWizard = useCallback(
     (args: OperativeCheckRequest): boolean => {
@@ -108,7 +99,7 @@ export function OperativeCheckProvider({
       setCheckinBookingId(args.bookingId);
       return true;
     },
-    [today, showToast, tGantt, tServer]
+    [today, showToast, tGantt, tServer],
   );
 
   const openCheckOut = useCallback((args: OperativeCheckRequest) => {
@@ -122,7 +113,7 @@ export function OperativeCheckProvider({
 
   const value = useMemo(
     () => ({ today, canEditAfterCheckout, openCheckInWizard, openCheckOut }),
-    [today, canEditAfterCheckout, openCheckInWizard, openCheckOut]
+    [today, canEditAfterCheckout, openCheckInWizard, openCheckOut],
   );
 
   return (
@@ -153,9 +144,7 @@ export function OperativeCheckProvider({
 export function useOperativeCheck(): OperativeCheckOps {
   const ctx = useContext(Ctx);
   if (!ctx) {
-    throw new Error(
-      "useOperativeCheck must be used within OperativeCheckProvider"
-    );
+    throw new Error("useOperativeCheck must be used within OperativeCheckProvider");
   }
   return ctx;
 }

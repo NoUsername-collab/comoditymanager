@@ -62,10 +62,7 @@ const onVercel = Boolean(process.env.VERCEL);
 if (!onVercel) {
   const { path, loaded } = loadEnvFile(root, args.file);
   if (!loaded && profile === "local") {
-    fail([
-      `Lipsește ${path}`,
-      "Copiază: cp .env.example .env.local și completează valorile",
-    ]);
+    fail([`Lipsește ${path}`, "Copiază: cp .env.example .env.local și completează valorile"]);
   } else if (loaded) {
     ok(`Env încărcat din ${path}`);
   }
@@ -104,9 +101,7 @@ if (service && !isValidJwtLikeKey(service)) {
 // Platform admin emails (recommended)
 const platformAdminEmails = process.env.ZALMOX_ADMIN_EMAILS?.trim();
 if (!platformAdminEmails) {
-  warnings.push(
-    "ZALMOX_ADMIN_EMAILS lipseste — nu vei putea accesa /platform-admin"
-  );
+  warnings.push("ZALMOX_ADMIN_EMAILS lipseste — nu vei putea accesa /platform-admin");
 }
 
 // Legacy staff emails (optional in multi-tenant — role comes from tenant_members DB)
@@ -119,11 +114,7 @@ if (adminEmail && !isValidEmail(adminEmail)) {
 if (operatorEmail && !isValidEmail(operatorEmail)) {
   errors.push("OPERATOR_EMAIL nu e un email valid");
 }
-if (
-  adminEmail &&
-  operatorEmail &&
-  adminEmail.toLowerCase() === operatorEmail.toLowerCase()
-) {
+if (adminEmail && operatorEmail && adminEmail.toLowerCase() === operatorEmail.toLowerCase()) {
   errors.push("ADMIN_EMAIL si OPERATOR_EMAIL trebuie sa fie conturi diferite");
 }
 
@@ -141,17 +132,14 @@ for (const def of ENV_MANIFEST) {
 
   if (profile === "production" && def.forbiddenInProduction) {
     if (def.key === "ADMIN_FACTORY_RESET_ENABLED" && val === "true") {
-      errors.push(
-        `${def.key}=true este interzis pe producție (reset șterge datele clienților)`
-      );
+      errors.push(`${def.key}=true este interzis pe producție (reset șterge datele clienților)`);
     }
     if (
-      (def.key === "ADMIN_INITIAL_PASSWORD" ||
-        def.key === "OPERATOR_INITIAL_PASSWORD") &&
+      (def.key === "ADMIN_INITIAL_PASSWORD" || def.key === "OPERATOR_INITIAL_PASSWORD") &&
       !isPlaceholderEnvValue(val)
     ) {
       errors.push(
-        `${def.key} nu trebuie setat pe Vercel producție — folosește doar local la setup-staff`
+        `${def.key} nu trebuie setat pe Vercel producție — folosește doar local la setup-staff`,
       );
     }
   }
@@ -160,13 +148,9 @@ for (const def of ENV_MANIFEST) {
     continue;
   }
 
-  if (
-    profile === "production" &&
-    def.recommendedInProduction &&
-    isPlaceholderEnvValue(val)
-  ) {
+  if (profile === "production" && def.recommendedInProduction && isPlaceholderEnvValue(val)) {
     warnings.push(
-      `${def.key} lipsește pe producție — recomandat pentru securitate cookie unlock (npm run env:secret)`
+      `${def.key} lipsește pe producție — recomandat pentru securitate cookie unlock (npm run env:secret)`,
     );
   }
 }

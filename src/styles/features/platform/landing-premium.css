@@ -11,7 +11,12 @@
   --lp-dark-1: #0a0618;
   --lp-dark-2: #0f0a2a;
   --lp-dark-3: #0d1a3a;
-  --lp-dark-bg: linear-gradient(145deg, var(--lp-dark-1) 0%, var(--lp-dark-2) 50%, var(--lp-dark-3) 100%);
+  --lp-dark-bg: linear-gradient(
+    145deg,
+    var(--lp-dark-1) 0%,
+    var(--lp-dark-2) 50%,
+    var(--lp-dark-3) 100%
+  );
   --lp-dark-text: #f5f4fa;
   --lp-dark-text-muted: #94a3b8;
   --lp-dark-text-faint: #64748b;
@@ -34,7 +39,12 @@
   --lp-accent-1: #7c3aed;
   --lp-accent-2: #4f46e5;
   --lp-accent-3: #2563eb;
-  --lp-accent-gradient: linear-gradient(135deg, var(--lp-accent-1) 0%, var(--lp-accent-2) 50%, var(--lp-accent-3) 100%);
+  --lp-accent-gradient: linear-gradient(
+    135deg,
+    var(--lp-accent-1) 0%,
+    var(--lp-accent-2) 50%,
+    var(--lp-accent-3) 100%
+  );
   --lp-accent-soft: rgba(124, 58, 237, 0.08);
   --lp-accent-border: rgba(124, 58, 237, 0.2);
   --lp-accent-on-dark: #a78bfa;
@@ -152,8 +162,15 @@
 }
 
 @keyframes btn-pulse {
-  0%, 100% { box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35); }
-  50%       { box-shadow: 0 4px 32px rgba(79, 70, 229, 0.65), 0 0 60px rgba(124,58,237,0.2); }
+  0%,
+  100% {
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
+  }
+  50% {
+    box-shadow:
+      0 4px 32px rgba(79, 70, 229, 0.65),
+      0 0 60px rgba(124, 58, 237, 0.2);
+  }
 }
 
 .lp-btn--ghost {
@@ -171,7 +188,12 @@
 
 .lp-hero {
   position: relative;
-  background: linear-gradient(145deg, var(--lp-dark-1) 0%, var(--lp-dark-2) 40%, var(--lp-dark-3) 100%);
+  background: linear-gradient(
+    145deg,
+    var(--lp-dark-1) 0%,
+    var(--lp-dark-2) 40%,
+    var(--lp-dark-3) 100%
+  );
   padding: 5rem 1.5rem 4rem;
   overflow: hidden;
 }
@@ -292,8 +314,8 @@
   border-radius: 0.875rem;
   overflow: visible;
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.08),
-    0 24px 64px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 24px 64px rgba(0, 0, 0, 0.55),
     0 0 120px rgba(124, 58, 237, 0.12);
   background: #0d1117;
 }
@@ -304,7 +326,7 @@
   gap: 0.5rem;
   padding: 0.6rem 0.875rem;
   background: #161b22;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 0.875rem 0.875rem 0 0;
 }
 
@@ -354,16 +376,18 @@
   display: grid;
   grid-template-columns: 2.5rem repeat(14, 1fr);
   padding: 0.35rem 0.875rem;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   gap: 2px;
 }
 
-.hero-browser__room-col { /* spacer */ }
+.hero-browser__room-col {
+  /* spacer */
+}
 
 .hero-browser__day {
   font-size: 0.5625rem;
   font-weight: 700;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
   text-align: center;
   letter-spacing: 0.04em;
   position: relative;
@@ -379,20 +403,20 @@
   padding: 0.25rem 0.875rem;
   align-items: center;
   gap: 0.5rem;
-  border-bottom: 1px solid rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .hero-browser__room-label {
   font-size: 0.6rem;
   font-weight: 700;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   letter-spacing: 0.02em;
 }
 
 .hero-browser__track {
   position: relative;
   height: 1.25rem;
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -445,9 +469,15 @@
   border-radius: 2px;
 }
 
-.hero-browser__swatch--ok { background: #22c55e; }
-.hero-browser__swatch--pending { background: #f59e0b; }
-.hero-browser__swatch--hold { background: #38bdf8; }
+.hero-browser__swatch--ok {
+  background: #22c55e;
+}
+.hero-browser__swatch--pending {
+  background: #f59e0b;
+}
+.hero-browser__swatch--hold {
+  background: #38bdf8;
+}
 
 .lp-stats-wrap {
   padding: 2.5rem 1.5rem 0;
@@ -623,7 +653,12 @@
 }
 
 .lp-feat-section--dark {
-  background: linear-gradient(145deg, var(--lp-dark-1) 0%, var(--lp-dark-2) 60%, var(--lp-dark-3) 100%);
+  background: linear-gradient(
+    145deg,
+    var(--lp-dark-1) 0%,
+    var(--lp-dark-2) 60%,
+    var(--lp-dark-3) 100%
+  );
 }
 
 .lp-feat-section__inner {
@@ -698,7 +733,7 @@
 }
 
 .lp-feat-list li::before {
-  content: '✓';
+  content: "✓";
   position: absolute;
   left: 0;
   color: var(--lp-accent-2);
@@ -731,7 +766,7 @@
 }
 
 .feat-mockup--booking {
-  filter: drop-shadow(0 16px 40px rgba(0,0,0,0.12));
+  filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.12));
 }
 
 .feat-mockup__card {
@@ -739,7 +774,7 @@
   border: 1px solid var(--lp-border);
   border-radius: 1rem;
   padding: 1.25rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
 .feat-mockup__card-header {
@@ -767,8 +802,12 @@
   background: var(--lp-border);
 }
 
-.feat-bar--title { height: 0.75rem; }
-.feat-bar--sub   { height: 0.5rem; }
+.feat-bar--title {
+  height: 0.75rem;
+}
+.feat-bar--sub {
+  height: 0.5rem;
+}
 
 .feat-mockup__divider {
   height: 1px;
@@ -912,7 +951,7 @@
 .phone-frame {
   display: flex;
   justify-content: center;
-  filter: drop-shadow(0 24px 48px rgba(0,0,0,0.45));
+  filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.45));
 }
 
 .phone-frame__shell {
@@ -923,7 +962,7 @@
   overflow: hidden;
   position: relative;
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
     0 0 0 1px rgba(124, 58, 237, 0.3);
 }
 
@@ -958,10 +997,10 @@
 }
 
 .phone-app__hero {
-  background: linear-gradient(135deg, rgba(124,58,237,0.4), rgba(37,99,235,0.3));
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(37, 99, 235, 0.3));
   border-radius: 0.875rem;
   padding: 0.875rem;
-  border: 1px solid rgba(124,58,237,0.25);
+  border: 1px solid rgba(124, 58, 237, 0.25);
 }
 
 .phone-app__welcome {
@@ -993,8 +1032,8 @@
 }
 
 .phone-tile {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 0.625rem;
   padding: 0.625rem 0.5rem;
   display: flex;
@@ -1025,7 +1064,10 @@
   padding: 0.5rem 0.625rem;
 }
 
-.phone-app__checkin-icon { font-size: 0.9rem; flex-shrink: 0; }
+.phone-app__checkin-icon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
 
 .phone-app__checkin-title {
   font-size: 0.625rem;
@@ -1079,7 +1121,7 @@
 
 .feat-mockup--dashboard {
   max-width: 460px;
-  filter: drop-shadow(0 16px 40px rgba(0,0,0,0.10));
+  filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.1));
 }
 
 .feat-mockup__dash {
@@ -1087,7 +1129,7 @@
   border: 1px solid var(--lp-border);
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
 }
 
 .dash-stats {
@@ -1101,7 +1143,9 @@
   border-right: 1px solid var(--lp-border-soft);
 }
 
-.dash-stat:last-child { border-right: none; }
+.dash-stat:last-child {
+  border-right: none;
+}
 
 .dash-stat__label {
   font-size: 0.5625rem;
@@ -1189,7 +1233,9 @@
   border-bottom: 1px solid var(--lp-bg-alt);
 }
 
-.dash-booking:last-child { border-bottom: none; }
+.dash-booking:last-child {
+  border-bottom: none;
+}
 
 .dash-booking__avatar {
   width: 1.75rem;
@@ -1205,7 +1251,9 @@
   flex-shrink: 0;
 }
 
-.dash-booking__info { flex: 1; }
+.dash-booking__info {
+  flex: 1;
+}
 
 .dash-booking__name {
   font-size: 0.6875rem;
@@ -1228,17 +1276,17 @@
 }
 
 .dash-booking__status--confirmed {
-  background: rgba(74,222,128,0.12);
+  background: rgba(74, 222, 128, 0.12);
   color: #16a34a;
 }
 
 .dash-booking__status--checkin {
-  background: rgba(56,189,248,0.12);
+  background: rgba(56, 189, 248, 0.12);
   color: #0369a1;
 }
 
 .dash-booking__status--pending {
-  background: rgba(251,191,36,0.12);
+  background: rgba(251, 191, 36, 0.12);
   color: #b45309;
 }
 
@@ -1395,7 +1443,7 @@
 }
 
 .lp-price-card__features li::before {
-  content: '\2713';
+  content: "\2713";
   position: absolute;
   left: 0;
   color: var(--lp-success);
@@ -1528,14 +1576,23 @@
 .lp-final-cta {
   position: relative;
   padding: 6rem 1.5rem;
-  background: linear-gradient(145deg, var(--lp-dark-1) 0%, var(--lp-dark-2) 50%, var(--lp-dark-3) 100%);
+  background: linear-gradient(
+    145deg,
+    var(--lp-dark-1) 0%,
+    var(--lp-dark-2) 50%,
+    var(--lp-dark-3) 100%
+  );
   overflow: hidden;
   text-align: center;
 }
 
 @keyframes cta-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .lp-final-cta__inner {

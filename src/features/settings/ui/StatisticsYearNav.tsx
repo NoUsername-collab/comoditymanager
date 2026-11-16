@@ -1,12 +1,6 @@
 import { Link } from "@/i18n/navigation";
 
-export function StatisticsYearNav({
-  years,
-  focusYear,
-}: {
-  years: number[];
-  focusYear: number;
-}) {
+export function StatisticsYearNav({ years, focusYear }: { years: number[]; focusYear: number }) {
   return (
     <div className="statistics-year-nav flex flex-wrap gap-2">
       {years.map((y) => (

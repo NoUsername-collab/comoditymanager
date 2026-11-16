@@ -54,10 +54,7 @@ export function isCheckinPaymentSettled(
   return status === "paid";
 }
 
-export function checkinPaymentBalance(
-  totalPrice: number,
-  amountPaid: number,
-): number {
+export function checkinPaymentBalance(totalPrice: number, amountPaid: number): number {
   if (totalPrice <= 0) return 0;
   return Math.max(0, totalPrice - amountPaid);
 }

@@ -3,18 +3,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/features/checkin/ui/import-checkin-styles";
-import {
-  updateEmailSettingsAction,
-  sendTestEmailAction,
-} from "@/features/settings/actions";
+import { updateEmailSettingsAction, sendTestEmailAction } from "@/features/settings/actions";
 import type { EmailDeliveryConfig } from "@/lib/email/provider";
 import type { TransactionalEmailIdentity } from "@/services/email-identity";
 import type { EmailSettings } from "@/services/email-settings";
 import type { PlanEmailScope } from "@/core/config/plans";
-import {
-  settingsPartialChanged,
-  useSettingsSaveFeedback,
-} from "@/hooks/useSettingsSaveFeedback";
+import { settingsPartialChanged, useSettingsSaveFeedback } from "@/hooks/useSettingsSaveFeedback";
 import { useSettingsDraft } from "@/hooks/useSettingsDraft";
 import { SettingsDraftSaveBar } from "@/components/admin/settings/SettingsDraftSaveBar";
 import { SettingRow } from "@/components/admin/settings/SettingRow";
@@ -26,12 +20,7 @@ type Props = {
   emailScope: PlanEmailScope;
 };
 
-export function EmailSettingsPanel({
-  settings: initial,
-  delivery,
-  identity,
-  emailScope,
-}: Props) {
+export function EmailSettingsPanel({ settings: initial, delivery, identity, emailScope }: Props) {
   const t = useTranslations("admin.pages.settings.email");
   const tSettings = useTranslations("admin.pages.settings");
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
@@ -84,7 +73,7 @@ export function EmailSettingsPanel({
         }
       })();
     },
-    [notifyError, notifySuccess, t]
+    [notifyError, notifySuccess, t],
   );
 
   const text = useSettingsDraft(
@@ -125,10 +114,7 @@ export function EmailSettingsPanel({
         notifyError(t("testFailed"), result.error ?? "");
       }
     } catch (e) {
-      notifyError(
-        t("testFailed"),
-        e instanceof Error ? e.message : ""
-      );
+      notifyError(t("testFailed"), e instanceof Error ? e.message : "");
     } finally {
       setIsSendingTest(false);
     }
@@ -159,12 +145,8 @@ export function EmailSettingsPanel({
       {/* Every plan tells the team about a new request; the rest depends on the plan. */}
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
-          <span className="checkin-settings__section-title">
-            {t("masterToggleTitle")}
-          </span>
-          <span className="checkin-settings__section-desc">
-            {t("masterToggleDesc")}
-          </span>
+          <span className="checkin-settings__section-title">{t("masterToggleTitle")}</span>
+          <span className="checkin-settings__section-desc">{t("masterToggleDesc")}</span>
         </div>
 
         <SettingRow label={t("enabled")} description={t("enabledDesc")}>
@@ -181,207 +163,181 @@ export function EmailSettingsPanel({
 
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
-          <span className="checkin-settings__section-title">
-            {t("adminNotificationsTitle")}
-          </span>
-          <span className="checkin-settings__section-desc">
-            {t("adminNotificationsDesc")}
-          </span>
+          <span className="checkin-settings__section-title">{t("adminNotificationsTitle")}</span>
+          <span className="checkin-settings__section-desc">{t("adminNotificationsDesc")}</span>
         </div>
 
-        <SettingRow
-          label={t("notifyNewRequest")}
-          description={t("notifyNewRequestDesc")}
-        >
+        <SettingRow label={t("notifyNewRequest")} description={t("notifyNewRequestDesc")}>
           <label className="checkin-toggle">
             <input
               type="checkbox"
               checked={settings.email_notify_new_request}
               disabled={disabled}
-              onChange={(e) =>
-                persist({ email_notify_new_request: e.target.checked })
-              }
+              onChange={(e) => persist({ email_notify_new_request: e.target.checked })}
             />
             <span className="checkin-toggle__slider" />
           </label>
         </SettingRow>
 
         {emailScope === "stay" ? (
-        <SettingRow
-          label={t("notifyDailySummary")}
-          description={t("notifyDailySummaryDesc")}
-        >
-          <label className="checkin-toggle">
-            <input
-              type="checkbox"
-              checked={settings.email_notify_daily_summary}
-              disabled={disabled}
-              onChange={(e) =>
-                persist({ email_notify_daily_summary: e.target.checked })
-              }
-            />
-            <span className="checkin-toggle__slider" />
-          </label>
-        </SettingRow>
+          <SettingRow label={t("notifyDailySummary")} description={t("notifyDailySummaryDesc")}>
+            <label className="checkin-toggle">
+              <input
+                type="checkbox"
+                checked={settings.email_notify_daily_summary}
+                disabled={disabled}
+                onChange={(e) => persist({ email_notify_daily_summary: e.target.checked })}
+              />
+              <span className="checkin-toggle__slider" />
+            </label>
+          </SettingRow>
         ) : null}
       </div>
 
       {emailScope === "none" ? null : (
-      <>
-      <div className="checkin-settings__section">
-        <div className="checkin-settings__section-header">
-          <span className="checkin-settings__section-title">
-            {t("guestNotificationsTitle")}
-          </span>
-          <span className="checkin-settings__section-desc">
-            {t("guestNotificationsDesc")}
-          </span>
-        </div>
+        <>
+          <div className="checkin-settings__section">
+            <div className="checkin-settings__section-header">
+              <span className="checkin-settings__section-title">
+                {t("guestNotificationsTitle")}
+              </span>
+              <span className="checkin-settings__section-desc">{t("guestNotificationsDesc")}</span>
+            </div>
 
-        <SettingRow
-          label={t("notifyConfirmation")}
-          description={t("notifyConfirmationDesc")}
-        >
-          <label className="checkin-toggle">
-            <input
-              type="checkbox"
-              checked={settings.email_notify_confirmation}
-              disabled={disabled}
-              onChange={(e) =>
-                persist({ email_notify_confirmation: e.target.checked })
-              }
-            />
-            <span className="checkin-toggle__slider" />
-          </label>
-        </SettingRow>
+            <SettingRow label={t("notifyConfirmation")} description={t("notifyConfirmationDesc")}>
+              <label className="checkin-toggle">
+                <input
+                  type="checkbox"
+                  checked={settings.email_notify_confirmation}
+                  disabled={disabled}
+                  onChange={(e) => persist({ email_notify_confirmation: e.target.checked })}
+                />
+                <span className="checkin-toggle__slider" />
+              </label>
+            </SettingRow>
 
-        {emailScope === "stay" ? (
-        <SettingRow
-          label={t("notifyCancellation")}
-          description={t("notifyCancellationDesc")}
-        >
-          <label className="checkin-toggle">
-            <input
-              type="checkbox"
-              checked={settings.email_notify_cancellation}
-              disabled={disabled}
-              onChange={(e) =>
-                persist({ email_notify_cancellation: e.target.checked })
-              }
-            />
-            <span className="checkin-toggle__slider" />
-          </label>
-        </SettingRow>
-        ) : null}
-      </div>
-
-      <div className="checkin-settings__section">
-        <div className="checkin-settings__section-header">
-          <span className="checkin-settings__section-title">{t("senderTitle")}</span>
-          <span className="checkin-settings__section-desc">{t("senderDesc")}</span>
-        </div>
-
-        <div className="checkin-setting-row checkin-setting-row--stack">
-          <div className="checkin-setting-row__left">
-            <span className="checkin-setting-row__label">{t("senderFromName")}</span>
-            <span className="checkin-setting-row__desc">{t("senderFromNameDesc")}</span>
+            {emailScope === "stay" ? (
+              <SettingRow label={t("notifyCancellation")} description={t("notifyCancellationDesc")}>
+                <label className="checkin-toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.email_notify_cancellation}
+                    disabled={disabled}
+                    onChange={(e) => persist({ email_notify_cancellation: e.target.checked })}
+                  />
+                  <span className="checkin-toggle__slider" />
+                </label>
+              </SettingRow>
+            ) : null}
           </div>
-          <div className="checkin-setting-row__right checkin-setting-row__right--wide">
-            <input
-              type="text"
-              className="checkin-field__input"
-              placeholder={identity.displayName}
-              value={fromName}
-              onChange={(e) => text.set("email_from_name", e.target.value)}
-            />
+
+          <div className="checkin-settings__section">
+            <div className="checkin-settings__section-header">
+              <span className="checkin-settings__section-title">{t("senderTitle")}</span>
+              <span className="checkin-settings__section-desc">{t("senderDesc")}</span>
+            </div>
+
+            <div className="checkin-setting-row checkin-setting-row--stack">
+              <div className="checkin-setting-row__left">
+                <span className="checkin-setting-row__label">{t("senderFromName")}</span>
+                <span className="checkin-setting-row__desc">{t("senderFromNameDesc")}</span>
+              </div>
+              <div className="checkin-setting-row__right checkin-setting-row__right--wide">
+                <input
+                  type="text"
+                  className="checkin-field__input"
+                  placeholder={identity.displayName}
+                  value={fromName}
+                  onChange={(e) => text.set("email_from_name", e.target.value)}
+                />
+              </div>
+            </div>
+
+            <SettingRow label={t("replyTo")} description={t("replyToDesc")}>
+              <input
+                type="email"
+                className="checkin-field__input"
+                placeholder={identity.defaultReplyTo ?? "contact@pensiune.ro"}
+                value={text.values.email_reply_to}
+                onChange={(e) => text.set("email_reply_to", e.target.value)}
+              />
+            </SettingRow>
+
+            {!settings.email_reply_to && identity.defaultReplyTo ? (
+              <p className="checkin-sheet-save__hint">{t("replyToFallbackHint")}</p>
+            ) : null}
           </div>
-        </div>
 
-        <SettingRow label={t("replyTo")} description={t("replyToDesc")}>
-          <input
-            type="email"
-            className="checkin-field__input"
-            placeholder={identity.defaultReplyTo ?? "contact@pensiune.ro"}
-            value={text.values.email_reply_to}
-            onChange={(e) => text.set("email_reply_to", e.target.value)}
-          />
-        </SettingRow>
+          <div className="checkin-settings__section">
+            <div className="checkin-settings__section-header">
+              <span className="checkin-settings__section-title">{t("testTitle")}</span>
+              <span className="checkin-settings__section-desc">{t("testDesc")}</span>
+            </div>
+            {delivery.configured ? (
+              <p className="checkin-sheet-save__hint">
+                {t("providerFrom", { from: identity.fromAddress })}
+              </p>
+            ) : null}
 
-        {!settings.email_reply_to && identity.defaultReplyTo ? (
-          <p className="checkin-sheet-save__hint">{t("replyToFallbackHint")}</p>
-        ) : null}
-      </div>
-
-      <div className="checkin-settings__section">
-        <div className="checkin-settings__section-header">
-          <span className="checkin-settings__section-title">{t("testTitle")}</span>
-          <span className="checkin-settings__section-desc">{t("testDesc")}</span>
-        </div>
-        {delivery.configured ? (
-          <p className="checkin-sheet-save__hint">
-            {t("providerFrom", { from: identity.fromAddress })}
-          </p>
-        ) : null}
-
-        <div className="checkin-sheet-save">
-          <button
-            type="button"
-            className="checkin-sheet-save__btn"
-            disabled={!delivery.configured || isSendingTest || isSaving}
-            onClick={handleSendTest}
-          >
-            {isSendingTest ? t("testSending") : t("testSend")}
-          </button>
-        </div>
-      </div>
-
-      {/* Own sending domain and footer text: rarely needed, folded away. */}
-      <details className="checkin-settings__section checkin-settings__advanced">
-        <summary className="checkin-settings__section-header">
-          <span className="checkin-settings__section-title">{t("advancedTitle")}</span>
-          <span className="checkin-settings__section-desc">{t("advancedHint")}</span>
-        </summary>
-
-        <div className="checkin-setting-row checkin-setting-row--stack">
-          <div className="checkin-setting-row__left">
-            <span className="checkin-setting-row__label">{t("senderFromAddress")}</span>
-            <span className="checkin-setting-row__desc">{t("senderFromAddressDesc")}</span>
+            <div className="checkin-sheet-save">
+              <button
+                type="button"
+                className="checkin-sheet-save__btn"
+                disabled={!delivery.configured || isSendingTest || isSaving}
+                onClick={handleSendTest}
+              >
+                {isSendingTest ? t("testSending") : t("testSend")}
+              </button>
+            </div>
           </div>
-          <div className="checkin-setting-row__right checkin-setting-row__right--wide">
-            <input
-              type="email"
-              className="checkin-field__input"
-              placeholder={identity.defaultReplyTo ?? `noreply@${identity.mailDomain}`}
-              value={fromAddress}
-              onChange={(e) => text.set("email_from_address", e.target.value)}
-            />
-          </div>
-        </div>
 
-        <p className="checkin-sheet-save__hint">
-          {t("senderPreview")}: <strong>{fromName.trim() || identity.displayName} &lt;{fromAddress.trim() || `noreply@${identity.mailDomain}`}&gt;</strong>
-        </p>
+          {/* Own sending domain and footer text: rarely needed, folded away. */}
+          <details className="checkin-settings__section checkin-settings__advanced">
+            <summary className="checkin-settings__section-header">
+              <span className="checkin-settings__section-title">{t("advancedTitle")}</span>
+              <span className="checkin-settings__section-desc">{t("advancedHint")}</span>
+            </summary>
 
-        <div className="checkin-setting-row checkin-setting-row--stack">
-          <div className="checkin-setting-row__left">
-            <span className="checkin-setting-row__label">
-              {t("customFooter")}
-            </span>
-            <span className="checkin-setting-row__desc">
-              {t("customFooterDesc")}
-            </span>
-          </div>
-          <div className="checkin-setting-row__right checkin-setting-row__right--wide">
-            <textarea
-              className="checkin-field__input checkin-field__input--textarea"
-              rows={2}
-              value={text.values.email_custom_footer}
-              onChange={(e) => text.set("email_custom_footer", e.target.value)}
-            />
-          </div>
-        </div>
-      </details>
-      </>
+            <div className="checkin-setting-row checkin-setting-row--stack">
+              <div className="checkin-setting-row__left">
+                <span className="checkin-setting-row__label">{t("senderFromAddress")}</span>
+                <span className="checkin-setting-row__desc">{t("senderFromAddressDesc")}</span>
+              </div>
+              <div className="checkin-setting-row__right checkin-setting-row__right--wide">
+                <input
+                  type="email"
+                  className="checkin-field__input"
+                  placeholder={identity.defaultReplyTo ?? `noreply@${identity.mailDomain}`}
+                  value={fromAddress}
+                  onChange={(e) => text.set("email_from_address", e.target.value)}
+                />
+              </div>
+            </div>
+
+            <p className="checkin-sheet-save__hint">
+              {t("senderPreview")}:{" "}
+              <strong>
+                {fromName.trim() || identity.displayName} &lt;
+                {fromAddress.trim() || `noreply@${identity.mailDomain}`}&gt;
+              </strong>
+            </p>
+
+            <div className="checkin-setting-row checkin-setting-row--stack">
+              <div className="checkin-setting-row__left">
+                <span className="checkin-setting-row__label">{t("customFooter")}</span>
+                <span className="checkin-setting-row__desc">{t("customFooterDesc")}</span>
+              </div>
+              <div className="checkin-setting-row__right checkin-setting-row__right--wide">
+                <textarea
+                  className="checkin-field__input checkin-field__input--textarea"
+                  rows={2}
+                  value={text.values.email_custom_footer}
+                  onChange={(e) => text.set("email_custom_footer", e.target.value)}
+                />
+              </div>
+            </div>
+          </details>
+        </>
       )}
 
       <SettingsDraftSaveBar draft={text} errorFallback={t("saveError")} />

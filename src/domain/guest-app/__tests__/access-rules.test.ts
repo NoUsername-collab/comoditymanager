@@ -49,9 +49,7 @@ describe("guest access window", () => {
 
   test("only confirmed bookings", () => {
     expect(isGuestAccessBookingStatusValid("confirmata")).toBeNull();
-    expect(isGuestAccessBookingStatusValid("cerere_noua")).toBe(
-      "booking_not_confirmed",
-    );
+    expect(isGuestAccessBookingStatusValid("cerere_noua")).toBe("booking_not_confirmed");
   });
 });
 

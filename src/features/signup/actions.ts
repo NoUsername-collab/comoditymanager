@@ -4,10 +4,7 @@ import { headers } from "next/headers";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { buildTenantLoginUrl, platformDomainFromRequestHost } from "@/lib/tenant/host";
 import { getTranslations } from "next-intl/server";
-import {
-  enforceRateLimit,
-  getClientIp,
-} from "@/lib/rate-limit";
+import { enforceRateLimit, getClientIp } from "@/lib/rate-limit";
 import { TURNSTILE_FIELD, turnstileAllows, verifyTurnstileToken } from "@/lib/security/turnstile";
 
 const RATE_LIMIT_SIGNUP = { limit: 5, windowMs: 60 * 60 * 1000 };
@@ -40,7 +37,7 @@ export type SignupResult =
 function mapSignupFailure(
   t: Awaited<ReturnType<typeof getTranslations<"signup">>>,
   source: "auth" | "rpc" | "config",
-  message: string
+  message: string,
 ): { error: string; errorCode: string; field?: string } {
   const msg = message.toLowerCase();
 
@@ -72,7 +69,10 @@ function mapSignupFailure(
     }
   }
 
-  if (msg.includes("room_option_definitions_slug_key") || msg.includes("room_type_definitions_slug_key")) {
+  if (
+    msg.includes("room_option_definitions_slug_key") ||
+    msg.includes("room_type_definitions_slug_key")
+  ) {
     return { error: t("errorCatalogMigration"), errorCode: "catalog_slug" };
   }
   if (msg.includes("tenants_plan_id_check") || msg.includes("plan_id")) {
@@ -126,7 +126,7 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
   const rl = await enforceRateLimit(
     `signup:${ip}`,
     RATE_LIMIT_SIGNUP.limit,
-    RATE_LIMIT_SIGNUP.windowMs
+    RATE_LIMIT_SIGNUP.windowMs,
   );
   if (!rl.allowed) {
     return { ok: false, error: t("rateLimited"), errorCode: "rate_limit" };
@@ -144,7 +144,9 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
   }
 
   const pensionName = String(formData.get("pension_name") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
   const password = String(formData.get("password") ?? "");
   const locale = String(formData.get("locale") ?? "ro");
   const country = String(formData.get("country") ?? "RO");
@@ -216,7 +218,7 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
 
   const { data: emailStatus, error: emailStatusError } = await supabase.rpc(
     "check_owner_email_for_signup",
-    { p_email: email }
+    { p_email: email },
   );
 
   if (!emailStatusError) {
@@ -254,21 +256,16 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
     }
   }
 
-  const { data: authData, error: authError } =
-    await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      app_metadata: { role: "owner" },
-    });
+  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    app_metadata: { role: "owner" },
+  });
 
   if (authError || !authData.user) {
     console.error("[SIGNUP] Auth error:", authError?.message ?? "no user");
-    const mapped = mapSignupFailure(
-      t,
-      "auth",
-      authError?.message ?? "auth failed"
-    );
+    const mapped = mapSignupFailure(t, "auth", authError?.message ?? "auth failed");
     return {
       ok: false,
       error: mapped.error,
@@ -285,32 +282,23 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
     BG: "Europe/Sofia",
   };
 
-  const requestHost =
-    (await headers()).get("x-forwarded-host") ??
-    (await headers()).get("host");
+  const requestHost = (await headers()).get("x-forwarded-host") ?? (await headers()).get("host");
 
-  const { data: tenantId, error: rpcError } = await supabase.rpc(
-    "onboard_new_tenant",
-    {
-      p_slug: slug,
-      p_display_name: pensionName,
-      p_owner_id: userId,
-      p_owner_email: email,
-      p_locale: locale,
-      p_country: country,
-      p_timezone: timezoneMap[country] ?? "Europe/Bucharest",
-      p_platform_domain: platformDomainFromRequestHost(requestHost),
-    }
-  );
+  const { data: tenantId, error: rpcError } = await supabase.rpc("onboard_new_tenant", {
+    p_slug: slug,
+    p_display_name: pensionName,
+    p_owner_id: userId,
+    p_owner_email: email,
+    p_locale: locale,
+    p_country: country,
+    p_timezone: timezoneMap[country] ?? "Europe/Bucharest",
+    p_platform_domain: platformDomainFromRequestHost(requestHost),
+  });
 
   if (rpcError || !tenantId) {
     console.error("[SIGNUP] RPC error:", rpcError?.message ?? "empty tenant id");
     await supabase.auth.admin.deleteUser(userId).catch(() => {});
-    const mapped = mapSignupFailure(
-      t,
-      "rpc",
-      rpcError?.message ?? "empty tenant id"
-    );
+    const mapped = mapSignupFailure(t, "rpc", rpcError?.message ?? "empty tenant id");
     return {
       ok: false,
       error: mapped.error,
@@ -331,7 +319,7 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
   if (memberError || !ownerMember) {
     console.error(
       "[SIGNUP] owner membership missing after onboard:",
-      memberError?.message ?? "no row"
+      memberError?.message ?? "no row",
     );
     await supabase.auth.admin.deleteUser(userId).catch(() => {});
     return {
@@ -353,7 +341,7 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
         signup: "1",
         email,
       },
-      requestHost
+      requestHost,
     ),
   };
 }

@@ -7,7 +7,7 @@ export type GanttFeatureFilter = "all" | "ac" | "fridge";
 
 export function filterGanttRoomsByFeature(
   rooms: GanttRoom[],
-  feature: GanttFeatureFilter
+  feature: GanttFeatureFilter,
 ): GanttRoom[] {
   if (feature === "all") return rooms;
   return rooms.filter((room) => {

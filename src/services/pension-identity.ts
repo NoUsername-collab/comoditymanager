@@ -46,9 +46,7 @@ function mapIdentity(row: Record<string, unknown> | null): PensionIdentity {
   };
 }
 
-async function loadPensionIdentityUncached(
-  tenantId: string,
-): Promise<PensionIdentity> {
+async function loadPensionIdentityUncached(tenantId: string): Promise<PensionIdentity> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("pension_settings")
@@ -61,18 +59,12 @@ async function loadPensionIdentityUncached(
 }
 
 const getCachedPensionIdentity = (tenantId: string) =>
-  unstable_cache(
-    () => loadPensionIdentityUncached(tenantId),
-    ["pension-identity", tenantId],
-    {
-      tags: [CACHE_TAGS.pensionSettings, tenantTag(tenantId, CACHE_TAGS.pensionSettings)],
-      revalidate: 300,
-    },
-  );
+  unstable_cache(() => loadPensionIdentityUncached(tenantId), ["pension-identity", tenantId], {
+    tags: [CACHE_TAGS.pensionSettings, tenantTag(tenantId, CACHE_TAGS.pensionSettings)],
+    revalidate: 300,
+  });
 
-const loadPensionIdentity = cache((tenantId: string) =>
-  getCachedPensionIdentity(tenantId)(),
-);
+const loadPensionIdentity = cache((tenantId: string) => getCachedPensionIdentity(tenantId)());
 
 /** Tenant passed in: safe inside another `unstable_cache`, where headers are unavailable. */
 export function getPensionIdentityForTenant(tenantId: string): Promise<PensionIdentity> {
@@ -92,9 +84,7 @@ export type PensionIdentityInput = {
   location: MapPoint | null;
 };
 
-export async function updatePensionIdentity(
-  input: PensionIdentityInput,
-): Promise<void> {
+export async function updatePensionIdentity(input: PensionIdentityInput): Promise<void> {
   const tenantId = await resolveTenantIdForData();
   const { getTenantScope } = await import("@/lib/tenant/scope");
   const { supabase } = await getTenantScope();

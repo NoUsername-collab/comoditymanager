@@ -136,8 +136,7 @@ export function CheckinWizardLauncher({
       return;
     }
 
-    const { booking: prefetchBooking, settings: prefetchSettings, editState } =
-      prefetchRef.current;
+    const { booking: prefetchBooking, settings: prefetchSettings, editState } = prefetchRef.current;
 
     if (prefetchBooking && prefetchSettings) {
       setContext({
@@ -168,10 +167,7 @@ export function CheckinWizardLauncher({
         return;
       }
 
-      if (
-        mode === "create" &&
-        (res.roomCheckinComplete ?? res.hasExistingCheckin)
-      ) {
+      if (mode === "create" && (res.roomCheckinComplete ?? res.hasExistingCheckin)) {
         showToastRef.current({
           kind: "info",
           title: tRef.current("title"),
@@ -239,16 +235,13 @@ export function CheckinWizardLauncher({
           checkinId={context.editState?.checkinId}
           initialGuests={context.editState?.guests}
           initialPaymentStatus={
-            context.editState?.paymentStatus ??
-            context.partialPayment?.paymentStatus
+            context.editState?.paymentStatus ?? context.partialPayment?.paymentStatus
           }
           initialPaymentAmountPaid={
-            context.editState?.paymentAmountPaid ??
-            context.partialPayment?.paymentAmountPaid
+            context.editState?.paymentAmountPaid ?? context.partialPayment?.paymentAmountPaid
           }
           initialDepositAmount={
-            context.editState?.depositAmount ??
-            context.partialPayment?.depositAmount
+            context.editState?.depositAmount ?? context.partialPayment?.depositAmount
           }
           ledgerCollectedHint={context.ledgerCollectedHint}
           initialKeysHandedRooms={context.editState?.keysHandedRooms}

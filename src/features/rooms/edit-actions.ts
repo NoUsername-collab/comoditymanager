@@ -26,16 +26,12 @@ export async function updateRoomAction(formData: FormData) {
   const building_id = String(formData.get("building_id") ?? "");
   const floor_id = String(formData.get("floor_id") ?? "");
   const name = String(formData.get("name") ?? "");
-  const room_type_definition_id = String(
-    formData.get("room_type_definition_id") ?? ""
-  );
+  const room_type_definition_id = String(formData.get("room_type_definition_id") ?? "");
   const capacity_base = Number(formData.get("capacity_base") ?? 2);
   const price_per_night = Number(formData.get("price_per_night") ?? 0);
   const sort_order = Number(formData.get("sort_order") ?? 0);
   const allows_extra_beds = formData.get("allows_extra_beds") === "on";
-  const max_extra_beds_per_room = Number(
-    formData.get("max_extra_beds_per_room") ?? 0
-  );
+  const max_extra_beds_per_room = Number(formData.get("max_extra_beds_per_room") ?? 0);
   const is_active = formData.get("is_active") === "on";
   const { max_cots, max_occupancy } = parseRoomSleepingLimits(formData);
   const enabled_option_ids = parseSelectedOptionIds(formData).filter(Boolean);
@@ -44,9 +40,7 @@ export async function updateRoomAction(formData: FormData) {
     throw new Error(t("roomUpdateIncomplete"));
   }
 
-  const building_default_price = await getBuildingDefaultPrice(building_id).catch(
-    () => 0
-  );
+  const building_default_price = await getBuildingDefaultPrice(building_id).catch(() => 0);
 
   await updateRoom(id, {
     building_id,

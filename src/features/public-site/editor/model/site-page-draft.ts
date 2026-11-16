@@ -35,11 +35,22 @@ export type SitePageDraft = {
 /** Ready-made pages to start from: the sections each one opens with. */
 export const PAGE_MODELS = {
   blank: [{ type: "text" }],
-  restaurant: [{ type: "text" }, { type: "gallery", settings: { albums: "food" } }, { type: "faq" }],
-  activities: [{ type: "attractions" }, { type: "text" }, { type: "gallery", settings: { albums: "area" } }],
+  restaurant: [
+    { type: "text" },
+    { type: "gallery", settings: { albums: "food" } },
+    { type: "faq" },
+  ],
+  activities: [
+    { type: "attractions" },
+    { type: "text" },
+    { type: "gallery", settings: { albums: "area" } },
+  ],
   about: [{ type: "intro" }, { type: "text" }, { type: "reviews" }],
   location: [{ type: "place" }, { type: "faq" }],
-} as const satisfies Record<string, readonly { type: PublicSectionType; settings?: Record<string, string> }[]>;
+} as const satisfies Record<
+  string,
+  readonly { type: PublicSectionType; settings?: Record<string, string> }[]
+>;
 
 export type PageModelId = keyof typeof PAGE_MODELS;
 export const PAGE_MODEL_IDS = Object.keys(PAGE_MODELS) as PageModelId[];
@@ -73,7 +84,10 @@ export function readSitePageDrafts(config: PublicSiteConfig): SitePageDraft[] {
     });
 }
 
-export function writeSitePages(config: PublicSiteConfig, pages: SitePageDraft[]): PublicSitePageInput[] {
+export function writeSitePages(
+  config: PublicSiteConfig,
+  pages: SitePageDraft[],
+): PublicSitePageInput[] {
   return pages.map((page, index) => {
     const saved = config.sitePages.find((row) => row.id === page.key);
     const text = (field: PageTextField, previous: unknown) =>
@@ -111,7 +125,9 @@ export function createSitePageDraft(args: {
   copy[args.locale].title = args.name.trim();
   const sections = PAGE_MODELS[args.model].map((entry) => {
     const section = newSectionDraft(entry.type, args.newKey());
-    return "settings" in entry ? { ...section, settings: { ...section.settings, ...entry.settings } } : section;
+    return "settings" in entry
+      ? { ...section, settings: { ...section.settings, ...entry.settings } }
+      : section;
   });
   return {
     key: args.newKey(),
@@ -146,7 +162,12 @@ export function setPageText(
 }
 
 /** Write a `page.<key>.<field>` slot; other paths leave the page as it is. */
-export function setPageSlot(page: SitePageDraft, locale: PublicLocale, path: string, value: string): SitePageDraft {
+export function setPageSlot(
+  page: SitePageDraft,
+  locale: PublicLocale,
+  path: string,
+  value: string,
+): SitePageDraft {
   const prefix = `page.${page.key}.`;
   if (!path.startsWith(prefix)) return page;
   const field = path.slice(prefix.length) as PageTextField;

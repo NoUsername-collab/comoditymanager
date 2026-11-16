@@ -14,10 +14,7 @@ import type { GuestAppThemeSource } from "@/design/themes/types";
 import { guestAppFeatureLabel } from "@/features/guest-app/feature-labels";
 import { saveGuestAppSettingsAction } from "@/features/settings/actions/guest-app";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
-import {
-  SettingsAlerts,
-  type SettingsAlert,
-} from "@/components/admin/settings/SettingsAlerts";
+import { SettingsAlerts, type SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { SettingsFieldHint } from "@/components/admin/settings/SettingsFieldHint";
 import { GuestAppSettingsPreview } from "@/features/settings/ui/GuestAppSettingsPreview";
@@ -76,9 +73,7 @@ export function GuestAppSettingsForm({
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const [draft, setDraft] = useState<GuestAppStudioDraft>(() =>
-    buildGuestAppStudioDraft(settings),
-  );
+  const [draft, setDraft] = useState<GuestAppStudioDraft>(() => buildGuestAppStudioDraft(settings));
   const previewSettings = useMemo(() => {
     const next = studioDraftToGuestAppSettings(draft);
     return {
@@ -108,9 +103,7 @@ export function GuestAppSettingsForm({
     e.preventDefault();
     setError(null);
     startTransition(async () => {
-      const result = await saveGuestAppSettingsAction(
-        studioDraftToGuestAppSettings(draft),
-      );
+      const result = await saveGuestAppSettingsAction(studioDraftToGuestAppSettings(draft));
       if (!result.ok) setError(result.error);
     });
   }
@@ -157,322 +150,314 @@ export function GuestAppSettingsForm({
         </>
       }
       form={
-    <form id="guest-app-studio-form" onSubmit={handleSubmit} className="settings-form-stack">
-      <fieldset disabled={readOnly} className="settings-form-stack border-0 p-0 m-0 min-w-0">
-        {error ? (
-          <div className="settings-alerts">
-            <p className="settings-alerts__item settings-alerts__item--error" role="alert">
-              {error}
-            </p>
-          </div>
-        ) : null}
+        <form id="guest-app-studio-form" onSubmit={handleSubmit} className="settings-form-stack">
+          <fieldset disabled={readOnly} className="settings-form-stack border-0 p-0 m-0 min-w-0">
+            {error ? (
+              <div className="settings-alerts">
+                <p className="settings-alerts__item settings-alerts__item--error" role="alert">
+                  {error}
+                </p>
+              </div>
+            ) : null}
 
-        <FormSection title={t("general")}>
-          <div className="admin-settings-fields">
-            <label className="pub-settings-section-toggle">
-              <input
-                type="checkbox"
-                checked={draft.enabled}
-                onChange={(e) => patchDraft({ enabled: e.target.checked })}
-              />
-              <span>{t("enabled")}</span>
-            </label>
-          </div>
-        </FormSection>
-
-        <FormSection title={t("hotelContent")}>
-          <div className="admin-settings-fields admin-settings-fields--2col">
-            <div className="admin-settings-fields__full">
-              <IdentityContactSummary
-                contact={{
-                  phone:
-                    draft.hotelPhone.trim() ||
-                    (draft.usePrimaryContact ? primaryContact.phone : null),
-                  email:
-                    draft.hotelEmail.trim() ||
-                    (draft.usePrimaryContact ? primaryContact.email : null),
-                  whatsapp: draft.usePrimaryContact ? primaryContact.whatsapp : null,
-                }}
-                address={
-                  draft.address.trim() || (draft.usePrimaryContact ? primaryAddress : null)
-                }
-                lead={t("contactFromIdentity")}
-              />
-            </div>
-            <label className="admin-settings-fields__full">
-              <span>{t("shortDescription")}</span>
-              <textarea
-                rows={2}
-                value={draft.shortDescription}
-                onChange={(e) => patchDraft({ shortDescription: e.target.value })}
-              />
-            </label>
-            <label className="admin-settings-fields__full">
-              <span>{t("longDescription")}</span>
-              <textarea
-                rows={4}
-                value={draft.longDescription}
-                onChange={(e) => patchDraft({ longDescription: e.target.value })}
-              />
-            </label>
-            <label className="admin-settings-fields__full">
-              <span>Website</span>
-              <input
-                value={draft.website}
-                onChange={(e) => patchDraft({ website: e.target.value })}
-              />
-            </label>
-            <details className="admin-settings-fields__full identity-contact-override">
-              <summary>{t("contactOverrideTitle")}</summary>
-              <div className="admin-settings-fields admin-settings-fields--2col">
-                <label className="pub-settings-section-toggle admin-settings-fields__full">
+            <FormSection title={t("general")}>
+              <div className="admin-settings-fields">
+                <label className="pub-settings-section-toggle">
                   <input
                     type="checkbox"
-                    checked={draft.usePrimaryContact}
-                    onChange={(e) => patchDraft({ usePrimaryContact: e.target.checked })}
+                    checked={draft.enabled}
+                    onChange={(e) => patchDraft({ enabled: e.target.checked })}
                   />
-                  <span>{t("usePrimaryContact")}</span>
+                  <span>{t("enabled")}</span>
+                </label>
+              </div>
+            </FormSection>
+
+            <FormSection title={t("hotelContent")}>
+              <div className="admin-settings-fields admin-settings-fields--2col">
+                <div className="admin-settings-fields__full">
+                  <IdentityContactSummary
+                    contact={{
+                      phone:
+                        draft.hotelPhone.trim() ||
+                        (draft.usePrimaryContact ? primaryContact.phone : null),
+                      email:
+                        draft.hotelEmail.trim() ||
+                        (draft.usePrimaryContact ? primaryContact.email : null),
+                      whatsapp: draft.usePrimaryContact ? primaryContact.whatsapp : null,
+                    }}
+                    address={
+                      draft.address.trim() || (draft.usePrimaryContact ? primaryAddress : null)
+                    }
+                    lead={t("contactFromIdentity")}
+                  />
+                </div>
+                <label className="admin-settings-fields__full">
+                  <span>{t("shortDescription")}</span>
+                  <textarea
+                    rows={2}
+                    value={draft.shortDescription}
+                    onChange={(e) => patchDraft({ shortDescription: e.target.value })}
+                  />
                 </label>
                 <label className="admin-settings-fields__full">
-                  <span>{t("address")}</span>
+                  <span>{t("longDescription")}</span>
+                  <textarea
+                    rows={4}
+                    value={draft.longDescription}
+                    onChange={(e) => patchDraft({ longDescription: e.target.value })}
+                  />
+                </label>
+                <label className="admin-settings-fields__full">
+                  <span>Website</span>
                   <input
-                    value={draft.address}
-                    onChange={(e) => patchDraft({ address: e.target.value })}
+                    value={draft.website}
+                    onChange={(e) => patchDraft({ website: e.target.value })}
+                  />
+                </label>
+                <details className="admin-settings-fields__full identity-contact-override">
+                  <summary>{t("contactOverrideTitle")}</summary>
+                  <div className="admin-settings-fields admin-settings-fields--2col">
+                    <label className="pub-settings-section-toggle admin-settings-fields__full">
+                      <input
+                        type="checkbox"
+                        checked={draft.usePrimaryContact}
+                        onChange={(e) => patchDraft({ usePrimaryContact: e.target.checked })}
+                      />
+                      <span>{t("usePrimaryContact")}</span>
+                    </label>
+                    <label className="admin-settings-fields__full">
+                      <span>{t("address")}</span>
+                      <input
+                        value={draft.address}
+                        onChange={(e) => patchDraft({ address: e.target.value })}
+                      />
+                    </label>
+                    <label>
+                      <span>{t("phone")}</span>
+                      <input
+                        value={draft.hotelPhone}
+                        onChange={(e) => patchDraft({ hotelPhone: e.target.value })}
+                      />
+                    </label>
+                    <label>
+                      <span>Email</span>
+                      <input
+                        type="email"
+                        value={draft.hotelEmail}
+                        onChange={(e) => patchDraft({ hotelEmail: e.target.value })}
+                      />
+                    </label>
+                  </div>
+                </details>
+              </div>
+            </FormSection>
+
+            <FormSection title="Wi-Fi">
+              <div className="admin-settings-fields">
+                <label>
+                  <span>{t("wifiNetwork")}</span>
+                  <input
+                    value={draft.wifiName}
+                    onChange={(e) => patchDraft({ wifiName: e.target.value })}
                   />
                 </label>
                 <label>
-                  <span>{t("phone")}</span>
+                  <span>{t("wifiPassword")}</span>
                   <input
-                    value={draft.hotelPhone}
-                    onChange={(e) => patchDraft({ hotelPhone: e.target.value })}
+                    value={draft.wifiPassword}
+                    onChange={(e) => patchDraft({ wifiPassword: e.target.value })}
                   />
                 </label>
                 <label>
-                  <span>Email</span>
-                  <input
-                    type="email"
-                    value={draft.hotelEmail}
-                    onChange={(e) => patchDraft({ hotelEmail: e.target.value })}
+                  <span>{t("wifiInstructions")}</span>
+                  <textarea
+                    rows={2}
+                    value={draft.wifiInstructions}
+                    onChange={(e) => patchDraft({ wifiInstructions: e.target.value })}
                   />
                 </label>
               </div>
-            </details>
-          </div>
-        </FormSection>
+            </FormSection>
 
-        <FormSection title="Wi-Fi">
-          <div className="admin-settings-fields">
-            <label>
-              <span>{t("wifiNetwork")}</span>
-              <input
-                value={draft.wifiName}
-                onChange={(e) => patchDraft({ wifiName: e.target.value })}
-              />
-            </label>
-            <label>
-              <span>{t("wifiPassword")}</span>
-              <input
-                value={draft.wifiPassword}
-                onChange={(e) => patchDraft({ wifiPassword: e.target.value })}
-              />
-            </label>
-            <label>
-              <span>{t("wifiInstructions")}</span>
-              <textarea
-                rows={2}
-                value={draft.wifiInstructions}
-                onChange={(e) => patchDraft({ wifiInstructions: e.target.value })}
-              />
-            </label>
-          </div>
-        </FormSection>
+            <FormSection title={t("travelTips")}>
+              <div className="admin-settings-fields">
+                <label>
+                  <span>{t("travelTipsHint")}</span>
+                  <textarea
+                    rows={4}
+                    value={draft.travelTips}
+                    onChange={(e) => patchDraft({ travelTips: e.target.value })}
+                  />
+                </label>
+              </div>
+            </FormSection>
 
-        <FormSection title={t("travelTips")}>
-          <div className="admin-settings-fields">
-            <label>
-              <span>{t("travelTipsHint")}</span>
-              <textarea
-                rows={4}
-                value={draft.travelTips}
-                onChange={(e) => patchDraft({ travelTips: e.target.value })}
-              />
-            </label>
-          </div>
-        </FormSection>
+            <FormSection
+              title={t("facilities")}
+              description={t("listItemsHint")}
+              defaultOpen={false}
+            >
+              <div className="admin-settings-fields">
+                <label>
+                  <span>{t("facilitiesList")}</span>
+                  <textarea
+                    rows={4}
+                    value={draft.facilitiesText}
+                    onChange={(e) => patchDraft({ facilitiesText: e.target.value })}
+                  />
+                </label>
+              </div>
+            </FormSection>
 
-        <FormSection title={t("facilities")} description={t("listItemsHint")} defaultOpen={false}>
-          <div className="admin-settings-fields">
-            <label>
-              <span>{t("facilitiesList")}</span>
-              <textarea
-                rows={4}
-                value={draft.facilitiesText}
-                onChange={(e) => patchDraft({ facilitiesText: e.target.value })}
-              />
-            </label>
-          </div>
-        </FormSection>
+            <FormSection title={t("services")} description={t("listItemsHint")} defaultOpen={false}>
+              <div className="admin-settings-fields">
+                <label>
+                  <span>{t("servicesList")}</span>
+                  <textarea
+                    rows={4}
+                    value={draft.servicesText}
+                    onChange={(e) => patchDraft({ servicesText: e.target.value })}
+                  />
+                </label>
+              </div>
+            </FormSection>
 
-        <FormSection title={t("services")} description={t("listItemsHint")} defaultOpen={false}>
-          <div className="admin-settings-fields">
-            <label>
-              <span>{t("servicesList")}</span>
-              <textarea
-                rows={4}
-                value={draft.servicesText}
-                onChange={(e) => patchDraft({ servicesText: e.target.value })}
-              />
-            </label>
-          </div>
-        </FormSection>
+            <FormSection title={t("greenStay")} defaultOpen={false}>
+              <div className="admin-settings-fields">
+                <label className="pub-settings-section-toggle">
+                  <input
+                    type="checkbox"
+                    checked={draft.greenEnabled}
+                    onChange={(e) => patchDraft({ greenEnabled: e.target.checked })}
+                  />
+                  <span>{t("greenStayEnabled")}</span>
+                </label>
+                <label>
+                  <span>{t("greenStayDescription")}</span>
+                  <textarea
+                    rows={3}
+                    value={draft.greenDescription}
+                    onChange={(e) => patchDraft({ greenDescription: e.target.value })}
+                  />
+                </label>
+              </div>
+            </FormSection>
 
-        <FormSection title={t("greenStay")} defaultOpen={false}>
-          <div className="admin-settings-fields">
-            <label className="pub-settings-section-toggle">
-              <input
-                type="checkbox"
-                checked={draft.greenEnabled}
-                onChange={(e) => patchDraft({ greenEnabled: e.target.checked })}
-              />
-              <span>{t("greenStayEnabled")}</span>
-            </label>
-            <label>
-              <span>{t("greenStayDescription")}</span>
-              <textarea
-                rows={3}
-                value={draft.greenDescription}
-                onChange={(e) => patchDraft({ greenDescription: e.target.value })}
-              />
-            </label>
-          </div>
-        </FormSection>
+            <FormSection title={t("loyalty")} description={t("loyaltyHint")} defaultOpen={false}>
+              <div className="admin-settings-fields">
+                <label className="pub-settings-section-toggle">
+                  <input
+                    type="checkbox"
+                    checked={draft.loyaltyEnabled}
+                    onChange={(e) => patchDraft({ loyaltyEnabled: e.target.checked })}
+                  />
+                  <span>{t("loyaltyEnabled")}</span>
+                </label>
+                <label>
+                  <span>{t("nightsForPerk")}</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={365}
+                    value={draft.nightsForPerk}
+                    onChange={(e) =>
+                      patchDraft({
+                        nightsForPerk: Math.max(0, Math.min(365, Number(e.target.value) || 0)),
+                      })
+                    }
+                  />
+                </label>
+                <SettingsFieldHint>{t("nightsForPerkHint")}</SettingsFieldHint>
+                <label className="admin-settings-fields__full">
+                  <span>{t("perkTitle")}</span>
+                  <input
+                    value={draft.perkTitle}
+                    maxLength={120}
+                    onChange={(e) => patchDraft({ perkTitle: e.target.value })}
+                  />
+                </label>
+                <label className="admin-settings-fields__full">
+                  <span>{t("perkDescription")}</span>
+                  <textarea
+                    rows={3}
+                    maxLength={2000}
+                    value={draft.perkDescription}
+                    onChange={(e) => patchDraft({ perkDescription: e.target.value })}
+                  />
+                </label>
+              </div>
+            </FormSection>
 
-        <FormSection title={t("loyalty")} description={t("loyaltyHint")} defaultOpen={false}>
-          <div className="admin-settings-fields">
-            <label className="pub-settings-section-toggle">
-              <input
-                type="checkbox"
-                checked={draft.loyaltyEnabled}
-                onChange={(e) =>
-                  patchDraft({ loyaltyEnabled: e.target.checked })
-                }
-              />
-              <span>{t("loyaltyEnabled")}</span>
-            </label>
-            <label>
-              <span>{t("nightsForPerk")}</span>
-              <input
-                type="number"
-                min={0}
-                max={365}
-                value={draft.nightsForPerk}
-                onChange={(e) =>
-                  patchDraft({
-                    nightsForPerk: Math.max(
-                      0,
-                      Math.min(365, Number(e.target.value) || 0),
-                    ),
-                  })
-                }
-              />
-            </label>
-            <SettingsFieldHint>{t("nightsForPerkHint")}</SettingsFieldHint>
-            <label className="admin-settings-fields__full">
-              <span>{t("perkTitle")}</span>
-              <input
-                value={draft.perkTitle}
-                maxLength={120}
-                onChange={(e) => patchDraft({ perkTitle: e.target.value })}
-              />
-            </label>
-            <label className="admin-settings-fields__full">
-              <span>{t("perkDescription")}</span>
-              <textarea
-                rows={3}
-                maxLength={2000}
-                value={draft.perkDescription}
-                onChange={(e) =>
-                  patchDraft({ perkDescription: e.target.value })
-                }
-              />
-            </label>
-          </div>
-        </FormSection>
+            <FormSection title={t("appearance")} description={t("themeHint")} defaultOpen={false}>
+              <div className="admin-settings-fields admin-settings-fields--2col">
+                <label className="admin-settings-fields__full">
+                  <span>{t("themeSource")}</span>
+                  <select
+                    value={draft.themeId}
+                    onChange={(e) => patchDraft({ themeId: e.target.value as GuestAppThemeSource })}
+                  >
+                    <option value="inherit">{t("themeInherit")}</option>
+                    {DESIGN_THEME_IDS.map((id) => (
+                      <option key={id} value={id}>
+                        {tThemes(`${id}.title`)}
+                      </option>
+                    ))}
+                    <option value="custom">{t("themeCustom")}</option>
+                  </select>
+                </label>
+                {draft.themeId === "custom" ? (
+                  <>
+                    <label>
+                      <span>{t("primaryColor")}</span>
+                      <input
+                        type="color"
+                        value={draft.primaryColor}
+                        onChange={(e) => patchDraft({ primaryColor: e.target.value })}
+                      />
+                    </label>
+                    <label>
+                      <span>{t("accentColor")}</span>
+                      <input
+                        type="color"
+                        value={draft.accentColor}
+                        onChange={(e) => patchDraft({ accentColor: e.target.value })}
+                      />
+                    </label>
+                  </>
+                ) : null}
+                <SettingsFieldHint className="admin-settings-fields__full">
+                  {t("logoManaged")}{" "}
+                  <Link href="/admin/settings/identity" className="underline">
+                    {t("logoManagedLink")}
+                  </Link>
+                </SettingsFieldHint>
+              </div>
+            </FormSection>
 
-        <FormSection title={t("appearance")} description={t("themeHint")} defaultOpen={false}>
-          <div className="admin-settings-fields admin-settings-fields--2col">
-            <label className="admin-settings-fields__full">
-              <span>{t("themeSource")}</span>
-              <select
-                value={draft.themeId}
-                onChange={(e) =>
-                  patchDraft({ themeId: e.target.value as GuestAppThemeSource })
-                }
-              >
-                <option value="inherit">{t("themeInherit")}</option>
-                {DESIGN_THEME_IDS.map((id) => (
-                  <option key={id} value={id}>
-                    {tThemes(`${id}.title`)}
-                  </option>
+            <FormSection title={t("features")} description={t("featuresHint")} defaultOpen={false}>
+              <ul className="admin-settings-list">
+                {draft.features.map((feature) => (
+                  <li key={feature.id} className="admin-settings-list__row">
+                    <span className="admin-settings-list__label">
+                      {guestAppFeatureLabel(feature.id)}
+                    </span>
+                    <select
+                      value={feature.state}
+                      onChange={(e) =>
+                        setFeatureState(feature.id, e.target.value as GuestAppFeatureState)
+                      }
+                    >
+                      <option value="mock">{t("stateMock")}</option>
+                      <option value="live">{t("stateLive")}</option>
+                      <option value="hidden">{t("stateHidden")}</option>
+                    </select>
+                  </li>
                 ))}
-                <option value="custom">{t("themeCustom")}</option>
-              </select>
-            </label>
-            {draft.themeId === "custom" ? (
-              <>
-                <label>
-                  <span>{t("primaryColor")}</span>
-                  <input
-                    type="color"
-                    value={draft.primaryColor}
-                    onChange={(e) => patchDraft({ primaryColor: e.target.value })}
-                  />
-                </label>
-                <label>
-                  <span>{t("accentColor")}</span>
-                  <input
-                    type="color"
-                    value={draft.accentColor}
-                    onChange={(e) => patchDraft({ accentColor: e.target.value })}
-                  />
-                </label>
-              </>
-            ) : null}
-            <SettingsFieldHint className="admin-settings-fields__full">
-              {t("logoManaged")}{" "}
-              <Link href="/admin/settings/identity" className="underline">
-                {t("logoManagedLink")}
-              </Link>
-            </SettingsFieldHint>
-          </div>
-        </FormSection>
-
-        <FormSection title={t("features")} description={t("featuresHint")} defaultOpen={false}>
-          <ul className="admin-settings-list">
-            {draft.features.map((feature) => (
-              <li key={feature.id} className="admin-settings-list__row">
-                <span className="admin-settings-list__label">
-                  {guestAppFeatureLabel(feature.id)}
-                </span>
-                <select
-                  value={feature.state}
-                  onChange={(e) =>
-                    setFeatureState(
-                      feature.id,
-                      e.target.value as GuestAppFeatureState,
-                    )
-                  }
-                >
-                  <option value="mock">{t("stateMock")}</option>
-                  <option value="live">{t("stateLive")}</option>
-                  <option value="hidden">{t("stateHidden")}</option>
-                </select>
-              </li>
-            ))}
-          </ul>
-        </FormSection>
-      </fieldset>
-    </form>
+              </ul>
+            </FormSection>
+          </fieldset>
+        </form>
       }
     />
   );

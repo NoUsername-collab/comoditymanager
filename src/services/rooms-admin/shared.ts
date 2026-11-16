@@ -73,7 +73,7 @@ export function mapRoomRows(
     buildings: { name: string } | { name: string }[] | null;
     floors: { name: string } | { name: string }[] | null;
     room_type_definitions: { name: string } | { name: string }[] | null;
-  }[]
+  }[],
 ): RoomWithJoins[] {
   return data.map((row) => {
     const b = row.buildings;
@@ -96,8 +96,8 @@ export function mapRoomRows(
       price_per_night: Number(row.price_per_night),
       is_active: row.is_active,
       sort_order: row.sort_order,
-      building_name: Array.isArray(b) ? b[0]?.name ?? "?" : b?.name ?? "?",
-      floor_name: Array.isArray(f) ? f[0]?.name ?? null : f?.name ?? null,
+      building_name: Array.isArray(b) ? (b[0]?.name ?? "?") : (b?.name ?? "?"),
+      floor_name: Array.isArray(f) ? (f[0]?.name ?? null) : (f?.name ?? null),
       room_type_name: typeName ?? null,
     };
   });
@@ -105,7 +105,7 @@ export function mapRoomRows(
 
 export async function assertFloorInBuilding(
   buildingId: string,
-  floorId: string | null
+  floorId: string | null,
 ): Promise<void> {
   if (!floorId) return;
   const { tenantId, supabase } = await requireBuildingInTenant(buildingId);

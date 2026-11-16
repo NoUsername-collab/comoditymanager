@@ -32,14 +32,10 @@ export function AdminGearMenu({ children }: Props) {
     if (!trigger) return;
 
     const measured = menuRef.current?.getBoundingClientRect();
-    const menuSize = measured
-      ? { width: measured.width, height: measured.height }
-      : MENU_ESTIMATE;
+    const menuSize = measured ? { width: measured.width, height: measured.height } : MENU_ESTIMATE;
 
     const pos = computeFixedDropdownPosition(trigger, menuSize, { gap: 6 });
-    setMenuPos((prev) =>
-      prev && prev.top === pos.top && prev.left === pos.left ? prev : pos
-    );
+    setMenuPos((prev) => (prev && prev.top === pos.top && prev.left === pos.left ? prev : pos));
   }, []);
 
   useLayoutEffect(() => {

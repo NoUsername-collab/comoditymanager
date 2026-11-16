@@ -4,7 +4,10 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { submitGuestPrecheckinAction } from "@/features/guest-app/actions/stay";
 import type { GuestAccessBookingSnapshot } from "@/domain/guest-app/types";
-import type { GuestPrecheckinDocType, GuestPrecheckinPrefill } from "@/domain/guest-app/precheckin-prefill";
+import type {
+  GuestPrecheckinDocType,
+  GuestPrecheckinPrefill,
+} from "@/domain/guest-app/precheckin-prefill";
 import { mrzToPrecheckinFields, type MrzMappedIdentity } from "@/domain/guest/mrz";
 import { GuestMrzScanDialog } from "@/features/guest-app/GuestMrzScanDialog";
 import { useGuestAppToast } from "@/features/guest-app/GuestAppToast";
@@ -21,12 +24,7 @@ function parsePrecheckinDocType(value: string): GuestPrecheckinDocType {
   return "";
 }
 
-export function GuestOnlineCheckinForm({
-  accessCode,
-  booking,
-  prefill,
-  alreadySubmitted,
-}: Props) {
+export function GuestOnlineCheckinForm({ accessCode, booking, prefill, alreadySubmitted }: Props) {
   const t = useTranslations("guestApp.precheckin");
   const { showToast } = useGuestAppToast();
   const [pending, startTransition] = useTransition();
@@ -133,8 +131,7 @@ export function GuestOnlineCheckinForm({
     });
   }
 
-  const displayName =
-    [lastName, firstName].filter(Boolean).join(" ").trim() || booking.guestName;
+  const displayName = [lastName, firstName].filter(Boolean).join(" ").trim() || booking.guestName;
 
   return (
     <>
@@ -164,127 +161,123 @@ export function GuestOnlineCheckinForm({
             {t("manualTitle")}
           </h3>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="guest-app__field">
+              <span className="guest-app__field__label">{t("lastName")}</span>
+              <input
+                className="guest-app__field__input"
+                required
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </label>
+            <label className="guest-app__field">
+              <span className="guest-app__field__label">{t("firstName")}</span>
+              <input
+                className="guest-app__field__input"
+                required
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+            </label>
+          </div>
+
           <label className="guest-app__field">
-            <span className="guest-app__field__label">{t("lastName")}</span>
+            <span className="guest-app__field__label">{t("phone")}</span>
             <input
               className="guest-app__field__input"
+              type="tel"
               required
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
             />
           </label>
+
           <label className="guest-app__field">
-            <span className="guest-app__field__label">{t("firstName")}</span>
+            <span className="guest-app__field__label">{t("email")}</span>
             <input
               className="guest-app__field__input"
-              required
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </label>
-        </div>
 
-        <label className="guest-app__field">
-          <span className="guest-app__field__label">{t("phone")}</span>
-          <input
-            className="guest-app__field__input"
-            type="tel"
-            required
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </label>
-
-        <label className="guest-app__field">
-          <span className="guest-app__field__label">{t("email")}</span>
-          <input
-            className="guest-app__field__input"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </label>
-
-        <label className="guest-app__field">
-          <span className="guest-app__field__label">{t("nationalId")}</span>
-          <span className="guest-app__field__hint">{t("nationalIdHint")}</span>
-          <input
-            className="guest-app__field__input"
-            inputMode="numeric"
-            autoComplete="off"
-            value={nationalId}
-            onChange={(e) => setNationalId(e.target.value.replace(/\s/g, ""))}
-          />
-        </label>
-
-        <div className="grid gap-3 sm:grid-cols-2">
           <label className="guest-app__field">
-            <span className="guest-app__field__label">{t("birthDate")}</span>
+            <span className="guest-app__field__label">{t("nationalId")}</span>
+            <span className="guest-app__field__hint">{t("nationalIdHint")}</span>
             <input
               className="guest-app__field__input"
-              type="date"
-              value={birthDate}
-              onChange={(e) => setBirthDate(e.target.value)}
+              inputMode="numeric"
+              autoComplete="off"
+              value={nationalId}
+              onChange={(e) => setNationalId(e.target.value.replace(/\s/g, ""))}
             />
           </label>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="guest-app__field">
+              <span className="guest-app__field__label">{t("birthDate")}</span>
+              <input
+                className="guest-app__field__input"
+                type="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+              />
+            </label>
+            <label className="guest-app__field">
+              <span className="guest-app__field__label">{t("nationality")}</span>
+              <input
+                className="guest-app__field__input"
+                value={nationality}
+                onChange={(e) => setNationality(e.target.value)}
+              />
+            </label>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="guest-app__field">
+              <span className="guest-app__field__label">{t("documentType")}</span>
+              <select
+                className="guest-app__field__input"
+                value={documentType}
+                onChange={(e) => setDocumentType(parsePrecheckinDocType(e.target.value))}
+              >
+                <option value="">{t("documentOptional")}</option>
+                <option value="ci">{t("documentCi")}</option>
+                <option value="pasaport">{t("documentPassport")}</option>
+                <option value="permis">{t("documentPermit")}</option>
+              </select>
+            </label>
+            <label className="guest-app__field">
+              <span className="guest-app__field__label">{t("documentNumber")}</span>
+              <input
+                className="guest-app__field__input"
+                value={documentNumber}
+                onChange={(e) => setDocumentNumber(e.target.value)}
+              />
+            </label>
+          </div>
+
           <label className="guest-app__field">
-            <span className="guest-app__field__label">{t("nationality")}</span>
-            <input
+            <span className="guest-app__field__label">{t("notes")}</span>
+            <textarea
               className="guest-app__field__input"
-              value={nationality}
-              onChange={(e) => setNationality(e.target.value)}
+              rows={3}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
             />
           </label>
-        </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="guest-app__field">
-            <span className="guest-app__field__label">{t("documentType")}</span>
-            <select
-              className="guest-app__field__input"
-              value={documentType}
-              onChange={(e) => setDocumentType(parsePrecheckinDocType(e.target.value))}
-            >
-              <option value="">{t("documentOptional")}</option>
-              <option value="ci">{t("documentCi")}</option>
-              <option value="pasaport">{t("documentPassport")}</option>
-              <option value="permis">{t("documentPermit")}</option>
-            </select>
-          </label>
-          <label className="guest-app__field">
-            <span className="guest-app__field__label">{t("documentNumber")}</span>
-            <input
-              className="guest-app__field__input"
-              value={documentNumber}
-              onChange={(e) => setDocumentNumber(e.target.value)}
-            />
-          </label>
-        </div>
+          {error ? <p className="guest-app__form-error">{error}</p> : null}
 
-        <label className="guest-app__field">
-          <span className="guest-app__field__label">{t("notes")}</span>
-          <textarea
-            className="guest-app__field__input"
-            rows={3}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          />
-        </label>
-
-        {error ? <p className="guest-app__form-error">{error}</p> : null}
-
-        <button type="submit" className="guest-app__btn-primary" disabled={pending}>
-          {pending ? t("submitting") : t("submit")}
-        </button>
+          <button type="submit" className="guest-app__btn-primary" disabled={pending}>
+            {pending ? t("submitting") : t("submit")}
+          </button>
         </section>
       </form>
 
-      <GuestMrzScanDialog
-        open={mrzOpen}
-        onClose={() => setMrzOpen(false)}
-        onApply={applyMrzScan}
-      />
+      <GuestMrzScanDialog open={mrzOpen} onClose={() => setMrzOpen(false)} onApply={applyMrzScan} />
     </>
   );
 }

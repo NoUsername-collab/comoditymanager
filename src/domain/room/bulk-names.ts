@@ -10,11 +10,7 @@ export function floorLevelFromStructure(
   levelNumber: number | null | undefined,
   name: string,
 ): number | null {
-  if (
-    levelNumber != null &&
-    Number.isInteger(levelNumber) &&
-    levelNumber >= 1
-  ) {
+  if (levelNumber != null && Number.isInteger(levelNumber) && levelNumber >= 1) {
     return levelNumber;
   }
   const match = name.trim().match(/(\d+)\s*$/);
@@ -45,7 +41,7 @@ export function buildBulkRoomNames(
   mode: BulkNamingMode,
   namePrefix: string,
   startNumber: number,
-  count: number
+  count: number,
 ): string[] {
   if (count < 1) return [];
   const names: string[] = [];
@@ -65,10 +61,7 @@ export function normalizeRoomNameKey(name: string): string {
 }
 
 /** Returnează numele care există deja sau se repetă în listă. */
-export function findDuplicateRoomNames(
-  existingNames: string[],
-  proposedNames: string[]
-): string[] {
+export function findDuplicateRoomNames(existingNames: string[], proposedNames: string[]): string[] {
   const taken = new Set(existingNames.map(normalizeRoomNameKey));
   const batch = new Set<string>();
   const conflicts: string[] = [];
@@ -94,7 +87,7 @@ function escapeRegex(s: string): string {
 export function suggestNextBulkStartNumber(
   existingNames: string[],
   mode: BulkNamingMode,
-  namePrefix: string
+  namePrefix: string,
 ): number {
   if (mode === "number_only") {
     let max = 0;
@@ -119,9 +112,7 @@ export function suggestNextBulkStartNumber(
   }
 
   let max = 0;
-  const re = prefix
-    ? new RegExp(`^${escapeRegex(prefix)}(\\d+)\\s*$`, "i")
-    : /^(\d+)\s*$/;
+  const re = prefix ? new RegExp(`^${escapeRegex(prefix)}(\\d+)\\s*$`, "i") : /^(\d+)\s*$/;
 
   for (const name of existingNames) {
     const m = name.trim().match(re);

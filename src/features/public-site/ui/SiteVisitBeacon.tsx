@@ -17,8 +17,15 @@ export function SiteVisitBeacon() {
     else referrer.current = "";
     const body = JSON.stringify({ path: window.location.pathname, referrer: referrer.current });
     try {
-      if (!navigator.sendBeacon?.("/api/site-visit", new Blob([body], { type: "application/json" }))) {
-        void fetch("/api/site-visit", { method: "POST", body, keepalive: true, headers: { "Content-Type": "application/json" } });
+      if (
+        !navigator.sendBeacon?.("/api/site-visit", new Blob([body], { type: "application/json" }))
+      ) {
+        void fetch("/api/site-visit", {
+          method: "POST",
+          body,
+          keepalive: true,
+          headers: { "Content-Type": "application/json" },
+        });
       }
     } catch {
       // Counting must never get in the visitor's way.

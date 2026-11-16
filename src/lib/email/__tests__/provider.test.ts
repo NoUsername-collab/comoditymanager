@@ -1,8 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import {
-  getEmailDeliveryConfig,
-  isEmailDeliveryConfigured,
-} from "@/lib/email/provider";
+import { getEmailDeliveryConfig, isEmailDeliveryConfigured } from "@/lib/email/provider";
 
 describe("email delivery config", () => {
   const originalKey = process.env.RESEND_API_KEY;

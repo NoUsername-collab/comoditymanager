@@ -70,7 +70,7 @@ function buildTenantHealthCheck(
     display_name: string;
     status: string;
   },
-  resources: ReturnType<typeof getTenantResourceCounts>
+  resources: ReturnType<typeof getTenantResourceCounts>,
 ): TenantHealthCheck {
   const issues: string[] = [];
   if (!resources.has_settings) issues.push("Lipsesc pension_settings");
@@ -95,41 +95,37 @@ function buildTenantHealthCheck(
 }
 
 /** Health check for a single tenant. */
-export const getTenantHealthCheck = cache(async (
-  tenantId: string
-): Promise<TenantHealthCheck | null> => {
-  const supabase = createPublicAdminClient();
+export const getTenantHealthCheck = cache(
+  async (tenantId: string): Promise<TenantHealthCheck | null> => {
+    const supabase = createPublicAdminClient();
 
-  const [{ data: tenant, error: tenantError }, resourceCounts] = await Promise.all([
-    supabase
-      .from("tenants")
-      .select("id, slug, display_name, status")
-      .eq("id", tenantId)
-      .maybeSingle(),
-    loadTenantResourceCounts(supabase),
-  ]);
+    const [{ data: tenant, error: tenantError }, resourceCounts] = await Promise.all([
+      supabase
+        .from("tenants")
+        .select("id, slug, display_name, status")
+        .eq("id", tenantId)
+        .maybeSingle(),
+      loadTenantResourceCounts(supabase),
+    ]);
 
-  throwIfDbError("tenants (single health check)", tenantError);
-  if (!tenant) return null;
+    throwIfDbError("tenants (single health check)", tenantError);
+    if (!tenant) return null;
 
-  return buildTenantHealthCheck(
-    tenant,
-    getTenantResourceCounts(resourceCounts, tenant.id)
-  );
-});
+    return buildTenantHealthCheck(tenant, getTenantResourceCounts(resourceCounts, tenant.id));
+  },
+);
 
 /** Health snapshot for all tenants — 2 DB round-trips at 100+ tenants. */
 export const runTenantHealthChecks = cache(async (): Promise<TenantHealthCheck[]> => {
   const supabase = createPublicAdminClient();
 
-  const [{ data: tenants, error: tenantsError }, resourceCounts] =
-    await Promise.all([
-      supabase
-        .from("tenants")
-        .select("id, slug, display_name, status")
-        .order("created_at", { ascending: false }),
-      loadTenantResourceCounts(supabase),
-    ]);
+  const [{ data: tenants, error: tenantsError }, resourceCounts] = await Promise.all([
+    supabase
+      .from("tenants")
+      .select("id, slug, display_name, status")
+      .order("created_at", { ascending: false }),
+    loadTenantResourceCounts(supabase),
+  ]);
 
   throwIfDbError("tenants (health check)", tenantsError);
   if (!tenants) {
@@ -137,7 +133,7 @@ export const runTenantHealthChecks = cache(async (): Promise<TenantHealthCheck[]
   }
 
   return tenants.map((tenant) =>
-    buildTenantHealthCheck(tenant, getTenantResourceCounts(resourceCounts, tenant.id))
+    buildTenantHealthCheck(tenant, getTenantResourceCounts(resourceCounts, tenant.id)),
   );
 });
 
@@ -158,105 +154,98 @@ async function loadTenantMap(tenantIds: string[]) {
 
   throwIfDbError("tenants (log enrichment)", error);
 
-  return new Map(
-    (tenants ?? []).map((t) => [t.id, { slug: t.slug, name: t.display_name }])
-  );
+  return new Map((tenants ?? []).map((t) => [t.id, { slug: t.slug, name: t.display_name }]));
 }
 
 /** Activity + dev logs for Zalmox admin — throws on query failure. */
-export const getPlatformLogsBundle = cache(async (
-  limit = 100,
-  tenantId?: string | null
-): Promise<PlatformLogsResult> => {
-  const supabase = createPublicAdminClient();
+export const getPlatformLogsBundle = cache(
+  async (limit = 100, tenantId?: string | null): Promise<PlatformLogsResult> => {
+    const supabase = createPublicAdminClient();
 
-  if (tenantId && !isUuid(tenantId)) {
-    throw new Error(
-      `[platform logs] invalid tenant filter "${tenantId}" (expected UUID)`
-    );
-  }
+    if (tenantId && !isUuid(tenantId)) {
+      throw new Error(`[platform logs] invalid tenant filter "${tenantId}" (expected UUID)`);
+    }
 
-  const filterId = tenantId && isUuid(tenantId) ? tenantId : null;
+    const filterId = tenantId && isUuid(tenantId) ? tenantId : null;
 
-  let activityQuery = supabase
-    .from("admin_activity_log")
-    .select(
-      "id, tenant_id, action, entity_type, entity_id, summary, created_at, actor_email"
-    )
-    .order("created_at", { ascending: false })
-    .limit(limit);
+    let activityQuery = supabase
+      .from("admin_activity_log")
+      .select("id, tenant_id, action, entity_type, entity_id, summary, created_at, actor_email")
+      .order("created_at", { ascending: false })
+      .limit(limit);
 
-  if (filterId) {
-    activityQuery = activityQuery.eq("tenant_id", filterId);
-  }
+    if (filterId) {
+      activityQuery = activityQuery.eq("tenant_id", filterId);
+    }
 
-  let devQuery = supabase
-    .from("dev_logs")
-    .select(
-      "id, tenant_id, level, source, message, stack, context, request_path, request_method, duration_ms, created_at, user_email"
-    )
-    .order("created_at", { ascending: false })
-    .limit(limit);
+    let devQuery = supabase
+      .from("dev_logs")
+      .select(
+        "id, tenant_id, level, source, message, stack, context, request_path, request_method, duration_ms, created_at, user_email",
+      )
+      .order("created_at", { ascending: false })
+      .limit(limit);
 
-  if (filterId) {
-    devQuery = devQuery.eq("tenant_id", filterId);
-  }
+    if (filterId) {
+      devQuery = devQuery.eq("tenant_id", filterId);
+    }
 
-  const [activityRes, devRes] = await Promise.all([activityQuery, devQuery]);
+    const [activityRes, devRes] = await Promise.all([activityQuery, devQuery]);
 
-  throwIfDbError("admin_activity_log", activityRes.error);
-  throwIfDbError("dev_logs", devRes.error);
+    throwIfDbError("admin_activity_log", activityRes.error);
+    throwIfDbError("dev_logs", devRes.error);
 
-  const activityRows = activityRes.data ?? [];
-  const devRows = devRes.data ?? [];
+    const activityRows = activityRes.data ?? [];
+    const devRows = devRes.data ?? [];
 
-  const tenantIds = [
-    ...new Set([
-      ...activityRows.map((d) => d.tenant_id).filter(Boolean),
-      ...devRows.map((d) => d.tenant_id).filter(Boolean),
-    ]),
-  ] as string[];
+    const tenantIds = [
+      ...new Set([
+        ...activityRows.map((d) => d.tenant_id).filter(Boolean),
+        ...devRows.map((d) => d.tenant_id).filter(Boolean),
+      ]),
+    ] as string[];
 
-  const tenantMap = await loadTenantMap(tenantIds);
+    const tenantMap = await loadTenantMap(tenantIds);
 
-  const activity: PlatformLogEntry[] = activityRows.map((d) => {
-    const tenant = tenantMap.get(d.tenant_id);
-    return {
-      id: d.id,
-      tenant_id: d.tenant_id,
-      tenant_slug: tenant?.slug ?? "—",
-      tenant_name: tenant?.name ?? "—",
-      action: d.action,
-      entity_type: d.entity_type,
-      entity_id: d.entity_id,
-      summary: d.summary ?? "",
-      actor_email: d.actor_email ?? null,
-      created_at: d.created_at,
-    };
-  });
+    const activity: PlatformLogEntry[] = activityRows.map((d) => {
+      const tenant = tenantMap.get(d.tenant_id);
+      return {
+        id: d.id,
+        tenant_id: d.tenant_id,
+        tenant_slug: tenant?.slug ?? "—",
+        tenant_name: tenant?.name ?? "—",
+        action: d.action,
+        entity_type: d.entity_type,
+        entity_id: d.entity_id,
+        summary: d.summary ?? "",
+        actor_email: d.actor_email ?? null,
+        created_at: d.created_at,
+      };
+    });
 
-  const dev: PlatformDevLogEntry[] = devRows.map((d) => {
-    const tenant = tenantMap.get(d.tenant_id);
-    return {
-      id: d.id,
-      tenant_id: d.tenant_id,
-      tenant_slug: tenant?.slug ?? "—",
-      tenant_name: tenant?.name ?? "—",
-      level: d.level,
-      source: d.source,
-      message: d.message,
-      stack: d.stack ?? null,
-      context:
-        d.context && typeof d.context === "object" && !Array.isArray(d.context)
-          ? (d.context as Record<string, unknown>)
-          : {},
-      request_path: d.request_path ?? null,
-      request_method: d.request_method ?? null,
-      duration_ms: d.duration_ms ?? null,
-      created_at: d.created_at,
-      user_email: d.user_email ?? null,
-    };
-  });
+    const dev: PlatformDevLogEntry[] = devRows.map((d) => {
+      const tenant = tenantMap.get(d.tenant_id);
+      return {
+        id: d.id,
+        tenant_id: d.tenant_id,
+        tenant_slug: tenant?.slug ?? "—",
+        tenant_name: tenant?.name ?? "—",
+        level: d.level,
+        source: d.source,
+        message: d.message,
+        stack: d.stack ?? null,
+        context:
+          d.context && typeof d.context === "object" && !Array.isArray(d.context)
+            ? (d.context as Record<string, unknown>)
+            : {},
+        request_path: d.request_path ?? null,
+        request_method: d.request_method ?? null,
+        duration_ms: d.duration_ms ?? null,
+        created_at: d.created_at,
+        user_email: d.user_email ?? null,
+      };
+    });
 
-  return { activity, dev };
-});
+    return { activity, dev };
+  },
+);

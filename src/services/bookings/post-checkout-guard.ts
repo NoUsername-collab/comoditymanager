@@ -10,10 +10,7 @@ import { getBookingById } from "./queries";
 type PostCheckoutBooking = { actual_check_out_at: string | null };
 
 async function resolvePostCheckoutEditPolicyImpl() {
-  const [{ memberRole }, settings] = await Promise.all([
-    requireStaff(),
-    getCheckinSettings(),
-  ]);
+  const [{ memberRole }, settings] = await Promise.all([requireStaff(), getCheckinSettings()]);
   const allowPostCheckoutEdits = settings.allow_post_checkout_edits;
   return {
     memberRole,
@@ -25,13 +22,11 @@ async function resolvePostCheckoutEditPolicyImpl() {
   };
 }
 
-export const resolvePostCheckoutEditPolicy = cache(
-  resolvePostCheckoutEditPolicyImpl
-);
+export const resolvePostCheckoutEditPolicy = cache(resolvePostCheckoutEditPolicyImpl);
 
 /** Assert policy when the booking row is already loaded (no extra fetch). */
 export async function assertBookingPostCheckoutEditAllowed(
-  booking: PostCheckoutBooking
+  booking: PostCheckoutBooking,
 ): Promise<void> {
   if (!booking.actual_check_out_at) return;
   const policy = await resolvePostCheckoutEditPolicy();

@@ -15,7 +15,10 @@ function escapeHtmlAttr(value: string): string {
 
 /** Prevent SMTP header injection in subject lines. */
 export function sanitizeEmailSubject(value: string): string {
-  return value.replace(/[\r\n]/g, " ").replace(/\s+/g, " ").trim();
+  return value
+    .replace(/[\r\n]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 /** Allow only http(s) links in email CTAs. */
@@ -61,5 +64,5 @@ export function safeCssUrl(url: string | null | undefined): string {
   const trimmed = url.trim();
   if (!/^https?:\/\//i.test(trimmed)) return "none";
   return trimmed.replace(/["'()\\]/g, (ch) => encodeURIComponent(ch));
-}import { safeInternalPath } from "@/lib/security/safe-path";
-
+}
+import { safeInternalPath } from "@/lib/security/safe-path";

@@ -9,7 +9,8 @@ function isStandalone(): boolean {
   if (typeof window === "undefined") return true;
   return (
     window.matchMedia("(display-mode: standalone)").matches ||
-    ("standalone" in navigator && (navigator as Navigator & { standalone?: boolean }).standalone === true)
+    ("standalone" in navigator &&
+      (navigator as Navigator & { standalone?: boolean }).standalone === true)
   );
 }
 
@@ -23,11 +24,7 @@ function isIos(): boolean {
   return /iPad|iPhone|iPod/.test(navigator.userAgent);
 }
 
-export function GuestInstallHint({
-  variant = "stay",
-}: {
-  variant?: "stay" | "loyalty";
-}) {
+export function GuestInstallHint({ variant = "stay" }: { variant?: "stay" | "loyalty" }) {
   const t = useTranslations("guestApp.install");
   const [visible, setVisible] = useState(false);
 

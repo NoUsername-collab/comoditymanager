@@ -24,11 +24,7 @@ const platformVars = {
   color: "#1a1d2e",
 } as CSSProperties;
 
-export default function PlatformLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   return (
     <AreaMessages only={["landing", "pricing", "signup", "platform", "admin.common"]}>
       <MobileShell

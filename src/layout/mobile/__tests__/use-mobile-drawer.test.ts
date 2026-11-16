@@ -6,7 +6,7 @@ describe("useMobileDrawer", () => {
   it("implements focus trap and escape handling", () => {
     const source = readFileSync(
       join(process.cwd(), "src/layout/mobile/use-mobile-drawer.ts"),
-      "utf8"
+      "utf8",
     );
     expect(source).toContain("getFocusableElements");
     expect(source).toContain('e.key === "Escape"');
@@ -17,7 +17,7 @@ describe("useMobileDrawer", () => {
   it("prefers first focusable in .ml-drawer__nav on open", () => {
     const source = readFileSync(
       join(process.cwd(), "src/layout/mobile/use-mobile-drawer.ts"),
-      "utf8"
+      "utf8",
     );
     expect(source).toContain("getInitialFocusTarget");
     expect(source).toContain(".ml-drawer__nav");

@@ -8,10 +8,7 @@ const MESSAGE_KEYS: Record<string, string> = {
 };
 
 /** Map thrown server error codes to admin.common i18n keys. */
-export function formatAdminError(
-  error: unknown,
-  t: (key: string) => string
-): string {
+export function formatAdminError(error: unknown, t: (key: string) => string): string {
   if (error instanceof Error) {
     const key = MESSAGE_KEYS[error.message];
     if (key) {

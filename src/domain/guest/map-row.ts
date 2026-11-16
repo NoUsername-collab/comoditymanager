@@ -21,8 +21,7 @@ export function mapGuestRow(row: Record<string, unknown>): GuestRow {
     profile: null,
     created_at: String(row.created_at),
     updated_at: String(row.updated_at),
-    identity_status:
-      (row.identity_status as GuestRow["identity_status"]) ?? "draft",
+    identity_status: (row.identity_status as GuestRow["identity_status"]) ?? "draft",
     doc_type: optStr(row.doc_type) as GuestRow["doc_type"],
     doc_series: optStr(row.doc_series),
     doc_number: optStr(row.doc_number),

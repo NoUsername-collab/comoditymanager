@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  resolveLayoutBreakpoint,
-  resolveLayoutMode,
-  resolveLayoutOrientation,
-} from "../resolve";
+import { resolveLayoutBreakpoint, resolveLayoutMode, resolveLayoutOrientation } from "../resolve";
 
 describe("resolveLayoutMode", () => {
   it("keeps phones mobile in portrait and landscape", () => {

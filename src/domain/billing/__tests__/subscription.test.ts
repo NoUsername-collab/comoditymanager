@@ -30,25 +30,62 @@ describe("the plan a subscription gives", () => {
 
   it("gives the plan while paid, and keeps it while Stripe retries a failed card", () => {
     for (const status of ["active", "trialing", "past_due"] as const) {
-      expect(billingStateFromSubscription(sub({ status }), prices)).toMatchObject({ planId: "professional", isPaying: true });
+      expect(billingStateFromSubscription(sub({ status }), prices)).toMatchObject({
+        planId: "professional",
+        isPaying: true,
+      });
     }
-    expect(billingStateFromSubscription(sub({}), prices).currentPeriodEnd).toBe("2027-01-15T08:00:00.000Z");
+    expect(billingStateFromSubscription(sub({}), prices).currentPeriodEnd).toBe(
+      "2027-01-15T08:00:00.000Z",
+    );
   });
 
   it("goes back to Basic when cancelled, unpaid, never paid or paused, and for an unknown price", () => {
-    for (const status of ["canceled", "unpaid", "incomplete", "incomplete_expired", "paused"] as const) {
-      expect(billingStateFromSubscription(sub({ status }), prices)).toMatchObject({ planId: "free", isPaying: false, subscriptionStatus: status });
+    for (const status of [
+      "canceled",
+      "unpaid",
+      "incomplete",
+      "incomplete_expired",
+      "paused",
+    ] as const) {
+      expect(billingStateFromSubscription(sub({ status }), prices)).toMatchObject({
+        planId: "free",
+        isPaying: false,
+        subscriptionStatus: status,
+      });
     }
-    expect(billingStateFromSubscription(sub({ priceId: "price_other" }), prices)).toMatchObject({ planId: "free", isPaying: false });
+    expect(billingStateFromSubscription(sub({ priceId: "price_other" }), prices)).toMatchObject({
+      planId: "free",
+      isPaying: false,
+    });
   });
 
   it("tells the owner how the plan is paid", () => {
-    const base = { planId: "professional", isPaying: true, currentPeriodEnd: "2027-01-15T00:00:00Z", cancelAtPeriodEnd: false };
-    expect(billingSituation({ ...base, subscriptionStatus: "active" })).toEqual({ kind: "card", renewsOn: base.currentPeriodEnd });
-    expect(billingSituation({ ...base, subscriptionStatus: "active", cancelAtPeriodEnd: true })).toEqual({ kind: "cancelling", endsOn: base.currentPeriodEnd });
-    expect(billingSituation({ ...base, subscriptionStatus: "past_due" })).toEqual({ kind: "payment_failed" });
+    const base = {
+      planId: "professional",
+      isPaying: true,
+      currentPeriodEnd: "2027-01-15T00:00:00Z",
+      cancelAtPeriodEnd: false,
+    };
+    expect(billingSituation({ ...base, subscriptionStatus: "active" })).toEqual({
+      kind: "card",
+      renewsOn: base.currentPeriodEnd,
+    });
+    expect(
+      billingSituation({ ...base, subscriptionStatus: "active", cancelAtPeriodEnd: true }),
+    ).toEqual({ kind: "cancelling", endsOn: base.currentPeriodEnd });
+    expect(billingSituation({ ...base, subscriptionStatus: "past_due" })).toEqual({
+      kind: "payment_failed",
+    });
     expect(billingSituation({ ...base, subscriptionStatus: null })).toEqual({ kind: "manual" });
-    expect(billingSituation({ ...base, planId: "free", isPaying: false, subscriptionStatus: "canceled" })).toEqual({ kind: "free" });
+    expect(
+      billingSituation({
+        ...base,
+        planId: "free",
+        isPaying: false,
+        subscriptionStatus: "canceled",
+      }),
+    ).toEqual({ kind: "free" });
     expect(hasLiveSubscription("canceled")).toBe(false);
     expect(hasLiveSubscription("past_due")).toBe(true);
   });
@@ -70,7 +107,9 @@ describe("Stripe's webhook signature", () => {
     const header = signStripePayload(body, secret, now);
     expect(verifyStripeSignature(body.replace("evt_1", "evt_2"), header, secret, now)).toBe(false);
     expect(verifyStripeSignature(body, header, "whsec_other", now)).toBe(false);
-    expect(verifyStripeSignature(body, signStripePayload(body, secret, now - 600), secret, now)).toBe(false);
+    expect(
+      verifyStripeSignature(body, signStripePayload(body, secret, now - 600), secret, now),
+    ).toBe(false);
     expect(verifyStripeSignature(body, null, secret, now)).toBe(false);
     expect(verifyStripeSignature(body, "t=abc,v1=zz", secret, now)).toBe(false);
   });

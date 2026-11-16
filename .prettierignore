@@ -1,0 +1,25 @@
+# Generated, vendored or history that must not change
+node_modules/
+.next/
+out/
+build/
+coverage/
+playwright-report/
+test-results/
+blob-report/
+public/
+supabase/
+test-data/
+logo/
+package-lock.json
+next-env.d.ts
+tsconfig.tsbuildinfo
+*.log
+*.txt
+
+# Prose: wrapped by hand
+*.md
+
+# Local tooling and hand-written pages
+.claude/
+docs/**/*.html

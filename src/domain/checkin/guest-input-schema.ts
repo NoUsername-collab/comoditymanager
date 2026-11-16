@@ -14,10 +14,7 @@ const checkinGuestInputSchema = z
     first_name: z.string().max(100).nullable().optional(),
     phone: z.string().max(32).nullable().optional(),
     national_id: z.string().max(32).nullable().optional(),
-    national_id_type: z
-      .enum(["cnp", "idnp", "egn", "amka", "szemelyi_szam"])
-      .nullable()
-      .optional(),
+    national_id_type: z.enum(["cnp", "idnp", "egn", "amka", "szemelyi_szam"]).nullable().optional(),
     document_type: z.string().max(32).nullable().optional(),
     document_series: z.string().max(16).nullable().optional(),
     document_number: z.string().max(32).nullable().optional(),
@@ -33,10 +30,7 @@ const checkinGuestInputSchema = z
   })
   .strict();
 
-const checkinGuestsArraySchema = z
-  .array(checkinGuestInputSchema)
-  .min(1)
-  .max(50);
+const checkinGuestsArraySchema = z.array(checkinGuestInputSchema).min(1).max(50);
 
 export function parseCheckinGuestsJson(
   json: string,

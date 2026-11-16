@@ -19,7 +19,9 @@ function normalizeUrl(value: string | null | undefined, prefix?: string): string
 
 export function buildPublicContactLinks(
   contact: PublicContactConfig,
-  labels: Partial<Record<"email" | "whatsapp" | "telegram" | "facebook" | "instagram", string>> = {},
+  labels: Partial<
+    Record<"email" | "whatsapp" | "telegram" | "facebook" | "instagram", string>
+  > = {},
 ) {
   const email = contact.email?.trim() || null;
   const phone = contact.phone?.trim() || null;
@@ -29,13 +31,11 @@ export function buildPublicContactLinks(
   const instagram = normalizeUrl(contact.instagram, "https://");
 
   const whatsappDigits = whatsappRaw?.replace(/[^\d+]/g, "") ?? null;
-  const whatsapp = whatsappDigits
-    ? `https://wa.me/${whatsappDigits.replace(/^\+/, "")}`
-    : null;
+  const whatsapp = whatsappDigits ? `https://wa.me/${whatsappDigits.replace(/^\+/, "")}` : null;
 
   const telegram = telegramRaw
-    ? normalizeUrl(telegramRaw, "https://t.me/") ??
-      `https://t.me/${telegramRaw.replace(/^@/, "")}`
+    ? (normalizeUrl(telegramRaw, "https://t.me/") ??
+      `https://t.me/${telegramRaw.replace(/^@/, "")}`)
     : null;
 
   // `detail` is what a visitor would copy: the address, number or handle.
@@ -108,10 +108,7 @@ export function PublicContactBar({
 
   return (
     <section
-      className={[
-        "pub-contact-bar",
-        links.length === 0 && "pub-contact-bar--empty",
-      ]
+      className={["pub-contact-bar", links.length === 0 && "pub-contact-bar--empty"]
         .filter(Boolean)
         .join(" ")}
       aria-label={title}
@@ -130,9 +127,7 @@ export function PublicContactBar({
                 key={link.id}
                 href={link.href}
                 className={`pub-contact-chip pub-contact-chip--${link.id}`}
-                {...(link.external
-                  ? { target: "_blank", rel: "noopener noreferrer" }
-                  : {})}
+                {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
               >
                 <span className="pub-contact-chip__icon" aria-hidden>
                   {CONTACT_ICONS[link.id] ?? "•"}

@@ -3,10 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { occupancyPhase } from "@/domain/occupancy/phase";
 import type { OccupancySegment } from "@/domain/occupancy/types";
-import {
-  mergeGanttLiveBookings,
-  mergeGanttLiveOccupancy,
-} from "@/domain/gantt/live-occupancy";
+import { mergeGanttLiveBookings, mergeGanttLiveOccupancy } from "@/domain/gantt/live-occupancy";
 import type { BookingRow } from "@/services/bookings/types";
 
 const GANTT_LIVE_BOOKING_EVENT = "gantt:live-booking";
@@ -81,14 +78,10 @@ export function useGanttLiveCalendar(
   serverOccupancy: OccupancySegment[],
   today: string,
 ): { bookings: BookingRow[]; occupancy: OccupancySegment[] } {
-  const [overlays, setOverlays] = useState<Map<string, BookingRow>>(
-    () => new Map(),
-  );
+  const [overlays, setOverlays] = useState<Map<string, BookingRow>>(() => new Map());
   const [removedIds, setRemovedIds] = useState<Set<string>>(() => new Set());
   const [extraSegments, setExtraSegments] = useState<OccupancySegment[]>([]);
-  const [removedSegmentIds, setRemovedSegmentIds] = useState<Set<string>>(
-    () => new Set(),
-  );
+  const [removedSegmentIds, setRemovedSegmentIds] = useState<Set<string>>(() => new Set());
 
   const onLiveBooking = useCallback((event: Event) => {
     const detail = (event as CustomEvent<GanttLiveBookingDetail>).detail;

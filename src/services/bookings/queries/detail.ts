@@ -48,9 +48,7 @@ type BookingDetailRow = {
     | null;
 };
 
-async function mapBookingDetailFromRow(
-  data: BookingDetailRow
-): Promise<BookingDetail> {
+async function mapBookingDetailFromRow(data: BookingDetailRow): Promise<BookingDetail> {
   const br = data.booking_rooms ?? [];
   const room_ids: string[] = [];
   const room_names: string[] = [];
@@ -60,9 +58,7 @@ async function mapBookingDetailFromRow(
     const name = Array.isArray(r) ? r[0]?.name : r?.name;
     if (name) room_names.push(name);
   }
-  const profiles = await listGuestProfileSummaries(
-    data.guest_id ? [String(data.guest_id)] : []
-  );
+  const profiles = await listGuestProfileSummaries(data.guest_id ? [String(data.guest_id)] : []);
 
   return {
     id: data.id,
@@ -80,7 +76,7 @@ async function mapBookingDetailFromRow(
         ? data.guest_alert_level
         : "normal",
     guest_alert_note: data.guest_alert_note ?? null,
-    guest_profile: data.guest_id ? profiles.get(String(data.guest_id)) ?? null : null,
+    guest_profile: data.guest_id ? (profiles.get(String(data.guest_id)) ?? null) : null,
     num_adults: data.num_adults,
     num_children: data.num_children,
     children_ages: data.children_ages ?? null,
@@ -105,7 +101,7 @@ const loadBookingById = cache(async (id: string): Promise<BookingDetail | null> 
       .select(BOOKING_DETAIL_SELECT)
       .eq("tenant_id", tenantId)
       .eq("id", id)
-      .maybeSingle()
+      .maybeSingle(),
   );
 
   if (error) throw new Error(error.message);
@@ -118,31 +114,27 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
   return loadBookingById(id);
 }
 
-const loadLatestBookingForGuest = cache(
-  async (guestId: string): Promise<BookingDetail | null> => {
-    const { data, error } = await getTenantScope().then(({ tenantId, supabase }) =>
-      supabase
-        .from("bookings")
-        .select(BOOKING_DETAIL_SELECT)
-        .eq("tenant_id", tenantId)
-        .eq("guest_id", guestId)
-        .neq("status", "anulata")
-        .order("check_out", { ascending: false })
-        .limit(1)
-        .maybeSingle()
-    );
+const loadLatestBookingForGuest = cache(async (guestId: string): Promise<BookingDetail | null> => {
+  const { data, error } = await getTenantScope().then(({ tenantId, supabase }) =>
+    supabase
+      .from("bookings")
+      .select(BOOKING_DETAIL_SELECT)
+      .eq("tenant_id", tenantId)
+      .eq("guest_id", guestId)
+      .neq("status", "anulata")
+      .order("check_out", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  );
 
-    if (error) throw new Error(error.message);
-    if (!data) return null;
+  if (error) throw new Error(error.message);
+  if (!data) return null;
 
-    return mapBookingDetailFromRow(data as BookingDetailRow);
-  }
-);
+  return mapBookingDetailFromRow(data as BookingDetailRow);
+});
 
 /** Latest non-cancelled stay for a guest — one query (rebook flows). */
-export async function getLatestBookingForGuest(
-  guestId: string
-): Promise<BookingDetail | null> {
+export async function getLatestBookingForGuest(guestId: string): Promise<BookingDetail | null> {
   return loadLatestBookingForGuest(guestId);
 }
 
@@ -156,28 +148,24 @@ type BookingStayParams = {
   children_separate_room: boolean;
 };
 
-const loadBookingStayParams = cache(
-  async (id: string): Promise<BookingStayParams | null> => {
-    const { tenantId, supabase } = await getTenantScope();
-    const { data, error } = await supabase
-      .from("bookings")
-      .select(
-        "id, check_in, check_out, num_adults, num_children, children_ages, children_separate_room",
-      )
-      .eq("tenant_id", tenantId)
-      .eq("id", id)
-      .maybeSingle();
+const loadBookingStayParams = cache(async (id: string): Promise<BookingStayParams | null> => {
+  const { tenantId, supabase } = await getTenantScope();
+  const { data, error } = await supabase
+    .from("bookings")
+    .select(
+      "id, check_in, check_out, num_adults, num_children, children_ages, children_separate_room",
+    )
+    .eq("tenant_id", tenantId)
+    .eq("id", id)
+    .maybeSingle();
 
-    if (error) throw new Error(error.message);
-    if (!data) return null;
+  if (error) throw new Error(error.message);
+  if (!data) return null;
 
-    return data as BookingStayParams;
-  }
-);
+  return data as BookingStayParams;
+});
 
 /** Lightweight stay window — parallel with full getBookingById on confirm flows. */
-export async function getBookingStayParams(
-  id: string
-): Promise<BookingStayParams | null> {
+export async function getBookingStayParams(id: string): Promise<BookingStayParams | null> {
   return loadBookingStayParams(id);
 }

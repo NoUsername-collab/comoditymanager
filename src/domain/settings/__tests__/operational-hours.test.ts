@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  parseExtraBedsMax,
-  parseOperationalHours,
-} from "@/domain/settings/operational-hours";
+import { parseExtraBedsMax, parseOperationalHours } from "@/domain/settings/operational-hours";
 
 describe("parseOperationalHours", () => {
   it("accepts a typical same-day hotel window", () => {

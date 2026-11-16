@@ -106,9 +106,7 @@ function mondayFirstOffset(year: number, month: number): number {
   return dow === 0 ? 6 : dow - 1;
 }
 
-function buildDayCountsMaps(
-  bookings: Awaited<ReturnType<typeof listBookingsForRange>>
-) {
+function buildDayCountsMaps(bookings: Awaited<ReturnType<typeof listBookingsForRange>>) {
   const checkins = new Map<string, number>();
   const checkouts = new Map<string, number>();
   const unassigned = new Map<string, number>();
@@ -145,7 +143,7 @@ function buildDaysForMonth(
   occupied: OccupiedRange[],
   countMaps: ReturnType<typeof buildDayCountsMaps>,
   buildingId: string | null,
-  locale: string
+  locale: string,
 ): DayAvailability[] {
   const { dim } = monthRange(year, month);
   const filtered = filterRoomsByBuilding(rooms, buildingId);
@@ -165,17 +163,14 @@ function buildDaysForMonth(
           unassigned_requests: countMaps.unassigned.get(iso) ?? 0,
           pending_requests: countMaps.pending.get(iso) ?? 0,
         },
-        locale
-      )
+        locale,
+      ),
     );
   }
   return days;
 }
 
-function computeKpis(
-  days: DayAvailability[],
-  prevFullDays: number
-): MonthAvailabilityKpis {
+function computeKpis(days: DayAvailability[], prevFullDays: number): MonthAvailabilityKpis {
   let days_relaxed = 0;
   let days_full = 0;
   let days_tight = 0;
@@ -212,7 +207,7 @@ async function loadAvailabilityDashboardImpl(
   year: number,
   month: number,
   buildingId: string | null = null,
-  featureFilter: GanttFeatureFilter = "all"
+  featureFilter: GanttFeatureFilter = "all",
 ): Promise<AvailabilityDashboard> {
   const { start, end } = monthRange(year, month);
 
@@ -238,7 +233,7 @@ async function loadAvailabilityDashboardImpl(
       listBookingsForRange(today < start ? today : start, scanEnd),
       roomsPromise
         .then((rooms) => getRoomOptionSlugsByRoomIds(rooms.map((r) => r.id)))
-        .catch(() => ({} as Record<string, string[]>)),
+        .catch(() => ({}) as Record<string, string[]>),
     ]);
 
   const rangeStart = scanStart < start ? scanStart : start;
@@ -249,8 +244,8 @@ async function loadAvailabilityDashboardImpl(
         r.is_active &&
         roomMatchesFeatureFilter(
           { has_ac: r.has_ac, option_slugs: optionSlugsByRoom[r.id] ?? [] },
-          featureFilter
-        )
+          featureFilter,
+        ),
     )
     .map((r) => ({
       id: r.id,
@@ -260,15 +255,7 @@ async function loadAvailabilityDashboardImpl(
 
   const countMaps = buildDayCountsMaps(bookings);
 
-  const days = buildDaysForMonth(
-    year,
-    month,
-    rooms,
-    occupied,
-    countMaps,
-    buildingId,
-    locale
-  );
+  const days = buildDaysForMonth(year, month, rooms, occupied, countMaps, buildingId, locale);
   const prevDays = buildDaysForMonth(
     prevYear,
     prevMonth,
@@ -276,7 +263,7 @@ async function loadAvailabilityDashboardImpl(
     occupied,
     countMaps,
     buildingId,
-    locale
+    locale,
   );
   const prevFull = prevDays.filter((d) => d.status === "full").length;
 
@@ -289,15 +276,7 @@ async function loadAvailabilityDashboardImpl(
       mm -= 12;
       yy += 1;
     }
-    const built = buildDaysForMonth(
-      yy,
-      mm,
-      rooms,
-      occupied,
-      countMaps,
-      buildingId,
-      locale
-    );
+    const built = buildDaysForMonth(yy, mm, rooms, occupied, countMaps, buildingId, locale);
     for (const d of built) {
       if (d.iso >= scanStart && d.iso <= scanEnd && !seenScan.has(d.iso)) {
         seenScan.add(d.iso);
@@ -359,160 +338,159 @@ type DayRoomRowsPayload = Pick<
   "rooms" | "unassigned_requests" | "pending_requests"
 >;
 
-const loadDayRoomRows = cache(async (
-  iso: string,
-  buildingId: string | null = null,
-  featureFilter: GanttFeatureFilter = "all"
-): Promise<DayRoomRowsPayload> => {
-  const scopePromise = getTenantScope();
-  const roomsPromise = listAllRooms();
+const loadDayRoomRows = cache(
+  async (
+    iso: string,
+    buildingId: string | null = null,
+    featureFilter: GanttFeatureFilter = "all",
+  ): Promise<DayRoomRowsPayload> => {
+    const scopePromise = getTenantScope();
+    const roomsPromise = listAllRooms();
 
-  const [roomsRaw, buildings, optionSlugsByRoom, roomBookingResult, requestsResult] =
-    await Promise.all([
-      roomsPromise,
-      listBuildings(),
-      roomsPromise
-        .then((rooms) =>
-          getRoomOptionSlugsByRoomIds(rooms.map((r) => r.id))
-        )
-        .catch(() => ({} as Record<string, string[]>)),
-      scopePromise.then(({ tenantId, supabase }) =>
-        supabase
-          .from("booking_rooms")
-          .select(
-            `room_id, booking_id,
-      bookings!inner ( id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name )`
-          )
-          .eq("tenant_id", tenantId)
-          .neq("bookings.status", "anulata")
-          .lte("bookings.check_in", iso)
-          .gt("bookings.check_out", iso)
-      ),
-      scopePromise.then(({ tenantId, supabase }) =>
-        supabase
-          .from("bookings")
-          .select("id, check_in, check_out, booking_rooms ( room_id )")
-          .eq("tenant_id", tenantId)
-          .eq("status", "cerere_noua")
-          .lte("check_in", iso)
-          .gt("check_out", iso)
-      ),
+    const [roomsRaw, buildings, optionSlugsByRoom, roomBookingResult, requestsResult] =
+      await Promise.all([
+        roomsPromise,
+        listBuildings(),
+        roomsPromise
+          .then((rooms) => getRoomOptionSlugsByRoomIds(rooms.map((r) => r.id)))
+          .catch(() => ({}) as Record<string, string[]>),
+        scopePromise.then(({ tenantId, supabase }) =>
+          supabase
+            .from("booking_rooms")
+            .select(
+              `room_id, booking_id,
+      bookings!inner ( id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name )`,
+            )
+            .eq("tenant_id", tenantId)
+            .neq("bookings.status", "anulata")
+            .lte("bookings.check_in", iso)
+            .gt("bookings.check_out", iso),
+        ),
+        scopePromise.then(({ tenantId, supabase }) =>
+          supabase
+            .from("bookings")
+            .select("id, check_in, check_out, booking_rooms ( room_id )")
+            .eq("tenant_id", tenantId)
+            .eq("status", "cerere_noua")
+            .lte("check_in", iso)
+            .gt("check_out", iso),
+        ),
+      ]);
+
+    const buildingMap = new Map(buildings.map((b) => [b.id, b]));
+    const activeRooms = roomsRaw.filter(
+      (r) =>
+        r.is_active &&
+        (!buildingId || r.building_id === buildingId) &&
+        roomMatchesFeatureFilter(
+          { has_ac: r.has_ac, option_slugs: optionSlugsByRoom[r.id] ?? [] },
+          featureFilter,
+        ),
+    );
+
+    const roomState = new Map<
+      string,
+      { guest_name: string; booking_id: string; status: "occupied" | "request" }
+    >();
+
+    for (const row of roomBookingResult.data ?? []) {
+      const raw = row.bookings as
+        | {
+            id: string;
+            check_in: string;
+            check_out: string;
+            status: string;
+            guest_name: string;
+            guest_last_name: string | null;
+            guest_first_name: string | null;
+          }
+        | {
+            id: string;
+            check_in: string;
+            check_out: string;
+            status: string;
+            guest_name: string;
+            guest_last_name: string | null;
+            guest_first_name: string | null;
+          }[]
+        | null;
+      const b = Array.isArray(raw) ? raw[0] : raw;
+      if (!b || !nightOccupied(iso, b.check_in, b.check_out)) continue;
+      const st = b.status === "cerere_noua" ? "request" : "occupied";
+      roomState.set(row.room_id, {
+        guest_name: b.guest_name,
+        booking_id: b.id,
+        status: st,
+      });
+    }
+
+    const rooms: DayRoomRow[] = activeRooms.map((r) => {
+      const b = buildingMap.get(r.building_id);
+      const st = roomState.get(r.id);
+      const color = resolveGanttBuildingColor(b?.color_hex ?? null, b?.ac_mode ?? "per_room");
+      return {
+        id: r.id,
+        name: r.name,
+        building_id: r.building_id,
+        building_name: r.building_name,
+        building_color: color,
+        has_ac: r.has_ac,
+        room_type_name: r.room_type_name,
+        option_slugs: optionSlugsByRoom[r.id] ?? [],
+        status: st?.status ?? "free",
+        guest_name: st?.guest_name ?? null,
+        booking_id: st?.booking_id ?? null,
+      };
+    });
+
+    rooms.sort((a, b) => {
+      const order = { free: 0, request: 1, occupied: 2 };
+      if (a.status !== b.status) return order[a.status] - order[b.status];
+      return a.name.localeCompare(b.name);
+    });
+
+    let unassigned = 0;
+    let pending = 0;
+    for (const c of requestsResult.data ?? []) {
+      const br = (c.booking_rooms ?? []) as { room_id: string }[];
+      if (br.length === 0) unassigned += 1;
+      else pending += 1;
+    }
+
+    return {
+      rooms,
+      unassigned_requests: unassigned,
+      pending_requests: pending,
+    };
+  },
+);
+
+export const loadDayAvailabilityDetail = cache(
+  async (
+    iso: string,
+    buildingId: string | null = null,
+    featureFilter: GanttFeatureFilter = "all",
+  ): Promise<DayAvailabilityDetail | null> => {
+    const [y, m, d] = iso.split("-").map(Number);
+    if (!y || m < 1 || m > 12 || !d) return null;
+
+    const [grid, roomRows] = await Promise.all([
+      loadAvailabilityDashboard(y, m - 1, buildingId, featureFilter),
+      loadDayRoomRows(iso, buildingId, featureFilter),
     ]);
 
-  const buildingMap = new Map(buildings.map((b) => [b.id, b]));
-  const activeRooms = roomsRaw.filter(
-    (r) =>
-      r.is_active &&
-      (!buildingId || r.building_id === buildingId) &&
-      roomMatchesFeatureFilter(
-        { has_ac: r.has_ac, option_slugs: optionSlugsByRoom[r.id] ?? [] },
-        featureFilter
-      )
-  );
+    const day = grid.days.find((x) => x.iso === iso);
+    if (!day) return null;
 
-  const roomState = new Map<
-    string,
-    { guest_name: string; booking_id: string; status: "occupied" | "request" }
-  >();
-
-  for (const row of roomBookingResult.data ?? []) {
-    const raw = row.bookings as
-      | {
-          id: string;
-          check_in: string;
-          check_out: string;
-          status: string;
-          guest_name: string;
-          guest_last_name: string | null;
-          guest_first_name: string | null;
-        }
-      | {
-          id: string;
-          check_in: string;
-          check_out: string;
-          status: string;
-          guest_name: string;
-          guest_last_name: string | null;
-          guest_first_name: string | null;
-        }[]
-      | null;
-    const b = Array.isArray(raw) ? raw[0] : raw;
-    if (!b || !nightOccupied(iso, b.check_in, b.check_out)) continue;
-    const st = b.status === "cerere_noua" ? "request" : "occupied";
-    roomState.set(row.room_id, {
-      guest_name: b.guest_name,
-      booking_id: b.id,
-      status: st,
-    });
-  }
-
-  const rooms: DayRoomRow[] = activeRooms.map((r) => {
-    const b = buildingMap.get(r.building_id);
-    const st = roomState.get(r.id);
-    const color = resolveGanttBuildingColor(
-      b?.color_hex ?? null,
-      b?.ac_mode ?? "per_room"
-    );
-    return {
-      id: r.id,
-      name: r.name,
-      building_id: r.building_id,
-      building_name: r.building_name,
-      building_color: color,
-      has_ac: r.has_ac,
-      room_type_name: r.room_type_name,
-      option_slugs: optionSlugsByRoom[r.id] ?? [],
-      status: st?.status ?? "free",
-      guest_name: st?.guest_name ?? null,
-      booking_id: st?.booking_id ?? null,
-    };
-  });
-
-  rooms.sort((a, b) => {
-    const order = { free: 0, request: 1, occupied: 2 };
-    if (a.status !== b.status) return order[a.status] - order[b.status];
-    return a.name.localeCompare(b.name);
-  });
-
-  let unassigned = 0;
-  let pending = 0;
-  for (const c of requestsResult.data ?? []) {
-    const br = (c.booking_rooms ?? []) as { room_id: string }[];
-    if (br.length === 0) unassigned += 1;
-    else pending += 1;
-  }
-
-  return {
-    rooms,
-    unassigned_requests: unassigned,
-    pending_requests: pending,
-  };
-});
-
-export const loadDayAvailabilityDetail = cache(async (
-  iso: string,
-  buildingId: string | null = null,
-  featureFilter: GanttFeatureFilter = "all"
-): Promise<DayAvailabilityDetail | null> => {
-  const [y, m, d] = iso.split("-").map(Number);
-  if (!y || m < 1 || m > 12 || !d) return null;
-
-  const [grid, roomRows] = await Promise.all([
-    loadAvailabilityDashboard(y, m - 1, buildingId, featureFilter),
-    loadDayRoomRows(iso, buildingId, featureFilter),
-  ]);
-
-  const day = grid.days.find((x) => x.iso === iso);
-  if (!day) return null;
-
-  return { day, ...roomRows };
-});
+    return { day, ...roomRows };
+  },
+);
 
 /** When the month grid day is already on the client, skip reloading the dashboard. */
 export async function loadDayAvailabilityDetailWithKnownDay(
   day: DayAvailability,
   buildingId: string | null = null,
-  featureFilter: GanttFeatureFilter = "all"
+  featureFilter: GanttFeatureFilter = "all",
 ): Promise<DayAvailabilityDetail> {
   const roomRows = await loadDayRoomRows(day.iso, buildingId, featureFilter);
   return { day, ...roomRows };

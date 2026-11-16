@@ -23,7 +23,10 @@ export const SHARED_CLIENT_NAMESPACES = [
 ] as const;
 
 /** The messages at these paths ("public", or "admin.common" for one part of a namespace). */
-export function pickMessages(messages: AbstractIntlMessages, paths: readonly string[]): AbstractIntlMessages {
+export function pickMessages(
+  messages: AbstractIntlMessages,
+  paths: readonly string[],
+): AbstractIntlMessages {
   const picked: AbstractIntlMessages = {};
   for (const path of paths) {
     const keys = path.split(".");

@@ -55,14 +55,16 @@ export async function upsertPublicSiteSettingsImpl(
 ): Promise<number> {
   const { supabase } = await getTenantScope();
 
-  const toRow = (pageId: string | null) => (section: PublicSiteSettingsInputParsed["sections"][number], index: number) => ({
-    id: section.id ?? null,
-    page_id: pageId,
-    section_type: section.sectionType,
-    sort_order: section.sortOrder ?? index * 10,
-    visible: section.visible,
-    payload: section.payload,
-  });
+  const toRow =
+    (pageId: string | null) =>
+    (section: PublicSiteSettingsInputParsed["sections"][number], index: number) => ({
+      id: section.id ?? null,
+      page_id: pageId,
+      section_type: section.sectionType,
+      sort_order: section.sortOrder ?? index * 10,
+      visible: section.visible,
+      payload: section.payload,
+    });
   // The first page's sections, then each own page's.
   const sectionsPayload = [
     ...input.sections.map(toRow(null)),

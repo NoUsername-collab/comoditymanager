@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   buildStaffStaySuggestions,
-
   quoteStaffStaySelection,
   mergeStayRoomSelection,
   resolveStaffStaySelection,
@@ -14,12 +13,7 @@ function adults(count: number, childAges: number[] = []): Party {
   return { adults: count, childAges, childrenSeparateRoom: false };
 }
 
-function room(
-  id: string,
-  name: string,
-  capacity: number,
-  price: number,
-): StaffStayQuoteRoom {
+function room(id: string, name: string, capacity: number, price: number): StaffStayQuoteRoom {
   return {
     id,
     name,
@@ -44,16 +38,13 @@ describe("mergeStayRoomSelection", () => {
 });
 
 describe("buildStaffStaySuggestions", () => {
-  const rooms = [
-    room("a", "101", 2, 100),
-    room("b", "102", 2, 110),
-    room("c", "201", 4, 250),
-  ];
+  const rooms = [room("a", "101", 2, 100), room("b", "102", 2, 110), room("c", "201", 4, 250)];
 
   it("puts hosting Gantt rooms first, then cheapest single, then a cheaper combo", () => {
     const suggestions = buildStaffStaySuggestions({
       availableRooms: rooms,
-      party: adults(3), policy: DEFAULT_CHILD_POLICY,
+      party: adults(3),
+      policy: DEFAULT_CHILD_POLICY,
       preferredIds: ["c"],
       ...STAY,
     });
@@ -67,7 +58,8 @@ describe("buildStaffStaySuggestions", () => {
   it("skips preferred rooms that cannot host the party", () => {
     const suggestions = buildStaffStaySuggestions({
       availableRooms: rooms,
-      party: adults(3), policy: DEFAULT_CHILD_POLICY,
+      party: adults(3),
+      policy: DEFAULT_CHILD_POLICY,
       preferredIds: ["a"],
       ...STAY,
     });
@@ -79,7 +71,8 @@ describe("buildStaffStaySuggestions", () => {
   it("does not duplicate the cheapest single as a one-room combo", () => {
     const suggestions = buildStaffStaySuggestions({
       availableRooms: rooms,
-      party: adults(2), policy: DEFAULT_CHILD_POLICY,
+      party: adults(2),
+      policy: DEFAULT_CHILD_POLICY,
       preferredIds: [],
       ...STAY,
     });
@@ -89,21 +82,15 @@ describe("buildStaffStaySuggestions", () => {
   });
 
   it("caps at three distinct options", () => {
-    const many = [
-      ...rooms,
-      room("d", "301", 4, 400),
-    ];
+    const many = [...rooms, room("d", "301", 4, 400)];
     const suggestions = buildStaffStaySuggestions({
       availableRooms: many,
-      party: adults(3), policy: DEFAULT_CHILD_POLICY,
+      party: adults(3),
+      policy: DEFAULT_CHILD_POLICY,
       preferredIds: ["d"],
       ...STAY,
     });
-    expect(suggestions.map((row) => row.kind)).toEqual([
-      "preferred",
-      "cheapest_single",
-      "combo",
-    ]);
+    expect(suggestions.map((row) => row.kind)).toEqual(["preferred", "cheapest_single", "combo"]);
     expect(suggestions[0]?.roomIds).toEqual(["d"]);
     expect(suggestions[1]?.roomIds).toEqual(["c"]);
     expect(suggestions[2]?.roomIds).toEqual(["a", "b"]);
@@ -112,11 +99,7 @@ describe("buildStaffStaySuggestions", () => {
 });
 
 describe("resolveStaffStaySelection", () => {
-  const rooms = [
-    room("a", "101", 2, 100),
-    room("b", "102", 2, 110),
-    room("c", "201", 4, 250),
-  ];
+  const rooms = [room("a", "101", 2, 100), room("b", "102", 2, 110), room("c", "201", 4, 250)];
 
   it("keeps a previous selection that still hosts", () => {
     expect(
@@ -124,7 +107,8 @@ describe("resolveStaffStaySelection", () => {
         previousIds: ["a", "b"],
         availableRooms: rooms,
         preferredIds: ["c"],
-        party: adults(3), policy: DEFAULT_CHILD_POLICY,
+        party: adults(3),
+        policy: DEFAULT_CHILD_POLICY,
         ...STAY,
       }),
     ).toEqual(["a", "b"]);
@@ -136,7 +120,8 @@ describe("resolveStaffStaySelection", () => {
         previousIds: ["a"],
         availableRooms: rooms,
         preferredIds: ["a"],
-        party: adults(3), policy: DEFAULT_CHILD_POLICY,
+        party: adults(3),
+        policy: DEFAULT_CHILD_POLICY,
         ...STAY,
       }),
     ).toEqual(["c"]);
@@ -148,7 +133,8 @@ describe("resolveStaffStaySelection", () => {
         previousIds: [],
         availableRooms: rooms,
         preferredIds: [],
-        party: adults(2), policy: DEFAULT_CHILD_POLICY,
+        party: adults(2),
+        policy: DEFAULT_CHILD_POLICY,
         ...STAY,
       }),
     ).toEqual(["a"]);
@@ -156,17 +142,14 @@ describe("resolveStaffStaySelection", () => {
 });
 
 describe("quoteStaffStaySelection", () => {
-  const rooms = [
-    room("a", "101", 2, 100),
-    room("b", "102", 2, 120),
-    room("c", "201", 4, 200),
-  ];
+  const rooms = [room("a", "101", 2, 100), room("b", "102", 2, 120), room("c", "201", 4, 200)];
 
   it("quotes the same nightly total used on the public site", () => {
     const quote = quoteStaffStaySelection({
       availableRooms: rooms,
       selectedIds: ["c"],
-      party: adults(3), policy: DEFAULT_CHILD_POLICY,
+      party: adults(3),
+      policy: DEFAULT_CHILD_POLICY,
       checkIn: "2026-09-10",
       checkOut: "2026-09-12",
     });
@@ -180,7 +163,8 @@ describe("quoteStaffStaySelection", () => {
     const tooSmall = quoteStaffStaySelection({
       availableRooms: rooms,
       selectedIds: ["a"],
-      party: adults(3), policy: DEFAULT_CHILD_POLICY,
+      party: adults(3),
+      policy: DEFAULT_CHILD_POLICY,
       checkIn: "2026-09-10",
       checkOut: "2026-09-12",
     });
@@ -190,7 +174,8 @@ describe("quoteStaffStaySelection", () => {
     const combo = quoteStaffStaySelection({
       availableRooms: rooms,
       selectedIds: ["a", "b"],
-      party: adults(3), policy: DEFAULT_CHILD_POLICY,
+      party: adults(3),
+      policy: DEFAULT_CHILD_POLICY,
       checkIn: "2026-09-10",
       checkOut: "2026-09-12",
     });
@@ -209,7 +194,8 @@ describe("quoteStaffStaySelection", () => {
     const quote = quoteStaffStaySelection({
       availableRooms: rooms,
       selectedIds: ["a"],
-      party: adults(2), policy: DEFAULT_CHILD_POLICY,
+      party: adults(2),
+      policy: DEFAULT_CHILD_POLICY,
       checkIn: "2026-09-10",
       checkOut: "2026-09-12",
       pricingRules: rules,
@@ -219,11 +205,7 @@ describe("quoteStaffStaySelection", () => {
 });
 
 describe("families", () => {
-  const rooms = [
-    room("a", "101", 2, 100),
-    room("b", "102", 2, 100),
-    room("c", "201", 4, 250),
-  ];
+  const rooms = [room("a", "101", 2, 100), room("b", "102", 2, 100), room("c", "201", 4, 250)];
 
   it("keeps parents and their child in one double instead of splitting", () => {
     const suggestions = buildStaffStaySuggestions({

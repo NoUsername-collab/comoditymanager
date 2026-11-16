@@ -69,7 +69,7 @@ export type GanttStaySurface = {
 
 export function ganttStaySurface(
   buildingColor: string | null | undefined,
-  isRequest: boolean
+  isRequest: boolean,
 ): GanttStaySurface {
   const base = buildingColor?.trim() || (isRequest ? "#f59e0b" : "#059669");
 
@@ -83,10 +83,7 @@ export function ganttStaySurface(
       tabEnd,
       border,
       text,
-      badgeBg:
-        text === "#ffffff"
-          ? "rgba(255, 255, 255, 0.22)"
-          : "rgba(120, 53, 15, 0.18)",
+      badgeBg: text === "#ffffff" ? "rgba(255, 255, 255, 0.22)" : "rgba(120, 53, 15, 0.18)",
       badgeText: text,
       glow: mixHex(base, "#f59e0b", 0.4),
     };
@@ -96,10 +93,7 @@ export function ganttStaySurface(
   const tabEnd = mixHex(base, "#000000", 0.2);
   const border = mixHex(base, "#000000", 0.22);
   const text = textOnBackground(fill);
-  const badgeBg =
-    text === "#ffffff"
-      ? "rgba(255, 255, 255, 0.22)"
-      : "rgba(15, 23, 42, 0.14)";
+  const badgeBg = text === "#ffffff" ? "rgba(255, 255, 255, 0.22)" : "rgba(15, 23, 42, 0.14)";
   return {
     fill,
     tabEnd,

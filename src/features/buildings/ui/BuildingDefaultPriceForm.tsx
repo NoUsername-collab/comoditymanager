@@ -30,9 +30,7 @@ export function BuildingDefaultPriceForm({
           className="mt-1 w-28 tabular-nums"
         />
       </label>
-      <AdminSubmitButton size="sm">
-        Salvează
-      </AdminSubmitButton>
+      <AdminSubmitButton size="sm">Salvează</AdminSubmitButton>
     </AdminPendingForm>
   );
 }

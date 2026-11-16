@@ -2,8 +2,16 @@ import { describe, expect, it } from "vitest";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import { styleFromSettings } from "@/features/public-site/domain/section-style";
 import { parsePublicSiteSettingsInput } from "@/domain/settings/schemas/public-site";
-import { setSectionField, findSectionDraft, sectionField } from "@/features/public-site/editor/model/section-draft";
-import { buildPublicSiteStudioDraft, mergeStudioToInput, patchStudioSection } from "@/features/public-site/editor/model/studio-draft";
+import {
+  setSectionField,
+  findSectionDraft,
+  sectionField,
+} from "@/features/public-site/editor/model/section-draft";
+import {
+  buildPublicSiteStudioDraft,
+  mergeStudioToInput,
+  patchStudioSection,
+} from "@/features/public-site/editor/model/studio-draft";
 import {
   applySiteTemplate,
   matchingSiteTemplate,
@@ -34,7 +42,11 @@ const config: PublicSiteConfig = {
       sectionType: "intro",
       sortOrder: 10,
       visible: true,
-      payload: { title: { ro: "Despre noi" }, lead: { ro: "Textul meu" }, style: { background: "accent" } },
+      payload: {
+        title: { ro: "Despre noi" },
+        lead: { ro: "Textul meu" },
+        style: { background: "accent" },
+      },
     },
     {
       id: "22222222-2222-4222-8222-222222222222",
@@ -80,7 +92,10 @@ describe("site templates", () => {
     expect(styleFromSettings(intro.settings).background).toBe("auto");
     const reviews = findSectionDraft(applied.sections, "reviews")!;
     expect(reviews.visible).toBe(true);
-    expect(styleFromSettings(reviews.settings)).toMatchObject({ background: "accent", align: "center" });
+    expect(styleFromSettings(reviews.settings)).toMatchObject({
+      background: "accent",
+      align: "center",
+    });
     expect(findSectionDraft(applied.sections, "gallery")!.settings.layout).toBe("mosaic");
     const text = findSectionDraft(applied.sections, "text")!;
     expect(sectionField(text, "ro", "body")).toBe("Din 1920");

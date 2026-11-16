@@ -42,11 +42,7 @@ export async function GET(): Promise<NextResponse<HealthCheck>> {
     const supabase = createPublicAdminClient();
 
     const dbStart = Date.now();
-    const { error } = await supabase
-      .from("pension_settings")
-      .select("id")
-      .limit(1)
-      .maybeSingle();
+    const { error } = await supabase.from("pension_settings").select("id").limit(1).maybeSingle();
     dbLatency = Date.now() - dbStart;
 
     if (error) {

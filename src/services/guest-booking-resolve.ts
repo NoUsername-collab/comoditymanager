@@ -2,11 +2,7 @@
  * Guest lookup/create for new bookings — extracted to break bookings ↔ guests cycle.
  */
 import { after } from "next/server";
-import {
-  hasGuestIdentity,
-  normalizeEmail,
-  normalizePhone,
-} from "@/domain/guest/normalize";
+import { hasGuestIdentity, normalizeEmail, normalizePhone } from "@/domain/guest/normalize";
 import type { GuestBookingInput } from "@/domain/guest/types";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { logAdminActivity } from "@/services/activity-log";
@@ -31,7 +27,7 @@ export type ResolveGuestResult = {
 };
 
 export async function resolveGuestForBooking(
-  input: GuestBookingInput
+  input: GuestBookingInput,
 ): Promise<ResolveGuestResult> {
   if (!hasGuestIdentity(input)) {
     return { guestId: null, mergeConflict: false };

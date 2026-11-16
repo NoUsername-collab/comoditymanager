@@ -43,13 +43,19 @@
 }
 
 .activity-journal__tab--active.activity-journal__tab--rezervari {
-  border-color: var(--admin-tint-info-border, color-mix(in srgb, #0ea5e9 55%, var(--admin-panel-border)));
+  border-color: var(
+    --admin-tint-info-border,
+    color-mix(in srgb, #0ea5e9 55%, var(--admin-panel-border))
+  );
   background: var(--admin-tint-info-bg, color-mix(in srgb, #e0f2fe 55%, var(--admin-panel-bg)));
   box-shadow: none;
 }
 
 .activity-journal__tab--active.activity-journal__tab--admin {
-  border-color: var(--admin-tint-violet-border, color-mix(in srgb, #8b5cf6 50%, var(--admin-panel-border)));
+  border-color: var(
+    --admin-tint-violet-border,
+    color-mix(in srgb, #8b5cf6 50%, var(--admin-panel-border))
+  );
   background: var(--admin-tint-violet-bg, color-mix(in srgb, #ede9fe 50%, var(--admin-panel-bg)));
   box-shadow: none;
 }
@@ -185,12 +191,18 @@
 }
 
 .admin-history-summary__chip--rezervari {
-  border-color: var(--admin-tint-info-border, color-mix(in srgb, #0ea5e9 35%, var(--admin-panel-border, #bae6fd)));
+  border-color: var(
+    --admin-tint-info-border,
+    color-mix(in srgb, #0ea5e9 35%, var(--admin-panel-border, #bae6fd))
+  );
   background: var(--admin-tint-info-bg, color-mix(in srgb, #e0f2fe 55%, var(--admin-panel-bg)));
 }
 
 .admin-history-summary__chip--admin {
-  border-color: var(--admin-tint-violet-border, color-mix(in srgb, #8b5cf6 32%, var(--admin-panel-border, #ddd6fe)));
+  border-color: var(
+    --admin-tint-violet-border,
+    color-mix(in srgb, #8b5cf6 32%, var(--admin-panel-border, #ddd6fe))
+  );
   background: var(--admin-tint-violet-bg, color-mix(in srgb, #ede9fe 50%, var(--admin-panel-bg)));
 }
 
@@ -287,7 +299,11 @@
 }
 
 .activity-undo-btn:hover {
-  background: color-mix(in srgb, var(--admin-tint-warning-bg, #fffbeb) 75%, var(--pending-border, #f59e0b));
+  background: color-mix(
+    in srgb,
+    var(--admin-tint-warning-bg, #fffbeb) 75%,
+    var(--pending-border, #f59e0b)
+  );
   border-color: color-mix(in srgb, var(--pending-border, #f59e0b) 55%, var(--border));
 }
 

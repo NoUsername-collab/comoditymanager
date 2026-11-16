@@ -5,11 +5,7 @@ import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { revalidateBookingSurfacesExtended } from "@/lib/cache/revalidate-admin";
 import { requireStaffPermission } from "@/lib/auth/require-admin";
 import { assertValidGuestPhone } from "@/domain/guest/normalize";
-import {
-  parsePartyInput,
-  partyFromFormData,
-  type Party,
-} from "@/domain/availability/party";
+import { parsePartyInput, partyFromFormData, type Party } from "@/domain/availability/party";
 import {
   createGuestRebookStay,
   loadGuestRebookDraft,
@@ -24,10 +20,7 @@ function revalidateAfterRebook(guestId: string, bookingId: string) {
   revalidateBookingSurfacesExtended({ bookingId });
 }
 
-export async function loadGuestRebookPanelAction(
-  guestId: string,
-  sourceBookingId: string
-) {
+export async function loadGuestRebookPanelAction(guestId: string, sourceBookingId: string) {
   await requireStaffPermission("booking_management");
   try {
     const draft = await loadGuestRebookDraft(guestId, sourceBookingId);

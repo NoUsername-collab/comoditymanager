@@ -80,9 +80,7 @@ export function BookingCheckoutPanel({
   const isEdit = intent === "edit";
   const effectiveToday = todayIso();
 
-  function resolveDefaultCheckoutAt(
-    panel: BookingCheckoutPanelData | null
-  ): string {
+  function resolveDefaultCheckoutAt(panel: BookingCheckoutPanelData | null): string {
     const plannedOut = panel?.plannedCheckOut ?? plannedCheckOutProp ?? "";
     const recordedOut = panel?.actualCheckOutAt ?? actualCheckOutAt;
     if (
@@ -93,10 +91,7 @@ export function BookingCheckoutPanel({
         actualCheckOutAt: recordedOut,
       })
     ) {
-      return defaultOperativeCheckoutDatetime(
-        plannedOut,
-        panel?.checkoutTimeUntil ?? null
-      );
+      return defaultOperativeCheckoutDatetime(plannedOut, panel?.checkoutTimeUntil ?? null);
     }
     return datetimeLocalNow();
   }
@@ -104,9 +99,7 @@ export function BookingCheckoutPanel({
   useEffect(() => {
     if (!open) return;
     if (isEdit) {
-      setAtLocal(
-        actualCheckOutAt ? isoToDatetimeLocal(actualCheckOutAt) : datetimeLocalNow()
-      );
+      setAtLocal(actualCheckOutAt ? isoToDatetimeLocal(actualCheckOutAt) : datetimeLocalNow());
       setData(null);
       setLoadError(null);
       setAddReview(false);
@@ -143,28 +136,19 @@ export function BookingCheckoutPanel({
     return () => {
       cancelled = true;
     };
-  }, [
-    open,
-    bookingId,
-    isEdit,
-    actualCheckOutAt,
-    plannedCheckOutProp,
-    effectiveToday,
-  ]);
+  }, [open, bookingId, isEdit, actualCheckOutAt, plannedCheckOutProp, effectiveToday]);
 
   const displayName = data?.guestName ?? guestNameProp ?? "";
   const plannedCheckIn = data?.plannedCheckIn ?? plannedCheckInProp ?? "";
   const plannedCheckOut = data?.plannedCheckOut ?? plannedCheckOutProp ?? "";
   const nights =
-    plannedCheckIn && plannedCheckOut
-      ? stayNightCount(plannedCheckIn, plannedCheckOut)
-      : 0;
+    plannedCheckIn && plannedCheckOut ? stayNightCount(plannedCheckIn, plannedCheckOut) : 0;
 
   const paymentBlocked = useMemo(() => {
     if (!data || isEdit) return false;
     return shouldBlockCheckoutForUnpaid(
       { checkout_block_unpaid: data.checkoutBlockUnpaid },
-      data.paymentStatus
+      data.paymentStatus,
     );
   }, [data, isEdit]);
 
@@ -175,18 +159,11 @@ export function BookingCheckoutPanel({
       today: effectiveToday,
       actualCheckOutAt: data?.actualCheckOutAt ?? actualCheckOutAt,
     });
-  }, [
-    plannedCheckOut,
-    isEdit,
-    effectiveToday,
-    data?.actualCheckOutAt,
-    actualCheckOutAt,
-  ]);
+  }, [plannedCheckOut, isEdit, effectiveToday, data?.actualCheckOutAt, actualCheckOutAt]);
 
   const overdueDays = useMemo(
-    () =>
-      overdueStay ? daysSincePlannedCheckout(plannedCheckOut, effectiveToday) : 0,
-    [overdueStay, plannedCheckOut, effectiveToday]
+    () => (overdueStay ? daysSincePlannedCheckout(plannedCheckOut, effectiveToday) : 0),
+    [overdueStay, plannedCheckOut, effectiveToday],
   );
 
   const lateNote = useMemo(() => {
@@ -199,11 +176,7 @@ export function BookingCheckoutPanel({
   const earlyNote = useMemo(() => {
     if (!data?.plannedCheckOut || isEdit || overdueStay) return false;
     if (
-      !shouldApplyEarlyDeparturePolicy(
-        data.plannedCheckOut,
-        effectiveToday,
-        data.actualCheckOutAt
-      )
+      !shouldApplyEarlyDeparturePolicy(data.plannedCheckOut, effectiveToday, data.actualCheckOutAt)
     ) {
       return false;
     }
@@ -266,8 +239,7 @@ export function BookingCheckoutPanel({
   if (!open) return null;
 
   const title = isEdit ? t("editTitle") : t("title");
-  const submitDisabled =
-    pending || loading || (!isEdit && !!loadError) || paymentBlocked;
+  const submitDisabled = pending || loading || (!isEdit && !!loadError) || paymentBlocked;
 
   return (
     <AdminFloatingPanel
@@ -288,15 +260,11 @@ export function BookingCheckoutPanel({
             </p>
           ) : null}
           {data?.roomNames.length ? (
-            <p className="booking-checkout-panel__rooms">
-              {data.roomNames.join(" · ")}
-            </p>
+            <p className="booking-checkout-panel__rooms">{data.roomNames.join(" · ")}</p>
           ) : null}
         </header>
 
-        {loading ? (
-          <p className="booking-checkout-panel__muted">{tCommon("loading")}</p>
-        ) : null}
+        {loading ? <p className="booking-checkout-panel__muted">{tCommon("loading")}</p> : null}
 
         {loadError ? (
           <p className="booking-checkout-panel__alert booking-checkout-panel__alert--error">
@@ -347,9 +315,7 @@ export function BookingCheckoutPanel({
         ) : null}
 
         <section className="booking-checkout-panel__section">
-          <h3 className="booking-checkout-panel__section-title">
-            {tGantt("dateTime")}
-          </h3>
+          <h3 className="booking-checkout-panel__section-title">{tGantt("dateTime")}</h3>
           <input
             type="datetime-local"
             className="booking-checkout-panel__input"

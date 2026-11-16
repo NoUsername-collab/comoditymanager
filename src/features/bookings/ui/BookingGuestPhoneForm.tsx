@@ -26,7 +26,7 @@ export function BookingGuestPhoneForm({
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
   const [phone, setPhone] = useState(
-    defaultPhone?.trim() && defaultPhone !== "—" ? defaultPhone : ""
+    defaultPhone?.trim() && defaultPhone !== "—" ? defaultPhone : "",
   );
 
   if (isValidGuestPhone(defaultPhone)) return null;
@@ -54,7 +54,9 @@ export function BookingGuestPhoneForm({
   return (
     <div className="bd-phone-warn">
       <div className="bd-phone-warn__header">
-        <span className="bd-phone-warn__icon" aria-hidden>!</span>
+        <span className="bd-phone-warn__icon" aria-hidden>
+          !
+        </span>
         <div>
           <p className="bd-phone-warn__title">{tPage("phoneRequiredTitle")}</p>
           <p className="bd-phone-warn__hint">{tPage("phoneRequiredHint")}</p>

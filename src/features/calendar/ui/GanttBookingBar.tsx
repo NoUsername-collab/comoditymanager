@@ -45,7 +45,7 @@ type Props = {
 function semanticStayVars(
   isRequest: boolean,
   occupancyPhase?: OccupancyPhase,
-  buildingColor?: string | null
+  buildingColor?: string | null,
 ): CSSProperties & Record<string, string> {
   const isPast = occupancyPhase === "past";
   const building = buildingColor?.trim() || null;
@@ -65,20 +65,16 @@ function semanticStayVars(
           border: "var(--booking-pending-border)",
           text: "var(--booking-pending-text)",
           tab: "color-mix(in srgb, var(--booking-pending-border) 85%, black)",
-          badge:
-            "color-mix(in srgb, var(--booking-pending-text) 18%, transparent)",
-          glow:
-            "color-mix(in srgb, var(--booking-pending-border) 35%, transparent)",
+          badge: "color-mix(in srgb, var(--booking-pending-text) 18%, transparent)",
+          glow: "color-mix(in srgb, var(--booking-pending-border) 35%, transparent)",
         }
       : {
           fill: "var(--gantt-bar-fill-active, color-mix(in srgb, var(--booking-active-bg) 55%, var(--booking-active-border) 45%))",
           border: "var(--booking-active-border)",
           text: "var(--booking-active-text)",
           tab: "color-mix(in srgb, var(--booking-active-border) 85%, black)",
-          badge:
-            "color-mix(in srgb, var(--booking-active-text) 18%, transparent)",
-          glow:
-            "color-mix(in srgb, var(--booking-active-border) 35%, transparent)",
+          badge: "color-mix(in srgb, var(--booking-active-text) 18%, transparent)",
+          glow: "color-mix(in srgb, var(--booking-active-border) 35%, transparent)",
         };
 
   const fill =
@@ -87,9 +83,7 @@ function semanticStayVars(
       : tone.fill;
 
   const borderColor =
-    building && !isPast
-      ? `color-mix(in srgb, ${building} 36%, ${tone.border})`
-      : tone.border;
+    building && !isPast ? `color-mix(in srgb, ${building} 36%, ${tone.border})` : tone.border;
 
   const spine =
     isPast && building
@@ -134,11 +128,7 @@ function StayDeskMark({
 }) {
   if (mark === "arrival") {
     return (
-      <span
-        className="gantt-stay__today-icon"
-        aria-hidden
-        title={tGantt("stayCard.arrivalToday")}
-      >
+      <span className="gantt-stay__today-icon" aria-hidden title={tGantt("stayCard.arrivalToday")}>
         ↓
       </span>
     );
@@ -187,21 +177,14 @@ function StayDeskMark({
   if (mark === "in_house") {
     return (
       <span
-        className={[
-          "gantt-stay__phase-badge",
-          checkinReady && "gantt-stay__phase-badge--ready",
-        ]
+        className={["gantt-stay__phase-badge", checkinReady && "gantt-stay__phase-badge--ready"]
           .filter(Boolean)
           .join(" ")}
         title={
-          checkinReady
-            ? tGantt("stayCard.milestoneDone")
-            : tGantt("stayCard.milestonePending")
+          checkinReady ? tGantt("stayCard.milestoneDone") : tGantt("stayCard.milestonePending")
         }
       >
-        {checkinReady ? (
-          <span className="gantt-stay__phase-gem" aria-hidden />
-        ) : null}
+        {checkinReady ? <span className="gantt-stay__phase-gem" aria-hidden /> : null}
         IN
       </span>
     );
@@ -388,9 +371,7 @@ export const GanttBookingBar = memo(function GanttBookingBar({
     </>
   );
 
-  const accessibleLabel = [title, earlyDepartureNote, capHealthLabel]
-    .filter(Boolean)
-    .join(" · ");
+  const accessibleLabel = [title, earlyDepartureNote, capHealthLabel].filter(Boolean).join(" · ");
 
   const barProps = {
     title: accessibleLabel || title,

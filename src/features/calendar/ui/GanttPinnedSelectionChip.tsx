@@ -11,11 +11,7 @@ type ChipProps = {
   onCancel: () => void;
 };
 
-export function GanttPinnedSelectionChip({
-  selection,
-  onCommit,
-  onCancel,
-}: ChipProps) {
+export function GanttPinnedSelectionChip({ selection, onCommit, onCancel }: ChipProps) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
   const locale = useLocale();

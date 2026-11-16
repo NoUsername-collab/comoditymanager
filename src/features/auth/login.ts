@@ -6,10 +6,7 @@ import { redirect } from "next/navigation";
 import { localeRedirect as localeRedirectInternal } from "@/i18n/server-redirect";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import {
-  isValidLoginIdentifier,
-  resolveLoginIdentifier,
-} from "@/lib/auth/constants";
+import { isValidLoginIdentifier, resolveLoginIdentifier } from "@/lib/auth/constants";
 import { resolveStaffRole } from "@/lib/auth/tenant-staff";
 import { isPlatformAdminEmail } from "@/lib/auth/require-platform-admin";
 import { lookupRequestTenantHost, resolveRequestTenant } from "@/lib/tenant/active";
@@ -20,11 +17,7 @@ import { getPrimaryTenantSlugForUser, getTenantMemberRole } from "@/services/ten
 import { getMfaAccessState } from "@/lib/auth/mfa-session";
 import { ONBOARDING_PATH } from "@/domain/onboarding/steps";
 import { tenantHasAnyRoom } from "@/services/onboarding";
-import {
-  enforceRateLimit,
-  getClientIp,
-  RATE_LIMIT_LOGIN,
-} from "@/lib/rate-limit";
+import { enforceRateLimit, getClientIp, RATE_LIMIT_LOGIN } from "@/lib/rate-limit";
 import { getTranslations } from "next-intl/server";
 
 export type LoginFormState = {
@@ -35,7 +28,7 @@ export type LoginFormState = {
 async function resolveFirstRunDestination(
   tenantId: string,
   userId: string,
-  safeNext: string
+  safeNext: string,
 ): Promise<string> {
   const isAdminHome = safeNext === "/admin" || safeNext === "/admin/";
   if (!isAdminHome) return safeNext;
@@ -50,7 +43,7 @@ async function finalizeStaffLogin(
   user: { id: string; email?: string | null },
   next: string,
   tenant: Awaited<ReturnType<typeof resolveRequestTenant>>,
-  role: Awaited<ReturnType<typeof resolveStaffRole>>
+  role: Awaited<ReturnType<typeof resolveStaffRole>>,
 ): Promise<never> {
   const t = await getTranslations("admin.serverActions");
   const safeNext = safeInternalPath(next, "/admin");
@@ -72,11 +65,7 @@ async function finalizeStaffLogin(
 
   let platformSlug: string | null = null;
   if (!tenant) {
-    platformSlug = await getPrimaryTenantSlugForUser(
-      supabase,
-      user.id,
-      user.email
-    );
+    platformSlug = await getPrimaryTenantSlugForUser(supabase, user.id, user.email);
     if (!platformSlug) {
       await supabase.auth.signOut();
       redirect("/admin/login?error=no_tenant");
@@ -90,9 +79,7 @@ async function finalizeStaffLogin(
   }
 
   if (platformSlug) {
-    const requestHost =
-      (await headers()).get("x-forwarded-host") ??
-      (await headers()).get("host");
+    const requestHost = (await headers()).get("x-forwarded-host") ?? (await headers()).get("host");
     redirect(buildTenantAdminUrl(platformSlug, destination, requestHost));
   }
 
@@ -103,7 +90,7 @@ async function finalizeStaffLogin(
 async function logLoginActivity(
   tenantId: string | undefined,
   user: { id: string; email?: string | null },
-  summary: string
+  summary: string,
 ): Promise<void> {
   if (!tenantId) return;
   try {
@@ -119,7 +106,7 @@ async function logLoginActivity(
         metadata: {},
         undoable: false,
         reverts_log_id: null,
-      })
+      }),
     );
   } catch (e) {
     console.error("[login] activity log", e);
@@ -128,7 +115,7 @@ async function logLoginActivity(
 
 export async function loginAction(
   _prevState: LoginFormState,
-  formData: FormData
+  formData: FormData,
 ): Promise<LoginFormState> {
   const t = await getTranslations("admin.serverActions");
   const username = String(formData.get("username") ?? "");
@@ -189,9 +176,7 @@ export async function loginAction(
     return { error: t("notMemberOfPension") };
   }
 
-  const memberRole = tenant
-    ? await getTenantMemberRole(tenant.id, user.id)
-    : null;
+  const memberRole = tenant ? await getTenantMemberRole(tenant.id, user.id) : null;
 
   const mfaState = await getMfaAccessState(supabase, {
     email: user.email,
@@ -220,9 +205,7 @@ export async function completeLoginAfterMfaAction(next: string): Promise<void> {
   const hostTenant = await lookupRequestTenantHost();
   if (hostTenant && !isTenantOperational(hostTenant.status)) {
     await supabase.auth.signOut();
-    redirect(
-      `/tenant-suspended?status=${encodeURIComponent(hostTenant.status)}`
-    );
+    redirect(`/tenant-suspended?status=${encodeURIComponent(hostTenant.status)}`);
   }
 
   const tenant = await resolveRequestTenant();
@@ -267,7 +250,7 @@ export async function logoutAction() {
             metadata: {},
             undoable: false,
             reverts_log_id: null,
-          })
+          }),
         );
       }
     } catch (e) {

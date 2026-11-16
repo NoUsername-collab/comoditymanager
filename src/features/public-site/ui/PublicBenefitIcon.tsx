@@ -3,13 +3,7 @@ import {
   type PublicBenefitIconId,
 } from "@/features/public-site/domain/benefit-icons";
 
-function IconSvg({
-  children,
-  title,
-}: {
-  children: React.ReactNode;
-  title?: string;
-}) {
+function IconSvg({ children, title }: { children: React.ReactNode; title?: string }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -91,19 +85,16 @@ function BenefitGlyph({ id }: { id: PublicBenefitIconId }) {
     default:
       return (
         <>
-          <path d="M12 3.5 13.4 9 19 10.5 13.4 12 12 17.5 10.6 12 5 10.5 10.6 9 12 3.5Z" {...PATH} />
+          <path
+            d="M12 3.5 13.4 9 19 10.5 13.4 12 12 17.5 10.6 12 5 10.5 10.6 9 12 3.5Z"
+            {...PATH}
+          />
         </>
       );
   }
 }
 
-export function PublicBenefitIcon({
-  icon,
-  title,
-}: {
-  icon?: string;
-  title?: string;
-}) {
+export function PublicBenefitIcon({ icon, title }: { icon?: string; title?: string }) {
   const id = normalizeBenefitIcon(icon);
   return (
     <span className="pub-benefit__icon" aria-hidden={title ? undefined : true}>

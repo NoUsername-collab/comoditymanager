@@ -1,9 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
-import {
-  PLATFORM_CONTACT_EMAIL,
-  PLATFORM_NAME,
-} from "@/lib/platform/branding";
+import { PLATFORM_CONTACT_EMAIL, PLATFORM_NAME } from "@/lib/platform/branding";
 
 export async function PlatformFooter() {
   const t = await getTranslations("platform.footer");
@@ -37,15 +34,15 @@ export async function PlatformFooter() {
           <div>
             <p className="platform-footer__label">{t("contact")}</p>
             <p className="platform-footer__contact">
-              <a href={`mailto:${PLATFORM_CONTACT_EMAIL}`}>
-                {PLATFORM_CONTACT_EMAIL}
-              </a>
+              <a href={`mailto:${PLATFORM_CONTACT_EMAIL}`}>{PLATFORM_CONTACT_EMAIL}</a>
             </p>
           </div>
         </div>
 
         <div className="platform-footer__bottom">
-          <p>&copy; {new Date().getFullYear()} {PLATFORM_NAME}. {t("rights")}</p>
+          <p>
+            &copy; {new Date().getFullYear()} {PLATFORM_NAME}. {t("rights")}
+          </p>
         </div>
       </div>
     </footer>

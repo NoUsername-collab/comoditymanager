@@ -31,7 +31,7 @@ export async function AdminDashboard({
         .map((room) => ({
           ...room,
           viewDateLabel: section.view_date_label,
-        }))
+        })),
     )
     .sort((a, b) => a.name.localeCompare(b.name, "ro-RO"));
 
@@ -72,7 +72,9 @@ export async function AdminDashboard({
           {/* Center: KPI pills inline */}
           <div className="admin-home-kpis" role="list" aria-label={tCommon("quickKpis")}>
             <span
-              className={["admin-home-kpi", hasRequests && "admin-home-kpi--alert"].filter(Boolean).join(" ")}
+              className={["admin-home-kpi", hasRequests && "admin-home-kpi--alert"]
+                .filter(Boolean)
+                .join(" ")}
               role="listitem"
             >
               <strong>{requestCount}</strong> {tCommon("newRequestsLabel")}
@@ -81,7 +83,8 @@ export async function AdminDashboard({
               <strong>{stats.freeTonight}</strong> {tCommon("freeTonight")}
             </span>
             <span className="admin-home-kpi" role="listitem">
-              <strong>{stats.occupiedTonight}</strong> {tCommon("occupiedTonight")} · {stats.occupancyTonightPct}%
+              <strong>{stats.occupiedTonight}</strong> {tCommon("occupiedTonight")} ·{" "}
+              {stats.occupancyTonightPct}%
             </span>
             <span className="admin-home-kpi" role="listitem">
               <strong>{stats.weekOccupancyPct}%</strong> {tCommon("weekOccupancy")}
@@ -95,7 +98,6 @@ export async function AdminDashboard({
             </Link>
           </div>
         </div>
-
       </header>
 
       {data.error && (
@@ -126,9 +128,7 @@ export async function AdminDashboard({
               <h2 id="admin-home-availability-title" className="admin-home-panel__title">
                 {tDashboard("quickAvail")}
               </h2>
-              <p className="admin-home-panel__desc">
-                {tDashboard("quickAvailDesc")}
-              </p>
+              <p className="admin-home-panel__desc">{tDashboard("quickAvailDesc")}</p>
             </div>
             <Link href="/admin/disponibilitate" className="admin-home-panel__link">
               {tDashboard("openFullAvailability")} →
@@ -147,9 +147,7 @@ export async function AdminDashboard({
             <h2 id="admin-home-requests-title" className="admin-home-panel__title">
               {tCommon("requestsQueue")}
             </h2>
-            <p className="admin-home-panel__desc">
-              {tDashboard("quickRequestsDesc")}
-            </p>
+            <p className="admin-home-panel__desc">{tDashboard("quickRequestsDesc")}</p>
           </div>
           {requestPreview.length > 0 ? (
             <Link href="/admin/cazari" className="admin-home-panel__link">
@@ -163,11 +161,7 @@ export async function AdminDashboard({
               <li key={c.id}>
                 <Link href={`/admin/bookings/${c.id}`} className="admin-home-requests-item">
                   <span className="admin-home-requests-item__guest">
-                    {formatGuestGanttLabel(
-                      c.guest_last_name,
-                      c.guest_first_name,
-                      c.guest_name
-                    )}
+                    {formatGuestGanttLabel(c.guest_last_name, c.guest_first_name, c.guest_name)}
                     <span className="admin-home-requests-item__meta">
                       {" "}
                       · {c.num_adults}+{c.num_children} pers.
@@ -200,9 +194,7 @@ export async function AdminDashboard({
             <h2 id="admin-home-rooms-title" className="admin-home-panel__title">
               {tCommon("roomGrid")}
             </h2>
-            <p className="admin-home-panel__desc">
-              Status operațional read-only.
-            </p>
+            <p className="admin-home-panel__desc">Status operațional read-only.</p>
           </div>
           <Link href={calHref} className="admin-home-panel__link">
             {tDashboard("quickCalendar")} →

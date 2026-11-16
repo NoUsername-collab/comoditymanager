@@ -15,7 +15,7 @@ export type BookingOccupantRow = {
 
 export function occupantCheckinSlots(
   occupants: BookingOccupantRow[],
-  rooms: { id: string; name: string }[]
+  rooms: { id: string; name: string }[],
 ): Array<{ guestId: string; roomLabel: string; isRepresentative: boolean }> {
   const nameById = new Map(rooms.map((room) => [room.id, room.name]));
   return occupants.map((occupant) => ({

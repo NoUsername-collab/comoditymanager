@@ -22,32 +22,18 @@ describe("isUnpaidForCheckout", () => {
 
 describe("shouldBlockCheckoutForUnpaid", () => {
   it("blocks when setting on and unpaid", () => {
-    expect(
-      shouldBlockCheckoutForUnpaid(
-        { checkout_block_unpaid: true },
-        "unpaid"
-      )
-    ).toBe(true);
+    expect(shouldBlockCheckoutForUnpaid({ checkout_block_unpaid: true }, "unpaid")).toBe(true);
   });
 
   it("allows when setting off", () => {
-    expect(
-      shouldBlockCheckoutForUnpaid(
-        { checkout_block_unpaid: false },
-        "unpaid"
-      )
-    ).toBe(false);
+    expect(shouldBlockCheckoutForUnpaid({ checkout_block_unpaid: false }, "unpaid")).toBe(false);
   });
 });
 
 describe("isLateCheckout", () => {
   it("detects checkout after configured until time", () => {
-    expect(
-      isLateCheckout("2026-06-11T14:00", { checkout_time_until: "12:00" })
-    ).toBe(true);
-    expect(
-      isLateCheckout("2026-06-11T11:30", { checkout_time_until: "12:00" })
-    ).toBe(false);
+    expect(isLateCheckout("2026-06-11T14:00", { checkout_time_until: "12:00" })).toBe(true);
+    expect(isLateCheckout("2026-06-11T11:30", { checkout_time_until: "12:00" })).toBe(false);
   });
 });
 
@@ -55,23 +41,13 @@ describe("isEarlyDeparture", () => {
   const settings = { checkout_time_until: "12:00" };
 
   it("detects departure before planned checkout date", () => {
-    expect(
-      isEarlyDepartureDate("2026-06-09T10:00", "2026-06-11")
-    ).toBe(true);
-    expect(isEarlyDeparture("2026-06-09T10:00", "2026-06-11", settings)).toBe(
-      true
-    );
+    expect(isEarlyDepartureDate("2026-06-09T10:00", "2026-06-11")).toBe(true);
+    expect(isEarlyDeparture("2026-06-09T10:00", "2026-06-11", settings)).toBe(true);
   });
 
   it("detects departure before standard hour on checkout day", () => {
-    expect(
-      isEarlyDepartureTime("2026-06-11T09:30", "2026-06-11", settings)
-    ).toBe(true);
-    expect(
-      isEarlyDeparture("2026-06-11T09:30", "2026-06-11", settings)
-    ).toBe(true);
-    expect(
-      isEarlyDeparture("2026-06-11T12:00", "2026-06-11", settings)
-    ).toBe(false);
+    expect(isEarlyDepartureTime("2026-06-11T09:30", "2026-06-11", settings)).toBe(true);
+    expect(isEarlyDeparture("2026-06-11T09:30", "2026-06-11", settings)).toBe(true);
+    expect(isEarlyDeparture("2026-06-11T12:00", "2026-06-11", settings)).toBe(false);
   });
 });

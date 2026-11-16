@@ -36,7 +36,7 @@ describe("computeRevenueKpis", () => {
         revenueRon: 600,
         roomNightsOccupied: 6,
         roomNightsCapacity: 20,
-      })
+      }),
     ).toEqual({
       adrRon: 100,
       revparRon: 30,

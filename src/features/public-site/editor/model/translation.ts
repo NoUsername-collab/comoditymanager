@@ -1,4 +1,8 @@
-import type { PublicLocale, PublicSectionType, PublicStockCopy } from "@/features/public-site/domain/types";
+import type {
+  PublicLocale,
+  PublicSectionType,
+  PublicStockCopy,
+} from "@/features/public-site/domain/types";
 import type { FlatCopyKey } from "@/features/public-site/editor/model/copy-fields";
 import {
   sectionTextSlots,
@@ -7,7 +11,10 @@ import {
 } from "@/features/public-site/editor/model/section-draft";
 import { pageTextSlots, setPageSlot } from "@/features/public-site/editor/model/site-page-draft";
 import { menuTextSlots, setMenuLabel } from "@/features/public-site/editor/model/menu-draft";
-import { mapAllSections, type PublicSiteStudioDraft } from "@/features/public-site/editor/model/studio-draft";
+import {
+  mapAllSections,
+  type PublicSiteStudioDraft,
+} from "@/features/public-site/editor/model/studio-draft";
 import { sectionKind } from "@/features/public-site/sections/kinds";
 
 /*
@@ -30,7 +37,10 @@ const FLAT_GROUPS: { id: TranslationPart; keys: FlatCopyKey[] }[] = [
       "heroImageAlt",
     ],
   },
-  { id: "chrome", keys: ["headerSubtitle", "footerTagline", "navHome", "navPrivacy", "navTerms", "navBook"] },
+  {
+    id: "chrome",
+    keys: ["headerSubtitle", "footerTagline", "navHome", "navPrivacy", "navTerms", "navBook"],
+  },
   {
     id: "pages",
     keys: [
@@ -94,7 +104,9 @@ export type TranslationGroup = {
 
 /** A row needs work when the source says something the target does not yet. */
 export function rowMissing(row: TranslationRow): boolean {
-  return row.source.trim().length > 0 && (row.target.trim().length === 0 || row.copied || row.stock);
+  return (
+    row.source.trim().length > 0 && (row.target.trim().length === 0 || row.copied || row.stock)
+  );
 }
 
 /**
@@ -111,7 +123,13 @@ export function translationGroups(
   const copied = new Set(draft.copiedText[to] ?? []);
   const stockFrom = new Set(stock?.[from] ?? []);
   const stockTo = new Set(stock?.[to] ?? []);
-  const row = (path: string, field: string, source: string, target: string, itemIndex?: number) => ({
+  const row = (
+    path: string,
+    field: string,
+    source: string,
+    target: string,
+    itemIndex?: number,
+  ) => ({
     path,
     field,
     itemIndex,
@@ -126,30 +144,41 @@ export function translationGroups(
     id,
     part: id,
     rows: keys
-      .map((key) => row(`copy.${key}`, key, draft.copies[from][key] ?? "", draft.copies[to][key] ?? ""))
+      .map((key) =>
+        row(`copy.${key}`, key, draft.copies[from][key] ?? "", draft.copies[to][key] ?? ""),
+      )
       .filter(worthShowing),
   });
 
-  const sectionGroups = (list: SectionDraft[]): TranslationGroup[] => list
-    .filter((section) => section.visible)
-    .map((section) => {
-      const kind = sectionKind(section.type);
-      const sourceSlots = new Map(sectionTextSlots(section, from).map((slot) => [slot.path, slot.value]));
-      const itemIndex = new Map(section.items.map((item, index) => [item.id, index + 1]));
-      const rows = sectionTextSlots(section, to).map((slot) => {
-        const rest = slot.path.slice(section.key.length + 1);
-        const [first, itemId, field] = rest.split(".");
-        return first === "items" && itemId && field
-          ? row(slot.path, field, sourceSlots.get(slot.path) ?? "", slot.value, itemIndex.get(itemId))
-          : row(slot.path, rest, sourceSlots.get(slot.path) ?? "", slot.value);
+  const sectionGroups = (list: SectionDraft[]): TranslationGroup[] =>
+    list
+      .filter((section) => section.visible)
+      .map((section) => {
+        const kind = sectionKind(section.type);
+        const sourceSlots = new Map(
+          sectionTextSlots(section, from).map((slot) => [slot.path, slot.value]),
+        );
+        const itemIndex = new Map(section.items.map((item, index) => [item.id, index + 1]));
+        const rows = sectionTextSlots(section, to).map((slot) => {
+          const rest = slot.path.slice(section.key.length + 1);
+          const [first, itemId, field] = rest.split(".");
+          return first === "items" && itemId && field
+            ? row(
+                slot.path,
+                field,
+                sourceSlots.get(slot.path) ?? "",
+                slot.value,
+                itemIndex.get(itemId),
+              )
+            : row(slot.path, rest, sourceSlots.get(slot.path) ?? "", slot.value);
+        });
+        const ownTitle = kind.namedByTitle ? (section.copy[from].fields.title ?? "").trim() : "";
+        return {
+          id: section.key,
+          section: { type: section.type, title: ownTitle },
+          rows: rows.filter(worthShowing),
+        };
       });
-      const ownTitle = kind.namedByTitle ? (section.copy[from].fields.title ?? "").trim() : "";
-      return {
-        id: section.key,
-        section: { type: section.type, title: ownTitle },
-        rows: rows.filter(worthShowing),
-      };
-    });
 
   // Each visible own page: its own texts, then its sections.
   const pages: TranslationGroup[] = draft.pages
@@ -160,14 +189,23 @@ export function translationGroups(
         id: `page.${page.key}`,
         page: { title: page.copy[from].title.trim() || `/${page.slug}` },
         rows: pageTextSlots(page, to)
-          .map((slot) => row(slot.path, `page.${slot.path.split(".").pop()}`, source.get(slot.path) ?? "", slot.value))
+          .map((slot) =>
+            row(
+              slot.path,
+              `page.${slot.path.split(".").pop()}`,
+              source.get(slot.path) ?? "",
+              slot.value,
+            ),
+          )
           .filter(worthShowing),
       };
       return [own, ...sectionGroups(page.sections)];
     });
 
   // The menu's own names, after the header and footer texts.
-  const menuSource = new Map(menuTextSlots(draft.menu, from).map((slot) => [slot.path, slot.value]));
+  const menuSource = new Map(
+    menuTextSlots(draft.menu, from).map((slot) => [slot.path, slot.value]),
+  );
   const menu: TranslationGroup = {
     id: "menu",
     part: "menu",

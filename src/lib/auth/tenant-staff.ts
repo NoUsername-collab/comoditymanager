@@ -2,23 +2,15 @@ import type { User } from "@supabase/supabase-js";
 import { isTenantOperational } from "@/domain/tenant/operational";
 import { lookupRequestTenantHost, resolveRequestTenant } from "@/lib/tenant/active";
 import type { StaffRole } from "@/lib/auth/roles";
-import {
-  getTenantMemberRole,
-  type TenantMemberRole,
-} from "@/services/tenant-members";
+import { getTenantMemberRole, type TenantMemberRole } from "@/services/tenant-members";
 
-export function tenantMemberRoleToStaffRole(
-  role: TenantMemberRole
-): StaffRole {
+export function tenantMemberRoleToStaffRole(role: TenantMemberRole): StaffRole {
   if (role === "operator") return "operator";
   return "admin";
 }
 
 /** Active tenant member role for a user (server). */
-async function getStaffRoleForTenant(
-  userId: string,
-  tenantId: string
-): Promise<StaffRole | null> {
+async function getStaffRoleForTenant(userId: string, tenantId: string): Promise<StaffRole | null> {
   const memberRole = await getTenantMemberRole(tenantId, userId);
   if (!memberRole) return null;
   return tenantMemberRoleToStaffRole(memberRole);
@@ -29,9 +21,7 @@ async function getStaffRoleForTenant(
  * Tenant hosts → tenant_members only (no global env bypass).
  * Local dev without tenant header → legacy ADMIN_EMAIL / OPERATOR_EMAIL.
  */
-export async function resolveStaffRole(
-  user: User | null | undefined
-): Promise<StaffRole | null> {
+export async function resolveStaffRole(user: User | null | undefined): Promise<StaffRole | null> {
   if (!user?.id) return null;
 
   const hostTenant = await lookupRequestTenantHost();

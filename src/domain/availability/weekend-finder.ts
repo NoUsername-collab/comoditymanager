@@ -17,7 +17,7 @@ export function findNextWeekendWithRooms(
   days: DayAvailability[],
   fromIso: string,
   minFree = 2,
-  maxScanDays = 120
+  maxScanDays = 120,
 ): WeekendPick | null {
   let cursor = fromIso;
   for (let i = 0; i < maxScanDays; i += 1) {
@@ -46,10 +46,7 @@ export function findNextWeekendWithRooms(
 }
 
 /** Toate weekendurile din lista de zile (pentru scan în mai multe luni) */
-export function scanWeekendsInDays(
-  days: DayAvailability[],
-  minFree = 2
-): WeekendPick[] {
+export function scanWeekendsInDays(days: DayAvailability[], minFree = 2): WeekendPick[] {
   const out: WeekendPick[] = [];
   const seen = new Set<string>();
   for (const d of days) {

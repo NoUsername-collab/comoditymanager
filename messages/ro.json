@@ -5734,24 +5734,24 @@
         "professional": "8",
         "business": "Nelimitat"
       },
-        "gantt": {
-          "free": "Da",
-          "essential": "Da",
-          "professional": "Da",
-          "business": "Da"
-        },
-        "branding": {
+      "gantt": {
+        "free": "Da",
+        "essential": "Da",
+        "professional": "Da",
+        "business": "Da"
+      },
+      "branding": {
         "free": "Da",
         "essential": "Da",
         "professional": "Nu",
-          "business": "Nu"
-        },
-        "modules": {
+        "business": "Nu"
+      },
+      "modules": {
         "free": "Pagină și link de sejur",
         "essential": "Factură PDF și o confirmare",
         "professional": "Domeniu propriu, iCal, hartă de ocupare",
-          "business": "+ onboarding și suport prioritar"
-        }
+        "business": "+ onboarding și suport prioritar"
+      }
     }
   },
   "platform": {

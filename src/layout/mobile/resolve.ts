@@ -12,10 +12,7 @@ export function resolveLayoutMode(width: number, height: number): LayoutMode {
   return "desktop";
 }
 
-export function resolveLayoutOrientation(
-  width: number,
-  height: number
-): LayoutOrientation {
+export function resolveLayoutOrientation(width: number, height: number): LayoutOrientation {
   return width >= height ? "landscape" : "portrait";
 }
 

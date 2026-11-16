@@ -9,12 +9,7 @@ type Props = {
 export function SettingsPreviewLink({ href, label, external = false }: Props) {
   if (external) {
     return (
-      <Link
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="settings-preview-link"
-      >
+      <Link href={href} target="_blank" rel="noopener noreferrer" className="settings-preview-link">
         {label}
         <span className="settings-preview-link__icon" aria-hidden>
           ↗

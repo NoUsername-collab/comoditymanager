@@ -42,8 +42,7 @@ export function GuestGreenStayForm({
   const earliest = today > checkIn ? today : checkIn;
   const canRequest = earliest <= lastNight;
   const defaultDate = addDays(today, 1);
-  const initialDate =
-    defaultDate >= earliest && defaultDate <= lastNight ? defaultDate : earliest;
+  const initialDate = defaultDate >= earliest && defaultDate <= lastNight ? defaultDate : earliest;
   const [skipDate, setSkipDate] = useState(initialDate);
   const [note, setNote] = useState("");
 

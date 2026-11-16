@@ -9,15 +9,10 @@ type Props = {
   showBookAgain?: boolean;
 };
 
-export async function GuestLoyaltyCard({
-  snapshot,
-  pensionName,
-  showBookAgain = true,
-}: Props) {
+export async function GuestLoyaltyCard({ snapshot, pensionName, showBookAgain = true }: Props) {
   const t = await getTranslations("guestApp.loyalty");
   const hasPerkCopy =
-    snapshot.perkTitle.trim().length > 0 ||
-    snapshot.perkDescription.trim().length > 0;
+    snapshot.perkTitle.trim().length > 0 || snapshot.perkDescription.trim().length > 0;
   const showProgress = snapshot.nightsForPerk > 0;
 
   return (
@@ -55,9 +50,7 @@ export async function GuestLoyaltyCard({
             <p className="guest-loyalty-card__perk-title">{snapshot.perkTitle}</p>
           ) : null}
           {snapshot.perkDescription.trim() ? (
-            <p className="guest-loyalty-card__perk-body">
-              {snapshot.perkDescription}
-            </p>
+            <p className="guest-loyalty-card__perk-body">{snapshot.perkDescription}</p>
           ) : null}
         </div>
       ) : null}

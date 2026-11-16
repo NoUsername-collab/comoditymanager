@@ -63,10 +63,7 @@ function createGuestSlot(
 }
 
 /** Cameră primită fără identitate — ocupantul o preia la sosire. */
-function createKeysOnlyRoomSlot(
-  booking: BookingForCheckin,
-  roomLabel: string,
-): CheckinGuestInput {
+function createKeysOnlyRoomSlot(booking: BookingForCheckin, roomLabel: string): CheckinGuestInput {
   return {
     full_name: "",
     last_name: "",
@@ -106,8 +103,7 @@ export function buildCheckinGuestSlotsForRooms(
 
   if (scope === "rep") {
     if (registered.length > 0) {
-      const rep =
-        registered.find((g) => g.is_representative) ?? registered[0];
+      const rep = registered.find((g) => g.is_representative) ?? registered[0];
       return [{ ...rep, room_label: roomLabels[0], is_representative: true }];
     }
     return [createGuestSlot(booking, roomLabels[0], true)];
@@ -119,9 +115,7 @@ export function buildCheckinGuestSlotsForRooms(
 
   if (!idsPerRoom || idsPerRoom.rule === "one") {
     return roomLabels.map((room, index) =>
-      index === 0
-        ? createGuestSlot(booking, room, true)
-        : createKeysOnlyRoomSlot(booking, room),
+      index === 0 ? createGuestSlot(booking, room, true) : createKeysOnlyRoomSlot(booking, room),
     );
   }
 
@@ -137,9 +131,7 @@ export function buildCheckinGuestSlotsForRooms(
 }
 
 /** Detect family rooms: rooms where all registered guests share the same last name. */
-export function detectFamilyRooms(
-  booking: BookingForCheckin,
-): string[] {
+export function detectFamilyRooms(booking: BookingForCheckin): string[] {
   const registered = booking.registered_guests ?? [];
   if (registered.length === 0) return [];
 
@@ -185,11 +177,7 @@ export function expandGuestsForPersistence(
     }));
   }
 
-  return guests.map((g) =>
-    g.keys_only
-      ? { ...g, full_name: g.full_name?.trim() || "—" }
-      : g,
-  );
+  return guests.map((g) => (g.keys_only ? { ...g, full_name: g.full_name?.trim() || "—" } : g));
 }
 
 /** Un client înregistrat per cameră (fără sloturi goale). */
@@ -243,21 +231,13 @@ export function buildCheckinGuestSlots(
 }
 
 /** Camere / oaspeți primiți în sesiunea curentă (inclusiv doar chei). */
-export function guestsReceivingRooms(
-  guests: CheckinGuestInput[],
-): CheckinGuestInput[] {
-  return guests.filter(
-    (g) => g.keys_only || g.present_at_checkin !== false,
-  );
+export function guestsReceivingRooms(guests: CheckinGuestInput[]): CheckinGuestInput[] {
+  return guests.filter((g) => g.keys_only || g.present_at_checkin !== false);
 }
 
 /** Oaspeți pentru care se colectează / validează identitatea acum. */
-export function guestsCollectingIdentity(
-  guests: CheckinGuestInput[],
-): CheckinGuestInput[] {
-  return guests.filter(
-    (g) => g.present_at_checkin !== false && !g.keys_only,
-  );
+export function guestsCollectingIdentity(guests: CheckinGuestInput[]): CheckinGuestInput[] {
+  return guests.filter((g) => g.present_at_checkin !== false && !g.keys_only);
 }
 
 /** Oaspeți care se salvează în DB la finalizare. */

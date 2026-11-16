@@ -7,10 +7,7 @@ export const MFA_SETUP_PATH = "/admin/settings/security";
 function stripLocalePrefixFromAdminPath(pathname: string): string {
   const segments = pathname.split("/").filter(Boolean);
   const first = segments[0];
-  if (
-    first &&
-    routing.locales.includes(first as (typeof routing.locales)[number])
-  ) {
+  if (first && routing.locales.includes(first as (typeof routing.locales)[number])) {
     return `/${segments.slice(1).join("/")}` || "/";
   }
   return pathname;

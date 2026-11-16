@@ -66,11 +66,7 @@ export function ForgotPasswordForm() {
               {error}
             </p>
           )}
-          <button
-            type="submit"
-            disabled={pending}
-            className="admin-login-submit"
-          >
+          <button type="submit" disabled={pending} className="admin-login-submit">
             {pending ? (
               <>
                 <span className="admin-login-submit__spinner" aria-hidden>

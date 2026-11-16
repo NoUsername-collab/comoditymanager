@@ -10,7 +10,10 @@ import {
   readGalleryLimit,
 } from "@/features/public-site/domain/gallery";
 import { GALLERY_LAYOUTS } from "@/features/public-site/domain/types";
-import { EditorField, usePublicSiteEditor } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
+import {
+  EditorField,
+  usePublicSiteEditor,
+} from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import {
   useSectionEditing,
   type SectionEditorProps,
@@ -32,7 +35,9 @@ export function GalleryEditor({ section }: SectionEditorProps) {
   const layout = readGalleryLayout(ed.setting("layout"));
   const limit = readGalleryLimit(ed.setting("limit"));
   const count = (album: MediaAlbum) => library.filter((photo) => photo.album === album).length;
-  const shown = library.filter((photo) => albums.length === 0 || albums.includes(photo.album)).length;
+  const shown = library.filter(
+    (photo) => albums.length === 0 || albums.includes(photo.album),
+  ).length;
 
   function toggleAlbum(album: MediaAlbum) {
     const next = albums.includes(album) ? albums.filter((a) => a !== album) : [...albums, album];
@@ -42,19 +47,38 @@ export function GalleryEditor({ section }: SectionEditorProps) {
   return (
     <>
       <div className="admin-settings-fields">
-        <EditorField label={te("sectionTitle")} value={ed.field("title")} onChange={ed.setField("title")} />
-        <EditorField rows={2} label={te("sectionLead")} value={ed.field("lead")} onChange={ed.setField("lead")} />
+        <EditorField
+          label={te("sectionTitle")}
+          value={ed.field("title")}
+          onChange={ed.setField("title")}
+        />
+        <EditorField
+          rows={2}
+          label={te("sectionLead")}
+          value={ed.field("lead")}
+          onChange={ed.setField("lead")}
+        />
       </div>
 
       <fieldset className="gallery-editor__group">
         <legend>{te("galleryAlbums")}</legend>
         <p className="gallery-editor__hint">
-          {albums.length === 0 ? te("galleryAllAlbums", { count: shown }) : te("gallerySomeAlbums", { count: shown })}
+          {albums.length === 0
+            ? te("galleryAllAlbums", { count: shown })
+            : te("gallerySomeAlbums", { count: shown })}
         </p>
         <div className="gallery-editor__albums">
           {MEDIA_ALBUMS.map((album) => (
-            <label key={album} className="gallery-editor__album" data-checked={albums.includes(album) ? "1" : undefined}>
-              <input type="checkbox" checked={albums.includes(album)} onChange={() => toggleAlbum(album)} />
+            <label
+              key={album}
+              className="gallery-editor__album"
+              data-checked={albums.includes(album) ? "1" : undefined}
+            >
+              <input
+                type="checkbox"
+                checked={albums.includes(album)}
+                onChange={() => toggleAlbum(album)}
+              />
               {tp(`album.${album}`)} <span>{count(album)}</span>
             </label>
           ))}
@@ -73,7 +97,10 @@ export function GalleryEditor({ section }: SectionEditorProps) {
               className="gallery-editor__layout"
               onClick={() => ed.setSetting("layout")(option)}
             >
-              <span className={`gallery-editor__pic gallery-editor__pic--${concreteGalleryLayout(option, draft.templateId)}`} aria-hidden>
+              <span
+                className={`gallery-editor__pic gallery-editor__pic--${concreteGalleryLayout(option, draft.templateId)}`}
+                aria-hidden
+              >
                 <i />
                 <i />
                 <i />
@@ -81,7 +108,11 @@ export function GalleryEditor({ section }: SectionEditorProps) {
               </span>
               <span>
                 {option === "auto"
-                  ? te("galleryLayoutAuto", { layout: te(`galleryLayouts.${concreteGalleryLayout("auto", draft.templateId)}`) })
+                  ? te("galleryLayoutAuto", {
+                      layout: te(
+                        `galleryLayouts.${concreteGalleryLayout("auto", draft.templateId)}`,
+                      ),
+                    })
                   : te(`galleryLayouts.${option}`)}
               </span>
             </button>

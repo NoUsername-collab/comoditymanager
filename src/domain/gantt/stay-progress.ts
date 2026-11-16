@@ -10,7 +10,7 @@ type StayNightProgress = {
 export function stayNightProgress(
   checkIn: string,
   checkOut: string,
-  today: string
+  today: string,
 ): StayNightProgress | null {
   const nights = stayNightDates(checkIn, checkOut);
   const total = nights.length;

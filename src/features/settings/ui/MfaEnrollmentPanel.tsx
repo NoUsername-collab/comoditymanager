@@ -88,9 +88,7 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
       });
       setQrDataUrl(dataUrl);
     } catch (e) {
-      setError(
-        mapMfaEnrollError(e instanceof Error ? e.message : undefined, t)
-      );
+      setError(mapMfaEnrollError(e instanceof Error ? e.message : undefined, t));
     } finally {
       setBusy(false);
     }
@@ -107,9 +105,7 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
       });
 
       if (!verified.ok) {
-        setError(
-          verified.reason === "invalid_code" ? t("invalidCode") : t("verifyFailed")
-        );
+        setError(verified.reason === "invalid_code" ? t("invalidCode") : t("verifyFailed"));
         return;
       }
 

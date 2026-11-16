@@ -1,4 +1,3 @@
-
 export type GanttBarPosition = {
   leftPct: number;
   widthPct: number;
@@ -28,7 +27,7 @@ export function bookingBarInRange(
   rangeEnd: string,
   dayCount: number,
   checkInTime: string,
-  checkOutTime: string
+  checkOutTime: string,
 ): GanttBarPosition | null {
   if (dayCount <= 0) return null;
 
@@ -49,10 +48,8 @@ export function bookingBarInRange(
   const clipStart = continuesBefore ? viewStart : stayStart;
   const clipEnd = continuesAfter ? viewEnd : stayEnd;
 
-  const leftPct =
-    ((clipStart.getTime() - viewStart.getTime()) / spanMs) * 100;
-  let widthPct =
-    ((clipEnd.getTime() - clipStart.getTime()) / spanMs) * 100;
+  const leftPct = ((clipStart.getTime() - viewStart.getTime()) / spanMs) * 100;
+  let widthPct = ((clipEnd.getTime() - clipStart.getTime()) / spanMs) * 100;
 
   widthPct = Math.min(widthPct, 100 - leftPct);
   if (widthPct <= 0) return null;

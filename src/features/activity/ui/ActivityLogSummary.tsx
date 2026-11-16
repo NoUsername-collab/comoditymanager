@@ -22,7 +22,9 @@ export async function ActivityLogSummary({ entries }: { entries: ActivityLogEntr
       <div className="admin-summary-chip">
         <p className="admin-summary-chip__label">{tActivity("total")}</p>
         <p className="admin-summary-chip__value">{entries.length}</p>
-        <p className="admin-summary-chip__hint">{tActivity("inLastEvents", { count: entries.length })}</p>
+        <p className="admin-summary-chip__hint">
+          {tActivity("inLastEvents", { count: entries.length })}
+        </p>
       </div>
       <div className="admin-summary-chip admin-history-summary__chip--rezervari">
         <p className="admin-summary-chip__label">{tActivity("bookings")}</p>

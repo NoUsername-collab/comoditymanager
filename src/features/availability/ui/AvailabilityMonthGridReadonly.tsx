@@ -82,19 +82,19 @@ export async function AvailabilityMonthGridReadonly({
                 </span>
               </div>
             </div>
-          )
+          ),
         )}
       </div>
 
-      <div className="avail-heat-legend avail-heat-legend--compact" aria-label={tAvail("availabilityColorLegend")}>
+      <div
+        className="avail-heat-legend avail-heat-legend--compact"
+        aria-label={tAvail("availabilityColorLegend")}
+      >
         <span className="avail-heat-legend__mode">{tAvail("freeRooms")}</span>
         <div className="avail-heat-legend__items">
           {legendItems.map((item) => (
             <span key={item.key} className="avail-heat-legend__item">
-              <span
-                className={`avail-heat-legend__swatch ${item.className}`}
-                aria-hidden
-              />
+              <span className={`avail-heat-legend__swatch ${item.className}`} aria-hidden />
               {item.label}
             </span>
           ))}

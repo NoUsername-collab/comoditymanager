@@ -52,22 +52,17 @@ async function getTenantByIdUncached(tenantId: string): Promise<TenantRow | null
 }
 
 const getCachedTenantById = (tenantId: string) =>
-  unstable_cache(
-    () => getTenantByIdUncached(tenantId),
-    ["tenant-by-id", tenantId],
-    { revalidate: 300, tags: [`tenant-id-${tenantId}`] }
-  );
+  unstable_cache(() => getTenantByIdUncached(tenantId), ["tenant-by-id", tenantId], {
+    revalidate: 300,
+    tags: [`tenant-id-${tenantId}`],
+  });
 
-const loadTenantById = cache((tenantId: string) =>
-  getCachedTenantById(tenantId)()
-);
+const loadTenantById = cache((tenantId: string) => getCachedTenantById(tenantId)());
 
 /**
  * Get tenant by ID.
  */
-export async function getTenantById(
-  tenantId: string
-): Promise<TenantRow | null> {
+export async function getTenantById(tenantId: string): Promise<TenantRow | null> {
   if (!tenantId) return null;
   return loadTenantById(tenantId);
 }
@@ -90,11 +85,10 @@ async function fetchTenantBySlug(slug: string): Promise<TenantRow | null> {
 }
 
 const getCachedTenantBySlug = (slug: string) =>
-  unstable_cache(
-    () => fetchTenantBySlug(slug),
-    ["tenant-by-slug", slug],
-    { revalidate: 300, tags: [`tenant-slug-${slug}`] }
-  );
+  unstable_cache(() => fetchTenantBySlug(slug), ["tenant-by-slug", slug], {
+    revalidate: 300,
+    tags: [`tenant-slug-${slug}`],
+  });
 
 /** Lookup by URL slug ({slug}.zalmox.app). */
 export async function getTenantBySlug(slug: string): Promise<TenantRow | null> {
@@ -118,16 +112,13 @@ async function fetchTenantBySlugAnyStatus(slug: string): Promise<TenantRow | nul
 }
 
 const getCachedTenantBySlugAnyStatus = (slug: string) =>
-  unstable_cache(
-    () => fetchTenantBySlugAnyStatus(slug),
-    ["tenant-by-slug-any-status", slug],
-    { revalidate: 60, tags: [`tenant-slug-${slug}`, `tenant-slug-status-${slug}`] }
-  );
+  unstable_cache(() => fetchTenantBySlugAnyStatus(slug), ["tenant-by-slug-any-status", slug], {
+    revalidate: 60,
+    tags: [`tenant-slug-${slug}`, `tenant-slug-status-${slug}`],
+  });
 
 /** Host enforcement — includes suspended/cancelled tenants. */
-export async function lookupTenantBySlugAnyStatus(
-  slug: string
-): Promise<TenantRow | null> {
+export async function lookupTenantBySlugAnyStatus(slug: string): Promise<TenantRow | null> {
   if (!slug) return null;
   return getCachedTenantBySlugAnyStatus(slug)();
 }
@@ -152,13 +143,11 @@ const getCachedTenantByDomainAnyStatus = (domain: string) =>
   unstable_cache(
     () => fetchTenantByDomainAnyStatus(domain),
     ["tenant-by-domain-any-status", domain],
-    { revalidate: 60, tags: [`tenant-domain-${domain}`, `tenant-domain-status-${domain}`] }
+    { revalidate: 60, tags: [`tenant-domain-${domain}`, `tenant-domain-status-${domain}`] },
   );
 
 /** Host enforcement — includes suspended/cancelled tenants. */
-export async function lookupTenantByDomainAnyStatus(
-  domain: string
-): Promise<TenantRow | null> {
+export async function lookupTenantByDomainAnyStatus(domain: string): Promise<TenantRow | null> {
   if (!domain) return null;
   return getCachedTenantByDomainAnyStatus(domain)();
 }
@@ -180,11 +169,10 @@ async function fetchTenantIdByDomain(domain: string): Promise<string | null> {
 }
 
 const getCachedTenantIdByDomain = (domain: string) =>
-  unstable_cache(
-    () => fetchTenantIdByDomain(domain),
-    ["tenant-id-by-domain", domain],
-    { revalidate: 300, tags: [`tenant-domain-${domain}`] }
-  );
+  unstable_cache(() => fetchTenantIdByDomain(domain), ["tenant-id-by-domain", domain], {
+    revalidate: 300,
+    tags: [`tenant-domain-${domain}`],
+  });
 
 export async function getTenantByDomain(domain: string): Promise<TenantRow | null> {
   const tenantId = await getCachedTenantIdByDomain(domain)();
@@ -215,9 +203,7 @@ export async function getTenantDisplayName(tenantId: string): Promise<string> {
  * Get ALL emails that should receive notifications for a tenant.
  * Returns owner + all active admin members.
  */
-export async function getTenantNotificationEmails(
-  tenantId: string
-): Promise<string[]> {
+export async function getTenantNotificationEmails(tenantId: string): Promise<string[]> {
   if (!tenantId) return [];
 
   const emails = new Set<string>();

@@ -24,10 +24,7 @@ function earliestCheckInDate(today: string = todayIso()): string {
 }
 
 /** Clamp check-in so it is not before today. */
-export function clampCheckInDate(
-  checkIn: string,
-  today: string = todayIso()
-): string {
+export function clampCheckInDate(checkIn: string, today: string = todayIso()): string {
   return checkIn < today ? today : checkIn;
 }
 
@@ -41,10 +38,7 @@ export function defaultNewStayDates(today: string = todayIso()): {
 }
 
 /** Earliest valid check-out for a given check-in (next calendar day). */
-export function minCheckOutDate(
-  checkIn: string,
-  today: string = todayIso()
-): string {
+export function minCheckOutDate(checkIn: string, today: string = todayIso()): string {
   return addDays(clampCheckInDate(checkIn, today), 1);
 }
 
@@ -70,11 +64,7 @@ export function nightsBetween(start: string, end: string): string[] {
   return out;
 }
 
-export function nightOccupied(
-  date: string,
-  checkIn: string,
-  checkOut: string
-): boolean {
+export function nightOccupied(date: string, checkIn: string, checkOut: string): boolean {
   return date >= checkIn && date < checkOut;
 }
 

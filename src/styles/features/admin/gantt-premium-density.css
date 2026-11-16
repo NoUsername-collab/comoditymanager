@@ -96,7 +96,9 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__btn
 }
 
 /* ── Date header + FREE row (−25%) ── */
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-head-main-row__room.gantt-room-column-header {
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-head-main-row__room.gantt-room-column-header {
   padding: var(--gantt-head-cell-py) 0.3rem !important;
   font-size: 0.65rem;
   line-height: 1.1;
@@ -107,7 +109,9 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-day-header-cell__
   padding: 0.18rem 0.14rem 0.24rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-day-header-cell--compact.gantt-day-header-cell__body {
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-day-header-cell--compact.gantt-day-header-cell__body {
   min-height: calc(var(--gantt-day-header-row-h) - 0.34rem);
   padding: 0.14rem 0.12rem 0.18rem;
 }
@@ -155,7 +159,9 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell__val
 }
 
 html[data-layout-chrome="compact"] .gantt-viewport-header--calendar .gantt-viewport-header__room,
-html[data-layout-chrome="compact"] .gantt-viewport-header--calendar .gantt-viewport-header__summary-label {
+html[data-layout-chrome="compact"]
+  .gantt-viewport-header--calendar
+  .gantt-viewport-header__summary-label {
   padding: var(--gantt-head-cell-py, 0.42rem) 0.3rem !important;
   font-size: 0.65rem;
 }
@@ -173,7 +179,9 @@ html[data-layout-chrome="compact"] .gantt-viewport-header--calendar .gantt-day-h
   font-size: 0.52rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-viewport-header--calendar .gantt-day-header-cell__weekday {
+html[data-layout-chrome="compact"]
+  .gantt-viewport-header--calendar
+  .gantt-day-header-cell__weekday {
   font-size: 0.63rem;
   line-height: 1;
 }
@@ -183,7 +191,9 @@ html[data-layout-chrome="compact"] .gantt-viewport-header--calendar .gantt-day-t
   font-size: 0.42rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-viewport-header--calendar .gantt-summary-row__label-title {
+html[data-layout-chrome="compact"]
+  .gantt-viewport-header--calendar
+  .gantt-summary-row__label-title {
   font-size: 0.5rem;
 }
 
@@ -546,24 +556,34 @@ html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar {
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-day-header-cell__body,
-html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-day-header-cell__body {
+html:not([data-layout-chrome="compact"])
+  .gantt-viewport-header--calendar
+  .gantt-day-header-cell__body {
   gap: 0.05rem;
   padding: 0.24rem 0.19rem 0.34rem;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-day-header-cell--compact.gantt-day-header-cell__body,
-html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-day-header-cell--compact.gantt-day-header-cell__body {
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .gantt-day-header-cell--compact.gantt-day-header-cell__body,
+html:not([data-layout-chrome="compact"])
+  .gantt-viewport-header--calendar
+  .gantt-day-header-cell--compact.gantt-day-header-cell__body {
   min-height: calc(var(--gantt-day-header-row-h) - 0.38rem);
   padding: 0.2rem 0.15rem 0.27rem;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-day-header-cell__date,
-html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-day-header-cell__date {
+html:not([data-layout-chrome="compact"])
+  .gantt-viewport-header--calendar
+  .gantt-day-header-cell__date {
   font-size: 0.58rem;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-day-header-cell__weekday,
-html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-day-header-cell__weekday {
+html:not([data-layout-chrome="compact"])
+  .gantt-viewport-header--calendar
+  .gantt-day-header-cell__weekday {
   font-size: 0.71rem;
   line-height: 1;
 }
@@ -574,13 +594,23 @@ html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt
   font-size: 0.43rem;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-thead-sticky .gantt-head-main-row > th,
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-thead-sticky .gantt-summary-row > td {
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .gantt-thead-sticky
+  .gantt-head-main-row
+  > th,
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .gantt-thead-sticky
+  .gantt-summary-row
+  > td {
   padding: 0;
   vertical-align: middle;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-head-main-row__room.gantt-room-column-header {
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .gantt-head-main-row__room.gantt-room-column-header {
   padding: 0.34rem 0.75rem;
 }
 
@@ -590,7 +620,10 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-row
 
 /* Left column — same inset as header / LIBERE / building labels */
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-room-cell,
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-building-header-row > td.gantt-building-header {
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .gantt-building-header-row
+  > td.gantt-building-header {
   padding-inline: 0.75rem !important;
 }
 
@@ -601,18 +634,24 @@ html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-row__label-title,
-html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-summary-row__label-title {
+html:not([data-layout-chrome="compact"])
+  .gantt-viewport-header--calendar
+  .gantt-summary-row__label-title {
   font-size: 0.49rem;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-row__label-state,
-html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-summary-row__label-state {
+html:not([data-layout-chrome="compact"])
+  .gantt-viewport-header--calendar
+  .gantt-summary-row__label-state {
   margin-top: 0.15rem;
   font-size: 0.43rem;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-cell__value,
-html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-summary-cell__value {
+html:not([data-layout-chrome="compact"])
+  .gantt-viewport-header--calendar
+  .gantt-summary-cell__value {
   font-size: 0.68rem;
 }
 
@@ -648,7 +687,10 @@ html[data-layout-chrome="compact"] .gantt-viewport-header--calendar {
 }
 
 /* Desktop calendar — summary flush to first building row (no dead band) */
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-thead-sticky .gantt-summary-row {
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .gantt-thead-sticky
+  .gantt-summary-row {
   line-height: 1;
   box-shadow: none !important;
 }
@@ -657,20 +699,32 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-row
   vertical-align: middle;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-building-header-row:first-of-type {
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .gantt-building-header-row:first-of-type {
   border-top: none !important;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-building-header-row:first-of-type > td.gantt-building-header {
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .gantt-building-header-row:first-of-type
+  > td.gantt-building-header {
   padding-top: 0.25rem !important;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-building-header-row .gantt-building-header__days {
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .gantt-building-header-row
+  .gantt-building-header__days {
   padding: 0 !important;
   vertical-align: top;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-building-header-row .gantt-building-header__days .gantt-day-cell {
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .gantt-building-header-row
+  .gantt-building-header__days
+  .gantt-day-cell {
   background: transparent;
 }
 
@@ -696,13 +750,24 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .admin-panel .admi
   background: transparent;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page > .admin-panel > .admin-panel__titlebar,
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .admin-panel .admin-panel > .admin-panel__titlebar {
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  > .admin-panel
+  > .admin-panel__titlebar,
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .admin-panel
+  .admin-panel
+  > .admin-panel__titlebar {
   display: none;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page > .admin-panel > .admin-panel-body,
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .admin-panel .admin-panel > .admin-panel-body {
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .admin-panel
+  .admin-panel
+  > .admin-panel-body {
   margin: 0 !important;
   padding: 0 !important;
   border: none !important;
@@ -813,7 +878,11 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-thead-stick
   margin-top: 0;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-shell--premium > .gantt-compact-toolbar + * {
+html:not([data-layout-chrome="compact"])
+  .gantt-calendar-page
+  .gantt-shell--premium
+  > .gantt-compact-toolbar
+  + * {
   margin-top: 0;
 }
 
@@ -874,7 +943,9 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-shell {
 
 html:not([data-layout-chrome="compact"]) .gantt-shell .gantt-day-grid--fixed,
 html:not([data-layout-chrome="compact"]) .gantt-shell .gantt-day-header-grid.gantt-day-grid--fixed,
-html:not([data-layout-chrome="compact"]) .gantt-shell .gantt-summary-row__grid.gantt-day-grid--fixed {
+html:not([data-layout-chrome="compact"])
+  .gantt-shell
+  .gantt-summary-row__grid.gantt-day-grid--fixed {
   width: 100%;
   min-width: 0;
 }
@@ -919,11 +990,15 @@ html:not([data-layout-chrome="compact"]) .gantt-shell[data-gantt-coverage="30"] 
   --gantt-unassigned-row-h: 24px;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-shell[data-gantt-coverage="30"] .gantt-day-header-cell__body {
+html:not([data-layout-chrome="compact"])
+  .gantt-shell[data-gantt-coverage="30"]
+  .gantt-day-header-cell__body {
   font-size: 0.62rem;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-shell[data-gantt-coverage="30"] .gantt-stay-chrome__label {
+html:not([data-layout-chrome="compact"])
+  .gantt-shell[data-gantt-coverage="30"]
+  .gantt-stay-chrome__label {
   font-size: 0.62rem;
 }
 
@@ -948,4 +1023,3 @@ html:not([data-layout-chrome="compact"]) .gantt-shell[data-gantt-coverage="30"] 
 .gantt-day-header-cell--drillable:disabled {
   cursor: default;
 }
-

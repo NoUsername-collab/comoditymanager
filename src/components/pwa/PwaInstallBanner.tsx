@@ -53,12 +53,8 @@ export function PwaInstallBanner() {
           ⚡
         </span>
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <strong className="text-sm font-bold text-[var(--admin-text,#e8e8f0)]">
-            Zalmox
-          </strong>
-          <span className="text-xs text-[var(--admin-text-muted,#8888aa)]">
-            {t("bannerSub")}
-          </span>
+          <strong className="text-sm font-bold text-[var(--admin-text,#e8e8f0)]">Zalmox</strong>
+          <span className="text-xs text-[var(--admin-text-muted,#8888aa)]">{t("bannerSub")}</span>
         </div>
         <button
           type="button"

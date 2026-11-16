@@ -185,12 +185,8 @@ describe("dailySummaryToOwner", () => {
   const data = {
     pensionName: "Casa Emil",
     date: "2025-06-15",
-    checkInsToday: [
-      { guestName: "Ion Popescu", rooms: ["Camera 1"] },
-    ],
-    checkOutsToday: [
-      { guestName: "Maria Ionescu", rooms: ["Camera 2", "Camera 3"] },
-    ],
+    checkInsToday: [{ guestName: "Ion Popescu", rooms: ["Camera 1"] }],
+    checkOutsToday: [{ guestName: "Maria Ionescu", rooms: ["Camera 2", "Camera 3"] }],
     pendingRequests: 3,
     occupancyPercent: 75,
   };

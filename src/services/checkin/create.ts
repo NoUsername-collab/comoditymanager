@@ -10,10 +10,7 @@ import type {
   CheckinStatus,
 } from "@/domain/checkin/types";
 import { mapCheckinDocTypeForDb } from "@/domain/checkin/doc-type";
-import {
-  expandGuestsForPersistence,
-  guestsToPersist,
-} from "@/domain/checkin/guest-layout";
+import { expandGuestsForPersistence, guestsToPersist } from "@/domain/checkin/guest-layout";
 import type { CheckinIdentityScope } from "@/domain/checkin/types";
 import { guestFullName } from "@/domain/checkin/identity-rules";
 import { mapBookingToForCheckin } from "@/domain/checkin/map-booking";
@@ -56,41 +53,28 @@ export async function createCheckin(
   const validation = validateCheckin(data, settings, booking, currentHour, today);
 
   if (validation.status === "blocked") {
-    throw new Error(
-      `checkin.blocked: ${validation.blockers.join("; ")}`,
-    );
+    throw new Error(`checkin.blocked: ${validation.blockers.join("; ")}`);
   }
 
   let activeBooking = booking;
 
   if (data.transfer_booking_to_guest_id) {
-    await reassignBookingHolder(
-      data.booking_id,
-      data.transfer_booking_to_guest_id,
-    );
+    await reassignBookingHolder(data.booking_id, data.transfer_booking_to_guest_id);
     const refreshed = await getBookingById(data.booking_id);
     if (!refreshed) throw new Error("booking.not_found");
     activeBooking = mapBookingToForCheckin(refreshed);
   }
 
-  const identityResult = await assertCheckinIdentityIntegrity(
-    data.guests,
-    activeBooking,
-  );
+  const identityResult = await assertCheckinIdentityIntegrity(data.guests, activeBooking);
   if (identityResult.blockers.length > 0) {
-    throw new Error(
-      `checkin.blocked: ${identityResult.blockers.join("; ")}`,
-    );
+    throw new Error(`checkin.blocked: ${identityResult.blockers.join("; ")}`);
   }
   if (identityResult.transferOffer && !data.transfer_booking_to_guest_id) {
-    throw new Error(
-      encodeCheckinTransferRequired(identityResult.transferOffer),
-    );
+    throw new Error(encodeCheckinTransferRequired(identityResult.transferOffer));
   }
 
   // Determine checkin status from validation result
-  const checkinStatus: CheckinStatus =
-    validation.status === "warning" ? "incomplete" : "complete";
+  const checkinStatus: CheckinStatus = validation.status === "warning" ? "incomplete" : "complete";
 
   const { tenantId, supabase } = await getTenantScope();
   const checkedInAt = now.toISOString();
@@ -146,16 +130,9 @@ export async function createCheckin(
   // ── Sync identity → profil client (`guests`) ───────────────
   const scope: CheckinIdentityScope = data.identity_scope ?? "per_room";
   const receptionRooms = data.reception_rooms ?? [];
-  const expandedGuests = expandGuestsForPersistence(
-    data.guests,
-    scope,
-    receptionRooms,
-  );
+  const expandedGuests = expandGuestsForPersistence(data.guests, scope, receptionRooms);
   const identityGuests = expandedGuests.filter((g) => !g.keys_only);
-  const resolvedIdentity = await resolveCheckinGuestIds(
-    identityGuests,
-    activeBooking,
-  );
+  const resolvedIdentity = await resolveCheckinGuestIds(identityGuests, activeBooking);
   timer.mark("resolveGuestIds");
   let syncIdx = 0;
   const mergedGuests = expandedGuests.map((g) => {
@@ -184,9 +161,7 @@ export async function createCheckin(
       }),
     );
 
-    const { error: guestErr } = await supabase
-      .from("checkin_guests")
-      .insert(guestRows);
+    const { error: guestErr } = await supabase.from("checkin_guests").insert(guestRows);
 
     if (guestErr) throw new Error(guestErr.message);
   }
@@ -205,10 +180,7 @@ export async function createCheckin(
   }
 
   // ── Log activity ──────────────────────────────────────────
-  const flagSummary =
-    validation.flags.length > 0
-      ? ` [${validation.flags.join(", ")}]`
-      : "";
+  const flagSummary = validation.flags.length > 0 ? ` [${validation.flags.join(", ")}]` : "";
 
   after(async () => {
     await enrichCheckinGuestProfiles(resolvedIdentity, activeBooking);
@@ -224,8 +196,7 @@ export async function createCheckin(
         status: checkinStatus,
         flags: validation.flags,
         payment_status: normalizePaymentStatusForDb(data.payment_status),
-        payment_channel:
-          data.payment_status === "online" ? "online_mock" : "manual",
+        payment_channel: data.payment_status === "online" ? "online_mock" : "manual",
         guest_count: guestsForDb.length,
       },
     });

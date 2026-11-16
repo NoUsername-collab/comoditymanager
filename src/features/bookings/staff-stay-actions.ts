@@ -5,21 +5,12 @@ import { parsePartyInput, type Party } from "@/domain/availability/party";
 import { assertValidGuestPhone, staffBookingEmail } from "@/domain/guest/normalize";
 import type { BookingOccupantDraft } from "@/domain/booking/occupants";
 import type { StayPricingRules } from "@/domain/settings/booking-rules";
-import {
-  requireAnyStaff,
-  requireStaffPermission,
-} from "@/lib/auth/require-admin";
+import { requireAnyStaff, requireStaffPermission } from "@/lib/auth/require-admin";
 import { revalidateBookingSurfacesExtended } from "@/lib/cache/revalidate-admin";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { createServerTimer } from "@/lib/dev/server-timing";
-import {
-  confirmBookingWithRooms,
-  createBookingRequest,
-} from "@/services/bookings";
-import {
-  loadAvailableRoomsForStay,
-  type StayRoomsAvailability,
-} from "@/services/booking-confirm";
+import { confirmBookingWithRooms, createBookingRequest } from "@/services/bookings";
+import { loadAvailableRoomsForStay, type StayRoomsAvailability } from "@/services/booking-confirm";
 import { getStayPricingRules } from "@/services/booking-rules-settings";
 import { quoteStayForRooms } from "@/services/stay-quote";
 import { getRoomsByIds } from "@/services/rooms-admin";

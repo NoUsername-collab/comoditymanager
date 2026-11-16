@@ -8,8 +8,7 @@ export function AdminCurrentThemeSummary() {
   const t = useTranslations("admin.pages.settings");
   const { themeId, mode } = useAdminTheme();
   const activePalette =
-    CATALOG_PALETTES.find((palette) => palette.id === themeId) ??
-    CATALOG_PALETTES[0]!;
+    CATALOG_PALETTES.find((palette) => palette.id === themeId) ?? CATALOG_PALETTES[0]!;
 
   return (
     <>

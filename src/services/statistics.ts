@@ -17,9 +17,7 @@ import { listBuildings, listBuildingsForTenant } from "@/services/buildings";
 const STATS_NOTE =
   "Occupancy uses today's active rooms as reference for the full history. Bookings stay in the database and reports expand automatically as operational history grows.";
 
-async function loadAllBookingsForStatisticsImpl(
-  tenantId: string
-): Promise<StatBooking[]> {
+async function loadAllBookingsForStatisticsImpl(tenantId: string): Promise<StatBooking[]> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("bookings")
@@ -29,7 +27,7 @@ async function loadAllBookingsForStatisticsImpl(
       num_adults, num_children, total_price,
       created_at, confirmed_at,
       booking_rooms ( room_id, rooms ( name, price_per_night, building_id, buildings ( name ) ) )
-    `
+    `,
     )
     .eq("tenant_id", tenantId)
     .order("check_in", { ascending: true });
@@ -90,16 +88,13 @@ const getCachedBookingsForStatistics = (tenantId: string) =>
     () => loadAllBookingsForStatisticsImpl(tenantId),
     ["bookings-statistics", tenantId],
     {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-      ],
+      tags: [CACHE_TAGS.bookingCounts, tenantTag(tenantId, CACHE_TAGS.bookingCounts)],
       revalidate: 120,
-    }
+    },
   );
 
 const loadAllBookingsForStatisticsCached = cache((tenantId: string) =>
-  getCachedBookingsForStatistics(tenantId)()
+  getCachedBookingsForStatistics(tenantId)(),
 );
 
 type StatisticsBaseData = {
@@ -108,9 +103,7 @@ type StatisticsBaseData = {
 };
 
 /** Shared bookings + room snapshot — deduped when report and month compare load together. */
-async function loadStatisticsBaseDataForTenant(
-  tenantId: string
-): Promise<StatisticsBaseData> {
+async function loadStatisticsBaseDataForTenant(tenantId: string): Promise<StatisticsBaseData> {
   const [bookings, rooms, buildings] = await Promise.all([
     loadAllBookingsForStatisticsCached(tenantId),
     listAllRoomsForTenant(tenantId),
@@ -126,7 +119,7 @@ export { loadStatisticsBaseDataForTenant };
 
 function activeRoomSnapshot(
   rooms: Awaited<ReturnType<typeof listAllRooms>>,
-  buildings: Awaited<ReturnType<typeof listBuildings>>
+  buildings: Awaited<ReturnType<typeof listBuildings>>,
 ): ActiveRoomSnapshot[] {
   const buildingName = new Map(buildings.map((b) => [b.id, b.name]));
   return rooms
@@ -141,7 +134,7 @@ function activeRoomSnapshot(
 async function buildStatisticsReportFromBase(
   bookings: StatBooking[],
   snapshot: ActiveRoomSnapshot[],
-  today: string
+  today: string,
 ): Promise<StatisticsReport> {
   const currentYear = Number(today.slice(0, 4));
   const yearsWithData = discoverYears(bookings, currentYear);
@@ -164,9 +157,7 @@ async function buildStatisticsReportFromBase(
   };
 }
 
-async function loadStatisticsReportForTenant(
-  tenantId: string
-): Promise<StatisticsReport> {
+async function loadStatisticsReportForTenant(tenantId: string): Promise<StatisticsReport> {
   const [{ bookings, snapshot }, today] = await Promise.all([
     loadStatisticsBaseDataForTenant(tenantId),
     todayIso(),
@@ -175,18 +166,14 @@ async function loadStatisticsReportForTenant(
 }
 
 const getCachedStatisticsReport = (tenantId: string) =>
-  unstable_cache(
-    () => loadStatisticsReportForTenant(tenantId),
-    ["statistics-report", tenantId],
-    {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-        tenantTag(tenantId, CACHE_TAGS.rooms),
-      ],
-      revalidate: 120,
-    }
-  );
+  unstable_cache(() => loadStatisticsReportForTenant(tenantId), ["statistics-report", tenantId], {
+    tags: [
+      CACHE_TAGS.bookingCounts,
+      tenantTag(tenantId, CACHE_TAGS.bookingCounts),
+      tenantTag(tenantId, CACHE_TAGS.rooms),
+    ],
+    revalidate: 120,
+  });
 
 export async function loadStatisticsReport(): Promise<StatisticsReport> {
   const { tenantId } = await getTenantScope();

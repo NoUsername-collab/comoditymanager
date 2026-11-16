@@ -1,8 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-export async function clearUnverifiedTotpFactors(
-  supabase: SupabaseClient
-): Promise<void> {
+export async function clearUnverifiedTotpFactors(supabase: SupabaseClient): Promise<void> {
   const { data: factors } = await supabase.auth.mfa.listFactors();
   for (const factor of factors?.totp ?? []) {
     if (factor.status !== "verified") {
@@ -12,27 +10,18 @@ export async function clearUnverifiedTotpFactors(
 }
 
 type EnrollErrorTranslator = (
-  key:
-    | "enrollFailed"
-    | "enrollFailedMfaDisabled"
-    | "enrollFailedRetry"
-    | "enrollFailedDetail",
-  values?: { detail?: string }
+  key: "enrollFailed" | "enrollFailedMfaDisabled" | "enrollFailedRetry" | "enrollFailedDetail",
+  values?: { detail?: string },
 ) => string;
 
-export function mapMfaEnrollError(
-  message: string | undefined,
-  t: EnrollErrorTranslator
-): string {
+export function mapMfaEnrollError(message: string | undefined, t: EnrollErrorTranslator): string {
   if (!message) return t("enrollFailed");
 
   const lower = message.toLowerCase();
 
   if (
     lower.includes("mfa") &&
-    (lower.includes("disabled") ||
-      lower.includes("not enabled") ||
-      lower.includes("not allowed"))
+    (lower.includes("disabled") || lower.includes("not enabled") || lower.includes("not allowed"))
   ) {
     return t("enrollFailedMfaDisabled");
   }

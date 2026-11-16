@@ -17,11 +17,7 @@ type Props = {
   maxItems?: number;
 };
 
-export function GuestCompletedStaysPanel({
-  stays,
-  historyHref,
-  maxItems = 4,
-}: Props) {
+export function GuestCompletedStaysPanel({ stays, historyHref, maxItems = 4 }: Props) {
   const tGuests = useTranslations("admin.guests");
   const locale = useLocale();
   const visible = stays.slice(0, maxItems);
@@ -43,17 +39,12 @@ export function GuestCompletedStaysPanel({
           <ul className="guest-hero__stays-list">
             {visible.map((stay) => (
               <li key={stay.id} className="guest-hero__stays-item">
-                <Link
-                  href={`/admin/bookings/${stay.id}`}
-                  className="guest-hero__stays-link"
-                >
+                <Link href={`/admin/bookings/${stay.id}`} className="guest-hero__stays-link">
                   <span className="guest-hero__stays-period">
                     {formatStayPeriod(stay.check_in, stay.check_out, locale, true)}
                   </span>
                   {stay.room_names.length > 0 ? (
-                    <span className="guest-hero__stays-rooms">
-                      {stay.room_names.join(", ")}
-                    </span>
+                    <span className="guest-hero__stays-rooms">{stay.room_names.join(", ")}</span>
                   ) : null}
                 </Link>
               </li>

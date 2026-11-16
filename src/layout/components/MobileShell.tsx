@@ -23,9 +23,7 @@ export function MobileShell({
 }: MobileShellProps) {
   return (
     <div
-      className={["ml-shell", `ml-shell--${surface}`, className]
-        .filter(Boolean)
-        .join(" ")}
+      className={["ml-shell", `ml-shell--${surface}`, className].filter(Boolean).join(" ")}
       data-layout-surface={surface}
       data-pub-template={pubTemplate}
       style={style}

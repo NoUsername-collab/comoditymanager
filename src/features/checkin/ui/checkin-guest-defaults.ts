@@ -5,11 +5,7 @@ import {
   defaultOperatorScope,
   effectiveIdentityScope,
 } from "@/domain/checkin/guest-layout";
-import type {
-  BookingForCheckin,
-  CheckinGuestInput,
-  CheckinSettings,
-} from "@/domain/checkin/types";
+import type { BookingForCheckin, CheckinGuestInput, CheckinSettings } from "@/domain/checkin/types";
 
 export function createInitialCheckinGuests(
   booking: BookingForCheckin,
@@ -22,8 +18,7 @@ export function createInitialCheckinGuests(
       defaultOperatorScope(settings.group_checkin_mode),
     );
     if (scope === "rep") {
-      const rep =
-        registered.find((g) => g.is_representative) ?? registered[0];
+      const rep = registered.find((g) => g.is_representative) ?? registered[0];
       const rooms = bookingRooms(booking);
       return [{ ...rep, room_label: rooms[0], is_representative: true }];
     }
@@ -36,8 +31,5 @@ export function createInitialCheckinGuests(
     }));
   }
 
-  return buildCheckinGuestSlots(
-    booking,
-    defaultOperatorScope(settings.group_checkin_mode),
-  );
+  return buildCheckinGuestSlots(booking, defaultOperatorScope(settings.group_checkin_mode));
 }

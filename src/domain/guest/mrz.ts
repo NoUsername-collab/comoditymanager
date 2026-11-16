@@ -7,10 +7,7 @@ import {
   type NationalIdType,
 } from "@/domain/guest/national-id";
 import { detectMrzFormat, normalizeMrzBlock, splitMrzInput } from "@/domain/guest/mrz-ocr";
-import {
-  isMrzParseChecksumValid,
-  tryParseMrzBlock,
-} from "@/domain/guest/mrz-parse";
+import { isMrzParseChecksumValid, tryParseMrzBlock } from "@/domain/guest/mrz-parse";
 import type { GuestPrecheckinDocType } from "@/domain/guest-app/precheckin-prefill";
 
 export type MrzMappedIdentity = {
@@ -118,9 +115,7 @@ function inferNationalId(
 ): { type: NationalIdType | null; value: string | null } {
   if (!rawNumber) return { type: null, value: null };
   const cleaned = cleanNationalId(rawNumber);
-  const preferredType = nationalityCode
-    ? COUNTRY_TO_NATIONAL_ID[nationalityCode]
-    : undefined;
+  const preferredType = nationalityCode ? COUNTRY_TO_NATIONAL_ID[nationalityCode] : undefined;
 
   if (preferredType && validateNationalId(preferredType, cleaned)) {
     return { type: preferredType, value: cleaned };
@@ -166,9 +161,7 @@ function sanitizeMrzPersonNames(
 }
 
 export async function parseMrzIdentity(input: string | string[]): Promise<MrzParseResult> {
-  const rawLines = Array.isArray(input)
-    ? input.map((line) => line.trim())
-    : splitMrzInput(input);
+  const rawLines = Array.isArray(input) ? input.map((line) => line.trim()) : splitMrzInput(input);
   if (rawLines.length === 0) return { ok: false, error: "empty" };
 
   const lines = normalizeMrzBlock(rawLines) ?? rawLines;
@@ -196,9 +189,7 @@ export async function parseMrzIdentity(input: string | string[]): Promise<MrzPar
   const lastName = rawNames.lastName;
   const firstName = rawNames.firstName;
   const documentNumber =
-    parsed.documentNumber?.trim() ||
-    String(fields.documentNumber ?? "").trim() ||
-    null;
+    parsed.documentNumber?.trim() || String(fields.documentNumber ?? "").trim() || null;
 
   const personalRaw = pickPersonalNumber(fields);
   const national = inferNationalId(nationalityCode, personalRaw);

@@ -8,7 +8,7 @@ import {
 } from "../format-db-error";
 
 function mockPostgrestError(
-  partial: Pick<PostgrestError, "message" | "code" | "details" | "hint">
+  partial: Pick<PostgrestError, "message" | "code" | "details" | "hint">,
 ): PostgrestError {
   return {
     name: "PostgrestError",
@@ -48,9 +48,7 @@ describe("formatDbError", () => {
       hint: "",
     });
 
-    expect(() => throwIfDbError("admin_activity_log", dbError)).toThrow(
-      PlatformAdminDbError
-    );
+    expect(() => throwIfDbError("admin_activity_log", dbError)).toThrow(PlatformAdminDbError);
 
     try {
       throwIfDbError("admin_activity_log", dbError);

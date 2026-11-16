@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  computeDailyFreeCounts,
-  dailyFreeHeatLevel,
-} from "@/domain/gantt/daily-free-counts";
+import { computeDailyFreeCounts, dailyFreeHeatLevel } from "@/domain/gantt/daily-free-counts";
 
 // ---------------------------------------------------------------------------
 // dailyFreeHeatLevel
@@ -41,21 +38,12 @@ describe("dailyFreeHeatLevel", () => {
 // computeDailyFreeCounts
 // ---------------------------------------------------------------------------
 describe("computeDailyFreeCounts", () => {
-  const rooms = [
-    { id: "r1" },
-    { id: "r2" },
-    { id: "r3" },
-  ] as { id: string }[];
+  const rooms = [{ id: "r1" }, { id: "r2" }, { id: "r3" }] as { id: string }[];
 
   const dayIsos = ["2025-06-10", "2025-06-11", "2025-06-12"];
 
   it("returns all rooms free when there are no bookings or occupancy", () => {
-    const result = computeDailyFreeCounts(
-      rooms as any,
-      [],
-      [],
-      dayIsos,
-    );
+    const result = computeDailyFreeCounts(rooms as any, [], [], dayIsos);
     expect(result).toHaveLength(3);
     for (const day of result) {
       expect(day.free).toBe(3);

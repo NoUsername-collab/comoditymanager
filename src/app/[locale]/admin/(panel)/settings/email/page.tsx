@@ -30,11 +30,7 @@ export default async function SettingsEmailPage({
   if (error) alerts.push({ tone: "error", message: error });
 
   return (
-    <SettingsPageLayout
-      alerts={alerts}
-      title={t("navEmail")}
-      description={t("navEmailDesc")}
-    >
+    <SettingsPageLayout alerts={alerts} title={t("navEmail")} description={t("navEmailDesc")}>
       <SettingsSection title={t("emailTitle")} description={t("emailSubtitle")}>
         {emailIdentity ? (
           <EmailSettingsPanel

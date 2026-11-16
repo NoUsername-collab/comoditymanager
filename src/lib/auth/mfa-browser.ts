@@ -3,13 +3,10 @@ import { clearUnverifiedTotpFactors } from "@/lib/auth/mfa-enroll";
 
 const TOTP_FRIENDLY_NAME = "Zalmox Admin";
 
-type TotpEnrollmentStatus =
-  | { ok: true; enrolled: boolean }
-  | { ok: false };
+type TotpEnrollmentStatus = { ok: true; enrolled: boolean } | { ok: false };
 
 type TotpEnrollStart =
-  | { ok: true; factorId: string; secret: string; uri: string }
-  | { ok: false; message?: string };
+  { ok: true; factorId: string; secret: string; uri: string } | { ok: false; message?: string };
 
 type TotpVerifyFailure = "verify_failed" | "invalid_code";
 
@@ -55,7 +52,7 @@ export async function startTotpEnrollment(): Promise<TotpEnrollStart> {
 
 async function challengeAndVerify(
   factorId: string,
-  code: string
+  code: string,
 ): Promise<{ ok: true } | { ok: false; reason: TotpVerifyFailure }> {
   const mfa = browserAuth().mfa;
   const { data: challenge, error: challengeError } = await mfa.challenge({
@@ -86,9 +83,7 @@ export async function confirmTotpEnrollment(opts: {
   return challengeAndVerify(opts.factorId, opts.code);
 }
 
-export async function unenrollAllTotpFactors(): Promise<
-  { ok: true } | { ok: false }
-> {
+export async function unenrollAllTotpFactors(): Promise<{ ok: true } | { ok: false }> {
   try {
     const mfa = browserAuth().mfa;
     const { data: factors } = await mfa.listFactors();
@@ -102,7 +97,7 @@ export async function unenrollAllTotpFactors(): Promise<
 }
 
 export async function verifyTotpChallenge(
-  code: string
+  code: string,
 ): Promise<{ ok: true } | { ok: false; reason: TotpChallengeFailure }> {
   const mfa = browserAuth().mfa;
   const { data: factors, error: listError } = await mfa.listFactors();
@@ -111,9 +106,7 @@ export async function verifyTotpChallenge(
     return { ok: false, reason: "verify_failed" };
   }
 
-  const totpFactor = (factors.totp ?? []).find(
-    (factor) => factor.status === "verified"
-  );
+  const totpFactor = (factors.totp ?? []).find((factor) => factor.status === "verified");
   if (!totpFactor) {
     return { ok: false, reason: "no_factor" };
   }

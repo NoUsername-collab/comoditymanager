@@ -47,8 +47,12 @@ export function tabForFieldPath(path: string): PublicSiteEditorTab {
   ) {
     return "settings";
   }
-  if (path.startsWith("templateId") || path.startsWith("themeId") || path.startsWith("chrome.fontId") ||
-    path.startsWith("chrome.accentColor")) {
+  if (
+    path.startsWith("templateId") ||
+    path.startsWith("themeId") ||
+    path.startsWith("chrome.fontId") ||
+    path.startsWith("chrome.accentColor")
+  ) {
     return "design";
   }
   return "content";
@@ -147,7 +151,6 @@ export function studioLocaleProgress(
   return progress;
 }
 
-
 /**
  * Fill only the empty homepage fields of `to` with the text from `from`, so the
  * operator can translate in place instead of starting from a blank page. What
@@ -176,7 +179,9 @@ export function fillStudioLocaleFrom(
   for (const key of HOMEPAGE_COPY_KEYS) next[key] = fill(target[key], source[key]);
 
   const withSections = mapAllSections(draft, (section) => {
-    const sourceSlots = new Map(sectionTextSlots(section, from).map((slot) => [slot.path, slot.value]));
+    const sourceSlots = new Map(
+      sectionTextSlots(section, from).map((slot) => [slot.path, slot.value]),
+    );
     let updated = section;
     for (const slot of sectionTextSlots(section, to)) {
       const value = fill(slot.value, sourceSlots.get(slot.path) ?? "");
@@ -239,8 +244,10 @@ export function publicSiteReadiness(
   // A gallery shows albums of the photo library: it is ready once they hold a photo.
   const hasPhoto =
     gallery != null &&
-    galleryPhotos(config.media, readGalleryAlbums((gallery.settings.albums ?? "").split(",").filter(Boolean)))
-      .length > 0;
+    galleryPhotos(
+      config.media,
+      readGalleryAlbums((gallery.settings.albums ?? "").split(",").filter(Boolean)),
+    ).length > 0;
   const contact = config.contact;
   const progress = studioLocaleProgress(draft, stock);
   const lands = (href: string) => {
@@ -264,7 +271,8 @@ export function publicSiteReadiness(
     // line it falls back to. A word or two reads as unfinished in the results.
     {
       id: "searchText",
-      done: (copy.seoDescription.trim() || copy.heroSubtitle.trim()).length >= SEARCH_TEXT_MIN_LENGTH,
+      done:
+        (copy.seoDescription.trim() || copy.heroSubtitle.trim()).length >= SEARCH_TEXT_MIN_LENGTH,
       tab: "settings",
       part: "google",
       optional: true,
@@ -272,7 +280,9 @@ export function publicSiteReadiness(
     // Every language: a page without it has no booking button at the top.
     {
       id: "heroButton",
-      done: !draft.bookingEnabled || PUBLIC_LOCALES.every((locale) => draft.copies[locale].heroCtaPrimary.trim()),
+      done:
+        !draft.bookingEnabled ||
+        PUBLIC_LOCALES.every((locale) => draft.copies[locale].heroCtaPrimary.trim()),
       tab: "content",
       part: "hero",
     },
@@ -282,7 +292,12 @@ export function publicSiteReadiness(
       tab: "content",
       part: "hero",
     },
-    { id: "rooms", done: !draft.bookingEnabled || config.stayOffers.length > 0, tab: "settings", part: "booking" },
+    {
+      id: "rooms",
+      done: !draft.bookingEnabled || config.stayOffers.length > 0,
+      tab: "settings",
+      part: "booking",
+    },
     // The booking form collects personal data; the policy is not optional.
     { id: "privacy", done: copy.privacyBody.trim().length > 0, tab: "settings", part: "legal" },
     {
@@ -381,7 +396,10 @@ export type QuickStartAnswers = {
   styleId: PublicStylePresetId | null;
 };
 
-export function quickStartAnswersFrom(draft: PublicSiteStudioDraft, photoCount: number): QuickStartAnswers {
+export function quickStartAnswersFrom(
+  draft: PublicSiteStudioDraft,
+  photoCount: number,
+): QuickStartAnswers {
   const copy = draft.copies[draft.editLocale];
   const preset = PUBLIC_STYLE_PRESETS.find(
     (row) => row.templateId === draft.templateId && row.themeId === draft.themeId,

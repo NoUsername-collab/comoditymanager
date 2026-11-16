@@ -60,16 +60,9 @@ export function AdminAppearanceProvider({
     return next;
   }, []);
 
-  const getServerSnapshot = useCallback(
-    () => initialSettings,
-    [initialSettings]
-  );
+  const getServerSnapshot = useCallback(() => initialSettings, [initialSettings]);
 
-  const settings = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
-  );
+  const settings = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
     applyTheme(settings.theme, settings.mode);
@@ -86,18 +79,12 @@ export function AdminAppearanceProvider({
     settingsRef.current = settings;
   }, [settings]);
 
-  const setMode = useCallback(
-    (mode: ThemeMode) => apply(settingsRef.current.theme, mode),
-    [apply]
-  );
+  const setMode = useCallback((mode: ThemeMode) => apply(settingsRef.current.theme, mode), [apply]);
 
-  const toggleMode = useCallback(
-    () => {
-      const s = settingsRef.current;
-      apply(s.theme, s.mode === "day" ? "night" : "day");
-    },
-    [apply]
-  );
+  const toggleMode = useCallback(() => {
+    const s = settingsRef.current;
+    apply(s.theme, s.mode === "day" ? "night" : "day");
+  }, [apply]);
 
   const value = useMemo(
     () => ({
@@ -107,14 +94,10 @@ export function AdminAppearanceProvider({
       toggleMode,
       apply,
     }),
-    [settings.theme, settings.mode, setMode, toggleMode, apply]
+    [settings.theme, settings.mode, setMode, toggleMode, apply],
   );
 
-  return (
-    <AppearanceContext.Provider value={value}>
-      {children}
-    </AppearanceContext.Provider>
-  );
+  return <AppearanceContext.Provider value={value}>{children}</AppearanceContext.Provider>;
 }
 
 export { AdminAppearanceProvider as AdminThemeProvider };

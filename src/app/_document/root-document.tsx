@@ -49,7 +49,8 @@ export const rootMetadata: Metadata = {
   },
   openGraph: {
     title: "Zalmox — Software pentru pensiuni",
-    description: "Gestionează rezervări, check-in oaspeți și facturare. Software modern pentru pensiuni și hoteluri mici.",
+    description:
+      "Gestionează rezervări, check-in oaspeți și facturare. Software modern pentru pensiuni și hoteluri mici.",
     siteName: "Zalmox",
     locale: "ro_RO",
     type: "website",

@@ -74,9 +74,7 @@ export function StayOpsToolbar({
             href={buildHorizonHref(key)}
             className={[
               "stays-horizon__pill rounded-full border px-2 py-0.5 text-[11px] font-semibold",
-              horizon === key
-                ? "stays-horizon__pill--active"
-                : "stays-horizon__pill--idle",
+              horizon === key ? "stays-horizon__pill--active" : "stays-horizon__pill--idle",
             ].join(" ")}
           >
             {label}

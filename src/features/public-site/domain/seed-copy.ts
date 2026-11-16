@@ -54,7 +54,10 @@ type NavMessages = typeof en.public.nav;
 type PrivacyMessages = typeof en.public.privacy;
 type TermsMessages = typeof en.public.terms;
 
-function triadOf<M>(sections: { en: M; ro: M; bg: M }, build: (section: M) => string): LocalizedText {
+function triadOf<M>(
+  sections: { en: M; ro: M; bg: M },
+  build: (section: M) => string,
+): LocalizedText {
   return localizedFromTriad({
     en: build(sections.en),
     ro: build(sections.ro),
@@ -90,7 +93,11 @@ function privacyBody(m: PrivacyMessages): string {
   ].join("\n\n");
 }
 
-const UNPUBLISHED = { en: en.public.unpublished, ro: ro.public.unpublished, bg: bg.public.unpublished };
+const UNPUBLISHED = {
+  en: en.public.unpublished,
+  ro: ro.public.unpublished,
+  bg: bg.public.unpublished,
+};
 
 /**
  * Page copy a new site starts with: the "coming soon" page and the legal pages.

@@ -21,9 +21,7 @@ const loadOperationalStays = cache(async (): Promise<OperationalStayRow[]> => {
   return loadOperationalStaysForTenant(tenantId);
 });
 
-async function listOperationalStaysImpl(
-  tenantId: string,
-): Promise<OperationalStayRow[]> {
+async function listOperationalStaysImpl(tenantId: string): Promise<OperationalStayRow[]> {
   const [today, supabase] = await Promise.all([
     todayIso(),
     Promise.resolve(createPublicAdminClient()),
@@ -42,12 +40,8 @@ async function listOperationalStaysImpl(
 
   if (error) throw new Error(error.message);
 
-  const rows = await attachGuestProfiles(
-    mapBookingRows((data ?? []) as BookingSelectRow[]),
-  );
-  const { attachCheckinRecordState } = await import(
-    "@/services/checkin/attach-booking-state"
-  );
+  const rows = await attachGuestProfiles(mapBookingRows((data ?? []) as BookingSelectRow[]));
+  const { attachCheckinRecordState } = await import("@/services/checkin/attach-booking-state");
   try {
     return await attachCheckinRecordState(rows);
   } catch {
@@ -60,19 +54,15 @@ async function listOperationalStaysImpl(
 }
 
 const getCachedOperationalStays = (tenantId: string) =>
-  unstable_cache(
-    () => listOperationalStaysImpl(tenantId),
-    ["operational-stays", tenantId],
-    {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        CACHE_TAGS.checkins,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-        tenantTag(tenantId, CACHE_TAGS.checkins),
-      ],
-      revalidate: 60,
-    },
-  );
+  unstable_cache(() => listOperationalStaysImpl(tenantId), ["operational-stays", tenantId], {
+    tags: [
+      CACHE_TAGS.bookingCounts,
+      CACHE_TAGS.checkins,
+      tenantTag(tenantId, CACHE_TAGS.bookingCounts),
+      tenantTag(tenantId, CACHE_TAGS.checkins),
+    ],
+    revalidate: 60,
+  });
 
 const loadOperationalStaysForTenant = cache(async (tenantId: string) => {
   return getCachedOperationalStays(tenantId)();
@@ -117,22 +107,18 @@ const getCachedRecentlyConfirmedHistory = (tenantId: string, limit: number) =>
     () => listRecentlyConfirmedStayHistoryImpl(tenantId, limit),
     ["stays-recent-confirmed", tenantId, String(limit)],
     {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-      ],
+      tags: [CACHE_TAGS.bookingCounts, tenantTag(tenantId, CACHE_TAGS.bookingCounts)],
       revalidate: 45,
     },
   );
 
-const loadRecentlyConfirmedStayHistoryForTenant = cache(
-  (tenantId: string, limit: number) =>
-    getCachedRecentlyConfirmedHistory(tenantId, limit)(),
+const loadRecentlyConfirmedStayHistoryForTenant = cache((tenantId: string, limit: number) =>
+  getCachedRecentlyConfirmedHistory(tenantId, limit)(),
 );
 
 /** Cazări confirmate încă active/viitoare — pentru istoric lateral (nu doar checkout trecut). */
 export async function listRecentlyConfirmedStayHistory(
-  limit = 16
+  limit = 16,
 ): Promise<CompletedStayHistoryRow[]> {
   return loadRecentlyConfirmedStayHistory(limit);
 }
@@ -170,10 +156,7 @@ const getCachedCompletedStayHistory = (tenantId: string, limit: number) =>
     () => listCompletedStayHistoryImpl(tenantId, limit),
     ["stays-completed-history", tenantId, String(limit)],
     {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-      ],
+      tags: [CACHE_TAGS.bookingCounts, tenantTag(tenantId, CACHE_TAGS.bookingCounts)],
       revalidate: 60,
     },
   );
@@ -183,9 +166,7 @@ const loadCompletedStayHistoryForTenant = cache((tenantId: string, limit: number
 );
 
 /** Istoric cazări deja încheiate, util pentru sidebar-uri și recap rapid. */
-export async function listCompletedStayHistory(
-  limit = 24
-): Promise<CompletedStayHistoryRow[]> {
+export async function listCompletedStayHistory(limit = 24): Promise<CompletedStayHistoryRow[]> {
   return loadCompletedStayHistory(limit);
 }
 
@@ -225,10 +206,7 @@ const getCachedCancelledStayHistory = (tenantId: string, limit: number) =>
     () => listCancelledStayHistoryImpl(tenantId, limit),
     ["stays-cancelled-history", tenantId, String(limit)],
     {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-      ],
+      tags: [CACHE_TAGS.bookingCounts, tenantTag(tenantId, CACHE_TAGS.bookingCounts)],
       revalidate: 60,
     },
   );
@@ -238,8 +216,6 @@ const loadCancelledStayHistoryForTenant = cache((tenantId: string, limit: number
 );
 
 /** Cereri/cazări anulate recent — pentru recontact când se eliberează loc. */
-export async function listCancelledStayHistory(
-  limit = 24
-): Promise<CancelledStayHistoryRow[]> {
+export async function listCancelledStayHistory(limit = 24): Promise<CancelledStayHistoryRow[]> {
   return loadCancelledStayHistory(limit);
 }

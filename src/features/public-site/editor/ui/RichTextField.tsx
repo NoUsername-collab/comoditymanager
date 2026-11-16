@@ -77,7 +77,12 @@ export function RichTextField({
           ••
         </button>
       </span>
-      <textarea ref={areaRef} rows={rows} value={value} onChange={(e) => onChange(e.target.value)} />
+      <textarea
+        ref={areaRef}
+        rows={rows}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
       <SettingsFieldHint>{hint ?? te("richHint")}</SettingsFieldHint>
     </label>
   );

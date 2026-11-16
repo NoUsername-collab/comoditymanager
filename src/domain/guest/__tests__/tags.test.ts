@@ -6,10 +6,7 @@ import { parseGuestTags, toggleGuestTag } from "@/domain/guest/tags";
 // ---------------------------------------------------------------------------
 describe("parseGuestTags", () => {
   it("filters to valid tags from a mixed array", () => {
-    expect(parseGuestTags(["vip", "recurrent", "invalid", "other"])).toEqual([
-      "vip",
-      "recurrent",
-    ]);
+    expect(parseGuestTags(["vip", "recurrent", "invalid", "other"])).toEqual(["vip", "recurrent"]);
   });
 
   it("returns only valid tags", () => {

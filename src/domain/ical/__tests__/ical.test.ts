@@ -54,7 +54,12 @@ const AIRBNB = [
 describe("reading another site's calendar", () => {
   it("keeps reservations as nights and leaves cancelled ones out", () => {
     expect(parseIcalEvents(BOOKING)).toEqual([
-      { uid: "a1b2c3@booking.com", checkIn: "2026-11-20", checkOut: "2026-11-23", summary: "CLOSED - Not available" },
+      {
+        uid: "a1b2c3@booking.com",
+        checkIn: "2026-11-20",
+        checkOut: "2026-11-23",
+        summary: "CLOSED - Not available",
+      },
     ]);
   });
 
@@ -101,31 +106,73 @@ describe("publishing a room's calendar", () => {
 describe("one sync of an imported calendar", () => {
   const today = "2026-11-14";
   const existing = [
-    { id: "b-past", uid: "past", checkIn: "2026-11-01", checkOut: "2026-11-03", reason: "Booking.com" },
-    { id: "b-moved", uid: "moved", checkIn: "2026-11-20", checkOut: "2026-11-22", reason: "Booking.com" },
-    { id: "b-same", uid: "same", checkIn: "2026-12-01", checkOut: "2026-12-02", reason: "Booking.com" },
-    { id: "b-gone", uid: "gone", checkIn: "2026-12-10", checkOut: "2026-12-12", reason: "Booking.com" },
+    {
+      id: "b-past",
+      uid: "past",
+      checkIn: "2026-11-01",
+      checkOut: "2026-11-03",
+      reason: "Booking.com",
+    },
+    {
+      id: "b-moved",
+      uid: "moved",
+      checkIn: "2026-11-20",
+      checkOut: "2026-11-22",
+      reason: "Booking.com",
+    },
+    {
+      id: "b-same",
+      uid: "same",
+      checkIn: "2026-12-01",
+      checkOut: "2026-12-02",
+      reason: "Booking.com",
+    },
+    {
+      id: "b-gone",
+      uid: "gone",
+      checkIn: "2026-12-10",
+      checkOut: "2026-12-12",
+      reason: "Booking.com",
+    },
   ];
   const events = [
     { uid: "moved", checkIn: "2026-11-21", checkOut: "2026-11-24", summary: "" },
     { uid: "same", checkIn: "2026-12-01", checkOut: "2026-12-02", summary: "" },
-    { uid: "new", checkIn: "2027-01-05", checkOut: "2027-01-08", summary: "CLOSED - Not available" },
+    {
+      uid: "new",
+      checkIn: "2027-01-05",
+      checkOut: "2027-01-08",
+      summary: "CLOSED - Not available",
+    },
     { uid: "old", checkIn: "2026-10-01", checkOut: "2026-10-03", summary: "" },
   ];
 
   it("adds new reservations, moves changed ones, removes cancelled ones and keeps the past", () => {
     expect(planIcalSync({ feedName: "Booking.com", events, existing, today })).toEqual({
-      insert: [{ uid: "new", checkIn: "2027-01-05", checkOut: "2027-01-08", reason: "Booking.com · CLOSED - Not available" }],
-      update: [{ id: "b-moved", checkIn: "2026-11-21", checkOut: "2026-11-24", reason: "Booking.com" }],
+      insert: [
+        {
+          uid: "new",
+          checkIn: "2027-01-05",
+          checkOut: "2027-01-08",
+          reason: "Booking.com · CLOSED - Not available",
+        },
+      ],
+      update: [
+        { id: "b-moved", checkIn: "2026-11-21", checkOut: "2026-11-24", reason: "Booking.com" },
+      ],
       remove: ["b-gone"],
     });
   });
 
   it("counts reservations that overlap nights Zalmox already gave away", () => {
     const taken = [{ checkIn: "2026-11-23", checkOut: "2026-11-25" }];
-    expect(countImportConflicts([{ checkIn: "2026-11-21", checkOut: "2026-11-24" }], taken)).toBe(1);
+    expect(countImportConflicts([{ checkIn: "2026-11-21", checkOut: "2026-11-24" }], taken)).toBe(
+      1,
+    );
     // Departure day is free for the next arrival.
-    expect(countImportConflicts([{ checkIn: "2026-11-21", checkOut: "2026-11-23" }], taken)).toBe(0);
+    expect(countImportConflicts([{ checkIn: "2026-11-21", checkOut: "2026-11-23" }], taken)).toBe(
+      0,
+    );
   });
 });
 
@@ -135,15 +182,32 @@ describe("a calendar address the owner pastes", () => {
       ok: true,
       url: "https://www.airbnb.com/calendar/ical/1.ics?s=abc",
     });
-    expect(normalizeIcalFeedUrl("https://admin.booking.com/hotel/hoteladmin/ical.html?t=x").ok).toBe(true);
+    expect(
+      normalizeIcalFeedUrl("https://admin.booking.com/hotel/hoteladmin/ical.html?t=x").ok,
+    ).toBe(true);
   });
 
   it("refuses plain http, the server's own network and addresses with passwords", () => {
-    expect(normalizeIcalFeedUrl("http://example.com/a.ics")).toEqual({ ok: false, error: "not_https" });
-    expect(normalizeIcalFeedUrl("https://localhost/a.ics")).toEqual({ ok: false, error: "private_host" });
-    expect(normalizeIcalFeedUrl("https://169.254.169.254/latest")).toEqual({ ok: false, error: "private_host" });
-    expect(normalizeIcalFeedUrl("https://intranet/a.ics")).toEqual({ ok: false, error: "private_host" });
-    expect(normalizeIcalFeedUrl("https://u:p@example.com/a.ics")).toEqual({ ok: false, error: "invalid_url" });
+    expect(normalizeIcalFeedUrl("http://example.com/a.ics")).toEqual({
+      ok: false,
+      error: "not_https",
+    });
+    expect(normalizeIcalFeedUrl("https://localhost/a.ics")).toEqual({
+      ok: false,
+      error: "private_host",
+    });
+    expect(normalizeIcalFeedUrl("https://169.254.169.254/latest")).toEqual({
+      ok: false,
+      error: "private_host",
+    });
+    expect(normalizeIcalFeedUrl("https://intranet/a.ics")).toEqual({
+      ok: false,
+      error: "private_host",
+    });
+    expect(normalizeIcalFeedUrl("https://u:p@example.com/a.ics")).toEqual({
+      ok: false,
+      error: "invalid_url",
+    });
     expect(normalizeIcalFeedUrl("not a url")).toEqual({ ok: false, error: "invalid_url" });
   });
 

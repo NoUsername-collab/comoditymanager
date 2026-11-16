@@ -4,7 +4,7 @@ import type { LayoutMode, LayoutOrientation } from "./types";
 /** When to show bottom nav, drawer, compact HUD (phone + all tablet). */
 export function resolveLayoutChrome(
   mode: LayoutMode,
-  _orientation: LayoutOrientation
+  _orientation: LayoutOrientation,
 ): LayoutChrome {
   if (mode === "mobile") return "compact";
   if (mode === "tablet") return "compact";

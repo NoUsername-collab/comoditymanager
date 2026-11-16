@@ -44,7 +44,7 @@ function cleanup(windowMs: number) {
 export function checkRateLimit(
   key: string,
   limit: number,
-  windowMs: number
+  windowMs: number,
 ): { allowed: true; remaining: number } | { allowed: false; retryAfterMs: number } {
   const now = Date.now();
   cleanup(windowMs);
@@ -76,11 +76,7 @@ export function checkRateLimit(
 export async function getClientIp(): Promise<string> {
   const { headers } = await import("next/headers");
   const h = await headers();
-  return (
-    h.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    h.get("x-real-ip") ||
-    "unknown"
-  );
+  return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
 }
 
 // ─── Presets ─────────────────────────────────────────────────────────
@@ -104,8 +100,7 @@ export const RATE_LIMIT_GUEST_STAY_ACTION = { limit: 10, windowMs: 10 * 60 * 100
 export const RATE_LIMIT_LOGIN = { limit: 10, windowMs: 15 * 60 * 1000 };
 
 type RateLimitResult =
-  | { allowed: true; remaining: number }
-  | { allowed: false; retryAfterMs: number };
+  { allowed: true; remaining: number } | { allowed: false; retryAfterMs: number };
 
 /**
  * Rate limit that holds across serverless restarts: the in-memory check stops a

@@ -133,28 +133,22 @@ export function auditCssArchitecture(): CssViolation[] {
       });
     }
 
-    const importsGanttPremiumSlice = /@import\s+[^;]*gantt-premium-[a-z0-9-]+\.css/.test(
-      content,
-    );
+    const importsGanttPremiumSlice = /@import\s+[^;]*gantt-premium-[a-z0-9-]+\.css/.test(content);
     if (importsGanttPremiumSlice && normalized !== GANTT_PREMIUM_SLICE_PARENT) {
       violations.push({
         file: normalized,
         rule: "gantt-premium-slices-via-barrel",
-        detail:
-          "gantt-premium-*.css slices must only be @imported from gantt-premium.css",
+        detail: "gantt-premium-*.css slices must only be @imported from gantt-premium.css",
       });
     }
 
     const importsMobileAdminSlice =
-      /@import\s+[^;]*mobile-admin-(hud|premium|flawless|alignment|touch)\.css/.test(
-        content,
-      );
+      /@import\s+[^;]*mobile-admin-(hud|premium|flawless|alignment|touch)\.css/.test(content);
     if (importsMobileAdminSlice && normalized !== MOBILE_ADMIN_SLICE_PARENT) {
       violations.push({
         file: normalized,
         rule: "mobile-admin-slices-via-barrel",
-        detail:
-          "mobile-admin-*.css slices must only be @imported from mobile-admin.css",
+        detail: "mobile-admin-*.css slices must only be @imported from mobile-admin.css",
       });
     }
 
@@ -180,8 +174,7 @@ export function auditCssArchitecture(): CssViolation[] {
       violations.push({
         file: normalized,
         rule: "checkin-css-single-entry",
-        detail:
-          "Import @/features/checkin/ui/import-checkin-styles instead of admin-checkin.css",
+        detail: "Import @/features/checkin/ui/import-checkin-styles instead of admin-checkin.css",
       });
     }
   }

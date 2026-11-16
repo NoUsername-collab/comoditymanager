@@ -27,11 +27,9 @@ const StatisticsBarChart = dynamic(
         </div>
       </div>
     ),
-  }
+  },
 );
 
-export function StatisticsBarChartLazy(
-  props: ComponentProps<typeof StatisticsBarChart>
-) {
+export function StatisticsBarChartLazy(props: ComponentProps<typeof StatisticsBarChart>) {
   return <StatisticsBarChart {...props} />;
 }

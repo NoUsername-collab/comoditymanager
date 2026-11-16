@@ -1,6 +1,10 @@
 import type { SectionKind } from "@/features/public-site/sections/kind";
 import { seedText } from "@/features/public-site/sections/seed";
-import { readGalleryAlbums, readGalleryLayout, readGalleryLimit } from "@/features/public-site/domain/gallery";
+import {
+  readGalleryAlbums,
+  readGalleryLayout,
+  readGalleryLimit,
+} from "@/features/public-site/domain/gallery";
 
 /**
  * Albums of the photo library, laid out as the operator picks. The photos live

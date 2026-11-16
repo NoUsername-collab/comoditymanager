@@ -3,7 +3,7 @@ import { parseIso, formatIso, todayIso } from "@/lib/stay-dates";
 export function shiftStayDatesByYears(
   checkIn: string,
   checkOut: string,
-  years: number
+  years: number,
 ): { check_in: string; check_out: string } {
   const inDate = parseIso(checkIn);
   const outDate = parseIso(checkOut);

@@ -20,9 +20,7 @@ export async function proxy(request: NextRequest) {
   }
 
   const correctedHost = stagingTenantHostCorrection(
-    request.headers.get("x-forwarded-host") ??
-      request.headers.get("host") ??
-      ""
+    request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "",
   );
   if (correctedHost) {
     const url = request.nextUrl.clone();

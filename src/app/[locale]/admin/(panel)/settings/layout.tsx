@@ -10,11 +10,7 @@ import { SettingsShellWithSetupIssues } from "@/components/admin/settings/Settin
 import { getRequestAdminPath } from "@/lib/auth/admin-path";
 import { isSettingsStudioPath } from "@/domain/settings/public-site-studio-path";
 
-export default async function SettingsLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function SettingsLayout({ children }: { children: React.ReactNode }) {
   const adminPath = await getRequestAdminPath();
   if (isSettingsStudioPath(adminPath)) {
     return children;
@@ -30,8 +26,7 @@ export default async function SettingsLayout({
   const { role, memberRole } = staff;
   const settings = pensionResult.settings;
 
-  const description =
-    role === "operator" ? t("descriptionOperator") : t("descriptionAdmin");
+  const description = role === "operator" ? t("descriptionOperator") : t("descriptionAdmin");
 
   return (
     <AdminPageFrame

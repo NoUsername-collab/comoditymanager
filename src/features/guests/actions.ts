@@ -10,11 +10,7 @@ import type {
   GuestSex,
   GuestTag,
 } from "@/domain/guest/types";
-import {
-  validateNationalId,
-  cleanNationalId,
-  NATIONAL_ID_TYPES,
-} from "@/domain/guest/national-id";
+import { validateNationalId, cleanNationalId, NATIONAL_ID_TYPES } from "@/domain/guest/national-id";
 import type { NationalIdType } from "@/domain/guest/national-id";
 import { parseGuestTags } from "@/domain/guest/tags";
 import { assertValidGuestPhone } from "@/domain/guest/normalize";
@@ -31,10 +27,7 @@ import {
   updateGuestTags,
 } from "@/services/guests";
 import type { GuestIdentityInput } from "@/services/guests";
-import {
-  saveGuestStayReview,
-  updateGuestProfileControls,
-} from "@/services/guest-profiles";
+import { saveGuestStayReview, updateGuestProfileControls } from "@/services/guest-profiles";
 import { getTranslations } from "next-intl/server";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import {
@@ -53,7 +46,7 @@ function parseIntField(
   value: FormDataEntryValue | null,
   fallback = 0,
   min = -100,
-  max = 100
+  max = 100,
 ): number {
   const parsed = Number(String(value ?? fallback).trim() || fallback);
   if (!Number.isFinite(parsed)) return fallback;
@@ -155,20 +148,18 @@ function parseOptionalDate(fd: FormData, key: string): string | null {
   return v;
 }
 
-export type GuestIdentityActionResult =
-  | { ok: true }
-  | { ok: false; error: string };
+export type GuestIdentityActionResult = { ok: true } | { ok: false; error: string };
 
 function isDuplicateNationalIdDbError(message: string): boolean {
   return /duplicate key|guests_tenant_national_id_uidx|guests_tenant_cnp_uidx|guests_national_id_uidx/i.test(
-    message
+    message,
   );
 }
 
 function mapGuestIdentityActionError(
   error: unknown,
   tActions: (key: string, values?: Record<string, string>) => string,
-  tIdentity: (key: string, values?: Record<string, string | number>) => string
+  tIdentity: (key: string, values?: Record<string, string | number>) => string,
 ): string {
   if (!(error instanceof Error)) {
     return tIdentity("saveFailed");
@@ -196,7 +187,7 @@ function mapGuestIdentityActionError(
 }
 
 export async function updateGuestIdentityAction(
-  formData: FormData
+  formData: FormData,
 ): Promise<GuestIdentityActionResult> {
   const [tActions, tIdentity] = await Promise.all([
     getTranslations("admin.serverActions"),
@@ -215,17 +206,15 @@ export async function updateGuestIdentityAction(
     await updateGuestPhone(guestId, phoneRaw);
 
     const rawDocType = parseOptionalStr(formData, "doc_type");
-    const docType = rawDocType && VALID_DOC_TYPES.has(rawDocType)
-      ? (rawDocType as GuestDocType)
-      : null;
+    const docType =
+      rawDocType && VALID_DOC_TYPES.has(rawDocType) ? (rawDocType as GuestDocType) : null;
 
     const rawSex = parseOptionalStr(formData, "sex");
     const sex = rawSex && VALID_SEX.has(rawSex) ? (rawSex as GuestSex) : null;
 
     const rawNationalIdType = parseOptionalStr(formData, "national_id_type");
     const nationalIdType =
-      rawNationalIdType &&
-      VALID_NATIONAL_ID_TYPES.has(rawNationalIdType as NationalIdType)
+      rawNationalIdType && VALID_NATIONAL_ID_TYPES.has(rawNationalIdType as NationalIdType)
         ? (rawNationalIdType as GuestNationalIdType)
         : null;
 
@@ -294,9 +283,7 @@ export async function updateGuestIdentityAction(
   }
 }
 
-function parseReviewPolarity(
-  value: FormDataEntryValue | null
-): "positive" | "negative" | null {
+function parseReviewPolarity(value: FormDataEntryValue | null): "positive" | "negative" | null {
   const raw = String(value ?? "").trim();
   if (raw === "positive" || raw === "negative") return raw;
   return null;

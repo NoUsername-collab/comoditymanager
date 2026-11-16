@@ -41,12 +41,7 @@ export function allIdentityEmpty(values: GuestIdentityValues): boolean {
 }
 
 export function identityFingerprint(values: GuestIdentityValues): string {
-  return [
-    values.lastName,
-    values.firstName,
-    values.email,
-    values.phone,
-  ]
+  return [values.lastName, values.firstName, values.email, values.phone]
     .map((value) => value.trim().toLowerCase())
     .join("\0");
 }

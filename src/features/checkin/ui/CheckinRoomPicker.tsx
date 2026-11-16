@@ -63,17 +63,13 @@ export function CheckinRoomPicker({
           {labels.selectAll}
         </button>
         {selectedRooms.length > 0 ? (
-          <span className="checkin-room-picker__selection-count">
-            {labels.selectedCount}
-          </span>
+          <span className="checkin-room-picker__selection-count">{labels.selectedCount}</span>
         ) : null}
       </div>
 
       <ul className="checkin-room-picker__list">
         {progress.pendingRooms.map((room) => {
-          const active = selectedRooms.some(
-            (r) => r.toLowerCase() === room.toLowerCase(),
-          );
+          const active = selectedRooms.some((r) => r.toLowerCase() === room.toLowerCase());
           return (
             <li key={room}>
               <button
@@ -90,9 +86,7 @@ export function CheckinRoomPicker({
                   🛏
                 </span>
                 <span className="checkin-room-picker__card-name">{room}</span>
-                <span className="checkin-room-picker__card-badge">
-                  {labels.pendingBadge}
-                </span>
+                <span className="checkin-room-picker__card-badge">{labels.pendingBadge}</span>
               </button>
               <button
                 type="button"

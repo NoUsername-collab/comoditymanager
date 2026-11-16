@@ -50,11 +50,7 @@ describe("parseMrzIdentity", () => {
   });
 
   it("rejects corrupt checksum on Romanian CI", async () => {
-    const corrupt = [
-      RO_CI_TD1[0]!,
-      "9001017M2501017ROU<<<<<<<<<<<0",
-      RO_CI_TD1[2]!,
-    ];
+    const corrupt = [RO_CI_TD1[0]!, "9001017M2501017ROU<<<<<<<<<<<0", RO_CI_TD1[2]!];
     expect(await parseMrzIdentity(corrupt)).toEqual({ ok: false, error: "checksum_failed" });
   });
 
@@ -73,11 +69,7 @@ describe("parseMrzIdentity", () => {
 
 describe("extractMrzLinesFromOcrText", () => {
   it("finds TD1 block in noisy OCR", () => {
-    const text = [
-      "SCAN RESULT",
-      ...TD1_SAMPLE,
-      "END",
-    ].join("\n");
+    const text = ["SCAN RESULT", ...TD1_SAMPLE, "END"].join("\n");
     expect(extractMrzLinesFromOcrText(text)).toEqual(TD1_SAMPLE);
   });
 

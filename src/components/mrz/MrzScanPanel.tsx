@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-  type RefCallback,
-} from "react";
+import { useCallback, useEffect, useRef, useState, useTransition, type RefCallback } from "react";
 import { useTranslations } from "next-intl";
 import { extractMrzLinesFromOcrTexts } from "@/domain/guest/mrz-ocr";
 import type { MrzMappedIdentity, MrzParseResult } from "@/domain/guest/mrz";
@@ -23,9 +16,7 @@ import {
   waitForVideoDimensions,
 } from "@/lib/mrz/camera";
 import { mrzCameraErrorMessage } from "@/lib/mrz/camera-error-message";
-import {
-  createStableMrzReader,
-} from "@/lib/mrz/stable-read";
+import { createStableMrzReader } from "@/lib/mrz/stable-read";
 
 type TabId = "paste" | "camera";
 type MrzScanVariant = "admin" | "guest";
@@ -49,19 +40,11 @@ function prefersCameraTab(): boolean {
   return window.matchMedia("(pointer: coarse)").matches;
 }
 
-export function MrzScanPanel({
-  open,
-  variant,
-  translationNamespace,
-  onClose,
-  onApply,
-}: Props) {
+export function MrzScanPanel({ open, variant, translationNamespace, onClose, onApply }: Props) {
   const t = useTranslations(translationNamespace);
   const tCommon = useTranslations(variant === "guest" ? "common" : "admin.common");
   const p = prefix(variant);
-  const [tab, setTab] = useState<TabId>(() =>
-    prefersCameraTab() ? "camera" : "paste",
-  );
+  const [tab, setTab] = useState<TabId>(() => (prefersCameraTab() ? "camera" : "paste"));
   const [pasteValue, setPasteValue] = useState("");
   const [preview, setPreview] = useState<MrzMappedIdentity | null>(null);
   const [parsedLines, setParsedLines] = useState<string[]>([]);
@@ -87,7 +70,8 @@ export function MrzScanPanel({
   const cameraErrorT = useRef(t);
   cameraErrorT.current = t;
 
-  const cameraReady = cameraPhase === "ready" || cameraPhase === "scanning" || cameraPhase === "success";
+  const cameraReady =
+    cameraPhase === "ready" || cameraPhase === "scanning" || cameraPhase === "success";
 
   const resetState = useCallback(() => {
     setPasteValue("");
@@ -393,11 +377,7 @@ export function MrzScanPanel({
     <>
       <p className={`${p}__intro`}>{t("intro")}</p>
 
-      <div
-        className="sr-only"
-        aria-live="polite"
-        aria-relevant="additions text"
-      >
+      <div className="sr-only" aria-live="polite" aria-relevant="additions text">
         {error ?? (preview && checksumValid ? t("previewTitle") : "")}
       </div>
 
@@ -406,9 +386,7 @@ export function MrzScanPanel({
           type="button"
           role="tab"
           aria-selected={tab === "paste"}
-          className={
-            tab === "paste" ? `${p}__tab ${p}__tab--active` : `${p}__tab`
-          }
+          className={tab === "paste" ? `${p}__tab ${p}__tab--active` : `${p}__tab`}
           onClick={() => setTab("paste")}
         >
           {t("tabPaste")}
@@ -417,9 +395,7 @@ export function MrzScanPanel({
           type="button"
           role="tab"
           aria-selected={tab === "camera"}
-          className={
-            tab === "camera" ? `${p}__tab ${p}__tab--active` : `${p}__tab`
-          }
+          className={tab === "camera" ? `${p}__tab ${p}__tab--active` : `${p}__tab`}
           onClick={() => setTab("camera")}
         >
           {t("tabCamera")}
@@ -456,9 +432,7 @@ export function MrzScanPanel({
           >
             <video
               ref={setVideoRef}
-              className={
-                mirrorVideo ? `${p}__video ${p}__video--mirror` : `${p}__video`
-              }
+              className={mirrorVideo ? `${p}__video ${p}__video--mirror` : `${p}__video`}
               autoPlay
               playsInline
               muted
@@ -527,11 +501,7 @@ export function MrzScanPanel({
                 {t("cameraRetry")}
               </button>
             ) : null}
-            <button
-              type="button"
-              className={`${p}__manual-link`}
-              onClick={() => setTab("paste")}
-            >
+            <button type="button" className={`${p}__manual-link`} onClick={() => setTab("paste")}>
               {t("manualFallback")}
             </button>
           </div>
@@ -557,9 +527,7 @@ export function MrzScanPanel({
           <dl className={`${p}__preview-dl`}>
             <div>
               <dt>{t("fieldName")}</dt>
-              <dd>
-                {[preview.lastName, preview.firstName].filter(Boolean).join(" ") || "—"}
-              </dd>
+              <dd>{[preview.lastName, preview.firstName].filter(Boolean).join(" ") || "—"}</dd>
             </div>
             <div>
               <dt>{t("fieldDocument")}</dt>

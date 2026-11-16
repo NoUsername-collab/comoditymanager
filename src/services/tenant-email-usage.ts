@@ -1,7 +1,4 @@
-import {
-  currentUtcMonthPeriod,
-  monthlyCapExceeded,
-} from "@/domain/email/usage-cap";
+import { currentUtcMonthPeriod, monthlyCapExceeded } from "@/domain/email/usage-cap";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 
 type EmailUsageAcquireResult = {
@@ -24,9 +21,7 @@ function mapAcquirePayload(payload: AcquireRpcPayload | null): EmailUsageAcquire
     sentCount: typeof payload?.sent_count === "number" ? payload.sent_count : 0,
     cap: typeof payload?.cap === "number" ? payload.cap : null,
     periodMonth:
-      typeof payload?.period_month === "string"
-        ? payload.period_month
-        : currentUtcMonthPeriod(),
+      typeof payload?.period_month === "string" ? payload.period_month : currentUtcMonthPeriod(),
   };
 }
 

@@ -7,7 +7,7 @@ export type BeforeInstallPromptEvent = Event & {
 
 export function isPwaStandaloneInBrowser(
   matchStandalone: (query: string) => boolean,
-  iosStandalone: boolean
+  iosStandalone: boolean,
 ): boolean {
   return (
     matchStandalone("(display-mode: standalone)") ||
@@ -18,8 +18,7 @@ export function isPwaStandaloneInBrowser(
 
 export function isIosSafariUserAgent(userAgent: string): boolean {
   const isIos = /iPhone|iPad|iPod/i.test(userAgent);
-  const isSafari =
-    /Safari/i.test(userAgent) && !/CriOS|FxiOS|EdgiOS|OPiOS/i.test(userAgent);
+  const isSafari = /Safari/i.test(userAgent) && !/CriOS|FxiOS|EdgiOS|OPiOS/i.test(userAgent);
   return isIos && isSafari;
 }
 
@@ -39,7 +38,7 @@ export function readPwaInstallContext(): {
   const nav = window.navigator as Navigator & { standalone?: boolean };
   const installed = isPwaStandaloneInBrowser(
     (q) => window.matchMedia(q).matches,
-    nav.standalone === true
+    nav.standalone === true,
   );
 
   return {

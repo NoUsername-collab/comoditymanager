@@ -14,7 +14,7 @@ export function computeDailyFreeCounts(
   rooms: GanttRoom[],
   bookings: BookingRow[],
   occupancy: OccupancySegment[],
-  dayIsos: string[]
+  dayIsos: string[],
 ): DailyFreeCount[] {
   const total = rooms.length;
   if (total === 0) {
@@ -55,10 +55,7 @@ export function computeDailyFreeCounts(
 }
 
 /** Summary-cell heat — green = many free, red = full. */
-export function dailyFreeHeatLevel(
-  free: number,
-  total: number
-): "high" | "mid" | "low" | "full" {
+export function dailyFreeHeatLevel(free: number, total: number): "high" | "mid" | "low" | "full" {
   if (total === 0) return "mid";
   if (free === 0) return "full";
   const ratio = free / total;
@@ -70,13 +67,11 @@ export function dailyFreeHeatLevel(
 /** Aggregate daily free counts into week columns (min free = busiest day in week). */
 export function aggregateWeeklyFreeCounts(
   dailyCounts: DailyFreeCount[],
-  weekStartIsos: string[]
+  weekStartIsos: string[],
 ): DailyFreeCount[] {
   return weekStartIsos.map((weekStart) => {
     const weekEnd = addDays(weekStart, 6);
-    const inWeek = dailyCounts.filter(
-      (c) => c.iso >= weekStart && c.iso <= weekEnd
-    );
+    const inWeek = dailyCounts.filter((c) => c.iso >= weekStart && c.iso <= weekEnd);
     if (inWeek.length === 0) {
       return { iso: weekStart, free: 0, total: 0, occupied: 0 };
     }

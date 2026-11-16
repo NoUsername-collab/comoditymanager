@@ -6,11 +6,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { guestAppHomeHref } from "@/domain/guest-app/routes";
 import type { GuestAppFeatureDef } from "@/domain/guest-app/types";
 import { GuestNavIcon } from "@/features/guest-app/icons";
-import {
-  buildGuestBottomNav,
-  guestNavLabelKey,
-  resolveActiveGuestNavTab,
-} from "./nav";
+import { buildGuestBottomNav, guestNavLabelKey, resolveActiveGuestNavTab } from "./nav";
 
 type Props = {
   accessCode: string;
@@ -48,8 +44,7 @@ export function GuestAppBottomNav({ accessCode, features }: Props) {
         style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
       >
         {tabs.map((tab) => {
-          const isActive =
-            tab.id === "menu" ? onHome && hash === "#features" : tab.id === active;
+          const isActive = tab.id === "menu" ? onHome && hash === "#features" : tab.id === active;
           const label = t(guestNavLabelKey(tab) as "nav.home");
 
           return (

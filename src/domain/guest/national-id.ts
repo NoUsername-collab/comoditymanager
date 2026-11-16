@@ -305,11 +305,19 @@ function validateSzemelyiSzam(value: string): NationalIdValidation {
   let sex: "M" | "F";
   let centuryBase: number;
 
-  if (s === 1) { sex = "M"; centuryBase = 1900; }
-  else if (s === 2) { sex = "F"; centuryBase = 1900; }
-  else if (s === 3) { sex = "M"; centuryBase = 2000; }
-  else if (s === 4) { sex = "F"; centuryBase = 2000; }
-  else {
+  if (s === 1) {
+    sex = "M";
+    centuryBase = 1900;
+  } else if (s === 2) {
+    sex = "F";
+    centuryBase = 1900;
+  } else if (s === 3) {
+    sex = "M";
+    centuryBase = 2000;
+  } else if (s === 4) {
+    sex = "F";
+    centuryBase = 2000;
+  } else {
     return { valid: false, data: null, error: "sexDigit" };
   }
 
@@ -344,10 +352,7 @@ const VALIDATORS: Record<NationalIdType, (v: string) => NationalIdValidation> = 
  * Validate a national ID of any supported type.
  * Returns extracted sex + birthDate when valid.
  */
-export function validateNationalId(
-  type: NationalIdType,
-  value: string
-): NationalIdValidation {
+export function validateNationalId(type: NationalIdType, value: string): NationalIdValidation {
   const validator = VALIDATORS[type];
   if (!validator) return { valid: false, data: null, error: "unknownType" };
   return validator(value);
@@ -370,7 +375,7 @@ export function cleanNationalId(value: string): string {
 /** Sex + birth date extracted from a valid national ID (CNP, IDNP, EGN, etc.). */
 export function extractIdentityFromNationalId(
   type: NationalIdType,
-  raw: string | null | undefined
+  raw: string | null | undefined,
 ): NationalIdData | null {
   const cleaned = raw?.trim() ? cleanNationalId(raw) : "";
   if (!cleaned || cleaned.length !== NATIONAL_ID_LENGTH[type]) return null;
@@ -402,11 +407,17 @@ export function guessNationalIdType(value: string): NationalIdType | null {
 export function nationalIdTypeForCountry(countryCode: string): NationalIdType | null {
   const cc = countryCode.toUpperCase();
   switch (cc) {
-    case "RO": return "cnp";
-    case "MD": return "idnp";
-    case "BG": return "egn";
-    case "GR": return "amka";
-    case "HU": return "szemelyi_szam";
-    default: return null;
+    case "RO":
+      return "cnp";
+    case "MD":
+      return "idnp";
+    case "BG":
+      return "egn";
+    case "GR":
+      return "amka";
+    case "HU":
+      return "szemelyi_szam";
+    default:
+      return null;
   }
 }

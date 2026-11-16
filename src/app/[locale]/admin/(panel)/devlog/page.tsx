@@ -95,9 +95,7 @@ export default async function DevLogPage({
                       <strong>User:</strong> {log.user_email}
                     </p>
                   )}
-                  {log.stack && (
-                    <pre className="devlog-entry__stack">{log.stack}</pre>
-                  )}
+                  {log.stack && <pre className="devlog-entry__stack">{log.stack}</pre>}
                   {Object.keys(log.context).length > 0 && (
                     <pre className="devlog-entry__context">
                       {JSON.stringify(log.context, null, 2)}

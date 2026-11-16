@@ -275,10 +275,10 @@ describe("scoreDedupCandidates", () => {
       birth_date: "1985-01-01",
     });
 
-    const results = scoreDedupCandidates(
-      makeInput({ nationalId: null, birthDate: "1985-01-01" }),
-      [lowerRow, makeRow({ id: "b", display_name: "B" })],
-    );
+    const results = scoreDedupCandidates(makeInput({ nationalId: null, birthDate: "1985-01-01" }), [
+      lowerRow,
+      makeRow({ id: "b", display_name: "B" }),
+    ]);
 
     expect(results.length).toBeGreaterThanOrEqual(1);
     for (let i = 1; i < results.length; i++) {
@@ -338,26 +338,26 @@ describe("dedupAction", () => {
   });
 
   it("returns 'suggest_merge' for strong tier with score >= 80", () => {
-    expect(
-      dedupAction({ ...base, tier: "strong", score: 85, reasons: ["phone_lastname"] })
-    ).toBe("suggest_merge");
+    expect(dedupAction({ ...base, tier: "strong", score: 85, reasons: ["phone_lastname"] })).toBe(
+      "suggest_merge",
+    );
   });
 
   it("returns 'suggest_merge' for strong tier with score exactly 80", () => {
-    expect(
-      dedupAction({ ...base, tier: "strong", score: 80, reasons: ["email_lastname"] })
-    ).toBe("suggest_merge");
+    expect(dedupAction({ ...base, tier: "strong", score: 80, reasons: ["email_lastname"] })).toBe(
+      "suggest_merge",
+    );
   });
 
   it("returns 'warn' for strong tier with score < 80", () => {
-    expect(
-      dedupAction({ ...base, tier: "strong", score: 75, reasons: ["doc_number_type"] })
-    ).toBe("warn");
+    expect(dedupAction({ ...base, tier: "strong", score: 75, reasons: ["doc_number_type"] })).toBe(
+      "warn",
+    );
   });
 
   it("returns 'warn' for probable tier", () => {
-    expect(
-      dedupAction({ ...base, tier: "probable", score: 60, reasons: ["name_birthdate"] })
-    ).toBe("warn");
+    expect(dedupAction({ ...base, tier: "probable", score: 60, reasons: ["name_birthdate"] })).toBe(
+      "warn",
+    );
   });
 });

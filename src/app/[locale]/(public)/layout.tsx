@@ -6,10 +6,7 @@ import { PublicHeader } from "@/features/public-site/ui/PublicHeader";
 import { PublicLodgingJsonLd } from "@/features/public-site/ui/PublicLodgingJsonLd";
 import { PublicContactBar } from "@/features/public-site/contact/PublicContactBar";
 import { effectivePublicTemplate } from "@/features/public-site/domain/template";
-import {
-  publicThemeClassName,
-  resolvePublicSiteStyle,
-} from "@/features/public-site/themes/loader";
+import { publicThemeClassName, resolvePublicSiteStyle } from "@/features/public-site/themes/loader";
 import { MobileShell } from "@/layout/components/MobileShell";
 import { loadPublicSiteConfig } from "@/features/public-site/loaders";
 import { requestOrigin } from "@/lib/tenant/site-url";
@@ -31,11 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function PublicLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   await bindTenantContextFromRequest();
 
   const [config, tFooter, tContact, locale, origin, country] = await Promise.all([
@@ -47,13 +40,20 @@ export default async function PublicLayout({
     resolveTenantCountryForRequest(),
   ]);
 
-  const style = resolvePublicSiteStyle(config.themeId, config.chrome, effectivePublicTemplate(config));
+  const style = resolvePublicSiteStyle(
+    config.themeId,
+    config.chrome,
+    effectivePublicTemplate(config),
+  );
 
   return (
     <>
       <PublicLodgingJsonLd config={config} locale={locale} url={origin} country={country} />
       {/* Above the site's frame: a layout may lay its header over the top of the page. */}
-      <AdminCorner className={`site-themed ${publicThemeClassName(config.themeId)}`} style={style} />
+      <AdminCorner
+        className={`site-themed ${publicThemeClassName(config.themeId)}`}
+        style={style}
+      />
       <MobileShell
         surface="public"
         className={`site-themed ${publicThemeClassName(config.themeId)} flex min-h-screen flex-1 flex-col`}

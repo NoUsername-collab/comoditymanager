@@ -1,17 +1,12 @@
 import { describe, it, expect } from "vitest";
-import {
-  auditCssArchitecture,
-  auditCssGodFileSizes,
-} from "@/lib/architecture/css-boundaries";
+import { auditCssArchitecture, auditCssGodFileSizes } from "@/lib/architecture/css-boundaries";
 
 describe("CSS architecture audit", () => {
   it("keeps feature CSS out of src/app/ (globals shim only)", () => {
     const violations = auditCssArchitecture().filter((v) => v.rule === "no-app-css");
 
     if (violations.length > 0) {
-      const report = violations
-        .map((v) => `  ${v.file} [${v.rule}] ${v.detail}`)
-        .join("\n");
+      const report = violations.map((v) => `  ${v.file} [${v.rule}] ${v.detail}`).join("\n");
       expect.fail(`CSS in wrong layer:\n${report}\nSee ARCHITECTURE.md § CSS.`);
     }
 

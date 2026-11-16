@@ -11,7 +11,9 @@ const VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 export const TURNSTILE_FIELD = "cf-turnstile-response";
 
 export function isTurnstileEnabled(): boolean {
-  return Boolean(process.env.TURNSTILE_SECRET_KEY?.trim() && process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim());
+  return Boolean(
+    process.env.TURNSTILE_SECRET_KEY?.trim() && process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim(),
+  );
 }
 
 export type TurnstileOutcome = "passed" | "off" | "missing" | "rejected" | "unavailable";
@@ -55,6 +57,7 @@ export async function verifyTurnstileToken(
 
 /** Whether the outcome lets the form be processed. */
 export function turnstileAllows(outcome: TurnstileOutcome): boolean {
-  if (outcome === "unavailable") console.error("[turnstile] Cloudflare did not answer; form let through");
+  if (outcome === "unavailable")
+    console.error("[turnstile] Cloudflare did not answer; form let through");
   return outcome === "passed" || outcome === "off" || outcome === "unavailable";
 }

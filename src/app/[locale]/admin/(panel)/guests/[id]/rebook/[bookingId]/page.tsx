@@ -16,9 +16,7 @@ export default async function GuestRebookStayPage({
     getTranslations("admin.pages.guestRebook"),
     params,
     searchParams,
-    params.then(({ id, bookingId: sourceBookingId }) =>
-      loadGuestRebookPage(id, sourceBookingId)
-    ),
+    params.then(({ id, bookingId: sourceBookingId }) => loadGuestRebookPage(id, sourceBookingId)),
   ]);
 
   if (!payload) notFound();
@@ -35,9 +33,7 @@ export default async function GuestRebookStayPage({
     checkOutTime,
   } = payload;
 
-  const backHref =
-    from?.trim() ||
-    `/admin/guests/${guestId}?tab=history`;
+  const backHref = from?.trim() || `/admin/guests/${guestId}?tab=history`;
 
   return (
     <main className="guest-rebook-page ml-content mx-auto max-w-3xl px-4 py-5">
@@ -52,11 +48,7 @@ export default async function GuestRebookStayPage({
         <p className="text-sm text-zinc-600">
           {t("subtitle", {
             name: draft.guestDisplayName,
-            period: formatStayPeriod(
-              draft.sourceCheckIn,
-              draft.sourceCheckOut,
-              true
-            ),
+            period: formatStayPeriod(draft.sourceCheckIn, draft.sourceCheckOut, true),
           })}
         </p>
       </header>

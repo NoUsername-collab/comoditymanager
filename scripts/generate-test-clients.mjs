@@ -90,7 +90,9 @@ function genAmka(sex, year, month, day, seq) {
   const yy = String(year).slice(-2);
   const mm = String(month).padStart(2, "0");
   const dd = String(day).padStart(2, "0");
-  const sq = String(sex === "M" ? seq * 2 + 1 : seq * 2).padStart(4, "0").slice(-4);
+  const sq = String(sex === "M" ? seq * 2 + 1 : seq * 2)
+    .padStart(4, "0")
+    .slice(-4);
   const first10 = `${dd}${mm}${yy}${sq}`;
   return first10 + luhnCheckDigit(first10);
 }
@@ -108,61 +110,337 @@ function genSzemelyi(sex, year, month, day, seq) {
 // ─── Names ──────────────────────────────────────────────────────────────────
 
 const RO_LAST = [
-  "Popescu", "Ionescu", "Popa", "Radu", "Stan", "Dumitru", "Munteanu", "Gheorghe",
-  "Stoica", "Florea", "Diaconu", "Marin", "Tudor", "Barbu", "Moldovan", "Neagu",
-  "Constantinescu", "Dobre", "Cristea", "Nistor", "Oprea", "Pavel", "Roman", "Sava",
-  "Toma", "Ungureanu", "Vasile", "Zamfir", "Anghel", "Badea", "Ciobanu", "Dragomir",
-  "Enache", "Filip", "Georgescu", "Hanganu", "Iacob", "Jianu", "Kovacs", "Lazar",
-  "Mihai", "Nita", "Olteanu", "Petrescu", "Rusu", "Serban", "Tanase", "Ursu", "Voicu",
-  "Axente", "Balan", "Cojocaru", "Dascalu", "Ene", "Farcas", "Grigore", "Horvath",
-  "Iliescu", "Jipa", "Luca", "Manole", "Niculescu", "Olaru", "Preda", "Rotaru",
-  "Sandu", "Tataru", "Ursache", "Vlad", "Zaharia", "Ardelean", "Birsan", "Carp",
-  "Dumitrache", "Fodor", "Ghita", "Ilinca",
+  "Popescu",
+  "Ionescu",
+  "Popa",
+  "Radu",
+  "Stan",
+  "Dumitru",
+  "Munteanu",
+  "Gheorghe",
+  "Stoica",
+  "Florea",
+  "Diaconu",
+  "Marin",
+  "Tudor",
+  "Barbu",
+  "Moldovan",
+  "Neagu",
+  "Constantinescu",
+  "Dobre",
+  "Cristea",
+  "Nistor",
+  "Oprea",
+  "Pavel",
+  "Roman",
+  "Sava",
+  "Toma",
+  "Ungureanu",
+  "Vasile",
+  "Zamfir",
+  "Anghel",
+  "Badea",
+  "Ciobanu",
+  "Dragomir",
+  "Enache",
+  "Filip",
+  "Georgescu",
+  "Hanganu",
+  "Iacob",
+  "Jianu",
+  "Kovacs",
+  "Lazar",
+  "Mihai",
+  "Nita",
+  "Olteanu",
+  "Petrescu",
+  "Rusu",
+  "Serban",
+  "Tanase",
+  "Ursu",
+  "Voicu",
+  "Axente",
+  "Balan",
+  "Cojocaru",
+  "Dascalu",
+  "Ene",
+  "Farcas",
+  "Grigore",
+  "Horvath",
+  "Iliescu",
+  "Jipa",
+  "Luca",
+  "Manole",
+  "Niculescu",
+  "Olaru",
+  "Preda",
+  "Rotaru",
+  "Sandu",
+  "Tataru",
+  "Ursache",
+  "Vlad",
+  "Zaharia",
+  "Ardelean",
+  "Birsan",
+  "Carp",
+  "Dumitrache",
+  "Fodor",
+  "Ghita",
+  "Ilinca",
 ];
 
 const RO_FIRST_M = [
-  "Ion", "Andrei", "Mihai", "Alexandru", "Cristian", "Gabriel", "Stefan", "Radu",
-  "Bogdan", "Florin", "Adrian", "Cosmin", "Dan", "Eduard", "Felix", "George",
-  "Horia", "Ilie", "Lucian", "Marius", "Nicolae", "Octavian", "Paul", "Razvan",
-  "Sorin", "Tiberiu", "Valentin", "Zoltan", "Catalin", "Dragos", "Emil", "Fabian",
-  "Gheorghe", "Iulian", "Laurentiu", "Mircea", "Petru", "Robert", "Sebastian", "Tudor",
-  "Vasile", "Xenofon", "Alin", "Beniamin", "Ciprian", "Dorian", "Eugen", "Filip",
-  "Grigore", "Henri", "Ionel", "Jan", "Kevin", "Liviu", "Matei", "Norbert",
-  "Ovidiu", "Pavel", "Romeo", "Silviu", "Teodor", "Ulise", "Victor", "William",
-  "Yannis", "Zeno", "Arcadie", "Basarab", "Carol", "Dimitrie", "Eusebiu", "Flaviu",
-  "Haralambie", "Ioachim", "Jean", "Konstantin",
+  "Ion",
+  "Andrei",
+  "Mihai",
+  "Alexandru",
+  "Cristian",
+  "Gabriel",
+  "Stefan",
+  "Radu",
+  "Bogdan",
+  "Florin",
+  "Adrian",
+  "Cosmin",
+  "Dan",
+  "Eduard",
+  "Felix",
+  "George",
+  "Horia",
+  "Ilie",
+  "Lucian",
+  "Marius",
+  "Nicolae",
+  "Octavian",
+  "Paul",
+  "Razvan",
+  "Sorin",
+  "Tiberiu",
+  "Valentin",
+  "Zoltan",
+  "Catalin",
+  "Dragos",
+  "Emil",
+  "Fabian",
+  "Gheorghe",
+  "Iulian",
+  "Laurentiu",
+  "Mircea",
+  "Petru",
+  "Robert",
+  "Sebastian",
+  "Tudor",
+  "Vasile",
+  "Xenofon",
+  "Alin",
+  "Beniamin",
+  "Ciprian",
+  "Dorian",
+  "Eugen",
+  "Filip",
+  "Grigore",
+  "Henri",
+  "Ionel",
+  "Jan",
+  "Kevin",
+  "Liviu",
+  "Matei",
+  "Norbert",
+  "Ovidiu",
+  "Pavel",
+  "Romeo",
+  "Silviu",
+  "Teodor",
+  "Ulise",
+  "Victor",
+  "William",
+  "Yannis",
+  "Zeno",
+  "Arcadie",
+  "Basarab",
+  "Carol",
+  "Dimitrie",
+  "Eusebiu",
+  "Flaviu",
+  "Haralambie",
+  "Ioachim",
+  "Jean",
+  "Konstantin",
 ];
 
 const RO_FIRST_F = [
-  "Maria", "Elena", "Ana", "Ioana", "Andreea", "Gabriela", "Cristina", "Diana",
-  "Florentina", "Geanina", "Irina", "Laura", "Monica", "Nicoleta", "Oana", "Paula",
-  "Raluca", "Simona", "Teodora", "Veronica", "Adela", "Bianca", "Camelia", "Denisa",
-  "Ecaterina", "Felicia", "Georgiana", "Helena", "Iulia", "Jana", "Karina", "Larisa",
-  "Madalina", "Natalia", "Olivia", "Patricia", "Ramona", "Sabina", "Tamara", "Ursula",
-  "Valentina", "Xenia", "Yasmina", "Zina", "Alina", "Beatrice", "Corina", "Doina",
-  "Emilia", "Florica", "Gina", "Hortensia", "Ilona", "Julieta", "Kinga", "Lidia",
-  "Mihaela", "Noemi", "Ofelia", "Petronela", "Roxana", "Silvia", "Tatiana", "Viorica",
-  "Wanda", "Zenobia", "Antoaneta", "Brindusa", "Casandra", "Dorina", "Estera", "Flavia",
-  "Gratiela", "Henrieta", "Ileana", "Jacqueline",
+  "Maria",
+  "Elena",
+  "Ana",
+  "Ioana",
+  "Andreea",
+  "Gabriela",
+  "Cristina",
+  "Diana",
+  "Florentina",
+  "Geanina",
+  "Irina",
+  "Laura",
+  "Monica",
+  "Nicoleta",
+  "Oana",
+  "Paula",
+  "Raluca",
+  "Simona",
+  "Teodora",
+  "Veronica",
+  "Adela",
+  "Bianca",
+  "Camelia",
+  "Denisa",
+  "Ecaterina",
+  "Felicia",
+  "Georgiana",
+  "Helena",
+  "Iulia",
+  "Jana",
+  "Karina",
+  "Larisa",
+  "Madalina",
+  "Natalia",
+  "Olivia",
+  "Patricia",
+  "Ramona",
+  "Sabina",
+  "Tamara",
+  "Ursula",
+  "Valentina",
+  "Xenia",
+  "Yasmina",
+  "Zina",
+  "Alina",
+  "Beatrice",
+  "Corina",
+  "Doina",
+  "Emilia",
+  "Florica",
+  "Gina",
+  "Hortensia",
+  "Ilona",
+  "Julieta",
+  "Kinga",
+  "Lidia",
+  "Mihaela",
+  "Noemi",
+  "Ofelia",
+  "Petronela",
+  "Roxana",
+  "Silvia",
+  "Tatiana",
+  "Viorica",
+  "Wanda",
+  "Zenobia",
+  "Antoaneta",
+  "Brindusa",
+  "Casandra",
+  "Dorina",
+  "Estera",
+  "Flavia",
+  "Gratiela",
+  "Henrieta",
+  "Ileana",
+  "Jacqueline",
 ];
 
 const COUNTIES = [
-  "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Brașov", "București", "Cluj",
-  "Constanța", "Covasna", "Dolj", "Galați", "Harghita", "Iași", "Maramureș", "Mureș",
-  "Neamț", "Prahova", "Sibiu", "Suceava", "Timiș", "Vâlcea", "Vrancea", "Ilfov",
+  "Alba",
+  "Arad",
+  "Argeș",
+  "Bacău",
+  "Bihor",
+  "Brașov",
+  "București",
+  "Cluj",
+  "Constanța",
+  "Covasna",
+  "Dolj",
+  "Galați",
+  "Harghita",
+  "Iași",
+  "Maramureș",
+  "Mureș",
+  "Neamț",
+  "Prahova",
+  "Sibiu",
+  "Suceava",
+  "Timiș",
+  "Vâlcea",
+  "Vrancea",
+  "Ilfov",
 ];
 
 const CI_SERIES = ["RX", "RK", "SB", "TM", "IS", "CT", "BV", "CJ", "MM", "DJ", "BC", "GL"];
 
 const FOREIGN = [
-  { code: "MD", country: "Republica Moldova", nat: "Republica Moldova", last: ["Rusu", "Ceban", "Moraru"], firstM: ["Vasile", "Ion", "Andrei"], firstF: ["Elena", "Natalia", "Maria"] },
-  { code: "BG", country: "Bulgaria", nat: "Bulgaria", last: ["Georgiev", "Ivanov", "Dimitrov"], firstM: ["Ivan", "Georgi", "Nikolay"], firstF: ["Maria", "Elena", "Violeta"] },
-  { code: "HU", country: "Ungaria", nat: "Ungaria", last: ["Nagy", "Kovacs", "Szabo"], firstM: ["Laszlo", "Peter", "Zoltan"], firstF: ["Katalin", "Eva", "Anna"] },
-  { code: "DE", country: "Germania", nat: "Germania", last: ["Muller", "Schmidt", "Weber"], firstM: ["Hans", "Klaus", "Thomas"], firstF: ["Anna", "Petra", "Sabine"] },
-  { code: "FR", country: "Franța", nat: "Franța", last: ["Dupont", "Martin", "Bernard"], firstM: ["Pierre", "Jean", "Luc"], firstF: ["Marie", "Sophie", "Camille"] },
-  { code: "IT", country: "Italia", nat: "Italia", last: ["Rossi", "Russo", "Ferrari"], firstM: ["Marco", "Luca", "Giuseppe"], firstF: ["Giulia", "Francesca", "Chiara"] },
-  { code: "UA", country: "Ucraina", nat: "Ucraina", last: ["Kovalenko", "Shevchenko", "Bondarenko"], firstM: ["Oleksandr", "Dmytro", "Andriy"], firstF: ["Olena", "Iryna", "Natalia"] },
-  { code: "GB", country: "Regatul Unit", nat: "Regatul Unit", last: ["Smith", "Jones", "Taylor"], firstM: ["James", "Oliver", "William"], firstF: ["Emily", "Charlotte", "Olivia"] },
+  {
+    code: "MD",
+    country: "Republica Moldova",
+    nat: "Republica Moldova",
+    last: ["Rusu", "Ceban", "Moraru"],
+    firstM: ["Vasile", "Ion", "Andrei"],
+    firstF: ["Elena", "Natalia", "Maria"],
+  },
+  {
+    code: "BG",
+    country: "Bulgaria",
+    nat: "Bulgaria",
+    last: ["Georgiev", "Ivanov", "Dimitrov"],
+    firstM: ["Ivan", "Georgi", "Nikolay"],
+    firstF: ["Maria", "Elena", "Violeta"],
+  },
+  {
+    code: "HU",
+    country: "Ungaria",
+    nat: "Ungaria",
+    last: ["Nagy", "Kovacs", "Szabo"],
+    firstM: ["Laszlo", "Peter", "Zoltan"],
+    firstF: ["Katalin", "Eva", "Anna"],
+  },
+  {
+    code: "DE",
+    country: "Germania",
+    nat: "Germania",
+    last: ["Muller", "Schmidt", "Weber"],
+    firstM: ["Hans", "Klaus", "Thomas"],
+    firstF: ["Anna", "Petra", "Sabine"],
+  },
+  {
+    code: "FR",
+    country: "Franța",
+    nat: "Franța",
+    last: ["Dupont", "Martin", "Bernard"],
+    firstM: ["Pierre", "Jean", "Luc"],
+    firstF: ["Marie", "Sophie", "Camille"],
+  },
+  {
+    code: "IT",
+    country: "Italia",
+    nat: "Italia",
+    last: ["Rossi", "Russo", "Ferrari"],
+    firstM: ["Marco", "Luca", "Giuseppe"],
+    firstF: ["Giulia", "Francesca", "Chiara"],
+  },
+  {
+    code: "UA",
+    country: "Ucraina",
+    nat: "Ucraina",
+    last: ["Kovalenko", "Shevchenko", "Bondarenko"],
+    firstM: ["Oleksandr", "Dmytro", "Andriy"],
+    firstF: ["Olena", "Iryna", "Natalia"],
+  },
+  {
+    code: "GB",
+    country: "Regatul Unit",
+    nat: "Regatul Unit",
+    last: ["Smith", "Jones", "Taylor"],
+    firstM: ["James", "Oliver", "William"],
+    firstF: ["Emily", "Charlotte", "Olivia"],
+  },
 ];
 
 // ─── Uniqueness ─────────────────────────────────────────────────────────────
@@ -210,32 +488,211 @@ function addDays(iso, days) {
 
 const STAYS = [
   // overlap cluster — aceleași date, test disponibilitate
-  { check_in: "2026-06-20", check_out: "2026-06-23", adults: 2, children: 0, has_minor: false, minor_age: "", party: "cuplu", overlap: "CLUSTER-A", stay_edge: "suprapunere_aceeasi_perioada" },
-  { check_in: "2026-06-20", check_out: "2026-06-23", adults: 1, children: 0, has_minor: false, minor_age: "", party: "single", overlap: "CLUSTER-A", stay_edge: "suprapunere_aceeasi_perioada" },
-  { check_in: "2026-06-20", check_out: "2026-06-23", adults: 4, children: 0, has_minor: false, minor_age: "", party: "grup", overlap: "CLUSTER-A", stay_edge: "suprapunere_aceeasi_perioada" },
-  { check_in: "2026-06-20", check_out: "2026-06-23", adults: 2, children: 2, has_minor: true, minor_age: "7", party: "familie", overlap: "CLUSTER-A", stay_edge: "suprapunere_aceeasi_perioada" },
-  { check_in: "2026-06-20", check_out: "2026-06-23", adults: 3, children: 1, has_minor: true, minor_age: "12", party: "grup", overlap: "CLUSTER-A", stay_edge: "suprapunere_aceeasi_perioada" },
+  {
+    check_in: "2026-06-20",
+    check_out: "2026-06-23",
+    adults: 2,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "cuplu",
+    overlap: "CLUSTER-A",
+    stay_edge: "suprapunere_aceeasi_perioada",
+  },
+  {
+    check_in: "2026-06-20",
+    check_out: "2026-06-23",
+    adults: 1,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "single",
+    overlap: "CLUSTER-A",
+    stay_edge: "suprapunere_aceeasi_perioada",
+  },
+  {
+    check_in: "2026-06-20",
+    check_out: "2026-06-23",
+    adults: 4,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "grup",
+    overlap: "CLUSTER-A",
+    stay_edge: "suprapunere_aceeasi_perioada",
+  },
+  {
+    check_in: "2026-06-20",
+    check_out: "2026-06-23",
+    adults: 2,
+    children: 2,
+    has_minor: true,
+    minor_age: "7",
+    party: "familie",
+    overlap: "CLUSTER-A",
+    stay_edge: "suprapunere_aceeasi_perioada",
+  },
+  {
+    check_in: "2026-06-20",
+    check_out: "2026-06-23",
+    adults: 3,
+    children: 1,
+    has_minor: true,
+    minor_age: "12",
+    party: "grup",
+    overlap: "CLUSTER-A",
+    stay_edge: "suprapunere_aceeasi_perioada",
+  },
   // overlap parțial
-  { check_in: "2026-07-01", check_out: "2026-07-06", adults: 2, children: 0, has_minor: false, minor_age: "", party: "cuplu", overlap: "CLUSTER-B", stay_edge: "suprapunere_partiala" },
-  { check_in: "2026-07-03", check_out: "2026-07-08", adults: 2, children: 0, has_minor: false, minor_age: "", party: "cuplu", overlap: "CLUSTER-B", stay_edge: "suprapunere_partiala" },
-  { check_in: "2026-07-04", check_out: "2026-07-10", adults: 1, children: 0, has_minor: false, minor_age: "", party: "single", overlap: "CLUSTER-B", stay_edge: "suprapunere_partiala" },
+  {
+    check_in: "2026-07-01",
+    check_out: "2026-07-06",
+    adults: 2,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "cuplu",
+    overlap: "CLUSTER-B",
+    stay_edge: "suprapunere_partiala",
+  },
+  {
+    check_in: "2026-07-03",
+    check_out: "2026-07-08",
+    adults: 2,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "cuplu",
+    overlap: "CLUSTER-B",
+    stay_edge: "suprapunere_partiala",
+  },
+  {
+    check_in: "2026-07-04",
+    check_out: "2026-07-10",
+    adults: 1,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "single",
+    overlap: "CLUSTER-B",
+    stay_edge: "suprapunere_partiala",
+  },
   // 1 noapte
-  { check_in: "2026-06-12", check_out: "2026-06-13", adults: 1, children: 0, has_minor: false, minor_age: "", party: "single", stay_edge: "1_noapte" },
-  { check_in: "2026-06-14", check_out: "2026-06-15", adults: 2, children: 0, has_minor: false, minor_age: "", party: "cuplu", stay_edge: "1_noapte" },
+  {
+    check_in: "2026-06-12",
+    check_out: "2026-06-13",
+    adults: 1,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "single",
+    stay_edge: "1_noapte",
+  },
+  {
+    check_in: "2026-06-14",
+    check_out: "2026-06-15",
+    adults: 2,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "cuplu",
+    stay_edge: "1_noapte",
+  },
   // weekend
-  { check_in: "2026-06-19", check_out: "2026-06-21", adults: 2, children: 0, has_minor: false, minor_age: "", party: "cuplu", stay_edge: "weekend_vineri_duminica" },
+  {
+    check_in: "2026-06-19",
+    check_out: "2026-06-21",
+    adults: 2,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "cuplu",
+    stay_edge: "weekend_vineri_duminica",
+  },
   // sejur lung
-  { check_in: "2026-08-01", check_out: "2026-08-08", adults: 2, children: 1, has_minor: true, minor_age: "5", party: "familie", stay_edge: "7_nopti" },
-  { check_in: "2026-09-10", check_out: "2026-09-24", adults: 1, children: 0, has_minor: false, minor_age: "", party: "single", stay_edge: "14_nopti" },
+  {
+    check_in: "2026-08-01",
+    check_out: "2026-08-08",
+    adults: 2,
+    children: 1,
+    has_minor: true,
+    minor_age: "5",
+    party: "familie",
+    stay_edge: "7_nopti",
+  },
+  {
+    check_in: "2026-09-10",
+    check_out: "2026-09-24",
+    adults: 1,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "single",
+    stay_edge: "14_nopti",
+  },
   // familii cu minori
-  { check_in: "2026-06-25", check_out: "2026-06-28", adults: 2, children: 1, has_minor: true, minor_age: "3", party: "familie", stay_edge: "minor_3_ani" },
-  { check_in: "2026-06-25", check_out: "2026-06-28", adults: 2, children: 2, has_minor: true, minor_age: "16", party: "familie", stay_edge: "minor_16_ani" },
+  {
+    check_in: "2026-06-25",
+    check_out: "2026-06-28",
+    adults: 2,
+    children: 1,
+    has_minor: true,
+    minor_age: "3",
+    party: "familie",
+    stay_edge: "minor_3_ani",
+  },
+  {
+    check_in: "2026-06-25",
+    check_out: "2026-06-28",
+    adults: 2,
+    children: 2,
+    has_minor: true,
+    minor_age: "16",
+    party: "familie",
+    stay_edge: "minor_16_ani",
+  },
   // grup mare
-  { check_in: "2026-07-15", check_out: "2026-07-18", adults: 6, children: 0, has_minor: false, minor_age: "", party: "grup", stay_edge: "grup_6_adulti" },
-  { check_in: "2026-07-15", check_out: "2026-07-18", adults: 5, children: 2, has_minor: true, minor_age: "9", party: "grup", stay_edge: "grup_5_adulti_2_copii" },
+  {
+    check_in: "2026-07-15",
+    check_out: "2026-07-18",
+    adults: 6,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "grup",
+    stay_edge: "grup_6_adulti",
+  },
+  {
+    check_in: "2026-07-15",
+    check_out: "2026-07-18",
+    adults: 5,
+    children: 2,
+    has_minor: true,
+    minor_age: "9",
+    party: "grup",
+    stay_edge: "grup_5_adulti_2_copii",
+  },
   // back-to-back (notat în scenario)
-  { check_in: "2026-06-10", check_out: "2026-06-12", adults: 2, children: 0, has_minor: false, minor_age: "", party: "cuplu", stay_edge: "back_to_back_A" },
-  { check_in: "2026-06-12", check_out: "2026-06-14", adults: 2, children: 0, has_minor: false, minor_age: "", party: "cuplu", stay_edge: "back_to_back_B_aceeasi_persoana" },
+  {
+    check_in: "2026-06-10",
+    check_out: "2026-06-12",
+    adults: 2,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "cuplu",
+    stay_edge: "back_to_back_A",
+  },
+  {
+    check_in: "2026-06-12",
+    check_out: "2026-06-14",
+    adults: 2,
+    children: 0,
+    has_minor: false,
+    minor_age: "",
+    party: "cuplu",
+    stay_edge: "back_to_back_B_aceeasi_persoana",
+  },
 ];
 
 function pickStay(index) {
@@ -246,8 +703,20 @@ function pickStay(index) {
   const parties = [
     { adults: 1, children: 0, has_minor: false, minor_age: "", party: "single" },
     { adults: 2, children: 0, has_minor: false, minor_age: "", party: "cuplu" },
-    { adults: 2, children: 1, has_minor: true, minor_age: String(4 + (base % 10)), party: "familie" },
-    { adults: 2, children: 2, has_minor: true, minor_age: String(6 + (base % 8)), party: "familie" },
+    {
+      adults: 2,
+      children: 1,
+      has_minor: true,
+      minor_age: String(4 + (base % 10)),
+      party: "familie",
+    },
+    {
+      adults: 2,
+      children: 2,
+      has_minor: true,
+      minor_age: String(6 + (base % 8)),
+      party: "familie",
+    },
     { adults: 3, children: 0, has_minor: false, minor_age: "", party: "grup" },
     { adults: 4, children: 1, has_minor: true, minor_age: "11", party: "grup" },
   ];
@@ -416,14 +885,32 @@ function foreignIdentity(fCode, docVariant, idx, sex, year, month, day) {
     };
   }
   if (docVariant === "passport") {
-    const prefixes = { DE: "DE", FR: "FR", IT: "IT", UA: "UA", GB: "GB", MD: "MD", BG: "BG", HU: "HU" };
+    const prefixes = {
+      DE: "DE",
+      FR: "FR",
+      IT: "IT",
+      UA: "UA",
+      GB: "GB",
+      MD: "MD",
+      BG: "BG",
+      HU: "HU",
+    };
     const natId =
       fCode === "MD"
-        ? { national_id_type: "idnp", national_id: uniqNat("idnp", genIdnp(sex, year, month, day, idx + 50)) }
+        ? {
+            national_id_type: "idnp",
+            national_id: uniqNat("idnp", genIdnp(sex, year, month, day, idx + 50)),
+          }
         : fCode === "BG"
-          ? { national_id_type: "egn", national_id: uniqNat("egn", genEgn(sex, year, month, day, idx + 50)) }
+          ? {
+              national_id_type: "egn",
+              national_id: uniqNat("egn", genEgn(sex, year, month, day, idx + 50)),
+            }
           : fCode === "HU"
-            ? { national_id_type: "szemelyi_szam", national_id: uniqNat("szemelyi_szam", genSzemelyi(sex, year, month, day, idx + 50)) }
+            ? {
+                national_id_type: "szemelyi_szam",
+                national_id: uniqNat("szemelyi_szam", genSzemelyi(sex, year, month, day, idx + 50)),
+              }
             : { national_id_type: null, national_id: null };
     return {
       ...base,
@@ -518,26 +1005,29 @@ function buildClients() {
     const month = (r % 12) + 1;
     const day = (r % 27) + 1;
     const last = RO_LAST[r % RO_LAST.length];
-    const first = sex === "M" ? RO_FIRST_M[r % RO_FIRST_M.length] : RO_FIRST_F[r % RO_FIRST_F.length];
+    const first =
+      sex === "M" ? RO_FIRST_M[r % RO_FIRST_M.length] : RO_FIRST_F[r % RO_FIRST_F.length];
     const stay = pickStay(r);
     const docKind = roDocPlan[r];
 
     let check_in = null;
     if (docKind !== "check_in_only") {
-      if (docKind === "ci" || docKind === "ci_partial") check_in = roCiIdentity(r, sex, year, month, day, docKind === "ci_partial");
+      if (docKind === "ci" || docKind === "ci_partial")
+        check_in = roCiIdentity(r, sex, year, month, day, docKind === "ci_partial");
       else if (docKind === "passport") check_in = roPassportIdentity(r, sex, year, month, day);
       else if (docKind === "other") check_in = roOtherIdentity(r, sex, year, month, day);
     }
 
-    const phone = uniqPhone(`07${String(20 + (r % 70)).padStart(2, "0")}${String(100000 + r * 137).slice(-6)}`);
-    const notes =
-      stay.overlap
-        ? `[TEST ${stay.overlap}] Cerere suprapusă — ${stay.stay_edge}`
-        : stay.stay_edge === "back_to_back_B_aceeasi_persoana"
-          ? "[TEST] Aceeași persoană ca clientul anterior (back-to-back)"
-          : stay.stay_edge !== "standard"
-            ? `[TEST] ${stay.stay_edge}`
-            : "";
+    const phone = uniqPhone(
+      `07${String(20 + (r % 70)).padStart(2, "0")}${String(100000 + r * 137).slice(-6)}`,
+    );
+    const notes = stay.overlap
+      ? `[TEST ${stay.overlap}] Cerere suprapusă — ${stay.stay_edge}`
+      : stay.stay_edge === "back_to_back_B_aceeasi_persoana"
+        ? "[TEST] Aceeași persoană ca clientul anterior (back-to-back)"
+        : stay.stay_edge !== "standard"
+          ? `[TEST] ${stay.stay_edge}`
+          : "";
 
     clients.push({
       id: `T${pad3(idx + 1)}`,
@@ -587,7 +1077,8 @@ function buildClients() {
       const month = (fIdx % 12) + 1;
       const day = (fIdx % 25) + 1;
       const last = f.last[slot % f.last.length];
-      const first = sex === "M" ? f.firstM[slot % f.firstM.length] : f.firstF[slot % f.firstF.length];
+      const first =
+        sex === "M" ? f.firstM[slot % f.firstM.length] : f.firstF[slot % f.firstF.length];
       const stay = pickStay(76 + fIdx);
       const docVariant = docs[slot];
       const identity = foreignIdentity(f.code, docVariant, 900 + fIdx, sex, year, month, day);
@@ -619,9 +1110,15 @@ function buildClients() {
           guest_last_name: last,
           guest_first_name: first,
           guest_name: `${last} ${first}`,
-          guest_email: uniqEmail(`${f.code.toLowerCase()}.client.${pad3(slot + 1)}@test.casaemil.local`),
+          guest_email: uniqEmail(
+            `${f.code.toLowerCase()}.client.${pad3(slot + 1)}@test.casaemil.local`,
+          ),
           guest_phone: uniqPhone(intlPhone),
-          notes: stay.overlap ? `[TEST ${stay.overlap}] ${stay.stay_edge}` : stay.stay_edge !== "standard" ? `[TEST] ${stay.stay_edge}` : `Cetățean ${f.nat}`,
+          notes: stay.overlap
+            ? `[TEST ${stay.overlap}] ${stay.stay_edge}`
+            : stay.stay_edge !== "standard"
+              ? `[TEST] ${stay.stay_edge}`
+              : `Cetățean ${f.nat}`,
         },
         check_in: identity,
         ...(stay.overlap ? { suprapunere: stay.overlap } : {}),
@@ -951,14 +1448,15 @@ function buildTestCatalog(clients) {
 }
 
 function buildScenario(citizenship, doc, stay) {
-  const docLabel = {
-    ci: "CI + CNP",
-    ci_partial: "CI parțial (completezi la check-in)",
-    passport: "Pașaport",
-    foreign_id: "Act străin",
-    other: "Alt document",
-    check_in_only: "Fără identitate — doar la check-in",
-  }[doc] ?? doc;
+  const docLabel =
+    {
+      ci: "CI + CNP",
+      ci_partial: "CI parțial (completezi la check-in)",
+      passport: "Pașaport",
+      foreign_id: "Act străin",
+      other: "Alt document",
+      check_in_only: "Fără identitate — doar la check-in",
+    }[doc] ?? doc;
   const parts = [
     citizenship === "RO" ? "Român" : `Străin (${citizenship})`,
     docLabel,
@@ -1008,7 +1506,8 @@ function renderMarkdown(clients, meta) {
     lines.push(`| Cetățenie | ${c.cetatenie} |`);
     lines.push(`| Tip | ${c.tip_persoane} |`);
     if (c.suprapunere) lines.push(`| Suprapunere | **${c.suprapunere}** |`);
-    if (c.test_tags?.length) lines.push(`| Test tags | ${c.test_tags.map((t) => `\`${t}\``).join(", ")} |`);
+    if (c.test_tags?.length)
+      lines.push(`| Test tags | ${c.test_tags.map((t) => `\`${t}\``).join(", ")} |`);
     lines.push("");
     lines.push("### Cerere publică (formular rezervare)");
     lines.push("");
@@ -1028,7 +1527,9 @@ function renderMarkdown(clients, meta) {
     lines.push("### Check-in / Înregistrare client (admin)");
     lines.push("");
     if (!ci) {
-      lines.push("*Completezi toate câmpurile identitate la check-in (client nou, fără date preexistente).*");
+      lines.push(
+        "*Completezi toate câmpurile identitate la check-in (client nou, fără date preexistente).*",
+      );
     } else {
       lines.push("| Câmp | Valoare |");
       lines.push("|------|---------|");
@@ -1159,7 +1660,9 @@ function renderHtml(rawClients, meta) {
   const sorted = [...rawClients].sort((a, b) => {
     const pa = a.cerere_publica;
     const pb = b.cerere_publica;
-    const byLast = pa.guest_last_name.localeCompare(pb.guest_last_name, "ro", { sensitivity: "base" });
+    const byLast = pa.guest_last_name.localeCompare(pb.guest_last_name, "ro", {
+      sensitivity: "base",
+    });
     if (byLast !== 0) return byLast;
     return pa.guest_first_name.localeCompare(pb.guest_first_name, "ro", { sensitivity: "base" });
   });
@@ -1572,11 +2075,17 @@ const meta = {
   count: clients.length,
   distributie: {
     romania: { count: roCount, procent: "76%" },
-    straini: { count: foreignCount, procent: "24%", cate_per_tara: 3, tari: FOREIGN.map((f) => f.code) },
+    straini: {
+      count: foreignCount,
+      procent: "24%",
+      cate_per_tara: 3,
+      tari: FOREIGN.map((f) => f.code),
+    },
   },
   structura: {
     cerere_publica: "Date pentru pagina publică /calendar — rezervare",
-    check_in: "Date pentru admin: acceptare + tab Identitate la check-in (null = completezi tot la check-in)",
+    check_in:
+      "Date pentru admin: acceptare + tab Identitate la check-in (null = completezi tot la check-in)",
   },
   tipuri_persoane: ["single", "cuplu", "familie", "grup"],
   suprapuneri: {

@@ -56,9 +56,7 @@ export function visibleGuestAppFeaturesForBooking(
   });
 }
 
-export function guestAppFeatureBadge(
-  feature: GuestAppFeatureDef,
-): string | null {
+export function guestAppFeatureBadge(feature: GuestAppFeatureDef): string | null {
   if (feature.state === "mock") return "Demo";
   return null;
 }
@@ -71,11 +69,11 @@ export function isGuestFeatureReady(
     case "hotel_info":
       return Boolean(
         ctx.hotel.shortDescription ||
-          ctx.hotel.longDescription ||
-          ctx.hotel.phone ||
-          ctx.hotel.email ||
-          ctx.hotel.address ||
-          ctx.stayHours,
+        ctx.hotel.longDescription ||
+        ctx.hotel.phone ||
+        ctx.hotel.email ||
+        ctx.hotel.address ||
+        ctx.stayHours,
       );
     case "wifi":
       return Boolean(ctx.wifi?.networkName || ctx.wifi?.password);

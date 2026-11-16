@@ -52,10 +52,7 @@ async function requireGuestAppOwnerAccess() {
   return { staff, tenant };
 }
 
-async function bookingExistsInPublic(
-  tenantId: string,
-  bookingId: string,
-): Promise<boolean> {
+async function bookingExistsInPublic(tenantId: string, bookingId: string): Promise<boolean> {
   const supabase = createPublicAdminClient();
   const { data } = await supabase
     .from("bookings")
@@ -81,10 +78,9 @@ export async function enableGuestAppFromOwnerAction(): Promise<
   }
 }
 
-export async function loadGuestAccessLinkAction(bookingId: string): Promise<
-  | { ok: true; url: string; accessCode: string }
-  | { ok: false; error: string }
-> {
+export async function loadGuestAccessLinkAction(
+  bookingId: string,
+): Promise<{ ok: true; url: string; accessCode: string } | { ok: false; error: string }> {
   try {
     const [t, { staff, tenant }] = await Promise.all([
       getTranslations("admin.pages.guestApp"),
@@ -110,10 +106,7 @@ export async function loadGuestAccessLinkAction(bookingId: string): Promise<
       return { ok: false, error: t("errors.simBookingOnly") };
     }
 
-    const link = await resolveGuestAccessLinkForBooking(
-      bookingId,
-      await resolveBaseUrl(),
-    );
+    const link = await resolveGuestAccessLinkForBooking(bookingId, await resolveBaseUrl());
     if (!link) return { ok: false, error: t("errors.linkUnavailable") };
 
     return { ok: true, url: link.url, accessCode: link.accessCode };
@@ -125,10 +118,7 @@ export async function loadGuestAccessLinkAction(bookingId: string): Promise<
 
 export async function regenerateGuestAccessAction(
   bookingId: string,
-): Promise<
-  | { ok: true; url: string; accessCode: string }
-  | { ok: false; error: string }
-> {
+): Promise<{ ok: true; url: string; accessCode: string } | { ok: false; error: string }> {
   try {
     const t = await getTranslations("admin.pages.guestApp");
     const { tenant } = await requireGuestAppOwnerAccess();

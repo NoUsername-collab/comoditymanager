@@ -36,10 +36,7 @@ export const loadStaysPrimaryData = cache(
       stays: emptyStays,
       cancelledHistory: emptyCancelled,
     };
-    const errors: Pick<
-      StayPageLoadResult["errors"],
-      "stays" | "cancelledHistory"
-    > = {
+    const errors: Pick<StayPageLoadResult["errors"], "stays" | "cancelledHistory"> = {
       stays: null,
       cancelledHistory: null,
     };
@@ -68,7 +65,7 @@ export const loadStaysPrimaryData = cache(
         confirmedRecentHistory: null,
       },
     };
-  }
+  },
 );
 
 /** Sidebar recap lists — streamed via Suspense on the cazări page. */
@@ -99,12 +96,9 @@ export const loadStaysSidebarHistoryData = cache(
     if (confirmedRecentResult.status === "fulfilled") {
       data.confirmedRecentHistory = confirmedRecentResult.value;
     } else {
-      errors.confirmedRecentHistory = errorMessage(
-        confirmedRecentResult.reason,
-        ""
-      );
+      errors.confirmedRecentHistory = errorMessage(confirmedRecentResult.reason, "");
     }
 
     return { data, errors };
-  }
+  },
 );

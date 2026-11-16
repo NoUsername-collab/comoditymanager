@@ -12,9 +12,7 @@ export const BUILDING_COLOR_PALETTE = [
   { hex: "#64748b", label: "Slate gray" },
 ] as const;
 
-export function defaultColorForAcMode(
-  acMode: "all_rooms" | "none" | "per_room"
-): string {
+export function defaultColorForAcMode(acMode: "all_rooms" | "none" | "per_room"): string {
   if (acMode === "all_rooms") return "#2563eb";
   if (acMode === "none") return "#ea580c";
   return "#059669";
@@ -37,7 +35,7 @@ export function normalizeBuildingColor(input: string | null | undefined): string
 /** Any valid hex; invalid input falls back to the AC default. */
 export function resolveSubmittedBuildingColor(
   rawInput: string,
-  acMode: "all_rooms" | "none" | "per_room"
+  acMode: "all_rooms" | "none" | "per_room",
 ): string {
   return canonicalHexColor(rawInput) ?? defaultColorForAcMode(acMode);
 }
@@ -51,13 +49,12 @@ const ganttColorCache = new Map<string, string>();
 
 export function resolveGanttBuildingColor(
   colorHex: string | null | undefined,
-  acMode: "all_rooms" | "none" | "per_room"
+  acMode: "all_rooms" | "none" | "per_room",
 ): string {
   const key = `${colorHex ?? ""}|${acMode}`;
   const cached = ganttColorCache.get(key);
   if (cached) return cached;
-  const resolved =
-    canonicalHexColor(colorHex) ?? defaultColorForAcMode(acMode);
+  const resolved = canonicalHexColor(colorHex) ?? defaultColorForAcMode(acMode);
   ganttColorCache.set(key, resolved);
   return resolved;
 }

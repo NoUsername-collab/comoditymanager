@@ -41,9 +41,8 @@ export function nightsBetween(checkIn: string, checkOut: string) {
   return Math.max(
     0,
     Math.round(
-      (parseIso(checkOut).getTime() - parseIso(checkIn).getTime()) /
-        (1000 * 60 * 60 * 24)
-    )
+      (parseIso(checkOut).getTime() - parseIso(checkIn).getTime()) / (1000 * 60 * 60 * 24),
+    ),
   );
 }
 
@@ -82,8 +81,7 @@ export function IntervalPlanner({
   locale: string;
   tGantt: (key: string) => string;
 }) {
-  const nights =
-    checkIn && checkOut && !invalidInterval ? nightsBetween(checkIn, checkOut) : 0;
+  const nights = checkIn && checkOut && !invalidInterval ? nightsBetween(checkIn, checkOut) : 0;
   const period =
     checkIn && checkOut && !invalidInterval
       ? formatStayPeriod(checkIn, checkOut, locale, true)
@@ -167,12 +165,7 @@ export function IntervalPlanner({
 
       <div className="mt-2 flex flex-wrap items-center gap-2">
         {[1, 2, 3, 7].map((value) => (
-          <AdminButton
-            key={value}
-            variant="soft"
-            size="sm"
-            onClick={() => onSetDuration(value)}
-          >
+          <AdminButton key={value} variant="soft" size="sm" onClick={() => onSetDuration(value)}>
             {nightLabel(value)}
           </AdminButton>
         ))}

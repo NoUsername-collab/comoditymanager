@@ -58,16 +58,27 @@ async function readAllRows(
   for (let from = 0; ; from += PAGE_SIZE) {
     let query = supabase.from(table).select("*").eq("tenant_id", tenantId);
     if (since) query = query.gte(since.column, since.value);
-    const { data, error } = await query.order(key, { ascending: true }).range(from, from + PAGE_SIZE - 1);
+    const { data, error } = await query
+      .order(key, { ascending: true })
+      .range(from, from + PAGE_SIZE - 1);
     if (error) throw new Error(`${table}: ${error.message}`);
     rows.push(...(data ?? []));
     if (!data || data.length < PAGE_SIZE) return rows;
   }
 }
 
-export type TenantBackupResult = { slug: string; ok: boolean; sizeKB?: number; rows?: number; error?: string };
+export type TenantBackupResult = {
+  slug: string;
+  ok: boolean;
+  sizeKB?: number;
+  rows?: number;
+  error?: string;
+};
 
-async function backupTenant(supabase: SupabaseClient, tenant: { id: string; slug: string }): Promise<TenantBackupResult> {
+async function backupTenant(
+  supabase: SupabaseClient,
+  tenant: { id: string; slug: string },
+): Promise<TenantBackupResult> {
   const data: Record<string, unknown[]> = {};
   let rows = 0;
   for (const { table, key } of BACKUP_TABLES) {
@@ -114,7 +125,9 @@ async function backupTenant(supabase: SupabaseClient, tenant: { id: string; slug
   const { data: files } = await supabase.storage
     .from(BACKUP_BUCKET)
     .list(folder, { limit: 200, sortBy: { column: "created_at", order: "desc" } });
-  const old = (files ?? []).slice(MAX_BACKUP_FILES_PER_TENANT).map((file) => `${folder}/${file.name}`);
+  const old = (files ?? [])
+    .slice(MAX_BACKUP_FILES_PER_TENANT)
+    .map((file) => `${folder}/${file.name}`);
   if (old.length > 0) await supabase.storage.from(BACKUP_BUCKET).remove(old);
 
   return { slug: tenant.slug, ok: true, sizeKB: Math.round(body.length / 1024), rows };
@@ -124,7 +137,9 @@ async function backupTenant(supabase: SupabaseClient, tenant: { id: string; slug
  * Backs up the properties that are due, oldest backup first, until the time
  * budget is spent; the rest wait for the next hourly run.
  */
-export async function runDueTenantBackups(budgetMs: number): Promise<{ due: number; results: TenantBackupResult[] }> {
+export async function runDueTenantBackups(
+  budgetMs: number,
+): Promise<{ due: number; results: TenantBackupResult[] }> {
   const started = Date.now();
   const supabase = createPublicAdminClient();
   const dueBefore = new Date(Date.now() - BACKUP_INTERVAL_MS).toISOString();
@@ -147,7 +162,11 @@ export async function runDueTenantBackups(budgetMs: number): Promise<{ due: numb
     try {
       results.push(await backupTenant(supabase, tenant as { id: string; slug: string }));
     } catch (e) {
-      results.push({ slug: tenant.slug as string, ok: false, error: e instanceof Error ? e.message : "Unknown error" });
+      results.push({
+        slug: tenant.slug as string,
+        ok: false,
+        error: e instanceof Error ? e.message : "Unknown error",
+      });
     }
   }
   return { due: tenants?.length ?? 0, results };

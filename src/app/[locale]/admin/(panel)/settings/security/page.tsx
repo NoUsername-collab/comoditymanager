@@ -30,9 +30,7 @@ export default async function SettingsSecurityPage({
   const [tPrivacy, retentionMonths] = isOwner
     ? await Promise.all([getTranslations("admin.guests.privacy"), getGuestRetentionMonths()])
     : [null, null];
-  const tLocation = showFactoryReset
-    ? await getTranslations("admin.pages.settingsLocation")
-    : null;
+  const tLocation = showFactoryReset ? await getTranslations("admin.pages.settingsLocation") : null;
 
   return (
     <SettingsPageLayout
@@ -44,7 +42,10 @@ export default async function SettingsSecurityPage({
           : undefined
       }
     >
-      <SettingsSection title={tMfa("settingsSectionTitle")} description={tMfa("settingsSectionDesc")}>
+      <SettingsSection
+        title={tMfa("settingsSectionTitle")}
+        description={tMfa("settingsSectionDesc")}
+      >
         <MfaEnrollmentPanel next={next} />
       </SettingsSection>
       {tPrivacy && retentionMonths != null ? (

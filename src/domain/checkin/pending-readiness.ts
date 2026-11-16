@@ -5,12 +5,7 @@
 
 import { isIdentityStatusCritical } from "@/domain/guest/profile-data";
 import type { GuestIdentityStatus } from "@/domain/guest/types";
-import type {
-  CheckinFlag,
-  CheckinSettings,
-  PaymentStatus,
-  ValidationResult,
-} from "./types";
+import type { CheckinFlag, CheckinSettings, PaymentStatus, ValidationResult } from "./types";
 
 export type PendingCheckinSnapshot = {
   checkInDate: string;
@@ -33,29 +28,20 @@ function effectivePaid(snapshot: PendingCheckinSnapshot): number {
   if (snapshot.paymentAmountPaid != null) {
     return snapshot.paymentAmountPaid;
   }
-  if (
-    snapshot.paymentStatus === "paid" ||
-    snapshot.paymentStatus === "online"
-  ) {
+  if (snapshot.paymentStatus === "paid" || snapshot.paymentStatus === "online") {
     return snapshot.totalPrice;
   }
   return 0;
 }
 
-function paymentMeetsThreshold(
-  paid: number,
-  total: number,
-  settings: CheckinSettings,
-): boolean {
+function paymentMeetsThreshold(paid: number, total: number, settings: CheckinSettings): boolean {
   if (settings.checkin_payment_rule === "at_checkout") return true;
   if (settings.checkin_payment_rule === "full") return paid >= total;
   const pct = total > 0 ? (paid / total) * 100 : 100;
   return pct >= settings.checkin_min_payment_pct;
 }
 
-function identityComplete(
-  status: GuestIdentityStatus | null | undefined,
-): boolean {
+function identityComplete(status: GuestIdentityStatus | null | undefined): boolean {
   return status === "complete";
 }
 
@@ -71,15 +57,11 @@ function assessPayment(
   if (totalDue <= 0) return;
 
   if (settings.checkin_payment_rule === "full" && paid < totalDue) {
-    blockers.push(
-      `Plata integrala obligatorie (restant: ${totalDue - paid})`,
-    );
+    blockers.push(`Plata integrala obligatorie (restant: ${totalDue - paid})`);
   } else if (settings.checkin_payment_rule === "partial") {
     const paidPct = totalDue > 0 ? (paid / totalDue) * 100 : 100;
     if (paidPct < settings.checkin_min_payment_pct) {
-      blockers.push(
-        `Minim ${settings.checkin_min_payment_pct}% din total obligatoriu`,
-      );
+      blockers.push(`Minim ${settings.checkin_min_payment_pct}% din total obligatoriu`);
     }
   } else if (paid < totalDue) {
     if (!flags.includes("unpaid")) flags.push("unpaid");

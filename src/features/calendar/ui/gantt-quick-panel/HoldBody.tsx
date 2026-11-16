@@ -14,10 +14,7 @@ import {
 import { showGanttCreateUndoToast } from "@/features/calendar/ui/gantt-create-undo";
 import { publishGanttHoldOrBlock } from "@/lib/gantt/live-bookings";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import {
-  GANTT_QUICK_LABEL_CLASS,
-  type GanttQuickCreateDraft,
-} from "./types";
+import { GANTT_QUICK_LABEL_CLASS, type GanttQuickCreateDraft } from "./types";
 
 export function HoldBody({
   roomId,
@@ -103,14 +100,13 @@ export function HoldBody({
             actionLabel: tGantt("quick.undoAction"),
             undoneTitle: tGantt("quick.undoneTitle"),
             undoneMessage: tGantt("quick.undoneMessage"),
-          }
+          },
         );
       } else {
         showToast({ kind: "success", title: tGantt("quick.holdCreated"), message: period });
       }
       const holdIds = "ids" in res ? res.ids : [res.id];
-      const holdRoomIds =
-        draft?.roomIds && draft.roomIds.length > 1 ? draft.roomIds : [roomId];
+      const holdRoomIds = draft?.roomIds && draft.roomIds.length > 1 ? draft.roomIds : [roomId];
       publishGanttHoldOrBlock({
         ids: holdIds,
         kind: "hold",

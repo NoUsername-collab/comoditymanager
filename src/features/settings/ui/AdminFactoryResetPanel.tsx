@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { factoryResetAction } from "@/features/settings/actions";
-import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
+import {
+  useAdminPending,
+  useRunAdminAction,
+} from "@/components/admin/feedback/AdminPendingProvider";
 
 export function AdminFactoryResetPanel() {
   const tPage = useTranslations("admin.pages.settingsLocation.factoryReset");
@@ -43,11 +46,7 @@ export function AdminFactoryResetPanel() {
       </ul>
 
       <label className="admin-factory-reset__ack">
-        <input
-          type="checkbox"
-          checked={ack}
-          onChange={(e) => setAck(e.target.checked)}
-        />
+        <input type="checkbox" checked={ack} onChange={(e) => setAck(e.target.checked)} />
         <span>{tPage("ack")}</span>
       </label>
 

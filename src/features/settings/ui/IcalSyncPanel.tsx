@@ -57,7 +57,10 @@ function FeedStatus({ feed }: { feed: RoomIcalFeed }) {
     const key = feed.lastError?.replace(/^ical\./, "") ?? "unreachable";
     return (
       <span className="text-xs text-[var(--admin-danger,#b91c1c)]" role="status">
-        {t("statusError", { when, reason: t.has(`errors.${key}`) ? t(`errors.${key}`) : t("errors.unreachable") })}
+        {t("statusError", {
+          when,
+          reason: t.has(`errors.${key}`) ? t(`errors.${key}`) : t("errors.unreachable"),
+        })}
       </span>
     );
   }
@@ -93,7 +96,12 @@ function RoomCard({ room, origin }: { room: RoomIcalOverview; origin: string }) 
       setName("");
       setMessage(
         result.syncError
-          ? { tone: "error", text: t("addedButFailed", { reason: t(`errors.${result.syncError.replace(/^ical\./, "")}`) }) }
+          ? {
+              tone: "error",
+              text: t("addedButFailed", {
+                reason: t(`errors.${result.syncError.replace(/^ical\./, "")}`),
+              }),
+            }
           : { tone: "ok", text: t("added") },
       );
     });
@@ -118,7 +126,9 @@ function RoomCard({ room, origin }: { room: RoomIcalOverview; origin: string }) 
       <h3 className="m-0 text-base font-semibold">
         {room.roomName}
         {room.buildingName ? (
-          <span className="ml-2 text-sm font-normal text-[var(--admin-text-muted)]">{room.buildingName}</span>
+          <span className="ml-2 text-sm font-normal text-[var(--admin-text-muted)]">
+            {room.buildingName}
+          </span>
         ) : null}
       </h3>
 
@@ -148,7 +158,13 @@ function RoomCard({ room, origin }: { room: RoomIcalOverview; origin: string }) 
                   <span className="text-sm">{feed.name}</span>
                   <FeedStatus feed={feed} />
                 </span>
-                <AdminButton type="button" size="sm" variant="ghost" onClick={() => remove(feed)} disabled={pending}>
+                <AdminButton
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => remove(feed)}
+                  disabled={pending}
+                >
                   {t("remove")}
                 </AdminButton>
               </li>
@@ -176,7 +192,13 @@ function RoomCard({ room, origin }: { room: RoomIcalOverview; origin: string }) 
             maxLength={60}
             onChange={(e) => setName(e.target.value)}
           />
-          <AdminButton type="button" size="sm" variant="primary" onClick={add} disabled={pending || !url.trim()}>
+          <AdminButton
+            type="button"
+            size="sm"
+            variant="primary"
+            onClick={add}
+            disabled={pending || !url.trim()}
+          >
             {pending ? t("adding") : t("add")}
           </AdminButton>
         </div>
@@ -227,7 +249,13 @@ export function IcalSyncPanel({ rooms, origin }: Props) {
 
       {feedCount > 0 ? (
         <div className="flex flex-wrap items-center gap-3">
-          <AdminButton type="button" size="sm" variant="secondary" onClick={syncNow} disabled={pending}>
+          <AdminButton
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={syncNow}
+            disabled={pending}
+          >
             {pending ? t("syncing") : t("syncNow")}
           </AdminButton>
           {syncMessage ? (

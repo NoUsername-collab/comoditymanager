@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  getLegacyStaffRoleByEmail,
-  pathBlockedForOperator,
-} from "@/lib/auth/roles";
+import { getLegacyStaffRoleByEmail, pathBlockedForOperator } from "@/lib/auth/roles";
 import { getAdminEmail, getOperatorEmail } from "@/lib/auth/constants";
 
 // ---------------------------------------------------------------------------

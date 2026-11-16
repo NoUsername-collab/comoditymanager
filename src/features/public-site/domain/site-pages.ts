@@ -1,4 +1,8 @@
-import { PAGE_SLUG_MAX, PAGE_SLUG_PATTERN, RESERVED_PAGE_SLUGS } from "@/domain/public-site/page-slug";
+import {
+  PAGE_SLUG_MAX,
+  PAGE_SLUG_PATTERN,
+  RESERVED_PAGE_SLUGS,
+} from "@/domain/public-site/page-slug";
 import {
   PUBLIC_MENU_KINDS,
   type LocalizedText,
@@ -33,7 +37,10 @@ export function slugifyPageName(name: string): string {
 export type PageSlugProblem = "empty" | "format" | "reserved" | "taken";
 
 /** Why a page address cannot be used, or null when it can. */
-export function pageSlugProblem(slug: string, otherSlugs: readonly string[]): PageSlugProblem | null {
+export function pageSlugProblem(
+  slug: string,
+  otherSlugs: readonly string[],
+): PageSlugProblem | null {
   if (!slug) return "empty";
   if (slug.length > PAGE_SLUG_MAX || !PAGE_SLUG_PATTERN.test(slug)) return "format";
   if ((RESERVED_PAGE_SLUGS as readonly string[]).includes(slug)) return "reserved";
@@ -74,7 +81,8 @@ function asLabel(raw: unknown): LocalizedText {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
   const out: LocalizedText = {};
   for (const [locale, value] of Object.entries(raw as Record<string, unknown>)) {
-    if ((locale === "ro" || locale === "en" || locale === "bg") && typeof value === "string") out[locale] = value;
+    if ((locale === "ro" || locale === "en" || locale === "bg") && typeof value === "string")
+      out[locale] = value;
   }
   return out;
 }

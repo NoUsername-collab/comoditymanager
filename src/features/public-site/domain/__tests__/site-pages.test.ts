@@ -8,7 +8,11 @@ import {
   sectionAnchor,
   slugifyPageName,
 } from "@/features/public-site/domain/site-pages";
-import type { PublicMenuItem, PublicSiteConfig, PublicSitePage } from "@/features/public-site/domain/types";
+import type {
+  PublicMenuItem,
+  PublicSiteConfig,
+  PublicSitePage,
+} from "@/features/public-site/domain/types";
 
 describe("page addresses", () => {
   it("makes an address from a name, without diacritics", () => {
@@ -55,7 +59,13 @@ describe("normalizePublicMenu", () => {
         kind: "group",
         label: { ro: "Descoperă" },
         children: [
-          { id: "e", kind: "url", ref: "https://example.com", label: { ro: "Hartă" }, children: [{ id: "f", kind: "home" }] },
+          {
+            id: "e",
+            kind: "url",
+            ref: "https://example.com",
+            label: { ro: "Hartă" },
+            children: [{ id: "f", kind: "home" }],
+          },
           { id: "g", kind: "group", label: {} },
         ],
       },
@@ -83,17 +93,36 @@ describe("the menu on the site", () => {
     visible: true,
     sortOrder: 0,
     sections: [
-      { id: "s-menu-1", sectionType: "text", sortOrder: 0, visible: true, payload: { title: { ro: "Meniul zilei" } } },
+      {
+        id: "s-menu-1",
+        sectionType: "text",
+        sortOrder: 0,
+        visible: true,
+        payload: { title: { ro: "Meniul zilei" } },
+      },
     ],
   };
-  const hiddenSpa: PublicSitePage = { ...restaurant, id: "p2", slug: "spa", title: { ro: "Spa" }, visible: false, sections: [] };
+  const hiddenSpa: PublicSitePage = {
+    ...restaurant,
+    id: "p2",
+    slug: "spa",
+    title: { ro: "Spa" },
+    visible: false,
+    sections: [],
+  };
   const site = (menu: PublicMenuItem[]) =>
     ({
       chrome: { ...defaultPublicChrome(), navHome: { ro: "Acasă" }, menu },
       bookingEnabled: true,
       bookingNavPosition: "footer",
       sections: [
-        { id: "s-intro-1", sectionType: "intro", sortOrder: 0, visible: true, payload: { title: { ro: "Despre noi" } } },
+        {
+          id: "s-intro-1",
+          sectionType: "intro",
+          sortOrder: 0,
+          visible: true,
+          payload: { title: { ro: "Despre noi" } },
+        },
       ],
       sitePages: [restaurant, hiddenSpa],
     }) as unknown as PublicSiteConfig;
@@ -128,8 +157,18 @@ describe("the menu on the site", () => {
             { id: "c2", kind: "url", ref: "https://maps.example.com", label: { ro: "Hartă" } },
           ],
         },
-        { id: "empty", kind: "group", label: { ro: "Gol" }, children: [{ id: "c3", kind: "page", ref: "p2", label: {} }] },
-        { id: "nameless", kind: "group", label: {}, children: [{ id: "c4", kind: "home", label: {} }] },
+        {
+          id: "empty",
+          kind: "group",
+          label: { ro: "Gol" },
+          children: [{ id: "c3", kind: "page", ref: "p2", label: {} }],
+        },
+        {
+          id: "nameless",
+          kind: "group",
+          label: {},
+          children: [{ id: "c4", kind: "home", label: {} }],
+        },
       ]),
       "ro",
     );

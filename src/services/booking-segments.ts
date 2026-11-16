@@ -1,7 +1,5 @@
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
-import {
-  type BookingRoomSegmentRow,
-} from "@/domain/booking/segment-types";
+import { type BookingRoomSegmentRow } from "@/domain/booking/segment-types";
 import { computeBookingTotalFromSegments } from "@/domain/pricing/segment-total";
 import { addDays, stayNightCount, todayIso } from "@/lib/stay-dates";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
@@ -28,9 +26,7 @@ async function roomNightlyRates(roomIds: string[]): Promise<Map<string, number>>
 
   if (error) throw new Error(error.message);
 
-  return new Map(
-    (data ?? []).map((row) => [String(row.id), Number(row.price_per_night)])
-  );
+  return new Map((data ?? []).map((row) => [String(row.id), Number(row.price_per_night)]));
 }
 
 type RoomMovePlan =
@@ -48,7 +44,7 @@ function resolveRoomMovePlan(
   segmentStart: string,
   segmentEnd: string,
   requestedPivot?: string,
-  today: string = todayIso()
+  today: string = todayIso(),
 ): RoomMovePlan {
   const pivot = requestedPivot && requestedPivot > today ? requestedPivot : today;
 
@@ -78,9 +74,7 @@ function resolveRoomMovePlan(
   };
 }
 
-async function listSegmentsForBooking(
-  bookingId: string
-): Promise<BookingRoomSegmentRow[]> {
+async function listSegmentsForBooking(bookingId: string): Promise<BookingRoomSegmentRow[]> {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("booking_room_segments")
@@ -98,10 +92,7 @@ export async function bookingHasSplitSegments(bookingId: string): Promise<boolea
   if (segments.length <= 1) return false;
 
   const { tenantId, supabase } = await getTenantScope();
-  const [
-    { data: booking, error: bErr },
-    { count, error },
-  ] = await Promise.all([
+  const [{ data: booking, error: bErr }, { count, error }] = await Promise.all([
     supabase
       .from("bookings")
       .select("check_in, check_out")
@@ -124,8 +115,7 @@ export async function bookingHasSplitSegments(bookingId: string): Promise<boolea
   if (segments.length > roomsWithMulti.size) return true;
 
   return segments.some(
-    (s) =>
-      s.segment_start !== booking.check_in || s.segment_end !== booking.check_out
+    (s) => s.segment_start !== booking.check_in || s.segment_end !== booking.check_out,
   );
 }
 
@@ -136,11 +126,11 @@ async function recalcBookingEnvelopeAndTotal(bookingId: string): Promise<void> {
 
   const checkIn = segments.reduce(
     (min, s) => (s.segment_start < min ? s.segment_start : min),
-    segments[0]!.segment_start
+    segments[0]!.segment_start,
   );
   const checkOut = segments.reduce(
     (max, s) => (s.segment_end > max ? s.segment_end : max),
-    segments[0]!.segment_end
+    segments[0]!.segment_end,
   );
   const total = computeBookingTotalFromSegments(segments);
 
@@ -179,9 +169,7 @@ export async function seedBookingRoomSegments(input: {
     });
   });
 
-  const { error: insErr } = await supabase
-    .from("booking_room_segments")
-    .insert(inserts);
+  const { error: insErr } = await supabase.from("booking_room_segments").insert(inserts);
   if (insErr) throw new Error(insErr.message);
 }
 
@@ -239,9 +227,7 @@ export async function syncBookingRoomSegments(bookingId: string): Promise<void> 
     });
   });
 
-  const { error: insErr } = await supabase
-    .from("booking_room_segments")
-    .insert(inserts);
+  const { error: insErr } = await supabase.from("booking_room_segments").insert(inserts);
   if (insErr) throw new Error(insErr.message);
 }
 
@@ -250,7 +236,7 @@ const RESYNC_CONCURRENCY = 8;
 async function mapPool<T>(
   items: T[],
   limit: number,
-  fn: (item: T) => Promise<void>
+  fn: (item: T) => Promise<void>,
 ): Promise<void> {
   if (items.length === 0) return;
   let next = 0;
@@ -267,10 +253,7 @@ async function mapPool<T>(
   await Promise.all(Array.from({ length: workers }, () => worker()));
 }
 
-export async function shiftAllSegmentsByDays(
-  bookingId: string,
-  dayDelta: number
-): Promise<void> {
+export async function shiftAllSegmentsByDays(bookingId: string, dayDelta: number): Promise<void> {
   const segments = await listSegmentsForBooking(bookingId);
   if (segments.length === 0) return;
 
@@ -284,7 +267,7 @@ export async function shiftAllSegmentsByDays(
       segment_start: addDays(seg.segment_start, dayDelta),
       segment_end: addDays(seg.segment_end, dayDelta),
       nightly_rate: seg.nightly_rate,
-    }))
+    })),
   );
   if (error) throw new Error(error.message);
 
@@ -317,7 +300,7 @@ export async function previewRoomMoveFromPivot(input: {
     source.segment_start,
     source.segment_end,
     input.pivotDate,
-    effectiveToday
+    effectiveToday,
   );
   const targetRate = await roomNightlyRate(input.targetRoomId);
 
@@ -358,9 +341,7 @@ export async function previewRoomMoveFromPivot(input: {
             start: source.segment_start,
             end: plan.pivot,
             nights: stayNightCount(source.segment_start, plan.pivot),
-            total: computeBookingTotalFromSegments([
-              { ...source, segment_end: plan.pivot },
-            ]),
+            total: computeBookingTotalFromSegments([{ ...source, segment_end: plan.pivot }]),
           }
         : null,
     targetSegment: {
@@ -420,7 +401,7 @@ export async function moveBookingRoomFromPivot(input: {
     source.segment_start,
     source.segment_end,
     input.pivotDate,
-    effectiveToday2
+    effectiveToday2,
   );
 
   // Parallel: check availability + get target room price
@@ -429,7 +410,7 @@ export async function moveBookingRoomFromPivot(input: {
       plan.effectiveStart,
       source.segment_end,
       [input.targetRoomId],
-      input.bookingId
+      input.bookingId,
     ),
     roomNightlyRate(input.targetRoomId),
   ]);
@@ -459,7 +440,7 @@ export async function moveBookingRoomFromPivot(input: {
         segment_start: plan.pivot,
         segment_end: source.segment_end,
         nightly_rate: targetRate,
-      })
+      }),
     );
     if (insErr) throw new Error(insErr.message);
   }
@@ -478,7 +459,7 @@ export async function moveBookingRoomFromPivot(input: {
         booking_id: input.bookingId,
         room_id: input.targetRoomId,
         extra_beds: 0,
-      })
+      }),
     );
     if (brErr) throw new Error(brErr.message);
   }

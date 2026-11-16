@@ -1,9 +1,7 @@
 /** Clase dispozitiv pentru UI adaptat (setat pe <html data-device>). */
 export type DeviceClass = "android" | "ios" | "mobile" | "desktop";
 
-export function detectDeviceFromUserAgent(
-  userAgent: string | null | undefined
-): DeviceClass {
+export function detectDeviceFromUserAgent(userAgent: string | null | undefined): DeviceClass {
   const ua = userAgent ?? "";
   if (/Android/i.test(ua)) return "android";
   if (/iPhone|iPod|iPad/i.test(ua)) return "ios";

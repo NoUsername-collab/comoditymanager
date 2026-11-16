@@ -5,11 +5,7 @@ import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
 import type { PensionSettings } from "@/services/pension-settings";
 import { getTranslations } from "next-intl/server";
 
-export async function OperationalHoursForm({
-  settings,
-}: {
-  settings: PensionSettings;
-}) {
+export async function OperationalHoursForm({ settings }: { settings: PensionSettings }) {
   const [t, tCommon] = await Promise.all([
     getTranslations("admin.pages.settings.stayHours"),
     getTranslations("admin.common"),

@@ -9,12 +9,27 @@ import {
 } from "@/features/public-site/domain/gallery";
 import type { PublicMediaPhoto } from "@/features/public-site/domain/types";
 
-const photo = (id: string, album: string): PublicMediaPhoto => ({ id, url: id, album, alt: {}, focus: "50% 50%" });
-const media = [photo("r1", "rooms"), photo("e1", "exterior"), photo("r2", "rooms"), photo("f1", "food")];
+const photo = (id: string, album: string): PublicMediaPhoto => ({
+  id,
+  url: id,
+  album,
+  alt: {},
+  focus: "50% 50%",
+});
+const media = [
+  photo("r1", "rooms"),
+  photo("e1", "exterior"),
+  photo("r2", "rooms"),
+  photo("f1", "food"),
+];
 
 describe("gallery", () => {
   it("shows the chosen albums in the library's album order, all of them when none is chosen", () => {
-    expect(galleryPhotos(media, ["rooms", "exterior"]).map((p) => p.id)).toEqual(["e1", "r1", "r2"]);
+    expect(galleryPhotos(media, ["rooms", "exterior"]).map((p) => p.id)).toEqual([
+      "e1",
+      "r1",
+      "r2",
+    ]);
     expect(galleryPhotos(media, []).map((p) => p.id)).toEqual(["e1", "r1", "r2", "f1"]);
     expect(galleryCategories(galleryPhotos(media, []))).toEqual(["exterior", "rooms", "food"]);
   });

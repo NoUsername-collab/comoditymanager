@@ -17,16 +17,11 @@ describe("calendar-derivations", () => {
   });
 
   it("derives focus iso from filter", () => {
+    expect(deriveGanttFocusIso(["2026-06-01", "2026-06-02"], "2026-06-01", "all", null)).toBe(
+      "2026-06-01",
+    );
     expect(
-      deriveGanttFocusIso(["2026-06-01", "2026-06-02"], "2026-06-01", "all", null)
-    ).toBe("2026-06-01");
-    expect(
-      deriveGanttFocusIso(
-        ["2026-06-01", "2026-06-02"],
-        "2026-06-01",
-        "occupied",
-        "2026-06-02"
-      )
+      deriveGanttFocusIso(["2026-06-01", "2026-06-02"], "2026-06-01", "occupied", "2026-06-02"),
     ).toBe("2026-06-02");
   });
 

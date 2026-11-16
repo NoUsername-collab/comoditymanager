@@ -35,7 +35,7 @@ export function CopyTextButton({
       }
       title={label ?? t("copy")}
     >
-      {copied ? t("copied") : label ?? t("copy")}
+      {copied ? t("copied") : (label ?? t("copy"))}
     </button>
   );
 }

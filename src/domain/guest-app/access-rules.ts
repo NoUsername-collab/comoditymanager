@@ -1,10 +1,7 @@
 import type { GuestAccessDenyReason, GuestAccessWindow } from "./types";
 
 /** Prima zi activă — la confirmare (earlyAccessDays 0) nu restricționăm înainte de check-in. */
-export function guestAccessOpensOn(
-  checkIn: string,
-  earlyAccessDays = 0,
-): string | null {
+export function guestAccessOpensOn(checkIn: string, earlyAccessDays = 0): string | null {
   if (earlyAccessDays <= 0) return null;
   const d = new Date(`${checkIn}T12:00:00`);
   d.setDate(d.getDate() - earlyAccessDays);
@@ -28,9 +25,7 @@ export function isGuestAccessDateValid(
   return null;
 }
 
-export function isGuestAccessBookingStatusValid(
-  status: string,
-): GuestAccessDenyReason | null {
+export function isGuestAccessBookingStatusValid(status: string): GuestAccessDenyReason | null {
   if (status === "confirmata") return null;
   return "booking_not_confirmed";
 }

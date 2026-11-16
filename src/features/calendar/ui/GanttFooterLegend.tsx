@@ -1,18 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  GanttBuildingMarker,
-  GanttRoomMarker,
-} from "@/features/calendar/ui/GanttBuildingMarker";
+import { GanttBuildingMarker, GanttRoomMarker } from "@/features/calendar/ui/GanttBuildingMarker";
 
-function LegendBody({
-  checkInTime,
-  checkOutTime,
-}: {
-  checkInTime: string;
-  checkOutTime: string;
-}) {
+function LegendBody({ checkInTime, checkOutTime }: { checkInTime: string; checkOutTime: string }) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
   const tLayers = useTranslations("admin.gantt.layers");

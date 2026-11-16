@@ -16,7 +16,7 @@ describe("tenantMemberRoleToStaffRole", () => {
 
   it('maps any non-operator role to "admin"', () => {
     expect(
-      tenantMemberRoleToStaffRole("staff" as Parameters<typeof tenantMemberRoleToStaffRole>[0])
+      tenantMemberRoleToStaffRole("staff" as Parameters<typeof tenantMemberRoleToStaffRole>[0]),
     ).toBe("admin");
   });
 });

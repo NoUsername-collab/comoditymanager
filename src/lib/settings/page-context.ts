@@ -50,9 +50,7 @@ export const loadSettingsStaffContext = cache(async () => {
   };
 });
 
-type SettingsStaffContext = Awaited<
-  ReturnType<typeof loadSettingsStaffContext>
->;
+type SettingsStaffContext = Awaited<ReturnType<typeof loadSettingsStaffContext>>;
 
 export async function guardSettingsPermission(group: PermissionGroupId) {
   const ctx = await loadSettingsStaffContext();
@@ -77,11 +75,7 @@ export function canEditFiscalBilling(ctx: SettingsStaffContext): boolean {
 
 /** Pension channel editors — matches `pension_settings` (owner always). */
 export function canEditPensionSettingsUi(ctx: SettingsStaffContext): boolean {
-  return canStaffPermission(
-    ctx.staff.memberRole,
-    "pension_settings",
-    ctx.teamPermissions,
-  );
+  return canStaffPermission(ctx.staff.memberRole, "pension_settings", ctx.teamPermissions);
 }
 
 export async function buildSettingsAlerts(
@@ -91,12 +85,8 @@ export async function buildSettingsAlerts(
   const t = await getTranslations("admin.pages.settings");
   // `?saved=1` is shown once as a toast by AdminFlashFromUrl, which then drops it from the URL.
   const alerts: SettingsAlert[] = [
-    params.location === "locked"
-      ? { tone: "warning", message: t("locationLocked") }
-      : null,
-    params.location === "forbidden"
-      ? { tone: "warning", message: t("locationForbidden") }
-      : null,
+    params.location === "locked" ? { tone: "warning", message: t("locationLocked") } : null,
+    params.location === "forbidden" ? { tone: "warning", message: t("locationForbidden") } : null,
     params.location === "closed"
       ? {
           tone: "info",

@@ -8,7 +8,11 @@ import type { MrzMappedIdentity } from "@/domain/guest/mrz";
 function MrzScanLoading() {
   const t = useTranslations("admin.checkIn.mrz");
   return (
-    <p className="mrz-scan__loading text-sm text-neutral-500" aria-busy="true" aria-label={t("loading")}>
+    <p
+      className="mrz-scan__loading text-sm text-neutral-500"
+      aria-busy="true"
+      aria-label={t("loading")}
+    >
       …
     </p>
   );
@@ -22,7 +26,7 @@ const MrzScanPanel = dynamic(
   {
     ssr: false,
     loading: MrzScanLoading,
-  }
+  },
 );
 
 type Props = {

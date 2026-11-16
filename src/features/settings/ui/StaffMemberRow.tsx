@@ -2,20 +2,14 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  changeStaffRoleAction,
-  deactivateStaffAction,
-} from "@/features/settings/actions/staff";
+import { changeStaffRoleAction, deactivateStaffAction } from "@/features/settings/actions/staff";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import type { TenantMember } from "@/services/tenant-members";
 
 const ROLE_COLORS: Record<string, string> = {
-  owner:
-    "bg-amber-100 text-amber-800 ring-1 ring-amber-300",
-  admin:
-    "bg-blue-100 text-blue-800 ring-1 ring-blue-200",
-  operator:
-    "bg-zinc-100 text-zinc-700 ring-1 ring-zinc-200",
+  owner: "bg-amber-100 text-amber-800 ring-1 ring-amber-300",
+  admin: "bg-blue-100 text-blue-800 ring-1 ring-blue-200",
+  operator: "bg-zinc-100 text-zinc-700 ring-1 ring-zinc-200",
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -112,23 +106,14 @@ export function StaffMemberRow({ member }: { member: TenantMember }) {
             </div>
 
             {/* Deactivate */}
-            <AdminButton
-              variant="danger"
-              size="sm"
-              onClick={handleDeactivate}
-              disabled={pending}
-            >
+            <AdminButton variant="danger" size="sm" onClick={handleDeactivate} disabled={pending}>
               {pending ? tCommon("saving") : t("deactivate")}
             </AdminButton>
           </>
         )}
       </div>
 
-      {error && (
-        <p className="admin-staff-row__error text-xs text-red-600 mt-1">
-          {error}
-        </p>
-      )}
+      {error && <p className="admin-staff-row__error text-xs text-red-600 mt-1">{error}</p>}
     </div>
   );
 }

@@ -2,30 +2,16 @@ import { cache } from "react";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { createClient } from "@/lib/supabase/server";
 import { isTenantOperational } from "@/domain/tenant/operational";
-import {
-  type StaffRole,
-} from "@/lib/auth/roles";
-import {
-  canStaffPermission,
-  type PermissionGroupId,
-} from "@/domain/settings/team-permissions";
-import {
-  pathPermissionGroup,
-  pathRequiresOwner,
-} from "@/domain/settings/team-permission-paths";
-import {
-  resolveStaffRole,
-  tenantMemberRoleToStaffRole,
-} from "@/lib/auth/tenant-staff";
+import { type StaffRole } from "@/lib/auth/roles";
+import { canStaffPermission, type PermissionGroupId } from "@/domain/settings/team-permissions";
+import { pathPermissionGroup, pathRequiresOwner } from "@/domain/settings/team-permission-paths";
+import { resolveStaffRole, tenantMemberRoleToStaffRole } from "@/lib/auth/tenant-staff";
 import { locationAccessibleForMemberRole } from "@/lib/auth/location-unlock";
 import { getRequestAdminPath } from "@/lib/auth/admin-path";
 import { isMfaExemptAdminPath } from "@/lib/auth/mfa-policy";
 import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
 import { lookupRequestTenantHost, resolveRequestTenant } from "@/lib/tenant/active";
-import {
-  getTenantMemberRole,
-  type TenantMemberRole,
-} from "@/services/tenant-members";
+import { getTenantMemberRole, type TenantMemberRole } from "@/services/tenant-members";
 import { getTeamPermissions } from "@/services/pension-settings";
 
 /**
@@ -59,28 +45,20 @@ export const cachedStaffContext = cache(async () => {
 
 /** Shell chrome: admin flag + location unlock without extra tenant_members queries. */
 export const getStaffShellAccess = cache(async () => {
-  const [ctx, permissions] = await Promise.all([
-    cachedStaffContext(),
-    getTeamPermissions(),
-  ]);
+  const [ctx, permissions] = await Promise.all([cachedStaffContext(), getTeamPermissions()]);
   if (!ctx.user || !ctx.role) {
     return { isAdmin: false, locationUnlocked: false };
   }
   return {
     isAdmin: ctx.role === "admin",
-    locationUnlocked: await locationAccessibleForMemberRole(
-      ctx.memberRole,
-      permissions,
-    ),
+    locationUnlocked: await locationAccessibleForMemberRole(ctx.memberRole, permissions),
   };
 });
 
 export async function requireStaff() {
   const hostTenant = await lookupRequestTenantHost();
   if (hostTenant && !isTenantOperational(hostTenant.status)) {
-    await redirect(
-      `/tenant-suspended?status=${encodeURIComponent(hostTenant.status)}`
-    );
+    await redirect(`/tenant-suspended?status=${encodeURIComponent(hostTenant.status)}`);
   }
 
   const ctx = await cachedStaffContext();
@@ -146,10 +124,7 @@ export async function requireLocationAdmin() {
   if (!canStaffPermission(ctx.memberRole, "location_structure", permissions)) {
     await redirect("/admin/settings?access=permission");
   }
-  const accessible = await locationAccessibleForMemberRole(
-    ctx.memberRole,
-    permissions,
-  );
+  const accessible = await locationAccessibleForMemberRole(ctx.memberRole, permissions);
   if (!accessible) {
     await redirect("/admin/settings?location=locked");
   }
@@ -182,10 +157,7 @@ export async function guardStaffPermissionRoute(pathname: string) {
   }
 
   if (group === "location_structure" && ctx.memberRole !== "owner") {
-    const accessible = await locationAccessibleForMemberRole(
-      ctx.memberRole,
-      permissions,
-    );
+    const accessible = await locationAccessibleForMemberRole(ctx.memberRole, permissions);
     if (!accessible) {
       await redirect("/admin/settings?location=locked");
     }

@@ -9,12 +9,7 @@ export type GanttQuickRoomOption = {
 
 export type GanttQuickCreateDraft = GanttCreateDraft;
 
-export type GanttQuickPanelMode =
-  | "hold"
-  | "block"
-  | "request"
-  | "direct"
-  | "move";
+export type GanttQuickPanelMode = "hold" | "block" | "request" | "direct" | "move";
 
 export type GanttQuickActionPanelProps = {
   mode: GanttQuickPanelMode | null;
@@ -25,5 +20,4 @@ export type GanttQuickActionPanelProps = {
   today?: string;
 };
 
-export const GANTT_QUICK_LABEL_CLASS =
-  "admin-field__label block uppercase tracking-[0.08em]";
+export const GANTT_QUICK_LABEL_CLASS = "admin-field__label block uppercase tracking-[0.08em]";

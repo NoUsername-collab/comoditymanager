@@ -28,10 +28,7 @@ export default async function AdminHomePage({
 }: {
   searchParams: Promise<AvailabilityShellSearchParams>;
 }) {
-  const [availabilityParams, data] = await Promise.all([
-    searchParams,
-    loadAdminHomePage(),
-  ]);
+  const [availabilityParams, data] = await Promise.all([searchParams, loadAdminHomePage()]);
   return (
     <AdminDashboard
       data={data}

@@ -4,14 +4,8 @@ import { Link } from "@/i18n/navigation";
 import { GanttPeriodJumpControl } from "@/features/calendar/ui/GanttPeriodJumpControl";
 import { GanttTodayActions } from "@/features/calendar/ui/GanttTodayActions";
 import { HudIconGrid, HudIconHome } from "@/components/admin/AdminHudIcons";
-import {
-  ToolbarFilterIcon,
-  type InlineZoomChoice,
-} from "@/features/calendar/ui/GanttGridHelpers";
-import {
-  parseGanttLayerFilter,
-  type GanttLayerFilter,
-} from "@/domain/gantt/occupancy-layer";
+import { ToolbarFilterIcon, type InlineZoomChoice } from "@/features/calendar/ui/GanttGridHelpers";
+import { parseGanttLayerFilter, type GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import type { GanttCalendarPatch } from "@/hooks/useGanttCalendarNavigation";
 import type { GanttCoverage } from "@/domain/gantt/layout";
 import { useTranslations } from "next-intl";
@@ -154,18 +148,18 @@ export function GanttCompactToolbar({
         />
 
         {showCoverage ? (
-        <div className="gantt-compact-toolbar__dropdown-wrap">
-          <select
-            className="gantt-compact-toolbar__select"
-            value={String(coverage)}
-            onChange={(e) => onCoverageChange(Number(e.target.value) as GanttCoverage)}
-            aria-label={tCommon("ganttCoverageAria")}
-          >
-            <option value="10">{tCommon("ganttCoverage10")}</option>
-            <option value="20">{tCommon("ganttCoverage20")}</option>
-            <option value="30">{tCommon("ganttCoverage30")}</option>
-          </select>
-        </div>
+          <div className="gantt-compact-toolbar__dropdown-wrap">
+            <select
+              className="gantt-compact-toolbar__select"
+              value={String(coverage)}
+              onChange={(e) => onCoverageChange(Number(e.target.value) as GanttCoverage)}
+              aria-label={tCommon("ganttCoverageAria")}
+            >
+              <option value="10">{tCommon("ganttCoverage10")}</option>
+              <option value="20">{tCommon("ganttCoverage20")}</option>
+              <option value="30">{tCommon("ganttCoverage30")}</option>
+            </select>
+          </div>
         ) : null}
       </div>
 
@@ -174,9 +168,7 @@ export function GanttCompactToolbar({
           <select
             className="gantt-compact-toolbar__select"
             value={layerFilter}
-            onChange={(e) =>
-              onCalendarPatch({ layer: parseGanttLayerFilter(e.target.value) })
-            }
+            onChange={(e) => onCalendarPatch({ layer: parseGanttLayerFilter(e.target.value) })}
             aria-label={tCommon("display")}
           >
             <option value="all">{tLayers("all")}</option>
@@ -190,20 +182,20 @@ export function GanttCompactToolbar({
         </div>
 
         {showHeatmap ? (
-        <button
-          type="button"
-          className={`gantt-compact-toolbar__icon-btn ${isAvailabilityPanelOpen ? "gantt-compact-toolbar__icon-btn--active" : ""}`}
-          onClick={onToggleAvailabilityPanel}
-          aria-label={tCommon("heatmap")}
-          title={tCommon("openHeatmapFloating")}
-        >
-          <HudIconGrid className="h-3.5 w-3.5" />
-        </button>
+          <button
+            type="button"
+            className={`gantt-compact-toolbar__icon-btn ${isAvailabilityPanelOpen ? "gantt-compact-toolbar__icon-btn--active" : ""}`}
+            onClick={onToggleAvailabilityPanel}
+            aria-label={tCommon("heatmap")}
+            title={tCommon("openHeatmapFloating")}
+          >
+            <HudIconGrid className="h-3.5 w-3.5" />
+          </button>
         ) : null}
 
         <button
           type="button"
-          className={`gantt-compact-toolbar__icon-btn ${(isFiltersOpen || hasActiveFilters) ? "gantt-compact-toolbar__icon-btn--active" : ""}`}
+          className={`gantt-compact-toolbar__icon-btn ${isFiltersOpen || hasActiveFilters ? "gantt-compact-toolbar__icon-btn--active" : ""}`}
           onClick={(event) => onToggleFilters(event.currentTarget.getBoundingClientRect())}
           aria-label={tCommon("filters")}
           title={tCommon("roomsAndOptions")}

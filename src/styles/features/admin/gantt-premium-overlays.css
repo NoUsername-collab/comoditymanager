@@ -43,7 +43,10 @@
   background: transparent;
   font-size: 0.64rem;
   line-height: 1.1;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    filter 0.12s ease;
 }
 
 .gantt-summary-cell:hover {
@@ -95,7 +98,11 @@
 }
 
 .gantt-summary-cell--past {
-  background-color: color-mix(in srgb, var(--past-bg, #e8eaf0) 70%, var(--gantt-zone-clean, var(--surface)));
+  background-color: color-mix(
+    in srgb,
+    var(--past-bg, #e8eaf0) 70%,
+    var(--gantt-zone-clean, var(--surface))
+  );
   color: var(--past-text, #7a809a);
 }
 
@@ -360,7 +367,11 @@
   height: 6px;
   width: 100%;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--stay-note-accent, #059669) 10%, var(--admin-surface-border, #e7e5e4));
+  background: color-mix(
+    in srgb,
+    var(--stay-note-accent, #059669) 10%,
+    var(--admin-surface-border, #e7e5e4)
+  );
   overflow: hidden;
 }
 
@@ -402,8 +413,13 @@
   font-weight: 700;
   line-height: 1.2;
   color: var(--admin-text, #1c1917);
-  background: color-mix(in srgb, var(--stay-note-accent, #059669) 8%, var(--admin-surface-bg, #fff));
-  border: 1px solid color-mix(in srgb, var(--stay-note-accent, #059669) 22%, var(--admin-surface-border, #e4e4e7));
+  background: color-mix(
+    in srgb,
+    var(--stay-note-accent, #059669) 8%,
+    var(--admin-surface-bg, #fff)
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--stay-note-accent, #059669) 22%, var(--admin-surface-border, #e4e4e7));
 }
 
 .gantt-stay-note__room--empty {
@@ -486,7 +502,9 @@
   font-size: 0.72rem;
   font-weight: 800;
   cursor: pointer;
-  transition: background 0.12s ease, transform 0.12s ease;
+  transition:
+    background 0.12s ease,
+    transform 0.12s ease;
 }
 
 .gantt-pinned-chip__btn:active {
@@ -548,9 +566,12 @@
   font-weight: 700;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset;
   cursor: pointer;
-  transition: filter 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  transition:
+    filter 0.12s ease,
+    box-shadow 0.12s ease,
+    opacity 0.12s ease;
 }
 
 .gantt-action-strip__badge strong {
@@ -638,7 +659,9 @@ span.gantt-action-strip__badge {
   background: color-mix(in srgb, var(--surface) 97%, transparent);
   color: var(--text);
   cursor: pointer;
-  transition: background 0.15s ease, filter 0.12s ease;
+  transition:
+    background 0.15s ease,
+    filter 0.12s ease;
 }
 
 .gantt-action-strip__btn:active {
@@ -689,7 +712,9 @@ span.gantt-action-strip__badge {
   border: 1px solid var(--admin-panel-border, var(--border));
   background: var(--admin-panel-bg, var(--surface));
   color: var(--admin-text, var(--text));
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
+  box-shadow:
+    0 10px 28px rgba(15, 23, 42, 0.16),
+    0 2px 6px rgba(15, 23, 42, 0.08);
   animation: gantt-popover-in 0.14s ease-out;
 }
 

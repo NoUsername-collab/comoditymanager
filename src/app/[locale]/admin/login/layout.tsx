@@ -1,10 +1,6 @@
 import { MobileShell } from "@/layout/components/MobileShell";
 
-export default function AdminLoginLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLoginLayout({ children }: { children: React.ReactNode }) {
   return (
     <MobileShell surface="auth" className="min-h-dvh">
       {children}

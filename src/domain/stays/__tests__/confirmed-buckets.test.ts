@@ -23,7 +23,7 @@ describe("groupConfirmedStays", () => {
   it("places in-house stays in today bucket", () => {
     const buckets = groupConfirmedStays(
       [{ check_in: "2026-06-20", check_out: "2026-06-25" }],
-      "2026-06-23"
+      "2026-06-23",
     );
     expect(buckets.find((b) => b.key === "today")?.stays).toHaveLength(1);
   });

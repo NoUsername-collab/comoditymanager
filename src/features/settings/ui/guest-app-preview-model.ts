@@ -73,8 +73,7 @@ export function buildGuestAppStudioDraft(settings: GuestAppSettings): GuestAppSt
     themeId: settings.appearance.themeId ?? "inherit",
     primaryColor: settings.appearance.primaryColor ?? "#d6b55a",
     accentColor: settings.appearance.accentColor ?? "#e8cc72",
-    features:
-      settings.features.length > 0 ? settings.features : DEFAULT_GUEST_APP_FEATURES,
+    features: settings.features.length > 0 ? settings.features : DEFAULT_GUEST_APP_FEATURES,
     shortDescription: hotel.shortDescription ?? "",
     longDescription: hotel.longDescription ?? "",
     address: hotel.address ?? "",
@@ -96,9 +95,7 @@ export function buildGuestAppStudioDraft(settings: GuestAppSettings): GuestAppSt
   };
 }
 
-export function studioDraftToGuestAppSettings(
-  draft: GuestAppStudioDraft,
-): GuestAppSettings {
+export function studioDraftToGuestAppSettings(draft: GuestAppStudioDraft): GuestAppSettings {
   return {
     enabled: draft.enabled,
     usePrimaryContact: draft.usePrimaryContact,

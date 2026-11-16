@@ -3,7 +3,10 @@
 import { useState, useTransition } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
-import { openBillingPortalAction, startSubscriptionCheckoutAction } from "@/features/settings/actions/billing";
+import {
+  openBillingPortalAction,
+  startSubscriptionCheckoutAction,
+} from "@/features/settings/actions/billing";
 import type { BillingSituation, CardPlanId } from "@/domain/billing/subscription";
 
 type PlanOffer = { id: CardPlanId; label: string; priceEur: number };
@@ -21,12 +24,20 @@ type Props = {
   checkout: string | null;
 };
 
-export function BillingPanel({ planLabel, situation, cardAvailable, hasCustomer, offers, checkout }: Props) {
+export function BillingPanel({
+  planLabel,
+  situation,
+  cardAvailable,
+  hasCustomer,
+  offers,
+  checkout,
+}: Props) {
   const t = useTranslations("admin.billing");
   const format = useFormatter();
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const day = (iso: string | null) => (iso ? format.dateTime(new Date(iso), { dateStyle: "long" }) : "—");
+  const day = (iso: string | null) =>
+    iso ? format.dateTime(new Date(iso), { dateStyle: "long" }) : "—";
 
   function go(run: () => Promise<{ ok: true; url: string } | { ok: false; error: string }>) {
     setError(null);
@@ -83,7 +94,10 @@ export function BillingPanel({ planLabel, situation, cardAvailable, hasCustomer,
           {offers.length > 0 ? (
             <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
               {offers.map((offer) => (
-                <li key={offer.id} className="flex flex-col gap-2 rounded-xl border border-[var(--admin-border)] p-4">
+                <li
+                  key={offer.id}
+                  className="flex flex-col gap-2 rounded-xl border border-[var(--admin-border)] p-4"
+                >
                   <strong>{offer.label}</strong>
                   <span className="text-sm text-[var(--admin-text-muted)]">
                     {t("price", { price: offer.priceEur })}

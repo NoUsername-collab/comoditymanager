@@ -4,10 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
-import {
-  lockLocationAdminAction,
-  unlockLocationAdminAction,
-} from "@/features/settings/actions";
+import { lockLocationAdminAction, unlockLocationAdminAction } from "@/features/settings/actions";
 
 export function AdminLocationUnlockForm({ isOwner = false }: { isOwner?: boolean }) {
   const tPage = useTranslations("admin.pages.settingsLocation.unlock");

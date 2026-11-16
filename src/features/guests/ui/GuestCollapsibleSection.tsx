@@ -4,10 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import type { GuestListItem } from "@/domain/guest/types";
 import { GuestListCard } from "@/features/guests/ui/GuestListCard";
-import {
-  guestListPreviewHref,
-  guestProfileHref,
-} from "@/lib/guest-list-links";
+import { guestListPreviewHref, guestProfileHref } from "@/lib/guest-list-links";
 
 type Props = {
   title: string;
@@ -78,11 +75,7 @@ export function GuestCollapsibleSection({
             ))}
           </ul>
           {!open && hiddenCount > 0 && (
-            <button
-              type="button"
-              className="guest-section__expand"
-              onClick={() => setOpen(true)}
-            >
+            <button type="button" className="guest-section__expand" onClick={() => setOpen(true)}>
               {t("expandSection", { count: hiddenCount })}
             </button>
           )}

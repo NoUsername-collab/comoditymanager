@@ -2,13 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-export function AdminMetricHint({
-  text,
-  label,
-}: {
-  text: string;
-  label?: string;
-}) {
+export function AdminMetricHint({ text, label }: { text: string; label?: string }) {
   const tCommon = useTranslations("admin.common");
   return (
     <span className="admin-metric-hint">

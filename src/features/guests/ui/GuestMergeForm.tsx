@@ -32,9 +32,7 @@ export function GuestMergeForm({
       className="guest-merge-form mt-4 space-y-2 rounded border border-amber-200 bg-amber-50 p-3"
     >
       <input type="hidden" name="target_id" value={guestId} />
-      <p className="text-sm font-semibold text-amber-950">
-        {t("title")}
-      </p>
+      <p className="text-sm font-semibold text-amber-950">{t("title")}</p>
       <AdminSelect
         name="source_id"
         value={selected}

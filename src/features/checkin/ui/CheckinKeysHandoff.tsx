@@ -35,9 +35,7 @@ export function CheckinKeysHandoff({
 }: Props) {
   const allSelected =
     rooms.length > 0 &&
-    rooms.every((room) =>
-      keysHandedRooms.some((r) => roomKey(r) === roomKey(room)),
-    );
+    rooms.every((room) => keysHandedRooms.some((r) => roomKey(r) === roomKey(room)));
 
   if (rooms.length === 0) return null;
 
@@ -65,11 +63,12 @@ export function CheckinKeysHandoff({
           const checked = keysHandedRooms.some((r) => roomKey(r) === roomKey(room));
           const eligibility = roomEligibility?.get(room);
           const blocked = eligibility ? !eligibility.allowed : false;
-          const blockReason = blocked && eligibility?.reason === "keys_blocked_no_id"
-            ? labels.blockedNoId
-            : blocked && eligibility?.reason === "keys_blocked_unpaid"
-              ? labels.blockedUnpaid
-              : undefined;
+          const blockReason =
+            blocked && eligibility?.reason === "keys_blocked_no_id"
+              ? labels.blockedNoId
+              : blocked && eligibility?.reason === "keys_blocked_unpaid"
+                ? labels.blockedUnpaid
+                : undefined;
           return (
             <li key={room}>
               <label
@@ -83,7 +82,8 @@ export function CheckinKeysHandoff({
                   onChange={() => onToggleRoom(room)}
                 />
                 <span className="checkin-keys-handoff__room">
-                  {blocked ? "🔒 " : ""}{room}
+                  {blocked ? "🔒 " : ""}
+                  {room}
                 </span>
                 {blockReason && (
                   <span className="checkin-keys-handoff__block-reason">{blockReason}</span>

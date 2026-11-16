@@ -25,10 +25,7 @@ import {
   type ChildPolicy,
   type Party,
 } from "@/domain/availability/party";
-import {
-  PartyFields,
-  PartyHiddenInputs,
-} from "@/features/bookings/ui/party/PartyFields";
+import { PartyFields, PartyHiddenInputs } from "@/features/bookings/ui/party/PartyFields";
 
 type Props = {
   draft: GuestRebookDraft;
@@ -83,9 +80,7 @@ export function GuestRebookStayForm({
   const initialDates = (() => {
     const checkIn = clampCheckInDate(draft.checkIn || today, today);
     const checkOut =
-      draft.checkOut && draft.checkOut > checkIn
-        ? draft.checkOut
-        : addDays(checkIn, 1);
+      draft.checkOut && draft.checkOut > checkIn ? draft.checkOut : addDays(checkIn, 1);
     return { checkIn, checkOut };
   })();
   const [checkIn, setCheckIn] = useState(initialDates.checkIn);
@@ -105,9 +100,7 @@ export function GuestRebookStayForm({
   const [minRoomsNeeded, setMinRoomsNeeded] = useState(initialMinRooms);
   const [roomsError, setRoomsError] = useState<string | null>(null);
 
-  const validDefaults = draft.defaultRoomIds.filter((id) =>
-    initialRooms.some((r) => r.id === id)
-  );
+  const validDefaults = draft.defaultRoomIds.filter((id) => initialRooms.some((r) => r.id === id));
   const [selected, setSelected] = useState<Set<string>>(() => new Set(validDefaults));
 
   const [previewPending, startPreview] = useTransition();
@@ -160,7 +153,7 @@ export function GuestRebookStayForm({
 
   const selectedRooms = useMemo(
     () => availableRooms.filter((r) => selected.has(r.id)),
-    [availableRooms, selected]
+    [availableRooms, selected],
   );
 
   // Same quote as the server: rooms, extra beds and cots, child rules and free stock.
@@ -177,16 +170,14 @@ export function GuestRebookStayForm({
             pricingRules,
           })
         : null,
-    [selectedRooms, party, childPolicy, inventory, checkIn, checkOut, nights, pricingRules]
+    [selectedRooms, party, childPolicy, inventory, checkIn, checkOut, nights, pricingRules],
   );
   const standardTotal = quote?.total ?? 0;
 
   const selectionHostsGuests = quote != null;
   const noRoomsAvailable = availableRooms.length === 0;
-  const showGlobalUnavailable =
-    !invalidInterval && (!canFulfill || noRoomsAvailable);
-  const showSelectionError =
-    canFulfill && selected.size > 0 && !selectionHostsGuests;
+  const showGlobalUnavailable = !invalidInterval && (!canFulfill || noRoomsAvailable);
+  const showSelectionError = canFulfill && selected.size > 0 && !selectionHostsGuests;
 
   const canSubmit =
     !invalidInterval &&
@@ -194,10 +185,7 @@ export function GuestRebookStayForm({
     guestLastName.trim().length > 0 &&
     agesComplete &&
     (selected.size === 0 ||
-      (canFulfill &&
-        selectionHostsGuests &&
-        selected.size > 0 &&
-        !noRoomsAvailable));
+      (canFulfill && selectionHostsGuests && selected.size > 0 && !noRoomsAvailable));
 
   function onCheckInChange(value: string) {
     const nextCheckIn = clampCheckInDate(value, today);
@@ -237,12 +225,7 @@ export function GuestRebookStayForm({
       {!embedded && (
         <p className="guest-rebook-form__intro text-sm text-zinc-600">
           {t("intro", {
-            period: formatStayPeriod(
-              draft.sourceCheckIn,
-              draft.sourceCheckOut,
-              locale,
-              true
-            ),
+            period: formatStayPeriod(draft.sourceCheckIn, draft.sourceCheckOut, locale, true),
           })}
         </p>
       )}
@@ -357,9 +340,7 @@ export function GuestRebookStayForm({
       <section className="guest-rebook-form__section space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="guest-rebook-form__heading">{t("roomsSection")}</h2>
-          {previewPending && (
-            <span className="text-xs text-zinc-500">{tCommon("checking")}</span>
-          )}
+          {previewPending && <span className="text-xs text-zinc-500">{tCommon("checking")}</span>}
         </div>
         {!embedded && <p className="text-sm text-zinc-600">{t("roomsHint")}</p>}
 
@@ -371,10 +352,7 @@ export function GuestRebookStayForm({
               ·{" "}
               {tConfirm("minimumRoomsInPeriod", {
                 count: minRoomsNeeded,
-                rooms:
-                  minRoomsNeeded === 1
-                    ? tCommon("room")
-                    : tCommon("rooms").toLowerCase(),
+                rooms: minRoomsNeeded === 1 ? tCommon("room") : tCommon("rooms").toLowerCase(),
               })}
             </span>
           )}
@@ -410,8 +388,7 @@ export function GuestRebookStayForm({
                   onChange={() => toggleRoom(r.id)}
                 />
                 <span className="min-w-0 flex-1">
-                  {r.name} — {r.building_name} · {r.max_capacity}{" "}
-                  {tCommon("personsShort")} ·{" "}
+                  {r.name} — {r.building_name} · {r.max_capacity} {tCommon("personsShort")} ·{" "}
                   {formatCurrency(r.price_per_night, locale)} {tCommon("ronPerNight")}
                   <RoomFeatureBadges
                     roomTypeName={r.room_type_name}
@@ -448,11 +425,7 @@ export function GuestRebookStayForm({
         >
           {tCommon("cancel")}
         </AdminButton>
-        <AdminButton
-          type="submit"
-          variant="primary"
-          disabled={!canSubmit || previewPending}
-        >
+        <AdminButton type="submit" variant="primary" disabled={!canSubmit || previewPending}>
           {embedded ? t("confirm") : t("submit")}
         </AdminButton>
       </div>

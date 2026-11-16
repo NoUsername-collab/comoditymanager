@@ -45,15 +45,12 @@ export function mapBookingRows(rows: BookingSelectRow[]): BookingRow[] {
 }
 
 export async function attachGuestProfiles(rows: BookingRow[]): Promise<BookingRow[]> {
-  const guestIds = [
-    ...new Set(rows.map((row) => row.guest_id).filter(Boolean) as string[]),
-  ];
+  const guestIds = [...new Set(rows.map((row) => row.guest_id).filter(Boolean) as string[])];
   if (guestIds.length === 0) return rows;
 
   const profiles = await listGuestProfileSummaries(guestIds);
   return rows.map((row) => ({
     ...row,
-    guest_profile: row.guest_id ? profiles.get(row.guest_id) ?? null : null,
+    guest_profile: row.guest_id ? (profiles.get(row.guest_id) ?? null) : null,
   }));
 }
-

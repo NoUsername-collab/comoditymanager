@@ -12,10 +12,7 @@ import { publishGanttLiveBooking } from "@/lib/gantt/live-bookings";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import type { BookingRow } from "@/services/bookings";
 import { LIST_SEPARATOR, SummaryCard } from "./shared";
-import {
-  GANTT_QUICK_LABEL_CLASS,
-  type GanttQuickRoomOption,
-} from "./types";
+import { GANTT_QUICK_LABEL_CLASS, type GanttQuickRoomOption } from "./types";
 
 export function MoveBody({
   rooms,
@@ -38,17 +35,13 @@ export function MoveBody({
 
   const confirmedBookings = useMemo(
     () =>
-      bookings.filter(
-        (booking) => booking.status === "confirmata" && booking.room_ids.length > 0
-      ),
-    [bookings]
+      bookings.filter((booking) => booking.status === "confirmata" && booking.room_ids.length > 0),
+    [bookings],
   );
 
   const defaultBooking = confirmedBookings[0] ?? null;
   const [moveBookingId, setMoveBookingId] = useState(defaultBooking?.id ?? "");
-  const [moveSourceRoomId, setMoveSourceRoomId] = useState(
-    defaultBooking?.room_ids[0] ?? ""
-  );
+  const [moveSourceRoomId, setMoveSourceRoomId] = useState(defaultBooking?.room_ids[0] ?? "");
   const [moveTargetRoomId, setMoveTargetRoomId] = useState("");
   const [movePreviewState, setMovePreviewState] = useState<{
     key: string;
@@ -57,7 +50,7 @@ export function MoveBody({
 
   const selectedBooking = useMemo(
     () => confirmedBookings.find((booking) => booking.id === moveBookingId) ?? null,
-    [confirmedBookings, moveBookingId]
+    [confirmedBookings, moveBookingId],
   );
 
   const moveTargetOptions = useMemo(() => {
@@ -69,8 +62,7 @@ export function MoveBody({
     selectedBooking && moveSourceRoomId && moveTargetRoomId
       ? `${selectedBooking.id}:${moveSourceRoomId}:${moveTargetRoomId}`
       : "";
-  const movePreview =
-    movePreviewState?.key === movePreviewKey ? movePreviewState.text : null;
+  const movePreview = movePreviewState?.key === movePreviewKey ? movePreviewState.text : null;
 
   useEffect(() => {
     if (!selectedBooking || !moveSourceRoomId || !moveTargetRoomId) return;
@@ -102,7 +94,7 @@ export function MoveBody({
                   res.preview.targetSegment.start,
                   res.preview.targetSegment.end,
                   locale,
-                  true
+                  true,
                 ),
                 oldTotal: res.preview.oldTotal,
                 newTotal: res.preview.newTotal,
@@ -113,14 +105,14 @@ export function MoveBody({
                   res.preview.sourceSegment?.start ?? "",
                   res.preview.sourceSegment?.end ?? "",
                   locale,
-                  true
+                  true,
                 ),
                 target: targetRoomName,
                 targetPeriod: formatStayPeriod(
                   res.preview.targetSegment.start,
                   res.preview.targetSegment.end,
                   locale,
-                  true
+                  true,
                 ),
                 oldTotal: res.preview.oldTotal,
                 newTotal: res.preview.newTotal,
@@ -173,8 +165,7 @@ export function MoveBody({
           onChange={(e) => {
             const nextBookingId = e.target.value;
             const nextBooking =
-              confirmedBookings.find((booking) => booking.id === nextBookingId) ??
-              null;
+              confirmedBookings.find((booking) => booking.id === nextBookingId) ?? null;
             onError(null);
             setMoveBookingId(nextBookingId);
             setMoveSourceRoomId(nextBooking?.room_ids[0] ?? "");
@@ -207,11 +198,7 @@ export function MoveBody({
                   {selectedBooking.guest_name}
                 </strong>
                 <div className="mt-1">
-                  {formatStayPeriod(
-                    selectedBooking.check_in,
-                    selectedBooking.check_out,
-                    true
-                  )}
+                  {formatStayPeriod(selectedBooking.check_in, selectedBooking.check_out, true)}
                 </div>
               </>
             }
@@ -254,11 +241,7 @@ export function MoveBody({
             </label>
           </div>
           {movePreview ? (
-            <SummaryCard
-              title={tGantt("quick.movePreviewTitle")}
-              tone="info"
-              body={movePreview}
-            />
+            <SummaryCard title={tGantt("quick.movePreviewTitle")} tone="info" body={movePreview} />
           ) : null}
           <AdminButton
             variant="primary"

@@ -34,9 +34,7 @@ function applyStagingTenantSuffix(platformDomain: string): string {
 }
 
 /** Optional extra platform hostnames (comma-separated env). */
-const EXTRA_PLATFORM_HOSTS = (
-  process.env.NEXT_PUBLIC_PLATFORM_HOSTS?.split(",") ?? []
-)
+const EXTRA_PLATFORM_HOSTS = (process.env.NEXT_PUBLIC_PLATFORM_HOSTS?.split(",") ?? [])
   .map((h) => h.trim().toLowerCase())
   .filter(Boolean);
 
@@ -60,7 +58,13 @@ function getPlatformRoots(): string[] {
 }
 
 function normalizeHost(host: string): string {
-  return host.replace(/^www\./, "").split(":")[0]?.trim().toLowerCase() ?? "";
+  return (
+    host
+      .replace(/^www\./, "")
+      .split(":")[0]
+      ?.trim()
+      .toLowerCase() ?? ""
+  );
 }
 
 /** True when the request host is the platform apex (zalmox.app, test.zalmox.app, localhost, etc.). */
@@ -74,18 +78,18 @@ export function isPlatformRequestHost(hostInput: string): boolean {
 function isPlatformHost(host: string): boolean {
   const normalized = normalizeHost(host);
   return getPlatformRoots().some(
-    (platform) =>
-      normalized === platform || normalized === `www.${platform}`
+    (platform) => normalized === platform || normalized === `www.${platform}`,
   );
 }
 
 /** Platform domain for tenant URLs — derived from the signup/login request host. */
-export function platformDomainFromRequestHost(
-  requestHost: string | null | undefined
-): string {
+export function platformDomainFromRequestHost(requestHost: string | null | undefined): string {
   const host =
-    requestHost?.split(":")[0]?.trim().toLowerCase().replace(/^www\./, "") ??
-    "";
+    requestHost
+      ?.split(":")[0]
+      ?.trim()
+      .toLowerCase()
+      .replace(/^www\./, "") ?? "";
 
   if (!host || host === "127.0.0.1") return defaultPlatformDomain();
   if (host === "localhost") return "localhost";
@@ -120,9 +124,7 @@ function tenantHost(slug: string, platformDomain: string): string {
 }
 
 type ParsedTenantHost =
-  | { type: "platform" }
-  | { type: "tenant"; slug: string }
-  | { type: "custom"; domain: string };
+  { type: "platform" } | { type: "tenant"; slug: string } | { type: "custom"; domain: string };
 
 /** Parse hostname → tenant context (shared by proxy + server). */
 export function parseTenantFromHost(hostInput: string): ParsedTenantHost {
@@ -179,13 +181,10 @@ export function tenantDomainFromHost(hostInput: string): string | null {
 export function buildTenantLoginUrl(
   slug: string,
   params?: Record<string, string | undefined>,
-  requestHost?: string | null
+  requestHost?: string | null,
 ): string {
-  const protocol =
-    process.env.NODE_ENV === "production" ? "https" : "http";
-  const platformDomain = applyStagingTenantSuffix(
-    platformDomainFromRequestHost(requestHost)
-  );
+  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+  const platformDomain = applyStagingTenantSuffix(platformDomainFromRequestHost(requestHost));
   const host = tenantHost(slug, platformDomain);
 
   const search = new URLSearchParams();
@@ -202,36 +201,25 @@ export function buildTenantLoginUrl(
 export function buildTenantAdminUrl(
   slug: string,
   path = "/admin",
-  requestHost?: string | null
+  requestHost?: string | null,
 ): string {
-  const protocol =
-    process.env.NODE_ENV === "production" ? "https" : "http";
-  const platformDomain = applyStagingTenantSuffix(
-    platformDomainFromRequestHost(requestHost)
-  );
+  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+  const platformDomain = applyStagingTenantSuffix(platformDomainFromRequestHost(requestHost));
   const host = tenantHost(slug, platformDomain);
   const safePath = path.startsWith("/") ? path : `/${path}`;
   return `${protocol}://${host}${safePath}`;
 }
 
 /** Public tenant site origin, e.g. https://slug.test.zalmox.app */
-export function buildTenantSiteUrl(
-  slug: string,
-  requestHost?: string | null,
-): string {
-  const protocol =
-    process.env.NODE_ENV === "production" ? "https" : "http";
-  const platformDomain = applyStagingTenantSuffix(
-    platformDomainFromRequestHost(requestHost),
-  );
+export function buildTenantSiteUrl(slug: string, requestHost?: string | null): string {
+  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+  const platformDomain = applyStagingTenantSuffix(platformDomainFromRequestHost(requestHost));
   const host = tenantHost(slug, platformDomain);
   return `${protocol}://${host}`;
 }
 
 /** Staging: redirect slug.zalmox.app → slug.test.zalmox.app. */
-export function stagingTenantHostCorrection(
-  hostInput: string
-): string | null {
+export function stagingTenantHostCorrection(hostInput: string): string | null {
   if (!isStagingDeployment()) return null;
 
   const host = normalizeHost(hostInput);

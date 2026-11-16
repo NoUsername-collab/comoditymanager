@@ -21,8 +21,16 @@ function makeDay(iso: string, free_rooms: number, total_rooms = 10): ComputedDay
     free_rooms,
     total_rooms,
     occupied_rooms: total_rooms - free_rooms,
-    occupancy_pct: total_rooms > 0 ? Math.round(((total_rooms - free_rooms) / total_rooms) * 100) : 0,
-    pressure: free_rooms <= 0 ? "full" : free_rooms === 1 ? "tight" : free_rooms <= 2 ? "moderate" : "relaxed",
+    occupancy_pct:
+      total_rooms > 0 ? Math.round(((total_rooms - free_rooms) / total_rooms) * 100) : 0,
+    pressure:
+      free_rooms <= 0
+        ? "full"
+        : free_rooms === 1
+          ? "tight"
+          : free_rooms <= 2
+            ? "moderate"
+            : "relaxed",
     status: free_rooms > 0 ? "available" : "full",
     checkins: 0,
     checkouts: 0,
@@ -38,7 +46,7 @@ function makeDay(iso: string, free_rooms: number, total_rooms = 10): ComputedDay
 function makeDays(
   startIso: string,
   count: number,
-  freeRoomsFn: (i: number, iso: string) => number = () => 5
+  freeRoomsFn: (i: number, iso: string) => number = () => 5,
 ): ComputedDay[] {
   const days: ComputedDay[] = [];
   const start = new Date(startIso + "T00:00:00");

@@ -14,12 +14,8 @@ export default async function LocationStructurePage() {
     getTranslations("admin.common"),
   ]);
 
-  let structures: Awaited<
-    ReturnType<typeof loadLocationStructurePage>
-  >["structures"] = [];
-  let catalogOptions: Awaited<
-    ReturnType<typeof loadLocationStructurePage>
-  >["catalogOptions"] = [];
+  let structures: Awaited<ReturnType<typeof loadLocationStructurePage>>["structures"] = [];
+  let catalogOptions: Awaited<ReturnType<typeof loadLocationStructurePage>>["catalogOptions"] = [];
   let policiesByBuilding: Awaited<
     ReturnType<typeof loadLocationStructurePage>
   >["policiesByBuilding"] = {};
@@ -43,10 +39,7 @@ export default async function LocationStructurePage() {
       description={t("pageDescription")}
       alerts={error ? [{ tone: "error", message: error }] : []}
       actions={
-        <Link
-          href="/admin/buildings/new?return_to=structure"
-          className="settings-primary-link"
-        >
+        <Link href="/admin/buildings/new?return_to=structure" className="settings-primary-link">
           {tCommon("newBuilding")}
         </Link>
       }

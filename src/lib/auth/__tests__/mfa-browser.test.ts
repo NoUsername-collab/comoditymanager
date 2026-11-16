@@ -94,9 +94,10 @@ describe("confirmTotpEnrollment", () => {
   it("maps verify errors to invalid_code", async () => {
     mfa.challenge.mockResolvedValue({ data: { id: "ch-1" }, error: null });
     mfa.verify.mockResolvedValue({ error: { message: "bad" } });
-    await expect(
-      confirmTotpEnrollment({ factorId: "fac-1", code: "000000" })
-    ).resolves.toEqual({ ok: false, reason: "invalid_code" });
+    await expect(confirmTotpEnrollment({ factorId: "fac-1", code: "000000" })).resolves.toEqual({
+      ok: false,
+      reason: "invalid_code",
+    });
   });
 });
 

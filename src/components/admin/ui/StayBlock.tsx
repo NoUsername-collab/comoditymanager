@@ -35,9 +35,7 @@ export function StayBlock({
         muted ? "border-zinc-100 bg-zinc-50/50" : "border-zinc-200/80 bg-white",
       ].join(" ")}
     >
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
-        {title}
-      </p>
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">{title}</p>
       {!stay ? (
         <p className="mt-1.5 text-sm text-zinc-500">{empty}</p>
       ) : (

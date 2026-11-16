@@ -7,10 +7,7 @@ import { tenantsToCsv } from "@/lib/platform-admin/tenant-csv";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { buildTenantSiteUrl } from "@/lib/tenant/host";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
-import {
-  getPlatformTenantById,
-  listAllTenants,
-} from "@/services/platform-admin";
+import { getPlatformTenantById, listAllTenants } from "@/services/platform-admin";
 
 type ActionResult<T = void> = { success: boolean; error?: string; data?: T };
 
@@ -43,9 +40,7 @@ export async function exportTenantsCsvAction(): Promise<
 }
 
 /** Bust all tenant-scoped cache tags for one tenant. */
-export async function revalidateTenantCacheAction(
-  tenantId: string
-): Promise<ActionResult> {
+export async function revalidateTenantCacheAction(tenantId: string): Promise<ActionResult> {
   if (!tenantId?.trim()) {
     return { success: false, error: "Tenant invalid." };
   }
@@ -73,7 +68,7 @@ export async function revalidateTenantCacheAction(
 
 /** Generate a one-time magic login link for the tenant owner (Supabase admin API). */
 export async function generateOwnerMagicLinkAction(
-  tenantId: string
+  tenantId: string,
 ): Promise<ActionResult<{ link: string }>> {
   if (!tenantId?.trim()) {
     return { success: false, error: "Tenant invalid." };

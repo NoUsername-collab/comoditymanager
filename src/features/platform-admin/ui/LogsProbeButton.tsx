@@ -38,12 +38,10 @@ export function LogsProbeButton() {
                 await probePlatformLogsErrorAction();
                 setProbeResult({
                   ok: false,
-                  message:
-                    "Probe returned without throwing — unexpected behavior.",
+                  message: "Probe returned without throwing — unexpected behavior.",
                 });
               } catch (error) {
-                const message =
-                  error instanceof Error ? error.message : String(error);
+                const message = error instanceof Error ? error.message : String(error);
                 console.error("[platform-logs-probe]", error);
                 setProbeResult({
                   ok: true,
@@ -69,13 +67,9 @@ export function LogsProbeButton() {
           }`}
         >
           {probeResult.ok && probeResult.logWritten && (
-            <p className="mb-2 font-sans text-sm text-emerald-100">
-              {t("loggedMessage")}
-            </p>
+            <p className="mb-2 font-sans text-sm text-emerald-100">{t("loggedMessage")}</p>
           )}
-          <p className="whitespace-pre-wrap break-words font-mono">
-            {probeResult.message}
-          </p>
+          <p className="whitespace-pre-wrap break-words font-mono">{probeResult.message}</p>
           {probeResult.ok && probeResult.logWritten && (
             <Link
               href="/platform-admin/logs#dev-logs"

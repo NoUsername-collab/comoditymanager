@@ -81,11 +81,7 @@ export function SettingsShell({
 
   const onOverview = activeId === "overview";
   const roleLabel =
-    memberRole === "owner"
-      ? t("roleOwner")
-      : role === "admin"
-        ? t("roleAdmin")
-        : t("roleOperator");
+    memberRole === "owner" ? t("roleOwner") : role === "admin" ? t("roleAdmin") : t("roleOperator");
 
   return (
     <div className="settings-shell grid min-h-[min(72vh,52rem)] grid-cols-1 md:grid-cols-[15.5rem_minmax(0,1fr)]">
@@ -149,10 +145,7 @@ export function SettingsShell({
 
       <div className="settings-shell__main">
         {!onOverview && jumpItems.length > 0 ? (
-          <nav
-            className="settings-quick-jump"
-            aria-label={t("quickJumpAria")}
-          >
+          <nav className="settings-quick-jump" aria-label={t("quickJumpAria")}>
             <div className="settings-quick-jump__scroll">
               {jumpItems.map((item) => (
                 <Link
@@ -161,8 +154,7 @@ export function SettingsShell({
                   className={[
                     "settings-quick-jump__chip",
                     item.id === activeId && "settings-quick-jump__chip--active",
-                    navItemHasIssues(setupIssues, item) &&
-                      "settings-quick-jump__chip--issue",
+                    navItemHasIssues(setupIssues, item) && "settings-quick-jump__chip--issue",
                   ]
                     .filter(Boolean)
                     .join(" ")}
@@ -240,9 +232,7 @@ function SettingsNavLink({
           <span className="settings-shell__link-label block text-[0.8125rem] font-bold text-[var(--admin-text,#18181b)]">
             {t(item.labelKey)}
           </span>
-          {hasIssue ? (
-            <SetupIssueBadge className="settings-shell__issue-badge" />
-          ) : null}
+          {hasIssue ? <SetupIssueBadge className="settings-shell__issue-badge" /> : null}
         </span>
         {item.descriptionKey ? (
           <span className="settings-shell__link-desc mt-[0.1rem] block text-[0.6875rem] leading-[1.35] text-[var(--admin-text-muted,#71717a)]">

@@ -3,15 +3,15 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { changeTenantEmailDeliveryAction, saveTenantResendVaultKeyAction, clearTenantResendVaultKeyAction } from "@/features/platform-admin/tenant-actions";
+import {
+  changeTenantEmailDeliveryAction,
+  saveTenantResendVaultKeyAction,
+  clearTenantResendVaultKeyAction,
+} from "@/features/platform-admin/tenant-actions";
 import type { TenantEmailDeliveryMode } from "@/domain/email/delivery-policy";
 import type { TenantEmailOperatorSnapshot } from "@/services/tenant-email-delivery";
 
-const MODES: TenantEmailDeliveryMode[] = [
-  "platform",
-  "tenant_resend",
-  "disabled",
-];
+const MODES: TenantEmailDeliveryMode[] = ["platform", "tenant_resend", "disabled"];
 
 export function TenantEmailDeliveryForm({
   tenantId,
@@ -24,9 +24,7 @@ export function TenantEmailDeliveryForm({
   const router = useRouter();
   const [deliveryMode, setDeliveryMode] = useState(snapshot.delivery.deliveryMode);
   const [byokConfigured, setByokConfigured] = useState(snapshot.delivery.byokConfigured);
-  const [monthlyCap, setMonthlyCap] = useState(
-    snapshot.delivery.monthlySendCap?.toString() ?? "",
-  );
+  const [monthlyCap, setMonthlyCap] = useState(snapshot.delivery.monthlySendCap?.toString() ?? "");
   const [notes, setNotes] = useState(snapshot.delivery.operatorNotes ?? "");
   const [vaultKeyInput, setVaultKeyInput] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -111,10 +109,7 @@ export function TenantEmailDeliveryForm({
               : t("platformResendOff")
           }
         />
-        <Row
-          label={t("tenantEmailEnabled")}
-          value={snapshot.emailEnabled ? t("yes") : t("no")}
-        />
+        <Row label={t("tenantEmailEnabled")} value={snapshot.emailEnabled ? t("yes") : t("no")} />
         <Row
           label={t("verifiedDomains")}
           value={
@@ -164,9 +159,7 @@ export function TenantEmailDeliveryForm({
             />
             <span>
               <span className="block font-medium">{t(`mode.${mode}.title`)}</span>
-              <span className="block text-[11px] text-neutral-500">
-                {t(`mode.${mode}.hint`)}
-              </span>
+              <span className="block text-[11px] text-neutral-500">{t(`mode.${mode}.hint`)}</span>
             </span>
           </label>
         ))}
@@ -189,7 +182,9 @@ export function TenantEmailDeliveryForm({
           />
 
           {snapshot.vaultKeySource === "tenant_env" && (
-            <p className="text-amber-400">{t("vaultEnvFallbackActive", { env: snapshot.tenantResendEnvVar })}</p>
+            <p className="text-amber-400">
+              {t("vaultEnvFallbackActive", { env: snapshot.tenantResendEnvVar })}
+            </p>
           )}
 
           <label className="block text-neutral-400">

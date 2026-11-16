@@ -23,9 +23,7 @@ export function RoomStructureRow({
       <span className="font-medium text-zinc-900">
         {room.name}
         {!room.is_active && (
-          <span className="ml-2 text-xs font-normal text-zinc-400">
-            ({tCommon("inactive")})
-          </span>
+          <span className="ml-2 text-xs font-normal text-zinc-400">({tCommon("inactive")})</span>
         )}
       </span>
       <span className="room-structure-row__controls flex flex-wrap items-center gap-2 text-xs text-zinc-500">

@@ -3,13 +3,7 @@ import type { HudIconName } from "@/components/admin/AdminHudIcons";
 export type AdminMoreLink = {
   href: string;
   labelKey:
-    | "reception"
-    | "statistics"
-    | "settings"
-    | "availability"
-    | "buildings"
-    | "rooms"
-    | "devlog";
+    "reception" | "statistics" | "settings" | "availability" | "buildings" | "rooms" | "devlog";
   icon: HudIconName;
   locationConfig?: boolean;
 };

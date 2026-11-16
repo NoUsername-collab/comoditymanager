@@ -1,12 +1,9 @@
-
 import { getAdminEmail, getOperatorEmail } from "@/lib/auth/constants";
 
 export type StaffRole = "admin" | "operator";
 
 /** Legacy env-based staff (localhost dev without tenant header). */
-export function getLegacyStaffRoleByEmail(
-  email: string | undefined
-): StaffRole | null {
+export function getLegacyStaffRoleByEmail(email: string | undefined): StaffRole | null {
   if (!email) return null;
   const normalized = email.toLowerCase();
   if (normalized === getAdminEmail().toLowerCase()) return "admin";
@@ -23,6 +20,6 @@ const OPERATOR_FORBIDDEN_PATH_PREFIXES = [
 
 export function pathBlockedForOperator(pathname: string): boolean {
   return OPERATOR_FORBIDDEN_PATH_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`)
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
 }

@@ -61,7 +61,11 @@ export function GuestReceptionRequestForm({ accessCode, requests }: Props) {
   }
 
   return (
-    <section id="reception-request" className="guest-app__request" aria-labelledby="guest-request-title">
+    <section
+      id="reception-request"
+      className="guest-app__request"
+      aria-labelledby="guest-request-title"
+    >
       <h2 id="guest-request-title" className="guest-app__section-title">
         {t("title")}
       </h2>
@@ -81,7 +85,11 @@ export function GuestReceptionRequestForm({ accessCode, requests }: Props) {
           />
         </label>
         {error ? <p className="guest-app__form-error">{error}</p> : null}
-        <button type="submit" className="guest-app__btn-primary" disabled={pending || message.trim().length < 2}>
+        <button
+          type="submit"
+          className="guest-app__btn-primary"
+          disabled={pending || message.trim().length < 2}
+        >
           {pending ? t("submitting") : t("submit")}
         </button>
       </form>

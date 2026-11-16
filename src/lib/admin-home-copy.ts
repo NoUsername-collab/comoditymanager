@@ -10,7 +10,7 @@ export function buildHomeMoodLine(
     stats: AdminDashboardStats;
     requestCount: number;
     todayBoard: TodayBoard | null;
-  }
+  },
 ): string {
   const { stats, requestCount, todayBoard } = input;
 
@@ -48,21 +48,17 @@ export function buildHomeBriefing(
   input: {
     todayBoard: TodayBoard | null;
     requestCount: number;
-  }
+  },
 ): string | null {
   const { todayBoard, requestCount } = input;
   if (!todayBoard) return null;
 
   const parts: string[] = [];
   if (todayBoard.arrivals.length > 0) {
-    parts.push(
-      t("briefingArrivals", { count: todayBoard.arrivals.length })
-    );
+    parts.push(t("briefingArrivals", { count: todayBoard.arrivals.length }));
   }
   if (todayBoard.departures.length > 0) {
-    parts.push(
-      t("briefingDepartures", { count: todayBoard.departures.length })
-    );
+    parts.push(t("briefingDepartures", { count: todayBoard.departures.length }));
   }
   if (todayBoard.roomsToClean.length > 0) {
     parts.push(t("briefingClean", { count: todayBoard.roomsToClean.length }));
@@ -91,7 +87,7 @@ export function buildHomeMilestones(
     stats: AdminDashboardStats;
     monthCompare: MonthComparison | null;
     requestCount: number;
-  }
+  },
 ): HomeMilestone[] {
   const out: HomeMilestone[] = [];
   const { totalConfirmed, stats, monthCompare, requestCount } = input;

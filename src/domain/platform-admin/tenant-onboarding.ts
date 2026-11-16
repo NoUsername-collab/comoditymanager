@@ -33,10 +33,7 @@ export function buildTenantOnboardingChecklist(
   };
 }
 
-export function onboardingProgressTone(
-  ready: number,
-  total: number,
-): "ok" | "warn" | "bad" {
+export function onboardingProgressTone(ready: number, total: number): "ok" | "warn" | "bad" {
   if (total === 0) return "ok";
   const ratio = ready / total;
   if (ratio >= 1) return "ok";

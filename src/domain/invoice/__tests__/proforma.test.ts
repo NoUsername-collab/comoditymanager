@@ -36,7 +36,7 @@ describe("resolveDefaultProformaAmount", () => {
       resolveDefaultProformaAmount({
         remainingToInvoice: 800,
         uninvoicedPaid: 300,
-      })
+      }),
     ).toBe(300);
   });
 });
@@ -50,7 +50,7 @@ describe("canConvertProforma", () => {
         remainingToInvoice: 800,
         convertedToInvoiceId: null,
         status: "issued",
-      })
+      }),
     ).toEqual({ ok: false, reason: "proforma.payment_insufficient" });
   });
 
@@ -62,7 +62,7 @@ describe("canConvertProforma", () => {
         remainingToInvoice: 800,
         convertedToInvoiceId: null,
         status: "issued",
-      })
+      }),
     ).toEqual({ ok: true });
   });
 
@@ -74,7 +74,7 @@ describe("canConvertProforma", () => {
         remainingToInvoice: 800,
         convertedToInvoiceId: "inv-1",
         status: "issued",
-      })
+      }),
     ).toEqual({ ok: false, reason: "proforma.already_converted" });
   });
 });
@@ -85,7 +85,7 @@ describe("sumIssuedInvoiceTotals excludes proforma", () => {
       sumIssuedInvoiceTotals([
         { total: 400, status: "issued", invoice_kind: "advance" },
         { total: 300, status: "issued", invoice_kind: "proforma" },
-      ])
+      ]),
     ).toBe(400);
   });
 });

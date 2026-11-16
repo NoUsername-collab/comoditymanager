@@ -3,9 +3,7 @@ import type { ActivityAction, ActivityLogEntry } from "./types";
 export type ActivityJournalCategory = "rezervari" | "admin";
 
 /** Rezervări = flux booking + check-in; Admin = autentificări, setări, clădiri/camere. */
-export function activityJournalCategory(
-  action: ActivityAction
-): ActivityJournalCategory {
+export function activityJournalCategory(action: ActivityAction): ActivityJournalCategory {
   if (
     action.startsWith("booking.") ||
     action.startsWith("checkin.") ||

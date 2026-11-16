@@ -8,15 +8,8 @@ import {
 
 describe("search-history-storage", () => {
   it("dedupes case-insensitively and keeps most recent first", () => {
-    expect(dedupeSearchHistory(["Ion", "Maria"], "ion")).toEqual([
-      "ion",
-      "Maria",
-    ]);
-    expect(dedupeSearchHistory(["Ion", "Maria"], "Ana")).toEqual([
-      "Ana",
-      "Ion",
-      "Maria",
-    ]);
+    expect(dedupeSearchHistory(["Ion", "Maria"], "ion")).toEqual(["ion", "Maria"]);
+    expect(dedupeSearchHistory(["Ion", "Maria"], "Ana")).toEqual(["Ana", "Ion", "Maria"]);
   });
 
   it("parses valid JSON arrays only", () => {
@@ -26,15 +19,13 @@ describe("search-history-storage", () => {
   });
 
   it("scopes storage key by tenant slug or custom domain", () => {
-    expect(searchHistoryStorageKey("demo.localhost")).toBe(
-      "zalmox-stays-search-history:demo",
-    );
+    expect(searchHistoryStorageKey("demo.localhost")).toBe("zalmox-stays-search-history:demo");
     expect(searchHistoryStorageKey("hotel.example.com")).toBe(
       "zalmox-stays-search-history:custom:hotel.example.com",
     );
-    expect(
-      searchHistoryStorageKey("demo.localhost", "casaemil-cazari-search-history"),
-    ).toBe("casaemil-cazari-search-history:demo");
+    expect(searchHistoryStorageKey("demo.localhost", "casaemil-cazari-search-history")).toBe(
+      "casaemil-cazari-search-history:demo",
+    );
   });
 
   it("hides exact query matches while filtering", () => {

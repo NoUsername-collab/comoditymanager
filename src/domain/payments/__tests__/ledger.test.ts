@@ -1,14 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { resolveCheckinPaymentFromLedger } from "@/domain/checkin/payment-panel";
-import {
-  computePaymentTotals,
-  paymentDeltaToTarget,
-  sumLedgerPayments,
-} from "../ledger";
+import { computePaymentTotals, paymentDeltaToTarget, sumLedgerPayments } from "../ledger";
 import type { PaymentEntry } from "../types";
 
 function entry(
-  partial: Partial<PaymentEntry> & Pick<PaymentEntry, "amount" | "kind">
+  partial: Partial<PaymentEntry> & Pick<PaymentEntry, "amount" | "kind">,
 ): PaymentEntry {
   return {
     id: "1",
@@ -37,16 +33,12 @@ describe("sumLedgerPayments", () => {
 
 describe("computePaymentTotals", () => {
   it("derives partial and paid", () => {
-    const partial = computePaymentTotals(1200, [
-      entry({ amount: 400, kind: "payment" }),
-    ]);
+    const partial = computePaymentTotals(1200, [entry({ amount: 400, kind: "payment" })]);
     expect(partial.totalPaid).toBe(400);
     expect(partial.balanceDue).toBe(800);
     expect(partial.derivedStatus).toBe("partial");
 
-    const paid = computePaymentTotals(1200, [
-      entry({ amount: 1200, kind: "payment" }),
-    ]);
+    const paid = computePaymentTotals(1200, [entry({ amount: 1200, kind: "payment" })]);
     expect(paid.derivedStatus).toBe("paid");
     expect(paid.balanceDue).toBe(0);
   });

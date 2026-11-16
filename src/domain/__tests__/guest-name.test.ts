@@ -107,15 +107,11 @@ describe("guestNamesFromForm", () => {
 
   it("throws when last name is missing", () => {
     const fd = makeFormData({ guest_last_name: "", guest_first_name: "Maria" });
-    expect(() => guestNamesFromForm(fd)).toThrow(
-      "guest.last_and_first_name_required"
-    );
+    expect(() => guestNamesFromForm(fd)).toThrow("guest.last_and_first_name_required");
   });
 
   it("throws when first name is missing", () => {
     const fd = makeFormData({ guest_last_name: "Popescu", guest_first_name: "" });
-    expect(() => guestNamesFromForm(fd)).toThrow(
-      "guest.last_and_first_name_required"
-    );
+    expect(() => guestNamesFromForm(fd)).toThrow("guest.last_and_first_name_required");
   });
 });

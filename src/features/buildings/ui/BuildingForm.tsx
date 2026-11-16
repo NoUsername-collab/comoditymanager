@@ -65,11 +65,7 @@ export function BuildingForm({
           {nonAcOptions.map((opt) => (
             <label key={opt.id} className="block text-sm">
               <span className="font-medium">{opt.name}</span>
-              <AdminSelect
-                name={`policy_${opt.id}`}
-                defaultValue="per_room"
-                className="mt-1"
-              >
+              <AdminSelect name={`policy_${opt.id}`} defaultValue="per_room" className="mt-1">
                 {policyOptions.map((p) => (
                   <option key={p.value} value={p.value}>
                     {p.label}
@@ -85,9 +81,7 @@ export function BuildingForm({
 
       <label className="block">
         <span className="text-sm font-medium">{tBuildings("defaultPricePerNightRon")}</span>
-        <span className="mt-0.5 block text-xs text-zinc-500">
-          {tBuildings("defaultPriceHint")}
-        </span>
+        <span className="mt-0.5 block text-xs text-zinc-500">{tBuildings("defaultPriceHint")}</span>
         <AdminInput
           name="default_price_per_night"
           type="number"
@@ -100,17 +94,10 @@ export function BuildingForm({
 
       <label className="block">
         <span className="text-sm font-medium">{tCommon("displayOrder")}</span>
-        <AdminInput
-          name="sort_order"
-          type="number"
-          defaultValue={1}
-          className="mt-1"
-        />
+        <AdminInput name="sort_order" type="number" defaultValue={1} className="mt-1" />
       </label>
 
-      <AdminSubmitButton size="md">
-        {tBuildings("saveBuilding")}
-      </AdminSubmitButton>
+      <AdminSubmitButton size="md">{tBuildings("saveBuilding")}</AdminSubmitButton>
     </AdminPendingForm>
   );
 }

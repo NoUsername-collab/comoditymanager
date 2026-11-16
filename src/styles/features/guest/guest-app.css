@@ -195,7 +195,9 @@
   font-weight: 600;
   color: var(--guest-primary-fg);
   touch-action: manipulation;
-  transition: opacity 0.15s ease, transform 0.1s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.1s ease;
 }
 
 .guest-app__btn-primary:active:not(:disabled) {
@@ -569,7 +571,9 @@
   border-radius: 0.75rem;
   color: var(--guest-muted);
   text-decoration: none;
-  transition: color 0.15s ease, background-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
@@ -717,7 +721,9 @@
   color: var(--guest-primary-fg);
   text-decoration: none;
   touch-action: manipulation;
-  transition: opacity 0.15s ease, transform 0.1s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.1s ease;
 }
 
 .guest-app__primary-cta:hover {
@@ -746,7 +752,9 @@
   background: color-mix(in srgb, var(--guest-card) 90%, transparent);
   padding: 0.75rem 0.875rem;
   text-decoration: none;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .guest-app__feature-link:hover {
@@ -1715,7 +1723,9 @@
   text-decoration: none;
   color: inherit;
   touch-action: manipulation;
-  transition: border-color 0.15s ease, transform 0.1s ease;
+  transition:
+    border-color 0.15s ease,
+    transform 0.1s ease;
 }
 
 .guest-today__card:first-child:nth-last-child(odd) {
@@ -1834,7 +1844,9 @@
   padding: 0.25rem;
   cursor: pointer;
   color: var(--guest-border);
-  transition: color 0.15s, transform 0.15s;
+  transition:
+    color 0.15s,
+    transform 0.15s;
 }
 
 .guest-feedback__star:hover {

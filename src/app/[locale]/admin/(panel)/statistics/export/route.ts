@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
 import { requireStaff } from "@/lib/auth/require-staff";
-import {
-  getPensionSettings,
-  pensionStatisticsVisibility,
-} from "@/services/pension-settings";
+import { getPensionSettings, pensionStatisticsVisibility } from "@/services/pension-settings";
 import { loadAccountingExportCsv } from "@/services/accounting-export";
 import type { AccountingExportFormat } from "@/domain/accounting/saga-export";
 
@@ -44,8 +41,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const month = parsedMonth;
 
   const formatParam = searchParams.get("format");
-  const format: AccountingExportFormat =
-    formatParam === "contaplus" ? "contaplus" : "saga";
+  const format: AccountingExportFormat = formatParam === "contaplus" ? "contaplus" : "saga";
   const sliceParam = searchParams.get("slice");
   const slice =
     sliceParam === "proforma" ||

@@ -2,19 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import {
-  requireStaff,
-  requireStaffPermission,
-} from "@/lib/auth/require-staff";
+import { requireStaff, requireStaffPermission } from "@/lib/auth/require-staff";
 import { bustPensionSettingsCache } from "@/lib/cache/revalidate-settings";
 import { revalidateAfterFactoryReset } from "@/lib/cache/revalidate-admin";
-import {
-  updateTeamPermissions,
-} from "@/services/pension-settings";
-import {
-  parseTeamPermissions,
-  teamPermissionsToJson,
-} from "@/domain/settings/team-permissions";
+import { updateTeamPermissions } from "@/services/pension-settings";
+import { parseTeamPermissions, teamPermissionsToJson } from "@/domain/settings/team-permissions";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { runFactoryReset } from "@/services/database-reset";
 import { updateStaffPasswordByEmail } from "@/services/staff-accounts";
@@ -34,9 +26,7 @@ export async function updateTeamPermissionsAction(
 
   let parsed: ReturnType<typeof parseTeamPermissions>;
   try {
-    parsed = parseTeamPermissions(
-      JSON.parse(String(formData.get("team_permissions") ?? "{}")),
-    );
+    parsed = parseTeamPermissions(JSON.parse(String(formData.get("team_permissions") ?? "{}")));
   } catch {
     return { ok: false, error: t("genericError") };
   }
@@ -58,7 +48,7 @@ export async function updateTeamPermissionsAction(
 
 function mapStaffPasswordError(
   message: string,
-  t: Awaited<ReturnType<typeof getTranslations<"admin.serverActions">>>
+  t: Awaited<ReturnType<typeof getTranslations<"admin.serverActions">>>,
 ): string {
   switch (message) {
     case "staff.password_min_8_chars":
@@ -94,11 +84,7 @@ export async function changeStaffPasswordAction(formData: FormData) {
   }
 
   try {
-    await updateStaffPasswordByEmail(
-      staff_email,
-      new_password,
-      tenant.id
-    );
+    await updateStaffPasswordByEmail(staff_email, new_password, tenant.id);
   } catch (e) {
     const raw = e instanceof Error ? e.message : t("changePasswordError");
     return {
@@ -135,8 +121,7 @@ export async function factoryResetAction(confirmText: string): Promise<void> {
         throw new Error(t("factoryResetDisabled"));
       }
       if (
-        e.message ===
-        "factory_reset.rpc_admin_factory_reset_for_tenant_missing_run_migration_042"
+        e.message === "factory_reset.rpc_admin_factory_reset_for_tenant_missing_run_migration_042"
       ) {
         throw new Error(t("factoryResetMigration042"));
       }

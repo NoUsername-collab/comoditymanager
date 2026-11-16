@@ -96,8 +96,7 @@ html[data-theme="default"] .gantt-stay--today-arrival {
 
 html[data-theme="default"] .admin-floating-panel {
   border-radius: var(--admin-radius) !important;
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--admin-overlay) 35%, transparent)
-    !important;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--admin-overlay) 35%, transparent) !important;
 }
 
 html[data-theme="default"] .admin-floating-panel__header {

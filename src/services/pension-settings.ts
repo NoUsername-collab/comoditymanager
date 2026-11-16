@@ -67,7 +67,7 @@ async function getPensionSettingsUncached(tenantId: string): Promise<PensionSett
     admin_palette_key: migrateLegacyPaletteKey(
       typeof data.admin_palette_key === "string" && data.admin_palette_key.length > 0
         ? data.admin_palette_key
-        : "noir"
+        : "noir",
     ),
     admin_day_night: parseDayNight(data.admin_day_night),
     statistics_visibility: statisticsVisibility,
@@ -76,22 +76,16 @@ async function getPensionSettingsUncached(tenantId: string): Promise<PensionSett
 }
 
 const getCachedPensionSettings = (tenantId: string) =>
-  unstable_cache(
-    () => getPensionSettingsUncached(tenantId),
-    ["pension-settings", tenantId],
-    {
-      tags: [
-        CACHE_TAGS.pensionSettings,
-        tenantTag(tenantId, CACHE_TAGS.pensionSettings),
-        `tenant-${tenantId}-settings`,
-      ],
-      revalidate: 300,
-    }
-  );
+  unstable_cache(() => getPensionSettingsUncached(tenantId), ["pension-settings", tenantId], {
+    tags: [
+      CACHE_TAGS.pensionSettings,
+      tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+      `tenant-${tenantId}-settings`,
+    ],
+    revalidate: 300,
+  });
 
-const loadPensionSettings = cache((tenantId: string) =>
-  getCachedPensionSettings(tenantId)()
-);
+const loadPensionSettings = cache((tenantId: string) => getCachedPensionSettings(tenantId)());
 
 /**
  * For callers that already know the tenant, e.g. inside another `unstable_cache`,
@@ -107,9 +101,7 @@ export async function getPensionSettings(): Promise<PensionSettings | null> {
   return loadPensionSettings(tenantId);
 }
 
-export function pensionAppearanceSettings(
-  s: PensionSettings
-): ThemeSettings {
+export function pensionAppearanceSettings(s: PensionSettings): ThemeSettings {
   return {
     theme: migrateLegacyPaletteKey(s.admin_palette_key),
     mode: s.admin_day_night,
@@ -126,7 +118,7 @@ export async function updatePensionSettings(
     admin_palette_source: "catalog";
     admin_palette_key: string;
     admin_day_night: ThemeMode;
-  }
+  },
 ): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
@@ -149,7 +141,7 @@ export async function updatePensionSettings(
 /** Extra beds and baby cots the whole property owns. */
 export async function updateBedStock(
   id: string,
-  input: { extraBeds: number; cots: number }
+  input: { extraBeds: number; cots: number },
 ): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
@@ -164,9 +156,7 @@ export async function updateBedStock(
   if (error) throw new Error(error.message);
 }
 
-export async function updateStatisticsVisibility(
-  visibility: StatisticsVisibility
-): Promise<void> {
+export async function updateStatisticsVisibility(visibility: StatisticsVisibility): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("pension_settings")
@@ -177,7 +167,7 @@ export async function updateStatisticsVisibility(
 }
 
 export function pensionStatisticsVisibility(
-  settings: PensionSettings | null
+  settings: PensionSettings | null,
 ): StatisticsVisibility {
   return settings?.statistics_visibility ?? DEFAULT_STATISTICS_VISIBILITY;
 }
@@ -187,15 +177,11 @@ export async function getTeamPermissions(): Promise<TeamPermissions> {
   return settings?.team_permissions ?? DEFAULT_TEAM_PERMISSIONS;
 }
 
-export function pensionTeamPermissions(
-  settings: PensionSettings | null,
-): TeamPermissions {
+export function pensionTeamPermissions(settings: PensionSettings | null): TeamPermissions {
   return settings?.team_permissions ?? DEFAULT_TEAM_PERMISSIONS;
 }
 
-export async function updateTeamPermissions(
-  permissions: TeamPermissions,
-): Promise<void> {
+export async function updateTeamPermissions(permissions: TeamPermissions): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   const payload = teamPermissionsToJson(permissions);
   const { error } = await supabase
@@ -207,9 +193,7 @@ export async function updateTeamPermissions(
 }
 
 /** Single-row partial update on pension_settings (atomic per tenant). */
-export async function updatePensionSettingsPartial(
-  fields: Record<string, unknown>,
-): Promise<void> {
+export async function updatePensionSettingsPartial(fields: Record<string, unknown>): Promise<void> {
   if (Object.keys(fields).length === 0) return;
 
   const { tenantId, supabase } = await getTenantScope();

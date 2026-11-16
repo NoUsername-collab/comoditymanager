@@ -6,10 +6,7 @@ import {
   useAdminPending,
   useRunAdminAction,
 } from "@/components/admin/feedback/AdminPendingProvider";
-import {
-  moveBookingRoomFromPivotAction,
-  previewRoomMoveAction,
-} from "@/features/calendar/actions";
+import { moveBookingRoomFromPivotAction, previewRoomMoveAction } from "@/features/calendar/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
@@ -90,13 +87,9 @@ export function MoveRoomDialog({ draft, rooms, booking = null, onClose }: Props)
 
   if (!draft) return null;
 
-  const targets = rooms.filter(
-    (r) => r.id !== draft.sourceRoomId && !draft.roomIds.includes(r.id)
-  );
-  const previewText =
-    previewState.roomId === targetRoomId ? previewState.text : null;
-  const error =
-    submitError ?? (previewState.roomId === targetRoomId ? previewState.error : null);
+  const targets = rooms.filter((r) => r.id !== draft.sourceRoomId && !draft.roomIds.includes(r.id));
+  const previewText = previewState.roomId === targetRoomId ? previewState.text : null;
+  const error = submitError ?? (previewState.roomId === targetRoomId ? previewState.error : null);
 
   function submit() {
     if (!draft) return;
@@ -116,7 +109,10 @@ export function MoveRoomDialog({ draft, rooms, booking = null, onClose }: Props)
         setSubmitError(res.error);
         return;
       }
-      notifyMoved(tGantt("moveRoom.moved"), tGantt("moveRoom.updated", { guestName: current.guestName }));
+      notifyMoved(
+        tGantt("moveRoom.moved"),
+        tGantt("moveRoom.updated", { guestName: current.guestName }),
+      );
       if (booking) {
         const target = rooms.find((room) => room.id === targetRoomId);
         publishGanttLiveBooking(
@@ -144,7 +140,9 @@ export function MoveRoomDialog({ draft, rooms, booking = null, onClose }: Props)
         <p className="text-sm text-zinc-600">
           <strong>{draft.guestName}</strong>
           <br />
-          {tGantt.rich("moveRoom.introHtml", { room: () => <strong>{draft.sourceRoomName}</strong> })}
+          {tGantt.rich("moveRoom.introHtml", {
+            room: () => <strong>{draft.sourceRoomName}</strong>,
+          })}
         </p>
 
         <label className="block text-xs font-semibold text-zinc-600">

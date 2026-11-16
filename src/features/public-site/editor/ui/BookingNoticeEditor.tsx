@@ -158,10 +158,13 @@ export function BookingNoticeEditor({
               const ready = readyText(preset);
               const shown = item ? view.items.find((row) => row.id === item.id) : null;
               const editing =
-                item &&
-                (editingIds.includes(item.id) || item.title.trim() || item.text.trim());
+                item && (editingIds.includes(item.id) || item.title.trim() || item.text.trim());
               return (
-                <li key={preset} className="pub-notice-editor__choice" data-on={checked || undefined}>
+                <li
+                  key={preset}
+                  className="pub-notice-editor__choice"
+                  data-on={checked || undefined}
+                >
                   <label className="pub-notice-editor__choice-row">
                     <input
                       type="checkbox"
@@ -185,7 +188,12 @@ export function BookingNoticeEditor({
                         placeholder={ready}
                         onChange={(patch) => patchItem(item.id, patch)}
                       />
-                      <AdminButton type="button" variant="ghost" size="sm" onClick={() => resetToReady(item)}>
+                      <AdminButton
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => resetToReady(item)}
+                      >
                         {t("noticeUsePreset")}
                       </AdminButton>
                     </div>
@@ -211,15 +219,28 @@ export function BookingNoticeEditor({
             {customItems.map((item) => (
               <div key={item.id} className="pub-notice-editor__card">
                 <NoticeFields item={item} onChange={(patch) => patchItem(item.id, patch)} />
-                <AdminButton type="button" variant="ghost" size="sm" onClick={() => removeItem(item.id)}>
+                <AdminButton
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeItem(item.id)}
+                >
                   {t("noticeRemove")}
                 </AdminButton>
               </div>
             ))}
-            <AdminButton type="button" variant="secondary" size="sm" disabled={full} onClick={addCustom}>
+            <AdminButton
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={full}
+              onClick={addCustom}
+            >
               + {t("noticeAddCustom")}
             </AdminButton>
-            {full ? <p className="admin-settings-hint">{t("noticeFull", { max: MAX_NOTICE_ITEMS })}</p> : null}
+            {full ? (
+              <p className="admin-settings-hint">{t("noticeFull", { max: MAX_NOTICE_ITEMS })}</p>
+            ) : null}
           </div>
 
           <details className="pub-notice-editor__more">

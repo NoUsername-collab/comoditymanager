@@ -134,7 +134,7 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
                           {formatGuestGanttLabel(
                             booking.guest_last_name,
                             booking.guest_first_name,
-                            booking.guest_name
+                            booking.guest_name,
                           )}
                         </p>
                         <p className="mt-1 text-sm text-[var(--site-muted)]">
@@ -153,16 +153,16 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
             <section className="rounded-xl border border-[var(--site-border)] bg-[color-mix(in_srgb,var(--site-card)_88%,transparent)] p-3 shadow-sm">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h3 className="text-base font-bold text-[var(--site-fg)]">{t("attentionToday")}</h3>
-                  <p className="mt-1 text-sm text-[var(--site-muted)]">
-                    {t("whatToCheckNow")}
-                  </p>
+                  <h3 className="text-base font-bold text-[var(--site-fg)]">
+                    {t("attentionToday")}
+                  </h3>
+                  <p className="mt-1 text-sm text-[var(--site-muted)]">{t("whatToCheckNow")}</p>
                 </div>
                 <Link
                   href="/admin"
                   className="text-sm font-semibold text-[var(--site-accent)] hover:underline"
                 >
-                    {t("admin")} →
+                  {t("admin")} →
                 </Link>
               </div>
 
@@ -205,12 +205,11 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
                         >
                           <p className="font-bold">
                             {room.room_name}
-                            <span className="font-medium opacity-70">
-                              {" "}
-                              · {room.building_name}
-                            </span>
+                            <span className="font-medium opacity-70"> · {room.building_name}</span>
                           </p>
-                          <p className="mt-1 opacity-80">{t("departureLabel", { name: room.guest_name })}</p>
+                          <p className="mt-1 opacity-80">
+                            {t("departureLabel", { name: room.guest_name })}
+                          </p>
                         </li>
                       ))}
                     </ul>
@@ -248,12 +247,11 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h4 className="font-bold text-[var(--site-fg)]">
-                        {section.building.name}
-                      </h4>
+                      <h4 className="font-bold text-[var(--site-fg)]">{section.building.name}</h4>
                       <p className="mt-1 text-xs text-[var(--site-muted)]">
                         {section.view_date_label} · {section.free_on_date} {t("free")} ·{" "}
-                        {section.occupied_on_date} {t("occupied")} · {section.pending_on_date} {t("requests")}
+                        {section.occupied_on_date} {t("occupied")} · {section.pending_on_date}{" "}
+                        {t("requests")}
                       </p>
                     </div>
                     <Link

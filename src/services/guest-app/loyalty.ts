@@ -9,11 +9,7 @@ import {
   loyaltyPerkUnlocked,
   normalizeLoyaltyReference,
 } from "@/domain/guest-app/loyalty";
-import {
-  enforceRateLimit,
-  getClientIp,
-  RATE_LIMIT_GUEST_ACCESS,
-} from "@/lib/rate-limit";
+import { enforceRateLimit, getClientIp, RATE_LIMIT_GUEST_ACCESS } from "@/lib/rate-limit";
 import { runInPublicBookingMode } from "@/lib/tenant/scope";
 import { withTenantId } from "@/lib/tenant/scope";
 import { getGuestAppPublicDb } from "./public-db";
@@ -114,10 +110,7 @@ function toSnapshot(
   };
 }
 
-async function insertLoyaltyRef(
-  tenantId: string,
-  guestId: string,
-): Promise<string | null> {
+async function insertLoyaltyRef(tenantId: string, guestId: string): Promise<string | null> {
   const { supabase } = await getGuestAppPublicDb();
   for (let attempt = 0; attempt < 6; attempt++) {
     const referenceCode = generateReferenceCode();
@@ -131,10 +124,7 @@ async function insertLoyaltyRef(
       { onConflict: "tenant_id,guest_id" },
     );
     if (!error) return referenceCode;
-    if (
-      error.message.includes("reference_code") ||
-      error.code === "23505"
-    ) {
+    if (error.message.includes("reference_code") || error.code === "23505") {
       continue;
     }
     throw new Error(error.message);
@@ -143,9 +133,7 @@ async function insertLoyaltyRef(
 }
 
 /** Mint or return the property loyalty reference for a guest file. */
-export async function issueLoyaltyRefForGuest(
-  guestId: string,
-): Promise<string | null> {
+export async function issueLoyaltyRefForGuest(guestId: string): Promise<string | null> {
   const settings = await getGuestAppSettings();
   if (!settings.loyalty.enabled) return null;
 
@@ -164,9 +152,7 @@ export async function issueLoyaltyRefForGuest(
   return insertLoyaltyRef(tenantId, guestId);
 }
 
-export async function getLoyaltyRefForGuest(
-  guestId: string,
-): Promise<string | null> {
+export async function getLoyaltyRefForGuest(guestId: string): Promise<string | null> {
   const { tenantId, supabase } = await getGuestAppPublicDb();
   const { data, error } = await supabase
     .from("guest_loyalty_refs")
@@ -181,9 +167,7 @@ export async function getLoyaltyRefForGuest(
 }
 
 /** Reception: new reference, previous URL stops working. */
-export async function reissueLoyaltyRefForGuest(
-  guestId: string,
-): Promise<string | null> {
+export async function reissueLoyaltyRefForGuest(guestId: string): Promise<string | null> {
   const settings = await getGuestAppSettings();
   if (!settings.loyalty.enabled) return null;
   const { tenantId } = await getGuestAppPublicDb();
@@ -203,66 +187,57 @@ function snapshotFromParts(
   }
   return {
     ok: true,
-    snapshot: toSnapshot(
-      referenceCode,
-      guest,
-      guestId,
-      nightsForPerk,
-      perkTitle,
-      perkDescription,
-    ),
+    snapshot: toSnapshot(referenceCode, guest, guestId, nightsForPerk, perkTitle, perkDescription),
   };
 }
 
-export const resolveLoyaltyByReference = cache(
-  async function resolveLoyaltyByReference(
-    rawRef: string,
-  ): Promise<GuestLoyaltyAccessResult> {
-    return runInPublicBookingMode(async () => {
-      const ip = await getClientIp();
-      const rl = await enforceRateLimit(
-        `guest-loyalty:${ip}`,
-        RATE_LIMIT_GUEST_ACCESS.limit,
-        RATE_LIMIT_GUEST_ACCESS.windowMs,
-      );
-      if (!rl.allowed) return { ok: false, reason: "not_found" };
+export const resolveLoyaltyByReference = cache(async function resolveLoyaltyByReference(
+  rawRef: string,
+): Promise<GuestLoyaltyAccessResult> {
+  return runInPublicBookingMode(async () => {
+    const ip = await getClientIp();
+    const rl = await enforceRateLimit(
+      `guest-loyalty:${ip}`,
+      RATE_LIMIT_GUEST_ACCESS.limit,
+      RATE_LIMIT_GUEST_ACCESS.windowMs,
+    );
+    if (!rl.allowed) return { ok: false, reason: "not_found" };
 
-      if (!isLoyaltyReferenceFormat(rawRef)) {
-        return { ok: false, reason: "not_found" };
-      }
+    if (!isLoyaltyReferenceFormat(rawRef)) {
+      return { ok: false, reason: "not_found" };
+    }
 
-      const settings = await getGuestAppSettingsPublic();
-      if (!settings.enabled || !settings.loyalty.enabled) {
-        return { ok: false, reason: "disabled" };
-      }
+    const settings = await getGuestAppSettingsPublic();
+    if (!settings.enabled || !settings.loyalty.enabled) {
+      return { ok: false, reason: "disabled" };
+    }
 
-      const code = normalizeLoyaltyReference(rawRef);
-      const { tenantId, supabase } = await getGuestAppPublicDb();
-      const { data, error } = await supabase
-        .from("guest_loyalty_refs")
-        .select("guest_id, reference_code, revoked_at")
-        .eq("tenant_id", tenantId)
-        .eq("reference_code", code)
-        .maybeSingle();
+    const code = normalizeLoyaltyReference(rawRef);
+    const { tenantId, supabase } = await getGuestAppPublicDb();
+    const { data, error } = await supabase
+      .from("guest_loyalty_refs")
+      .select("guest_id, reference_code, revoked_at")
+      .eq("tenant_id", tenantId)
+      .eq("reference_code", code)
+      .maybeSingle();
 
-      if (error) throw new Error(error.message);
-      if (!data || data.revoked_at) return { ok: false, reason: "not_found" };
+    if (error) throw new Error(error.message);
+    if (!data || data.revoked_at) return { ok: false, reason: "not_found" };
 
-      const guestId = String(data.guest_id);
-      const guest = await loadGuestLoyaltyRow(tenantId, guestId);
-      if (!guest) return { ok: false, reason: "not_found" };
+    const guestId = String(data.guest_id);
+    const guest = await loadGuestLoyaltyRow(tenantId, guestId);
+    if (!guest) return { ok: false, reason: "not_found" };
 
-      return snapshotFromParts(
-        String(data.reference_code),
-        guestId,
-        guest,
-        settings.loyalty.nightsForPerk,
-        settings.loyalty.perkTitle,
-        settings.loyalty.perkDescription,
-      );
-    });
-  },
-);
+    return snapshotFromParts(
+      String(data.reference_code),
+      guestId,
+      guest,
+      settings.loyalty.nightsForPerk,
+      settings.loyalty.perkTitle,
+      settings.loyalty.perkDescription,
+    );
+  });
+});
 
 export async function loadLoyaltySnapshotForGuest(
   guestId: string,
@@ -339,4 +314,3 @@ export const resolveLoyaltyFromStayAccessCode = cache(
     });
   },
 );
-

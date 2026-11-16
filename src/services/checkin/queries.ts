@@ -5,10 +5,7 @@ import { getTenantScope } from "@/lib/tenant/scope";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import type { CheckinRow, CheckinGuestRow } from "./types";
-import {
-  CHECKIN_ROW_SELECT,
-  CHECKIN_GUEST_ROW_SELECT,
-} from "./types";
+import { CHECKIN_ROW_SELECT, CHECKIN_GUEST_ROW_SELECT } from "./types";
 
 // ── Single checkin for a booking ────────────────────────────
 
@@ -37,7 +34,7 @@ const getCachedCheckinByBooking = (tenantId: string, bookingId: string) =>
     {
       tags: [CACHE_TAGS.checkins, tenantTag(tenantId, CACHE_TAGS.checkins)],
       revalidate: 120,
-    }
+    },
   );
 
 const loadCheckinByBooking = cache(async (bookingId: string) => {
@@ -45,9 +42,7 @@ const loadCheckinByBooking = cache(async (bookingId: string) => {
   return getCachedCheckinByBooking(tenantId, bookingId)();
 });
 
-export async function getCheckinByBookingId(
-  bookingId: string,
-): Promise<CheckinRow | null> {
+export async function getCheckinByBookingId(bookingId: string): Promise<CheckinRow | null> {
   return loadCheckinByBooking(bookingId);
 }
 
@@ -80,7 +75,7 @@ const getCachedCheckinGuests = (tenantId: string, checkinId: string) =>
     {
       tags: [CACHE_TAGS.checkins, tenantTag(tenantId, CACHE_TAGS.checkins)],
       revalidate: 120,
-    }
+    },
   );
 
 const loadCheckinGuests = cache(async (checkinId: string) => {
@@ -88,19 +83,13 @@ const loadCheckinGuests = cache(async (checkinId: string) => {
   return getCachedCheckinGuests(tenantId, checkinId)();
 });
 
-export async function getCheckinGuests(
-  checkinId: string,
-): Promise<CheckinGuestRow[]> {
+export async function getCheckinGuests(checkinId: string): Promise<CheckinGuestRow[]> {
   return loadCheckinGuests(checkinId);
 }
 
 import type { StoredPaymentStatus } from "@/domain/checkin/types";
 
-function mergeRoomLabel(
-  map: Map<string, string[]>,
-  bookingId: string,
-  label: string,
-): void {
+function mergeRoomLabel(map: Map<string, string[]>, bookingId: string, label: string): void {
   const list = map.get(bookingId) ?? [];
   if (!list.some((r) => r.toLowerCase() === label.toLowerCase())) {
     list.push(label);
@@ -165,8 +154,7 @@ export async function loadCheckinEnrichmentByBookingIds(
         booking_id: bookingId,
         checked_in_at: row.checked_in_at as string,
         checked_in_by: (row.checked_in_by as string | null) ?? null,
-        payment_status:
-          (row.payment_status as StoredPaymentStatus | null) ?? null,
+        payment_status: (row.payment_status as StoredPaymentStatus | null) ?? null,
       });
     }
 
@@ -181,9 +169,7 @@ export async function loadCheckinEnrichmentByBookingIds(
 
   const { data: guests, error: guestErr } = await supabase
     .from("checkin_guests")
-    .select(
-      "checkin_id, room_label, national_id, document_number, document_series",
-    )
+    .select("checkin_id, room_label, national_id, document_number, document_series")
     .eq("tenant_id", tenantId)
     .in("checkin_id", checkinIds);
 
@@ -198,8 +184,8 @@ export async function loadCheckinEnrichmentByBookingIds(
 
     const hasId = Boolean(
       (guest.national_id as string | null)?.trim() ||
-        (guest.document_number as string | null)?.trim() ||
-        (guest.document_series as string | null)?.trim(),
+      (guest.document_number as string | null)?.trim() ||
+      (guest.document_series as string | null)?.trim(),
     );
     if (hasId) mergeRoomLabel(roomIdVerifiedByBooking, bookingId, label);
   }
@@ -213,16 +199,12 @@ export async function loadCheckinEnrichmentByBookingIds(
 }
 
 /** Camere distincte deja recepționate per rezervare (toate sesiunile de check-in). */
-async function getCheckedInRoomsByBookingIds(
-  bookingIds: string[],
-): Promise<Map<string, string[]>> {
+async function getCheckedInRoomsByBookingIds(bookingIds: string[]): Promise<Map<string, string[]>> {
   const batch = await loadCheckinEnrichmentByBookingIds(bookingIds);
   return batch.checkedRoomsByBooking;
 }
 
-export async function getCheckedInRoomsForBooking(
-  bookingId: string,
-): Promise<string[]> {
+export async function getCheckedInRoomsForBooking(bookingId: string): Promise<string[]> {
   const map = await getCheckedInRoomsByBookingIds([bookingId]);
   return map.get(bookingId) ?? [];
 }
@@ -254,9 +236,7 @@ export async function getActiveCheckinsWithFlags(): Promise<
 // ── Today's checkins count (dashboard) ──────────────────────
 
 /** In-house stays with check-in recorded but payment still unpaid/partial. */
-async function countUnpaidInHouseCheckinsUncached(
-  tenantId: string,
-): Promise<number> {
+async function countUnpaidInHouseCheckinsUncached(tenantId: string): Promise<number> {
   const supabase = createPublicAdminClient();
 
   const { data: inHouse, error: bookingsError } = await supabase

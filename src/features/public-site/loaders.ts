@@ -1,10 +1,7 @@
 import { getStaffUser } from "@/lib/auth/require-admin";
 import { loadStaffPublicPreview } from "@/services/admin-dashboard";
 import { loadBookingConfirmContext } from "@/services/booking-confirm";
-import {
-  getBookingRulesSettings,
-  getStayPricingRules,
-} from "@/services/booking-rules-settings";
+import { getBookingRulesSettings, getStayPricingRules } from "@/services/booking-rules-settings";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getPublicSiteConfig } from "@/services/public-site/queries";
 
@@ -16,9 +13,7 @@ export async function loadPublicHomePage() {
   const staffUserPromise = getStaffUser().catch(() => null);
   const [config, staffPreview] = await Promise.all([
     getPublicSiteConfig(),
-    staffUserPromise.then((user) =>
-      user ? loadStaffPublicPreview().catch(() => null) : null,
-    ),
+    staffUserPromise.then((user) => (user ? loadStaffPublicPreview().catch(() => null) : null)),
   ]);
   return { config, staffPreview };
 }

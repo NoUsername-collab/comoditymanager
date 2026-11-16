@@ -9,7 +9,10 @@ import { GuestFlagPill } from "@/features/guests/ui/GuestFlagPill";
 import { GuestIdentityStatusPill } from "@/features/guests/ui/GuestIdentityStatusPill";
 import { GuestScoreHint } from "@/features/guests/ui/GuestScoreHint";
 import { GuestStarsCompact } from "@/features/guests/ui/GuestStarsCompact";
-import { GuestCompletedStaysPanel, type GuestCompletedStaySummary } from "@/features/guests/ui/GuestCompletedStaysPanel";
+import {
+  GuestCompletedStaysPanel,
+  type GuestCompletedStaySummary,
+} from "@/features/guests/ui/GuestCompletedStaysPanel";
 import { buildGuestIdentitySummaryLines } from "@/lib/guest-identity-summary";
 import { formatRoDate } from "@/lib/stay-dates";
 
@@ -29,8 +32,7 @@ export function GuestIdentityCard({
 
   const stars = guest.profile?.stars_avg ?? DEFAULT_STARS_AVG;
   const reviewCount = guest.profile?.review_count ?? 0;
-  const resolvedHistoryHref =
-    historyHref ?? `/admin/guests/${guest.id}?tab=history`;
+  const resolvedHistoryHref = historyHref ?? `/admin/guests/${guest.id}?tab=history`;
 
   const identityLines = buildGuestIdentitySummaryLines(guest, {
     nationalIdTypes: {
@@ -60,9 +62,7 @@ export function GuestIdentityCard({
   return (
     <section className="guest-hero admin-surface-card">
       <div className="guest-hero__top">
-        <div className="guest-hero__avatar">
-          {(guest.display_name?.[0] ?? "?").toUpperCase()}
-        </div>
+        <div className="guest-hero__avatar">{(guest.display_name?.[0] ?? "?").toUpperCase()}</div>
         <div className="guest-hero__info">
           <div className="guest-hero__name-row">
             <h2 className="guest-hero__name">{guest.display_name}</h2>
@@ -84,7 +84,12 @@ export function GuestIdentityCard({
       <div className="guest-hero__stats">
         <div className="guest-hero__stat guest-hero__stat--stars">
           <span className="guest-hero__stat-value">
-            <GuestStarsCompact value={stars} count={reviewCount} showCount={false} showValue={false} />
+            <GuestStarsCompact
+              value={stars}
+              count={reviewCount}
+              showCount={false}
+              showValue={false}
+            />
           </span>
           <span className="guest-hero__stat-label">
             {reviewCount > 0
@@ -97,16 +102,11 @@ export function GuestIdentityCard({
           <span className="guest-hero__stat-value">
             {completedStays.length || guest.profile?.completed_stays || 0}
           </span>
-          <span className="guest-hero__stat-label">
-            {tGuests("profileCards.completedStays")}
-          </span>
+          <span className="guest-hero__stat-label">{tGuests("profileCards.completedStays")}</span>
         </div>
       </div>
 
-      <GuestCompletedStaysPanel
-        stays={completedStays}
-        historyHref={resolvedHistoryHref}
-      />
+      <GuestCompletedStaysPanel stays={completedStays} historyHref={resolvedHistoryHref} />
 
       <div className="guest-hero__identity">
         <div className="guest-hero__identity-head">

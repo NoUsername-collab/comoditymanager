@@ -2,9 +2,7 @@ import type { NextRequest } from "next/server";
 import { parseTenantFromHost } from "@/lib/tenant/host";
 
 type DomainContext =
-  | { type: "platform" }
-  | { type: "tenant"; slug: string }
-  | { type: "custom"; domain: string };
+  { type: "platform" } | { type: "tenant"; slug: string } | { type: "custom"; domain: string };
 
 export function detectDomainContext(request: NextRequest): DomainContext {
   const host = request.headers.get("host")?.split(":")[0] ?? "";
@@ -26,10 +24,7 @@ export function detectDomainContext(request: NextRequest): DomainContext {
   return { type: "custom", domain: parsed.domain };
 }
 
-export function stripLocalePrefix(
-  pathname: string,
-  locales: readonly string[]
-): string {
+export function stripLocalePrefix(pathname: string, locales: readonly string[]): string {
   const segments = pathname.split("/").filter(Boolean);
   const first = segments[0];
   if (first && locales.includes(first)) {

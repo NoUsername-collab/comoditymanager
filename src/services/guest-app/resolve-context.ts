@@ -2,10 +2,7 @@ import { pickLocalized } from "@/features/public-site/domain/localized";
 import { galleryPhotos, readGalleryAlbums } from "@/features/public-site/domain/gallery";
 import type { PublicMediaPhoto } from "@/features/public-site/domain/types";
 import { findSection } from "@/features/public-site/domain/order-sections";
-import type {
-  PublicBenefitItem,
-  PublicSiteConfig,
-} from "@/features/public-site/domain/types";
+import type { PublicBenefitItem, PublicSiteConfig } from "@/features/public-site/domain/types";
 import type { GuestPrecheckinPrefill } from "@/domain/guest-app/precheckin-prefill";
 import type { GuestReceptionRequestSnapshot } from "@/domain/guest-app/reception-request";
 import type {
@@ -45,15 +42,14 @@ export type GuestAppResolvedContext = {
   stayHours: { checkIn: string; checkOut: string } | null;
 };
 
-function mapBenefits(
-  items: PublicBenefitItem[],
-  locale: string,
-): GuestAppListItem[] {
-  return items.map((item, index) => ({
-    icon: item.icon,
-    title: pickLocalized(item.title, locale),
-    description: pickLocalized(item.text, locale),
-  })).filter((item) => item.title.trim().length > 0);
+function mapBenefits(items: PublicBenefitItem[], locale: string): GuestAppListItem[] {
+  return items
+    .map((item, index) => ({
+      icon: item.icon,
+      title: pickLocalized(item.title, locale),
+      description: pickLocalized(item.text, locale),
+    }))
+    .filter((item) => item.title.trim().length > 0);
 }
 
 /** The site gallery's photos (its albums of the photo library), described in the guest's language. */
@@ -71,12 +67,8 @@ function mergeHotel(
   locale: string,
 ): GuestAppHotelContent {
   const intro = findSection(publicConfig?.sections, "intro", { visibleOnly: true });
-  const introBody = intro?.payload.body
-    ? pickLocalized(intro.payload.body, locale)
-    : undefined;
-  const introLead = intro?.payload.lead
-    ? pickLocalized(intro.payload.lead, locale)
-    : undefined;
+  const introBody = intro?.payload.body ? pickLocalized(intro.payload.body, locale) : undefined;
+  const introLead = intro?.payload.lead ? pickLocalized(intro.payload.lead, locale) : undefined;
 
   return {
     shortDescription: guest?.shortDescription?.trim() || introLead || undefined,
@@ -138,8 +130,7 @@ async function loadGuestLiveState(bookingId: string): Promise<{
     ]);
 
     const precheckinSubmitted = Boolean(precheckin.data);
-    const greenStayPendingDates =
-      greenRows.data?.map((row) => String(row.skip_date)) ?? [];
+    const greenStayPendingDates = greenRows.data?.map((row) => String(row.skip_date)) ?? [];
     const feedbackSubmitted = Boolean(feedback.data);
     const receptionRequests: GuestReceptionRequestSnapshot[] = (receptionRows.data ?? []).map(
       (row) => ({
@@ -171,24 +162,24 @@ export async function resolveGuestAppContext(
     ? getPensionIdentity().catch(() => null)
     : Promise.resolve(null);
 
-  const [publicConfig, identity, liveState, precheckinPrefill] =
-    await Promise.all([
-      publicConfigPromise,
-      identityPromise,
-      loadGuestLiveState(booking.id),
-      loadGuestPrecheckinPrefill(booking),
-    ]);
-  const hotelSource = settings.usePrimaryContact && identity
-    ? {
-        ...settings.content.hotel,
-        ...resolveHotelContactWithPrimary(
-          identity.contact,
-          settings.content.hotel,
-          true,
-          identity.address,
-        ),
-      }
-    : settings.content.hotel;
+  const [publicConfig, identity, liveState, precheckinPrefill] = await Promise.all([
+    publicConfigPromise,
+    identityPromise,
+    loadGuestLiveState(booking.id),
+    loadGuestPrecheckinPrefill(booking),
+  ]);
+  const hotelSource =
+    settings.usePrimaryContact && identity
+      ? {
+          ...settings.content.hotel,
+          ...resolveHotelContactWithPrimary(
+            identity.contact,
+            settings.content.hotel,
+            true,
+            identity.address,
+          ),
+        }
+      : settings.content.hotel;
 
   const benefitsSection = findSection(publicConfig?.sections, "benefits", { visibleOnly: true });
   const benefits = benefitsSection ? mapBenefits(benefitsSection.payload.items ?? [], locale) : [];
@@ -202,12 +193,10 @@ export async function resolveGuestAppContext(
     : [];
 
   // The booked room types' photos from the photo library; a type can have several.
-  const roomGallery: GuestGalleryDisplayItem[] = booking.roomImageUrls.map(
-    (url, index) => ({
-      id: `room-${index}`,
-      url,
-    }),
-  );
+  const roomGallery: GuestGalleryDisplayItem[] = booking.roomImageUrls.map((url, index) => ({
+    id: `room-${index}`,
+    url,
+  }));
 
   const galleryItems = [...galleryFromSite, ...roomGallery];
 

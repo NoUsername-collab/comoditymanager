@@ -21,13 +21,12 @@ export default async function GuestAppSettingsPage({
     params,
     ctx,
     { tenant, settings, displayName, publicThemeId, logoUrl, primaryContact, primaryAddress },
-  ] =
-    await Promise.all([
-      getTranslations("admin.pages.guestApp"),
-      searchParams,
-      guardSettingsPermission("pension_settings"),
-      loadGuestAppSettingsPage(),
-    ]);
+  ] = await Promise.all([
+    getTranslations("admin.pages.guestApp"),
+    searchParams,
+    guardSettingsPermission("pension_settings"),
+    loadGuestAppSettingsPage(),
+  ]);
 
   if (!tenant || !settings) {
     return (

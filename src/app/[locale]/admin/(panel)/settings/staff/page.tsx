@@ -24,7 +24,11 @@ export default async function StaffManagementPage() {
         <StaffList members={members} />
       </SettingsSection>
 
-      <SettingsSection title={t("inviteTitle")} description={t("inviteSubtitle")} defaultOpen={false}>
+      <SettingsSection
+        title={t("inviteTitle")}
+        description={t("inviteSubtitle")}
+        defaultOpen={false}
+      >
         <StaffInviteForm />
       </SettingsSection>
 

@@ -24,7 +24,10 @@ describe("internationalPhone", () => {
 
   it("changes only the phone and WhatsApp of a contact", () => {
     expect(
-      withInternationalPhones({ email: "a@b.ro", phone: "0755232632", whatsapp: "0730127427" }, "RO"),
+      withInternationalPhones(
+        { email: "a@b.ro", phone: "0755232632", whatsapp: "0730127427" },
+        "RO",
+      ),
     ).toEqual({ email: "a@b.ro", phone: "+40755232632", whatsapp: "+40730127427" });
     const onlyEmail: { email: string; phone?: string | null } = { email: "a@b.ro" };
     expect(withInternationalPhones(onlyEmail, "RO")).toEqual({ email: "a@b.ro" });

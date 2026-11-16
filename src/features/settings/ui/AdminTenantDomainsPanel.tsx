@@ -87,7 +87,9 @@ export function AdminTenantDomainsPanel({
   return (
     <div className="settings-form-stack tenant-domains-panel">
       <SettingsSection title={t("platformSubdomain")} description={t("platformSubdomainHint")}>
-        <p className="font-mono text-sm font-semibold">{platformSubdomainRow?.domain ?? `${tenantSlug}.${platformDomain}`}</p>
+        <p className="font-mono text-sm font-semibold">
+          {platformSubdomainRow?.domain ?? `${tenantSlug}.${platformDomain}`}
+        </p>
         <a
           href={defaultUrl}
           className="settings-primary-link settings-primary-link--ghost mt-3"
@@ -100,7 +102,9 @@ export function AdminTenantDomainsPanel({
 
       {!canManageCustom ? (
         <div className="settings-alerts">
-          <p className="settings-alerts__item settings-alerts__item--warning">{t("upgradeForCustom")}</p>
+          <p className="settings-alerts__item settings-alerts__item--warning">
+            {t("upgradeForCustom")}
+          </p>
         </div>
       ) : null}
 
@@ -127,12 +131,7 @@ export function AdminTenantDomainsPanel({
               <div className="admin-settings-fields">
                 <label>
                   <span>{t("addCustomTitle")}</span>
-                  <input
-                    name="domain"
-                    type="text"
-                    required
-                    placeholder="www.pensiunea-mea.ro"
-                  />
+                  <input name="domain" type="text" required placeholder="www.pensiunea-mea.ro" />
                 </label>
                 <label>
                   <span>{t("routingKind")}</span>
@@ -155,44 +154,44 @@ export function AdminTenantDomainsPanel({
 
           {customDomains.length > 0 ? (
             <ul className="admin-settings-list">
-                {customDomains.map((d) => (
-                  <li key={d.id} className="admin-settings-list__row !items-start !flex-col">
-                    <div>
-                      <p className="admin-settings-list__label font-mono">{d.domain}</p>
-                      <p className="admin-settings-hint">{t(`kinds.${d.routing_kind}`)}</p>
-                      <p className="admin-settings-hint">
-                        {d.verified ? t("statusVerified") : t("statusPending")}
-                      </p>
-                      {!d.verified ? <DomainActivationSteps domain={d.domain} /> : null}
-                    </div>
-                    <div className="settings-dialog-actions !mt-2 !justify-start">
-                      {!d.verified ? (
-                        <form
-                          action={async (fd) => {
-                            const result = await verifyCustomDomainAction(fd);
-                            if (!result.ok) setError(t(`errors.${result.error}`));
-                          }}
-                        >
-                          <input type="hidden" name="domain_id" value={d.id} />
-                          <AdminButton type="submit" variant="secondary" size="md">
-                            {t("markVerified")}
-                          </AdminButton>
-                        </form>
-                      ) : null}
+              {customDomains.map((d) => (
+                <li key={d.id} className="admin-settings-list__row !items-start !flex-col">
+                  <div>
+                    <p className="admin-settings-list__label font-mono">{d.domain}</p>
+                    <p className="admin-settings-hint">{t(`kinds.${d.routing_kind}`)}</p>
+                    <p className="admin-settings-hint">
+                      {d.verified ? t("statusVerified") : t("statusPending")}
+                    </p>
+                    {!d.verified ? <DomainActivationSteps domain={d.domain} /> : null}
+                  </div>
+                  <div className="settings-dialog-actions !mt-2 !justify-start">
+                    {!d.verified ? (
                       <form
                         action={async (fd) => {
-                          const result = await removeCustomDomainAction(fd);
+                          const result = await verifyCustomDomainAction(fd);
                           if (!result.ok) setError(t(`errors.${result.error}`));
                         }}
                       >
                         <input type="hidden" name="domain_id" value={d.id} />
-                        <AdminButton type="submit" variant="danger" size="md">
-                          {t("remove")}
+                        <AdminButton type="submit" variant="secondary" size="md">
+                          {t("markVerified")}
                         </AdminButton>
                       </form>
-                    </div>
-                  </li>
-                ))}
+                    ) : null}
+                    <form
+                      action={async (fd) => {
+                        const result = await removeCustomDomainAction(fd);
+                        if (!result.ok) setError(t(`errors.${result.error}`));
+                      }}
+                    >
+                      <input type="hidden" name="domain_id" value={d.id} />
+                      <AdminButton type="submit" variant="danger" size="md">
+                        {t("remove")}
+                      </AdminButton>
+                    </form>
+                  </div>
+                </li>
+              ))}
             </ul>
           ) : null}
         </>

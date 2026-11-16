@@ -5,9 +5,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
 import { guestAppHomeHref } from "@/domain/guest-app/routes";
 import type { GuestAppAppearance } from "@/domain/guest-app/types";
-import {
-  parseGuestAppFeatureSlug,
-} from "@/domain/guest-app/routes";
+import { parseGuestAppFeatureSlug } from "@/domain/guest-app/routes";
 
 type Props = {
   accessCode?: string;
@@ -32,9 +30,7 @@ export function GuestAppHeader({
   let featureTitle: string | null = null;
   if (!onHome) {
     const marker = `${resolvedHome}/`;
-    const slug = pathname.includes(marker)
-      ? pathname.split(marker)[1]?.split("/")[0]
-      : null;
+    const slug = pathname.includes(marker) ? pathname.split(marker)[1]?.split("/")[0] : null;
     const featureId = slug ? parseGuestAppFeatureSlug(slug) : null;
     if (featureId) {
       featureTitle = t(`featureTitles.${featureId}`);
@@ -45,11 +41,7 @@ export function GuestAppHeader({
     <header className="guest-app__header border-b px-4 pb-3 pt-[max(1rem,env(safe-area-inset-top))]">
       <div className="mx-auto flex max-w-lg items-center gap-3">
         {!onHome ? (
-          <Link
-            href={resolvedHome}
-            className="guest-app__header-back"
-            aria-label={t("back")}
-          >
+          <Link href={resolvedHome} className="guest-app__header-back" aria-label={t("back")}>
             ←
           </Link>
         ) : null}

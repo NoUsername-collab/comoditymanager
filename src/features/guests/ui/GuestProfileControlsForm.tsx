@@ -28,11 +28,7 @@ export function GuestProfileControlsForm({
       className="guest-profile-controls-form space-y-4"
     >
       <input type="hidden" name="guest_id" value={guestId} />
-      <input
-        type="hidden"
-        name="blacklist_reason"
-        value={profile?.blacklist_reason ?? ""}
-      />
+      <input type="hidden" name="blacklist_reason" value={profile?.blacklist_reason ?? ""} />
 
       <label className="guest-profile-controls-form__field block max-w-md space-y-1 text-sm">
         <span className="font-bold">{tGuests("profileControls.profileState")}</span>

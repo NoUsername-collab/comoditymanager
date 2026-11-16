@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SETUP_ISSUE_IDS } from "@/domain/setup-issues/types";
-import {
-  computeSettingsCompletion,
-  hasIdentityContact,
-} from "../settings-completion";
+import { computeSettingsCompletion, hasIdentityContact } from "../settings-completion";
 
 describe("hasIdentityContact", () => {
   it("returns true when email or phone is set", () => {

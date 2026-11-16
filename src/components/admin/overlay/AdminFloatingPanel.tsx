@@ -11,7 +11,7 @@ const FOCUSABLE =
 
 function getFocusableElements(root: HTMLElement): HTMLElement[] {
   return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-    (el) => !el.hasAttribute("hidden") && el.tabIndex !== -1
+    (el) => !el.hasAttribute("hidden") && el.tabIndex !== -1,
   );
 }
 
@@ -119,11 +119,7 @@ export function AdminFloatingPanel({
 
   return (
     <AdminPortal>
-      <div
-        className="admin-overlay-stack"
-        data-admin-overlay={variant}
-        aria-hidden={false}
-      >
+      <div className="admin-overlay-stack" data-admin-overlay={variant} aria-hidden={false}>
         {showBackdrop && (
           <button
             type="button"
@@ -137,11 +133,7 @@ export function AdminFloatingPanel({
           role="dialog"
           aria-modal={isModal}
           aria-labelledby={title ? titleId : undefined}
-          className={[
-            "admin-floating-panel",
-            isModal && "admin-floating-panel--modal",
-            className,
-          ]
+          className={["admin-floating-panel", isModal && "admin-floating-panel--modal", className]
             .filter(Boolean)
             .join(" ")}
           style={

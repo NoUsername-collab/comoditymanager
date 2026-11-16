@@ -15,13 +15,7 @@ type Props = {
   today?: string;
 };
 
-export function GanttToolbarOccForm({
-  mode,
-  rooms,
-  bookings,
-  onClose,
-  today,
-}: Props) {
+export function GanttToolbarOccForm({ mode, rooms, bookings, onClose, today }: Props) {
   return (
     <GanttQuickActionPanel
       mode={mode}

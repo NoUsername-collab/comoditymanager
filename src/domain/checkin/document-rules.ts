@@ -1,8 +1,5 @@
 import { checkinUiDocTypeValue } from "@/domain/checkin/doc-type";
-import {
-  guestHasValidCnp,
-  isRomanianNationality,
-} from "./identity-rules";
+import { guestHasValidCnp, isRomanianNationality } from "./identity-rules";
 import type { CheckinGuestInput } from "./types";
 
 /** Document de călătorie / identitate — necesită dată expirare când e relevant. */
@@ -12,11 +9,7 @@ export function guestRequiresDocumentExpiry(guest: CheckinGuestInput): boolean {
   const docType = checkinUiDocTypeValue(guest.document_type);
 
   // Carte de identitate RO: CNP valid acoperă identitatea legală (OPANAF).
-  if (
-    docType === "ci" &&
-    isRomanianNationality(guest.nationality) &&
-    guestHasValidCnp(guest)
-  ) {
+  if (docType === "ci" && isRomanianNationality(guest.nationality) && guestHasValidCnp(guest)) {
     return false;
   }
 
@@ -25,22 +18,15 @@ export function guestRequiresDocumentExpiry(guest: CheckinGuestInput): boolean {
   }
 
   if (docType === "ci") {
-    return Boolean(
-      guest.document_number?.trim() || guest.document_series?.trim(),
-    );
+    return Boolean(guest.document_number?.trim() || guest.document_series?.trim());
   }
 
   // Fără tip selectat: cere expirare doar dacă există serie/număr fără CNP RO valid.
-  if (
-    isRomanianNationality(guest.nationality) &&
-    guestHasValidCnp(guest)
-  ) {
+  if (isRomanianNationality(guest.nationality) && guestHasValidCnp(guest)) {
     return false;
   }
 
-  return Boolean(
-    guest.document_number?.trim() || guest.document_series?.trim(),
-  );
+  return Boolean(guest.document_number?.trim() || guest.document_series?.trim());
 }
 
 export function guestHasDocumentExpiry(guest: CheckinGuestInput): boolean {

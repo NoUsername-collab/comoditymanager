@@ -12,7 +12,10 @@ import {
   siteTemplate,
   templateReplacedStyles,
 } from "@/features/public-site/editor/model/site-templates";
-import { EditorGroup, usePublicSiteEditor } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
+import {
+  EditorGroup,
+  usePublicSiteEditor,
+} from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 
 /**
  * Ready-made sites: a click shows one in the preview; "Apply" takes it, and
@@ -22,14 +25,16 @@ export function SiteTemplatesGroup() {
   const t = useTranslations("admin.pages.publicSite");
   const te = useTranslations("admin.pages.publicSite.editor.siteTemplates");
   const tc = useTranslations("admin.pages.publicSite.editor");
-  const { draft, readOnly, templatePreview, setTemplatePreview, applyTemplate } = usePublicSiteEditor();
+  const { draft, readOnly, templatePreview, setTemplatePreview, applyTemplate } =
+    usePublicSiteEditor();
   const current = matchingSiteTemplate(draft);
   const previewed = templatePreview ? siteTemplate(templatePreview) : undefined;
   // What applying adds: own pages the site does not have yet.
   // Sections whose own look the template replaces: said plainly, the texts are not all that changes.
   const replacedStyles = previewed ? templateReplacedStyles(draft, previewed) : 0;
   const newPages = (previewed?.pages ?? []).filter(
-    (model) => !draft.pages.some((page) => page.slug === slugifyPageName(PAGE_MODEL_NAMES[model].ro)),
+    (model) =>
+      !draft.pages.some((page) => page.slug === slugifyPageName(PAGE_MODEL_NAMES[model].ro)),
   );
 
   return (
@@ -45,10 +50,20 @@ export function SiteTemplatesGroup() {
             {replacedStyles > 0 ? ` ${te("replacesStyles", { count: replacedStyles })}` : ""}
           </p>
           <div className="pub-templates__actions">
-            <AdminButton type="button" size="sm" disabled={readOnly} onClick={() => applyTemplate(previewed.id)}>
+            <AdminButton
+              type="button"
+              size="sm"
+              disabled={readOnly}
+              onClick={() => applyTemplate(previewed.id)}
+            >
               {te("apply")}
             </AdminButton>
-            <AdminButton type="button" size="sm" variant="secondary" onClick={() => setTemplatePreview(null)}>
+            <AdminButton
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => setTemplatePreview(null)}
+            >
               {tc("cancel")}
             </AdminButton>
           </div>
@@ -60,7 +75,9 @@ export function SiteTemplatesGroup() {
             key={template.id}
             type="button"
             role="radio"
-            aria-checked={templatePreview ? templatePreview === template.id : current === template.id}
+            aria-checked={
+              templatePreview ? templatePreview === template.id : current === template.id
+            }
             className="pub-editor-choice"
             onClick={() => setTemplatePreview(templatePreview === template.id ? null : template.id)}
           >
@@ -76,7 +93,8 @@ export function SiteTemplatesGroup() {
             <span className="pub-editor-choice__title">{te(`items.${template.id}.name`)}</span>
             <span className="pub-editor-choice__desc">{te(`items.${template.id}.desc`)}</span>
             <span className="pub-templates__meta">
-              {t(`templates.${template.templateId}.title`)} · {t(`themes.${template.themeId}.title`)}
+              {t(`templates.${template.templateId}.title`)} ·{" "}
+              {t(`themes.${template.themeId}.title`)}
             </span>
           </button>
         ))}

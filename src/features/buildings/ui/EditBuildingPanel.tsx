@@ -4,10 +4,7 @@ import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { Building } from "@/types/database";
 import type { AcMode } from "@/types/database";
-import {
-  updateBuildingFormAction,
-  type BuildingFormState,
-} from "@/features/buildings/actions";
+import { updateBuildingFormAction, type BuildingFormState } from "@/features/buildings/actions";
 import { deleteBuildingAction } from "@/features/buildings/actions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
@@ -25,17 +22,12 @@ export function EditBuildingPanel({ building }: { building: Building }) {
   const [open, setOpen] = useState(false);
   const [acMode, setAcMode] = useState<AcMode>(building.ac_mode);
   const runAdminAction = useRunAdminAction();
-  const [state, dispatch] = useActionState(
-    updateBuildingFormAction,
-    null as BuildingFormState
-  );
+  const [state, dispatch] = useActionState(updateBuildingFormAction, null as BuildingFormState);
 
   const initialColor = building.color_hex ?? null;
 
   const feedback =
-    state?.messageKey === "buildingUpdated"
-      ? tActions("buildingUpdated")
-      : state?.message;
+    state?.messageKey === "buildingUpdated" ? tActions("buildingUpdated") : state?.message;
 
   return (
     <div className="mt-2">
@@ -71,12 +63,7 @@ export function EditBuildingPanel({ building }: { building: Building }) {
             <input type="hidden" name="building_id" value={building.id} />
             <label className="block text-sm">
               <span className="font-medium">{tBuildings("buildingNameRequired")}</span>
-              <AdminInput
-                name="name"
-                required
-                defaultValue={building.name}
-                className="mt-1"
-              />
+              <AdminInput name="name" required defaultValue={building.name} className="mt-1" />
             </label>
             <label className="block text-sm">
               <span className="font-medium">{tBuildings("acPolicyRequired")}</span>
@@ -91,11 +78,7 @@ export function EditBuildingPanel({ building }: { building: Building }) {
                 <option value="per_room">{tBuildings("acPolicyPerRoom")}</option>
               </AdminSelect>
             </label>
-            <ColorPalettePicker
-              key={building.id}
-              acMode={acMode}
-              defaultValue={initialColor}
-            />
+            <ColorPalettePicker key={building.id} acMode={acMode} defaultValue={initialColor} />
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block text-sm">
                 <span className="font-medium">{tBuildings("defaultPricePerNightRon")}</span>
@@ -118,9 +101,7 @@ export function EditBuildingPanel({ building }: { building: Building }) {
                 />
               </label>
             </div>
-            <AdminSubmitButton size="md">
-              {t("saveBuilding")}
-            </AdminSubmitButton>
+            <AdminSubmitButton size="md">{t("saveBuilding")}</AdminSubmitButton>
           </form>
 
           <div className="mt-4 border-t border-zinc-200 pt-3">

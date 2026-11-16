@@ -2,14 +2,8 @@ import type { ActivityLogEntry } from "@/domain/activity/types";
 import type { BookingStatus } from "@/domain/booking/types";
 import { getStaffUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
-import {
-  canUndoActivityEntry,
-  isUndoableAction,
-} from "@/domain/activity/undo/registry";
-import {
-  getActivityLogEntryById,
-  logAdminActivityFromSession,
-} from "@/services/activity-log";
+import { canUndoActivityEntry, isUndoableAction } from "@/domain/activity/undo/registry";
+import { getActivityLogEntryById, logAdminActivityFromSession } from "@/services/activity-log";
 import {
   getBookingById,
   rescheduleBookingDates,
@@ -102,9 +96,7 @@ async function undoBookingCancelled(entry: ActivityLogEntry): Promise<void> {
   const bookingId = entry.entity_id;
   if (!bookingId) throw new Error("activity.undo_missing_booking");
 
-  const previousStatus = metaString(entry.metadata, "previous_status") as
-    | BookingStatus
-    | null;
+  const previousStatus = metaString(entry.metadata, "previous_status") as BookingStatus | null;
   if (!previousStatus || previousStatus === "anulata") {
     throw new Error("activity.undo_missing_metadata");
   }

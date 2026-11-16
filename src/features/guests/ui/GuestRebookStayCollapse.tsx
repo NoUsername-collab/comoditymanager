@@ -43,9 +43,7 @@ export function GuestRebookStayCollapse({
   const tCommon = useTranslations("admin.common");
 
   const [open, setOpen] = useState(false);
-  const [payload, setPayload] = useState<GuestRebookPanelPayload | null>(
-    initialPayload
-  );
+  const [payload, setPayload] = useState<GuestRebookPanelPayload | null>(initialPayload);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pending, startLoad] = useTransition();
 

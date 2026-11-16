@@ -2,15 +2,9 @@
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import {
-  clearAdminLocationUnlock,
-  setAdminLocationUnlock,
-} from "@/lib/auth/admin-config-session";
+import { clearAdminLocationUnlock, setAdminLocationUnlock } from "@/lib/auth/admin-config-session";
 import { verifyLocationUnlockPassword } from "@/lib/auth/location-unlock";
-import {
-  parseExtraBedsMax,
-  parseOperationalHours,
-} from "@/domain/settings/operational-hours";
+import { parseExtraBedsMax, parseOperationalHours } from "@/domain/settings/operational-hours";
 import {
   requireLocationAdmin,
   requireStaff,
@@ -43,7 +37,11 @@ export async function unlockLocationAdminAction(formData: FormData) {
     getClientIp(),
   ]);
 
-  const rl = await enforceRateLimit(`pwd:${ip}`, RATE_LIMIT_PASSWORD_VERIFY.limit, RATE_LIMIT_PASSWORD_VERIFY.windowMs);
+  const rl = await enforceRateLimit(
+    `pwd:${ip}`,
+    RATE_LIMIT_PASSWORD_VERIFY.limit,
+    RATE_LIMIT_PASSWORD_VERIFY.windowMs,
+  );
   if (!rl.allowed) {
     return { error: t("ownerPasswordIncorrect") };
   }
@@ -188,9 +186,7 @@ export async function updatePensionIdentityAction(
       return { ok: false, error: t("identityLogoInvalid") };
     }
     const logoUrl =
-      typeof logoParsed.data === "string" && logoParsed.data.trim()
-        ? logoParsed.data.trim()
-        : null;
+      typeof logoParsed.data === "string" && logoParsed.data.trim() ? logoParsed.data.trim() : null;
 
     // A point the browser sends is checked again: within the map, never 0,0.
     const { mapPoint } = await import("@/domain/settings/map-point");
@@ -200,12 +196,15 @@ export async function updatePensionIdentityAction(
     }
 
     // Numbers are kept with their country code, so call and WhatsApp links work.
-    const [{ updatePensionIdentity }, { withInternationalPhones }, { resolveTenantCountryForRequest }] =
-      await Promise.all([
-        import("@/services/pension-identity"),
-        import("@/domain/settings/phone"),
-        import("@/lib/tenant/resolve-fiscal-tenant"),
-      ]);
+    const [
+      { updatePensionIdentity },
+      { withInternationalPhones },
+      { resolveTenantCountryForRequest },
+    ] = await Promise.all([
+      import("@/services/pension-identity"),
+      import("@/domain/settings/phone"),
+      import("@/lib/tenant/resolve-fiscal-tenant"),
+    ]);
     const contact = withInternationalPhones(input.contact, await resolveTenantCountryForRequest());
     await updatePensionIdentity({ ...input, contact, logoUrl, location });
     await logAdminActivityFromSession({
@@ -237,7 +236,7 @@ export async function updatePensionIdentityAction(
 }
 
 export async function updateBookingRulesSettingsAction(
-  formData: FormData
+  formData: FormData,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const t = await getTranslations("admin.serverActions");
   try {
@@ -255,7 +254,7 @@ export async function updateBookingRulesSettingsAction(
   if (formData.has("cancellation_policy_days")) {
     partial.cancellationPolicyDays = Math.min(
       90,
-      Math.max(0, Number(formData.get("cancellation_policy_days") ?? 0))
+      Math.max(0, Number(formData.get("cancellation_policy_days") ?? 0)),
     );
   }
   if (formData.has("cancellation_policy_custom_text")) {
@@ -263,18 +262,15 @@ export async function updateBookingRulesSettingsAction(
     partial.cancellationPolicyCustomText = raw || null;
   }
   if (formData.has("pricing_weekend_enabled")) {
-    partial.pricingWeekendEnabled =
-      String(formData.get("pricing_weekend_enabled")) === "1";
+    partial.pricingWeekendEnabled = String(formData.get("pricing_weekend_enabled")) === "1";
   }
   if (formData.has("pricing_weekend_mode")) {
-    partial.pricingWeekendMode = String(
-      formData.get("pricing_weekend_mode")
-    ) as WeekendPricingMode;
+    partial.pricingWeekendMode = String(formData.get("pricing_weekend_mode")) as WeekendPricingMode;
   }
   if (formData.has("pricing_weekend_multiplier")) {
     partial.pricingWeekendMultiplier = Math.min(
       5,
-      Math.max(1, Number(formData.get("pricing_weekend_multiplier")) || 1)
+      Math.max(1, Number(formData.get("pricing_weekend_multiplier")) || 1),
     );
   }
   if (formData.has("extra_bed_fee")) {
@@ -286,7 +282,7 @@ export async function updateBookingRulesSettingsAction(
   if (formData.has("child_policy")) {
     try {
       const policy = parseChildPolicyInput(
-        JSON.parse(String(formData.get("child_policy") ?? "null"))
+        JSON.parse(String(formData.get("child_policy") ?? "null")),
       );
       if (!policy) return { ok: false, error: t("genericError") };
       partial.childPolicy = policy;
@@ -297,7 +293,7 @@ export async function updateBookingRulesSettingsAction(
   if (formData.has("pricing_seasons")) {
     try {
       partial.pricingSeasons = parsePricingSeasons(
-        JSON.parse(String(formData.get("pricing_seasons") ?? "[]"))
+        JSON.parse(String(formData.get("pricing_seasons") ?? "[]")),
       );
     } catch {
       return { ok: false, error: t("genericError") };
@@ -323,7 +319,8 @@ export async function updateBookingRulesSettingsAction(
 export async function geocodePropertyAddressAction(
   address: string,
 ): Promise<
-  { ok: true; lat: number; lng: number; label: string; approximate: boolean } | { ok: false; error: string }
+  | { ok: true; lat: number; lng: number; label: string; approximate: boolean }
+  | { ok: false; error: string }
 > {
   const t = await getTranslations("admin.serverActions");
   try {

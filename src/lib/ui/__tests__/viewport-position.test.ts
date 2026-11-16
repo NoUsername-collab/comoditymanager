@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  computeFixedPointerMenuPosition,
-  getViewportClampMargin,
-} from "../viewport-position";
+import { computeFixedPointerMenuPosition, getViewportClampMargin } from "../viewport-position";
 
 describe("getViewportClampMargin", () => {
   it("returns at least fallback when document is unavailable", () => {
@@ -23,7 +20,7 @@ describe("computeFixedPointerMenuPosition", () => {
       350,
       400,
       { width: 260, height: 320 },
-      { margin: 12, viewport: phoneViewport }
+      { margin: 12, viewport: phoneViewport },
     );
     expect(pos.left).toBeLessThanOrEqual(390 - 260 - 12);
     expect(pos.left).toBeGreaterThanOrEqual(12);
@@ -35,7 +32,7 @@ describe("computeFixedPointerMenuPosition", () => {
       40,
       800,
       { width: 240, height: 320 },
-      { margin: 12, viewport: phoneViewport }
+      { margin: 12, viewport: phoneViewport },
     );
     expect(pos.top).toBeLessThanOrEqual(844 - 320 - 12);
   });

@@ -11,76 +11,75 @@ import { roomTypePhotosForTenant } from "@/services/media-library";
 import { getTenantPublicScope } from "@/lib/tenant/scope";
 import { mediaFocus, type MediaAsset } from "@/domain/media/types";
 import { DEFAULT_BOOKING_RULES, toStayPricingRules } from "@/domain/settings/booking-rules";
-import {
-  DEFAULT_CHECK_IN_TIME,
-  DEFAULT_CHECK_OUT_TIME,
-} from "@/lib/constants";
+import { DEFAULT_CHECK_IN_TIME, DEFAULT_CHECK_OUT_TIME } from "@/lib/constants";
 
-const loadGuestStayPreviewCached = cache(async (
-  checkIn: string,
-  checkOut: string,
-  partyKey: string,
-  preferRoomTypeId: string | null,
-): Promise<GuestStayPreview> => {
-  const party = JSON.parse(partyKey) as Party;
+const loadGuestStayPreviewCached = cache(
+  async (
+    checkIn: string,
+    checkOut: string,
+    partyKey: string,
+    preferRoomTypeId: string | null,
+  ): Promise<GuestStayPreview> => {
+    const party = JSON.parse(partyKey) as Party;
 
-  const { tenantId } = await getTenantPublicScope();
-  const [roomsRaw, occupied, settings, rules, photos] = await Promise.all([
-    listAllRoomsForPublic(),
-    listOccupiedRoomRanges(undefined, {
-      forPublicCalendar: true,
-      rangeStart: checkIn,
-      rangeEnd: checkOut,
-    }),
-    getPensionSettings().catch(() => null),
-    getBookingRulesSettings().catch(() => DEFAULT_BOOKING_RULES),
-    roomTypePhotosForTenant(tenantId).catch(() => new Map<string, MediaAsset[]>()),
-  ]);
+    const { tenantId } = await getTenantPublicScope();
+    const [roomsRaw, occupied, settings, rules, photos] = await Promise.all([
+      listAllRoomsForPublic(),
+      listOccupiedRoomRanges(undefined, {
+        forPublicCalendar: true,
+        rangeStart: checkIn,
+        rangeEnd: checkOut,
+      }),
+      getPensionSettings().catch(() => null),
+      getBookingRulesSettings().catch(() => DEFAULT_BOOKING_RULES),
+      roomTypePhotosForTenant(tenantId).catch(() => new Map<string, MediaAsset[]>()),
+    ]);
 
-  const inventory = await getFreeStockForStay({
-    checkIn,
-    checkOut,
-    policy: rules.childPolicy,
-  });
+    const inventory = await getFreeStockForStay({
+      checkIn,
+      checkOut,
+      policy: rules.childPolicy,
+    });
 
-  const checkInTime =
-    settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
-  const checkOutTime =
-    settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
+    const checkInTime = settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
+    const checkOutTime = settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
 
-  const rooms = roomsRaw
-    .filter((r) => r.is_active)
-    .map((r) => ({
-      id: r.id,
-      room_type_id: r.room_type_definition_id ?? null,
-      photo: (() => {
-        const cover = r.room_type_definition_id ? photos.get(r.room_type_definition_id)?.[0] : undefined;
-        return cover ? { url: cover.url, focus: mediaFocus(cover) } : null;
-      })(),
-      name: r.name,
-      building_name: r.building_name,
-      has_ac: r.has_ac,
-      capacity_base: r.capacity_base,
-      allows_extra_beds: r.allows_extra_beds,
-      max_extra_beds_per_room: r.max_extra_beds_per_room,
-      max_cots: r.max_cots,
-      max_occupancy: r.max_occupancy,
-      price_per_night: Number(r.price_per_night),
-    }));
+    const rooms = roomsRaw
+      .filter((r) => r.is_active)
+      .map((r) => ({
+        id: r.id,
+        room_type_id: r.room_type_definition_id ?? null,
+        photo: (() => {
+          const cover = r.room_type_definition_id
+            ? photos.get(r.room_type_definition_id)?.[0]
+            : undefined;
+          return cover ? { url: cover.url, focus: mediaFocus(cover) } : null;
+        })(),
+        name: r.name,
+        building_name: r.building_name,
+        has_ac: r.has_ac,
+        capacity_base: r.capacity_base,
+        allows_extra_beds: r.allows_extra_beds,
+        max_extra_beds_per_room: r.max_extra_beds_per_room,
+        max_cots: r.max_cots,
+        max_occupancy: r.max_occupancy,
+        price_per_night: Number(r.price_per_night),
+      }));
 
-  return computeGuestStayOptions({
-    rooms,
-    occupied,
-    checkIn,
-    checkOut,
-    party,
-    policy: rules.childPolicy,
-    inventory,
-    times: { checkIn: checkInTime, checkOut: checkOutTime },
-    pricingRules: toStayPricingRules(rules),
-    preferRoomTypeId,
-  });
-});
+    return computeGuestStayOptions({
+      rooms,
+      occupied,
+      checkIn,
+      checkOut,
+      party,
+      policy: rules.childPolicy,
+      inventory,
+      times: { checkIn: checkInTime, checkOut: checkOutTime },
+      pricingRules: toStayPricingRules(rules),
+      preferRoomTypeId,
+    });
+  },
+);
 
 export async function loadGuestStayPreview(
   checkIn: string,

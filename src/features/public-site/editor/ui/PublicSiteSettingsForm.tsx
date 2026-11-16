@@ -26,7 +26,10 @@ import {
   type PublicSiteEditorApi,
 } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import { PublicSiteDesignPanel } from "@/features/public-site/editor/ui/PublicSiteDesignPanel";
-import { applySiteTemplate, siteTemplate } from "@/features/public-site/editor/model/site-templates";
+import {
+  applySiteTemplate,
+  siteTemplate,
+} from "@/features/public-site/editor/model/site-templates";
 import { PublicSiteContentPanel } from "@/features/public-site/editor/ui/PublicSiteContentPanel";
 import { PublicSiteTranslatePanel } from "@/features/public-site/editor/ui/PublicSiteTranslatePanel";
 import {
@@ -141,9 +144,14 @@ export function PublicSiteSettingsForm({
   );
   // A page taken away (or never saved, after a reload) falls back to the first page.
   const activePage =
-    activePageState && settledDraft.pages.some((page) => page.key === activePageState) ? activePageState : null;
+    activePageState && settledDraft.pages.some((page) => page.key === activePageState)
+      ? activePageState
+      : null;
   const pageSections = useMemo(
-    () => ({ sections: sectionsOf(settledDraft, activePage), showContactBar: settledDraft.showContactBar }),
+    () => ({
+      sections: sectionsOf(settledDraft, activePage),
+      showContactBar: settledDraft.showContactBar,
+    }),
     [settledDraft, activePage],
   );
   // The part being edited: the preview scrolls to it, marks it, and shows it if hidden.
@@ -165,7 +173,9 @@ export function PublicSiteSettingsForm({
       return {
         ...previewConfig,
         sitePages: previewConfig.sitePages.map((page) =>
-          page.id === activePage ? { ...page, visible: true, sections: page.sections.map(shown) } : page,
+          page.id === activePage
+            ? { ...page, visible: true, sections: page.sections.map(shown) }
+            : page,
         ),
       };
     }
@@ -173,10 +183,12 @@ export function PublicSiteSettingsForm({
   }, [previewConfig, previewFocus, openKey, activePage]);
   // While the quick start is open the preview shows its answers before they are applied;
   // a site template being looked at shows the site with it applied.
-  const previewTemplate = tab === "design" && templatePreview ? siteTemplate(templatePreview) : undefined;
+  const previewTemplate =
+    tab === "design" && templatePreview ? siteTemplate(templatePreview) : undefined;
   const studioPreviewConfig = useMemo(() => {
     let shown: PublicSiteStudioDraft | null = null;
-    if (quickStartOpen && quickStartAnswers) shown = applyQuickStart(settledDraft, quickStartAnswers);
+    if (quickStartOpen && quickStartAnswers)
+      shown = applyQuickStart(settledDraft, quickStartAnswers);
     else if (previewTemplate) {
       let n = 0;
       shown = applySiteTemplate(settledDraft, previewTemplate, () => `template-preview-${++n}`);
@@ -184,7 +196,15 @@ export function PublicSiteSettingsForm({
     if (!shown) return focusedPreviewConfig;
     const input = mergeStudioToInput({ config: configWithLibrary, draft: shown });
     return buildPublicSiteConfigFromInput(configWithLibrary, input, primaryContact);
-  }, [quickStartOpen, quickStartAnswers, previewTemplate, focusedPreviewConfig, settledDraft, configWithLibrary, primaryContact]);
+  }, [
+    quickStartOpen,
+    quickStartAnswers,
+    previewTemplate,
+    focusedPreviewConfig,
+    settledDraft,
+    configWithLibrary,
+    primaryContact,
+  ]);
   const progress = useMemo(
     () => studioLocaleProgress(settledDraft, stockCopy),
     [settledDraft, stockCopy],
@@ -273,8 +293,9 @@ export function PublicSiteSettingsForm({
     let frame = 0;
     let tries = 0;
     const find = () => {
-      const doc = document.querySelector<HTMLIFrameElement>(".pub-site-studio__frame iframe")
-        ?.contentDocument;
+      const doc = document.querySelector<HTMLIFrameElement>(
+        ".pub-site-studio__frame iframe",
+      )?.contentDocument;
       const root = doc?.querySelector(".pub-site-studio__doc");
       if (!doc || !root) {
         if (tries++ < 30) frame = window.setTimeout(find, 30);
@@ -480,9 +501,7 @@ export function PublicSiteSettingsForm({
     save(next, () => setDraftState((d) => ({ ...d, published: !published })));
   }
 
-  const errorTabs = new Set(
-    Object.keys(fieldErrors).map((path) => firstErrorTab({ [path]: "x" })),
-  );
+  const errorTabs = new Set(Object.keys(fieldErrors).map((path) => firstErrorTab({ [path]: "x" })));
 
   return (
     <PublicSiteStudio
@@ -519,37 +538,37 @@ export function PublicSiteSettingsForm({
       saveControl={
         readOnly || quickStartOpen ? null : (
           <>
-          <span className="pub-site-studio__history">
-            <button
-              type="button"
-              className="pub-site-studio__history-btn"
-              onClick={undo}
-              disabled={!canUndo}
-              aria-label={te("undo")}
-              title={te("undoShortcut")}
+            <span className="pub-site-studio__history">
+              <button
+                type="button"
+                className="pub-site-studio__history-btn"
+                onClick={undo}
+                disabled={!canUndo}
+                aria-label={te("undo")}
+                title={te("undoShortcut")}
+              >
+                ↶
+              </button>
+              <button
+                type="button"
+                className="pub-site-studio__history-btn"
+                onClick={redo}
+                disabled={!canRedo}
+                aria-label={te("redo")}
+                title={te("redoShortcut")}
+              >
+                ↷
+              </button>
+            </span>
+            <AdminSubmitButton
+              form="public-site-studio-form"
+              type="submit"
+              variant="primary"
+              size="sm"
+              disabled={pending}
             >
-              ↶
-            </button>
-            <button
-              type="button"
-              className="pub-site-studio__history-btn"
-              onClick={redo}
-              disabled={!canRedo}
-              aria-label={te("redo")}
-              title={te("redoShortcut")}
-            >
-              ↷
-            </button>
-          </span>
-          <AdminSubmitButton
-            form="public-site-studio-form"
-            type="submit"
-            variant="primary"
-            size="sm"
-            disabled={pending}
-          >
-            {pending ? t("saving") : t("save")}
-          </AdminSubmitButton>
+              {pending ? t("saving") : t("save")}
+            </AdminSubmitButton>
           </>
         )
       }
@@ -620,77 +639,77 @@ export function PublicSiteSettingsForm({
             onClose={closeQuickStart}
           />
         ) : (
-        <form
-          ref={formRef}
-          id="public-site-studio-form"
-          onSubmit={handleSubmit}
-          className="pub-editor"
-        >
-          <nav className="pub-editor-tabs" role="tablist" aria-label={te("tabsAria")}>
-            {PUBLIC_SITE_EDITOR_TABS.map((key) => (
-              <button
-                key={key}
-                type="button"
-                role="tab"
-                id={`pub-editor-tab-${key}`}
-                aria-selected={tab === key}
-                aria-controls="pub-editor-panel"
-                className="pub-editor-tabs__tab"
-                data-error={errorTabs.has(key) ? "1" : undefined}
-                onClick={() => goTo(key)}
-              >
-                <span className="pub-editor-tabs__label">{te(`tabs.${key}`)}</span>
-              </button>
-            ))}
-          </nav>
-
-          {tab !== "design" ? (
-          <div className="pub-editor-locale" role="status">
-            <span>
-              {te("editingLocale", { language: t(`localeTab_${draft.editLocale}`) })}
-            </span>
-            {canCopy && copySource ? (
-              <button
-                type="button"
-                onClick={() =>
-                  setDraftState((d) => fillStudioLocaleFrom(d, copySource, d.editLocale))
-                }
-                title={te("copyFromHint", { locale: copySource.toUpperCase() })}
-              >
-                {te("copyFrom", { locale: copySource.toUpperCase() })}
-              </button>
-            ) : null}
-          </div>
-          ) : null}
-
-          <fieldset
-            disabled={readOnly}
-            id="pub-editor-panel"
-            role="tabpanel"
-            aria-labelledby={`pub-editor-tab-${tab}`}
-            className="pub-editor__panel"
+          <form
+            ref={formRef}
+            id="public-site-studio-form"
+            onSubmit={handleSubmit}
+            className="pub-editor"
           >
-            {tab !== "content" ? (
-              <p className="pub-editor-tabhint">{te(`tabHints.${tab}`)}</p>
+            <nav className="pub-editor-tabs" role="tablist" aria-label={te("tabsAria")}>
+              {PUBLIC_SITE_EDITOR_TABS.map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  id={`pub-editor-tab-${key}`}
+                  aria-selected={tab === key}
+                  aria-controls="pub-editor-panel"
+                  className="pub-editor-tabs__tab"
+                  data-error={errorTabs.has(key) ? "1" : undefined}
+                  onClick={() => goTo(key)}
+                >
+                  <span className="pub-editor-tabs__label">{te(`tabs.${key}`)}</span>
+                </button>
+              ))}
+            </nav>
+
+            {tab !== "design" ? (
+              <div className="pub-editor-locale" role="status">
+                <span>{te("editingLocale", { language: t(`localeTab_${draft.editLocale}`) })}</span>
+                {canCopy && copySource ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setDraftState((d) => fillStudioLocaleFrom(d, copySource, d.editLocale))
+                    }
+                    title={te("copyFromHint", { locale: copySource.toUpperCase() })}
+                  >
+                    {te("copyFrom", { locale: copySource.toUpperCase() })}
+                  </button>
+                ) : null}
+              </div>
             ) : null}
-            <PublicSiteEditorProvider value={api}>
-              {tab === "design" ? <PublicSiteDesignPanel /> : null}
-              {tab === "content" ? (
-                <PublicSiteContentPanel
-                  openKey={openKey}
-                  onOpenKeyChange={setOpenKey}
-                  scrollSeq={scrollSeq}
-                  onOpenContact={() => goTo("settings", "contact")}
-                  onQuickStart={quickStartOffered ? () => setQuickStartOpen(true) : undefined}
-                />
+
+            <fieldset
+              disabled={readOnly}
+              id="pub-editor-panel"
+              role="tabpanel"
+              aria-labelledby={`pub-editor-tab-${tab}`}
+              className="pub-editor__panel"
+            >
+              {tab !== "content" ? (
+                <p className="pub-editor-tabhint">{te(`tabHints.${tab}`)}</p>
               ) : null}
-              {tab === "settings" ? (
-                <PublicSiteSettingsPanel openKey={settingsKey} onOpenKeyChange={setSettingsKey} />
-              ) : null}
-              {tab === "translate" ? <PublicSiteTranslatePanel stock={stockCopy} progress={progress} /> : null}
-            </PublicSiteEditorProvider>
-          </fieldset>
-        </form>
+              <PublicSiteEditorProvider value={api}>
+                {tab === "design" ? <PublicSiteDesignPanel /> : null}
+                {tab === "content" ? (
+                  <PublicSiteContentPanel
+                    openKey={openKey}
+                    onOpenKeyChange={setOpenKey}
+                    scrollSeq={scrollSeq}
+                    onOpenContact={() => goTo("settings", "contact")}
+                    onQuickStart={quickStartOffered ? () => setQuickStartOpen(true) : undefined}
+                  />
+                ) : null}
+                {tab === "settings" ? (
+                  <PublicSiteSettingsPanel openKey={settingsKey} onOpenKeyChange={setSettingsKey} />
+                ) : null}
+                {tab === "translate" ? (
+                  <PublicSiteTranslatePanel stock={stockCopy} progress={progress} />
+                ) : null}
+              </PublicSiteEditorProvider>
+            </fieldset>
+          </form>
         )
       }
     />

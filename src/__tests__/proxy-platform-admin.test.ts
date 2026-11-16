@@ -81,7 +81,6 @@ describe("proxy platform platform-admin", () => {
     expect(location).not.toMatch(/\/platform-admin\/?$/);
     expect(location).toContain("/admin/login");
   });
-
 });
 
 describe("proxy tenant status enforcement", () => {

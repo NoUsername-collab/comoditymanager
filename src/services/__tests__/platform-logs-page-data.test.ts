@@ -4,8 +4,7 @@ import { captureAndThrowPlatformLogsSectionError } from "../platform-logs-page-d
 const capturePlatformAdminError = vi.fn();
 
 vi.mock("@/services/dev-logs", () => ({
-  capturePlatformAdminError: (...args: unknown[]) =>
-    capturePlatformAdminError(...args),
+  capturePlatformAdminError: (...args: unknown[]) => capturePlatformAdminError(...args),
 }));
 
 vi.mock("@/services/platform-debug", () => ({
@@ -27,7 +26,7 @@ describe("captureAndThrowPlatformLogsSectionError", () => {
     const original = new Error("db timeout");
 
     await expect(
-      captureAndThrowPlatformLogsSectionError("platform-logs", original)
+      captureAndThrowPlatformLogsSectionError("platform-logs", original),
     ).rejects.toThrow("[platform-admin/logs:platform-logs] db timeout");
 
     expect(capturePlatformAdminError).toHaveBeenCalledWith(original, {
@@ -41,13 +40,13 @@ describe("captureAndThrowPlatformLogsSectionError", () => {
     capturePlatformAdminError.mockRejectedValue(writeFailure);
 
     await expect(
-      captureAndThrowPlatformLogsSectionError("health-checks", new Error("x"))
+      captureAndThrowPlatformLogsSectionError("health-checks", new Error("x")),
     ).rejects.toBe(writeFailure);
   });
 
   it("wraps non-Error values in a thrown Error", async () => {
     await expect(
-      captureAndThrowPlatformLogsSectionError("tenant-filters", "broken")
+      captureAndThrowPlatformLogsSectionError("tenant-filters", "broken"),
     ).rejects.toThrow("[platform-admin/logs:tenant-filters] broken");
   });
 });

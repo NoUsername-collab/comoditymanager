@@ -57,25 +57,22 @@ export function StayActions({
           moveOnlyConfirmed: labels.moveOnlyConfirmed,
           phoneRequiredForCheckIn: labels.phoneRequiredForCheckIn,
           completeCheckinForTouristSheet: labels.completeCheckinForTouristSheet,
-          checkInArrivalDayHint: formatStayLabel(
-            labels.checkInOnlyOnArrivalDay,
-            { date: stay.check_in },
-          ),
+          checkInArrivalDayHint: formatStayLabel(labels.checkInOnlyOnArrivalDay, {
+            date: stay.check_in,
+          }),
         }}
         hasCheckinRecord={!!stay.has_checkin_record}
         emitTouristSheetLabel={labels.emitTouristSheet}
       />
       <div className="stay-card__danger-zone">
         <BookingCancelButton
-        label={
-          stay.status === "confirmata" ? labels.cancelStay : labels.cancelRequest
-        }
-        confirmMessage={cancelMessage}
-        formAction={cancelBookingAction}
-        bookingId={stay.id}
-        returnTo={returnTo}
-        variant="compact"
-        operative
+          label={stay.status === "confirmata" ? labels.cancelStay : labels.cancelRequest}
+          confirmMessage={cancelMessage}
+          formAction={cancelBookingAction}
+          bookingId={stay.id}
+          returnTo={returnTo}
+          variant="compact"
+          operative
         />
       </div>
     </div>

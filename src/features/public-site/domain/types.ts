@@ -83,7 +83,16 @@ export type PublicChromeConfig = {
 };
 
 /** Where a menu link goes. */
-export const PUBLIC_MENU_KINDS = ["home", "page", "section", "calendar", "privacy", "terms", "url", "group"] as const;
+export const PUBLIC_MENU_KINDS = [
+  "home",
+  "page",
+  "section",
+  "calendar",
+  "privacy",
+  "terms",
+  "url",
+  "group",
+] as const;
 export type PublicMenuKind = (typeof PUBLIC_MENU_KINDS)[number];
 
 /**
@@ -135,16 +144,7 @@ export type BookingNoticePresetId =
   | "cancel"
   | "custom";
 export type BookingNoticeIconId =
-  | "check"
-  | "timer"
-  | "clock"
-  | "info"
-  | "phone"
-  | "card"
-  | "key"
-  | "meal"
-  | "park"
-  | "paw";
+  "check" | "timer" | "clock" | "info" | "phone" | "card" | "key" | "meal" | "park" | "paw";
 
 export type PublicBookingNoticeItem = {
   id: string;
@@ -241,7 +241,9 @@ export type PublicSiteSectionOf<T extends PublicSectionType> = {
   sortOrder: number;
   visible: boolean;
   /** Each kind's own fields, plus how this section looks over the page layout. */
-  payload: PublicSectionPayloadByType[T] & { style?: Partial<Record<"look" | "background" | "width" | "align", string>> };
+  payload: PublicSectionPayloadByType[T] & {
+    style?: Partial<Record<"look" | "background" | "width" | "align", string>>;
+  };
 };
 
 /** One homepage section; narrowing on `sectionType` types its payload. */

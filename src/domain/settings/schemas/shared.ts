@@ -46,8 +46,7 @@ export const hexColorSchema = z
   .transform((v) => (v === "" || v === null ? null : v));
 
 export type ParseResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: string; fieldErrors?: Record<string, string> };
+  { ok: true; data: T } | { ok: false; error: string; fieldErrors?: Record<string, string> };
 
 export function formatZodError(error: z.ZodError): string {
   return error.issues.map((issue) => issue.message).join("; ");

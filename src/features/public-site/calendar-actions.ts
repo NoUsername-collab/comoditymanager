@@ -12,11 +12,7 @@ import { loadGuestStayPreview } from "@/services/guest-stay-preview";
 import { getRoomsByIds } from "@/services/rooms-admin";
 import { stayNightCount } from "@/lib/stay-dates";
 import { quoteStayForRooms } from "@/services/stay-quote";
-import {
-  parsePartyInput,
-  partyFromFormData,
-  type Party,
-} from "@/domain/availability/party";
+import { parsePartyInput, partyFromFormData, type Party } from "@/domain/availability/party";
 import {
   enforceRateLimit,
   getClientIp,
@@ -71,7 +67,7 @@ export async function previewGuestStayAction(input: {
         typeof input.room_type_id === "string" && /^[\w-]{1,64}$/.test(input.room_type_id)
           ? input.room_type_id
           : null,
-      )
+      ),
     );
     return { ok: true as const, preview };
   } catch (e) {
@@ -83,7 +79,14 @@ export async function previewGuestStayAction(input: {
 }
 
 function parseSelectedRoomIds(optionId: string): string[] {
-  return [...new Set(optionId.split(",").map((id) => id.trim()).filter(Boolean))];
+  return [
+    ...new Set(
+      optionId
+        .split(",")
+        .map((id) => id.trim())
+        .filter(Boolean),
+    ),
+  ];
 }
 
 export async function submitGuestRequestAction(formData: FormData) {
@@ -164,9 +167,7 @@ export async function submitGuestRequestAction(formData: FormData) {
       }
       const nights = stayNightCount(check_in, check_out);
 
-      const roomList = rooms
-        .map((r) => `${r.name} (${r.building_name})`)
-        .join(", ");
+      const roomList = rooms.map((r) => `${r.name} (${r.building_name})`).join(", ");
       const variantBlock = [
         tServer("selectedVariantHeader"),
         roomList,
@@ -176,9 +177,7 @@ export async function submitGuestRequestAction(formData: FormData) {
         tServer("selectedVariantNote"),
       ].join("\n");
 
-      const notes = notesRaw
-        ? `${notesRaw}\n\n${variantBlock}`
-        : variantBlock;
+      const notes = notesRaw ? `${notesRaw}\n\n${variantBlock}` : variantBlock;
 
       const bookingId = await createBookingRequest({
         source: "site",
@@ -197,9 +196,8 @@ export async function submitGuestRequestAction(formData: FormData) {
       after(async () => {
         try {
           const { requireTenantIdForData } = await import("@/lib/tenant/guards");
-          const { getTenantNotificationEmails, getTenantDisplayName } = await import(
-            "@/services/tenants"
-          );
+          const { getTenantNotificationEmails, getTenantDisplayName } =
+            await import("@/services/tenants");
           const tenantId = await requireTenantIdForData();
           const { getEmailSettings } = await import("@/services/email-settings");
           const [emails, pensionName, emailSettings] = await Promise.all([
@@ -233,8 +231,8 @@ export async function submitGuestRequestAction(formData: FormData) {
                 bookingId: bookingId ?? "unknown",
                 baseUrl,
                 emailSettings: emailSettings ?? undefined,
-              })
-            )
+              }),
+            ),
           );
         } catch {
           /* email failure — non-fatal */

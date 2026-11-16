@@ -22,7 +22,7 @@ const envFile = process.argv[2] ?? ".env.local";
 const check = spawnSync(
   process.execPath,
   ["scripts/check-env.mjs", "--setup", `--file=${envFile}`],
-  { cwd: root, stdio: "inherit" }
+  { cwd: root, stdio: "inherit" },
 );
 if (check.status !== 0) process.exit(check.status ?? 1);
 
@@ -36,9 +36,7 @@ const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!url || !serviceKey) {
-  console.error(
-    `Lipsește NEXT_PUBLIC_SUPABASE_URL sau SUPABASE_SERVICE_ROLE_KEY în ${envFile}`
-  );
+  console.error(`Lipsește NEXT_PUBLIC_SUPABASE_URL sau SUPABASE_SERVICE_ROLE_KEY în ${envFile}`);
   process.exit(1);
 }
 
@@ -65,14 +63,12 @@ const users = list?.users ?? [];
 for (const account of accounts) {
   if (!account.password) {
     console.error(
-      `Lipsește parola pentru ${account.login} — setează ADMIN_INITIAL_PASSWORD / OPERATOR_INITIAL_PASSWORD`
+      `Lipsește parola pentru ${account.login} — setează ADMIN_INITIAL_PASSWORD / OPERATOR_INITIAL_PASSWORD`,
     );
     process.exit(1);
   }
 
-  const existing = users.find(
-    (u) => u.email?.toLowerCase() === account.email.toLowerCase()
-  );
+  const existing = users.find((u) => u.email?.toLowerCase() === account.email.toLowerCase());
 
   if (existing) {
     const { error } = await supabase.auth.admin.updateUserById(existing.id, {
@@ -100,6 +96,4 @@ for (const account of accounts) {
   }
 }
 
-console.log(
-  "Gata. Poți șterge *_INITIAL_PASSWORD din env după setup. Nu comite parolele în git."
-);
+console.log("Gata. Poți șterge *_INITIAL_PASSWORD din env după setup. Nu comite parolele în git.");

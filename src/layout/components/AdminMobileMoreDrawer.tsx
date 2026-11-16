@@ -5,10 +5,7 @@ import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useAdminRoutePrefetch } from "@/hooks/useAdminRoutePrefetch";
 import { AdminHudIcon } from "@/components/admin/AdminHudIcons";
 import { useTranslations } from "next-intl";
-import {
-  ADMIN_MORE_LINKS,
-  filterAdminMoreLinks,
-} from "@/layout/mobile/admin-more-links";
+import { ADMIN_MORE_LINKS, filterAdminMoreLinks } from "@/layout/mobile/admin-more-links";
 import { groupAdminMoreLinks } from "@/layout/mobile/admin-more-sections";
 import { isAdminTabActive } from "@/layout/mobile/admin-tabs";
 import { MobileDrawerPortal } from "@/layout/mobile/MobileDrawerPortal";
@@ -64,11 +61,7 @@ export function AdminMobileMoreDrawer({
       <div
         ref={panelRef}
         id={panelId}
-        className={[
-          "ml-drawer",
-          "ml-drawer--admin",
-          open && "ml-drawer--open",
-        ]
+        className={["ml-drawer", "ml-drawer--admin", open && "ml-drawer--open"]
           .filter(Boolean)
           .join(" ")}
         role="dialog"
@@ -107,10 +100,7 @@ export function AdminMobileMoreDrawer({
                     onMouseEnter={() => {
                       if (!active) router.prefetch(link.href);
                     }}
-                    className={[
-                      "ml-drawer__link",
-                      active && "ml-drawer__link--active",
-                    ]
+                    className={["ml-drawer__link", active && "ml-drawer__link--active"]
                       .filter(Boolean)
                       .join(" ")}
                     onClick={onClose}

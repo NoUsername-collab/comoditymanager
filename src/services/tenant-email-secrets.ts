@@ -24,9 +24,7 @@ type SecretRow = {
   resend_key_hint: string | null;
 };
 
-async function getTenantResendVaultHint(
-  tenantId: string,
-): Promise<string | null> {
+async function getTenantResendVaultHint(tenantId: string): Promise<string | null> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("tenant_email_secrets")
@@ -42,9 +40,7 @@ async function getTenantResendVaultHint(
   return data?.resend_key_hint ?? null;
 }
 
-async function getTenantResendApiKeyFromVault(
-  tenantId: string,
-): Promise<string | null> {
+async function getTenantResendApiKeyFromVault(tenantId: string): Promise<string | null> {
   const masterKey = getTenantSecretsMasterKey();
   if (!masterKey) return null;
 

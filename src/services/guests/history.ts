@@ -1,14 +1,7 @@
 import { cache } from "react";
 import { formatGuestFullName } from "@/domain/guest-name";
-import {
-  shiftStayDatesByYears,
-  shiftStayToNextFutureYear,
-} from "@/domain/guest/rebook-dates";
-import {
-  assertValidGuestPhone,
-  normalizeEmail,
-  normalizePhone,
-} from "@/domain/guest/normalize";
+import { shiftStayDatesByYears, shiftStayToNextFutureYear } from "@/domain/guest/rebook-dates";
+import { assertValidGuestPhone, normalizeEmail, normalizePhone } from "@/domain/guest/normalize";
 import { parseGuestTags } from "@/domain/guest/tags";
 import type {
   GuestDocType,
@@ -39,9 +32,8 @@ import {
   mergeGuestProfiles,
 } from "@/services/guest-profiles";
 
-
 async function listSegmentsForBookings(
-  bookingIds: string[]
+  bookingIds: string[],
 ): Promise<Map<string, BookingRoomSegmentRow[]>> {
   const ids = [...new Set(bookingIds.filter(Boolean))];
   if (ids.length === 0) return new Map();
@@ -78,60 +70,57 @@ type GuestBookingHistoryItem = {
   review: GuestStayReviewRow | null;
 };
 
-const loadGuestBookingHistory = cache(async (
-  guestId: string
-): Promise<GuestBookingHistoryItem[]> => {
-  const { tenantId, supabase } = await getTenantScope();
-  const { data, error } = await supabase
-    .from("bookings")
-    .select(
-      `
+const loadGuestBookingHistory = cache(
+  async (guestId: string): Promise<GuestBookingHistoryItem[]> => {
+    const { tenantId, supabase } = await getTenantScope();
+    const { data, error } = await supabase
+      .from("bookings")
+      .select(
+        `
       id, check_in, check_out, status, total_price, num_adults, num_children,
       booking_rooms ( room_id, rooms ( name ) )
-    `
-    )
-    .eq("tenant_id", tenantId)
-    .eq("guest_id", guestId)
-    .order("check_in", { ascending: false });
+    `,
+      )
+      .eq("tenant_id", tenantId)
+      .eq("guest_id", guestId)
+      .order("check_in", { ascending: false });
 
-  if (error) throw new Error(error.message);
+    if (error) throw new Error(error.message);
 
-  const bookingIds = (data ?? []).map((booking) => String(booking.id));
-  const [segmentsByBooking, reviews] = await Promise.all([
-    listSegmentsForBookings(bookingIds),
-    listGuestStayReviewsByBookingIds(bookingIds),
-  ]);
-  const items: GuestBookingHistoryItem[] = [];
-  for (const b of data ?? []) {
-    const br = (b.booking_rooms ?? []) as {
-      room_id: string;
-      rooms: { name: string } | { name: string }[] | null;
-    }[];
-    const room_names: string[] = [];
-    for (const line of br) {
-      const r = line.rooms;
-      const name = Array.isArray(r) ? r[0]?.name : r?.name;
-      if (name) room_names.push(name);
+    const bookingIds = (data ?? []).map((booking) => String(booking.id));
+    const [segmentsByBooking, reviews] = await Promise.all([
+      listSegmentsForBookings(bookingIds),
+      listGuestStayReviewsByBookingIds(bookingIds),
+    ]);
+    const items: GuestBookingHistoryItem[] = [];
+    for (const b of data ?? []) {
+      const br = (b.booking_rooms ?? []) as {
+        room_id: string;
+        rooms: { name: string } | { name: string }[] | null;
+      }[];
+      const room_names: string[] = [];
+      for (const line of br) {
+        const r = line.rooms;
+        const name = Array.isArray(r) ? r[0]?.name : r?.name;
+        if (name) room_names.push(name);
+      }
+      items.push({
+        id: b.id as string,
+        check_in: b.check_in as string,
+        check_out: b.check_out as string,
+        status: b.status as BookingStatus,
+        room_names,
+        total_price: b.total_price != null ? Number(b.total_price) : null,
+        num_adults: b.num_adults as number,
+        num_children: b.num_children as number,
+        segments: segmentsByBooking.get(String(b.id)) ?? [],
+        review: reviews.get(String(b.id)) ?? null,
+      });
     }
-    items.push({
-      id: b.id as string,
-      check_in: b.check_in as string,
-      check_out: b.check_out as string,
-      status: b.status as BookingStatus,
-      room_names,
-      total_price: b.total_price != null ? Number(b.total_price) : null,
-      num_adults: b.num_adults as number,
-      num_children: b.num_children as number,
-      segments: segmentsByBooking.get(String(b.id)) ?? [],
-      review: reviews.get(String(b.id)) ?? null,
-    });
-  }
-  return items;
-});
+    return items;
+  },
+);
 
-export async function getGuestBookingHistory(
-  guestId: string
-): Promise<GuestBookingHistoryItem[]> {
+export async function getGuestBookingHistory(guestId: string): Promise<GuestBookingHistoryItem[]> {
   return loadGuestBookingHistory(guestId);
 }
-

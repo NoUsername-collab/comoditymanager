@@ -6,11 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import { changeTenantPlanAction } from "@/features/platform-admin/tenant-actions";
 import { PLAN_CONFIGS, type CloudPlan, type PlanId } from "@/core/config/plans";
 
-const SOLD_CLOUD_PLAN_IDS: CloudPlan[] = [
-  "free",
-  "essential",
-  "professional",
-];
+const SOLD_CLOUD_PLAN_IDS: CloudPlan[] = ["free", "essential", "professional"];
 
 export function TenantPlanForm({
   tenantId,
@@ -82,9 +78,7 @@ export function TenantPlanForm({
       </button>
 
       {feedback && (
-        <p
-          className={`text-xs ${feedback === t("success") ? "text-emerald-400" : "text-red-400"}`}
-        >
+        <p className={`text-xs ${feedback === t("success") ? "text-emerald-400" : "text-red-400"}`}>
           {feedback}
         </p>
       )}

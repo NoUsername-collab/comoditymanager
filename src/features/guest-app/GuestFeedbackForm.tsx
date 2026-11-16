@@ -52,11 +52,7 @@ function StarInput({
   );
 }
 
-export function GuestFeedbackForm({
-  accessCode,
-  alreadySubmitted,
-  existingStars,
-}: Props) {
+export function GuestFeedbackForm({ accessCode, alreadySubmitted, existingStars }: Props) {
   const t = useTranslations("guestApp.feedback");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -96,9 +92,7 @@ export function GuestFeedbackForm({
 
   return (
     <form className="guest-app__form space-y-4" onSubmit={handleSubmit}>
-      <p className="guest-app__subtle text-sm leading-relaxed">
-        {t("description")}
-      </p>
+      <p className="guest-app__subtle text-sm leading-relaxed">{t("description")}</p>
 
       <div className="guest-app__field">
         <span className="guest-app__field__label">{t("rating")}</span>
@@ -118,11 +112,7 @@ export function GuestFeedbackForm({
 
       {error ? <p className="guest-app__form-error">{error}</p> : null}
 
-      <button
-        type="submit"
-        className="guest-app__btn-primary"
-        disabled={pending || stars < 1}
-      >
+      <button type="submit" className="guest-app__btn-primary" disabled={pending || stars < 1}>
         {pending ? t("submitting") : t("submit")}
       </button>
     </form>

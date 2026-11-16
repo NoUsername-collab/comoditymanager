@@ -1,9 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
-import type {
-  GuestSearchFilter,
-  GuestSearchResult,
-} from "@/domain/guest/types";
+import type { GuestSearchFilter, GuestSearchResult } from "@/domain/guest/types";
 import { GuestListCard } from "@/features/guests/ui/GuestListCard";
 import { GuestCollapsibleSection } from "@/features/guests/ui/GuestCollapsibleSection";
 import { GuestRecentHeroSection } from "@/features/guests/ui/GuestRecentHeroSection";
@@ -196,21 +193,19 @@ export default async function AdminGuestsPage({
         </div>
       ) : (
         <section className="guest-results guest-surface">
-          <h2 className="guest-results__title">{t("resultsTitle", { count: result.items.length })}</h2>
+          <h2 className="guest-results__title">
+            {t("resultsTitle", { count: result.items.length })}
+          </h2>
           {result.items.length === 0 ? (
             <AdminEmptyState
               emoji="🔎"
               title={t("emptyTitle")}
               description={t("emptyDescription")}
               actionHref={
-                q || (result.filter && result.filter !== "all")
-                  ? buildGuestListHref({})
-                  : undefined
+                q || (result.filter && result.filter !== "all") ? buildGuestListHref({}) : undefined
               }
               actionLabel={
-                q || (result.filter && result.filter !== "all")
-                  ? tCommon("reset")
-                  : undefined
+                q || (result.filter && result.filter !== "all") ? tCommon("reset") : undefined
               }
             />
           ) : (

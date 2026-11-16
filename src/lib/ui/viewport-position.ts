@@ -11,7 +11,7 @@ export function getViewportClampMargin(fallback = 8): number {
     readCssPxVariable("--ml-safe-left"),
     readCssPxVariable("--ml-safe-right"),
     readCssPxVariable("--ml-safe-top"),
-    readCssPxVariable("--ml-safe-bottom")
+    readCssPxVariable("--ml-safe-bottom"),
   );
   return Math.max(fallback, safe, 12);
 }
@@ -43,25 +43,24 @@ export function computeFixedPointerMenuPosition(
   options?: {
     margin?: number;
     viewport?: ReturnType<typeof getVisualViewportBox>;
-  }
+  },
 ): FixedAnchoredPosition {
   const margin = options?.margin ?? getViewportClampMargin(12);
-  const { width: vw, height: vh, offsetTop, offsetLeft } =
-    options?.viewport ?? getVisualViewportBox();
+  const {
+    width: vw,
+    height: vh,
+    offsetTop,
+    offsetLeft,
+  } = options?.viewport ?? getVisualViewportBox();
 
   const minLeft = offsetLeft + margin;
   const maxLeft = offsetLeft + vw - menu.width - margin;
   const left =
-    vw <= 0 || maxLeft < minLeft
-      ? minLeft
-      : Math.min(Math.max(clientX, minLeft), maxLeft);
+    vw <= 0 || maxLeft < minLeft ? minLeft : Math.min(Math.max(clientX, minLeft), maxLeft);
 
   const minTop = offsetTop + margin;
   const maxTop = offsetTop + vh - menu.height - margin;
-  const top =
-    vh <= 0 || maxTop < minTop
-      ? minTop
-      : Math.min(Math.max(clientY, minTop), maxTop);
+  const top = vh <= 0 || maxTop < minTop ? minTop : Math.min(Math.max(clientY, minTop), maxTop);
 
   return { top, left };
 }
@@ -73,7 +72,7 @@ export function computeFixedPointerMenuPosition(
 export function computeFixedDropdownPosition(
   trigger: DOMRect,
   menu: { width: number; height: number },
-  options?: { gap?: number; margin?: number }
+  options?: { gap?: number; margin?: number },
 ): FixedAnchoredPosition {
   const gap = options?.gap ?? 8;
   const margin = options?.margin ?? getViewportClampMargin(8);
@@ -88,10 +87,7 @@ export function computeFixedDropdownPosition(
     top = trigger.top - menu.height - gap + offsetTop;
   }
 
-  left = Math.min(
-    Math.max(left, offsetLeft + margin),
-    offsetLeft + vw - menu.width - margin
-  );
+  left = Math.min(Math.max(left, offsetLeft + margin), offsetLeft + vw - menu.width - margin);
 
   const maxTop = offsetTop + vh - menu.height - margin;
   top = Math.min(Math.max(top, offsetTop + margin), maxTop);

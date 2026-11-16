@@ -21,15 +21,9 @@ export async function BookingActivitySection({
         <h2 className="bd-card__title" style={{ marginBottom: 0 }}>
           {t("title")}
         </h2>
-        {entries.length > 0 && (
-          <span className="bd-activity__count">{entries.length}</span>
-        )}
+        {entries.length > 0 && <span className="bd-activity__count">{entries.length}</span>}
       </div>
-      <ActivityTimeline
-        entries={entries}
-        compact
-        bookingCheckIn={checkIn}
-      />
+      <ActivityTimeline entries={entries} compact bookingCheckIn={checkIn} />
     </section>
   );
 }

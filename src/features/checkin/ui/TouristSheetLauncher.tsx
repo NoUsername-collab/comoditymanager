@@ -65,10 +65,7 @@ export function TouristSheetLauncher({
           width={720}
           className="tourist-sheet-modal"
         >
-          <TouristSheetView
-            data={sheetData}
-            onClose={() => setSheetData(null)}
-          />
+          <TouristSheetView data={sheetData} onClose={() => setSheetData(null)} />
         </AdminFloatingPanel>
       ) : null}
     </>

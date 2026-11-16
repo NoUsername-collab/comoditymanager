@@ -79,7 +79,8 @@ export async function createSubscriptionCheckout(input: {
   if (!config) return { ok: false, error: "not_configured" };
   const tenant = await getTenantBilling(input.tenantId);
   if (!tenant) throw new Error("tenant.not_found");
-  if (hasLiveSubscription(tenant.subscriptionStatus)) return { ok: false, error: "already_subscribed" };
+  if (hasLiveSubscription(tenant.subscriptionStatus))
+    return { ok: false, error: "already_subscribed" };
   // A plan set by the Zalmox team (Business, or paid by transfer) is changed by the team.
   if (tenant.isPaying && !tenant.stripeSubscriptionId) return { ok: false, error: "manual_plan" };
 
@@ -156,14 +157,25 @@ async function refreshTenantCache(tenantId: string, slug: string) {
   revalidateTag(`tenant-id-${tenantId}`, "max");
   revalidateTag(`tenant-slug-${slug}`, "max");
   revalidateTag(`tenant-slug-status-${slug}`, "max");
-  const { data } = await createPublicAdminClient().from("tenant_domains").select("domain").eq("tenant_id", tenantId);
+  const { data } = await createPublicAdminClient()
+    .from("tenant_domains")
+    .select("domain")
+    .eq("tenant_id", tenantId);
   for (const row of data ?? []) revalidateTag(`tenant-domain-${row.domain as string}`, "max");
 }
 
 /** Reads the subscription from Stripe and puts its property on the plan it gives. */
-async function syncSubscription(config: StripeConfig, subscriptionId: string, hintTenantId: string | null) {
+async function syncSubscription(
+  config: StripeConfig,
+  subscriptionId: string,
+  hintTenantId: string | null,
+) {
   const sub = snapshot(
-    await stripeRequest<RawSubscription>(config, "GET", `/subscriptions/${encodeURIComponent(subscriptionId)}`),
+    await stripeRequest<RawSubscription>(
+      config,
+      "GET",
+      `/subscriptions/${encodeURIComponent(subscriptionId)}`,
+    ),
   );
   const supabase = createPublicAdminClient();
 
@@ -175,7 +187,11 @@ async function syncSubscription(config: StripeConfig, subscriptionId: string, hi
     ["stripe_customer_id", sub.customer],
   ] as const) {
     if (!value) continue;
-    const { data, error } = await supabase.from("tenants").select(BILLING_COLUMNS).eq(column, value).maybeSingle();
+    const { data, error } = await supabase
+      .from("tenants")
+      .select(BILLING_COLUMNS)
+      .eq(column, value)
+      .maybeSingle();
     if (error) throw new Error(error.message);
     if (data) {
       tenant = mapBilling(data);
@@ -219,7 +235,9 @@ async function syncSubscription(config: StripeConfig, subscriptionId: string, hi
  * Applies one webhook event, once. Subscription and invoice events re-read the
  * subscription from Stripe, so their order does not matter.
  */
-export async function applyStripeEvent(event: StripeEvent): Promise<"applied" | "duplicate" | "ignored"> {
+export async function applyStripeEvent(
+  event: StripeEvent,
+): Promise<"applied" | "duplicate" | "ignored"> {
   const config = getStripeConfig();
   if (!config) throw new Error("billing.not_configured");
   const supabase = createPublicAdminClient();

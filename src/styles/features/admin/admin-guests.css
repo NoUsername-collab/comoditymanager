@@ -69,7 +69,9 @@
   border: 1px solid var(--border);
   background: var(--surface);
   overflow: hidden;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .guest-search__bar:focus-within {
@@ -381,7 +383,9 @@
   overflow: hidden;
   content-visibility: auto;
   contain-intrinsic-size: auto 4rem;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 
 .guest-card:hover {
@@ -501,7 +505,9 @@
   border-left: 1px solid var(--border);
   color: var(--text-muted);
   font-size: 0.78rem;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .guest-card__preview-btn:hover {
@@ -517,8 +523,12 @@
 /* Legacy — kept for compatibility if referenced elsewhere */
 
 /* Unused layout elements — kept in case referenced elsewhere */
-.guest-card__actions { display: none; }
-.guest-card__btn { display: none; }
+.guest-card__actions {
+  display: none;
+}
+.guest-card__btn {
+  display: none;
+}
 
 /* ─── Pagination ─── */
 
@@ -871,7 +881,10 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .guest-profile-page__tab-panel .guest-rebook-form--embedded .guest-rebook-form__section:first-of-type .grid {
+  .guest-profile-page__tab-panel
+    .guest-rebook-form--embedded
+    .guest-rebook-form__section:first-of-type
+    .grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
@@ -1943,7 +1956,9 @@
   font-size: 0.78rem;
   color: var(--text);
   outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .guest-identity-form__input:focus,

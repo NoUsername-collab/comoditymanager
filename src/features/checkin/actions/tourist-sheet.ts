@@ -4,18 +4,13 @@ import { requireAnyStaff } from "@/lib/auth/require-admin";
 import { getTranslations } from "next-intl/server";
 import { getCheckinSettings } from "@/services/checkin/settings";
 import { getBookingById } from "@/services/bookings";
-import {
-  getCheckinByBookingId,
-  getCheckinGuests,
-} from "@/services/checkin/queries";
+import { getCheckinByBookingId, getCheckinGuests } from "@/services/checkin/queries";
 import { buildTouristSheetFromPersisted } from "@/domain/checkin/tourist-sheet";
 import { mapBookingToForCheckin } from "@/domain/checkin/map-booking";
 import { mapPersistedCheckinGuestsToInput } from "@/domain/checkin/map-persisted-guests";
 import type { LoadTouristSheetResult } from "./types";
 
-export async function loadTouristSheetAction(
-  bookingId: string,
-): Promise<LoadTouristSheetResult> {
+export async function loadTouristSheetAction(bookingId: string): Promise<LoadTouristSheetResult> {
   await requireAnyStaff();
 
   try {

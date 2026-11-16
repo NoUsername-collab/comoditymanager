@@ -44,10 +44,7 @@ export type RoomPlacement = PartyGroup & {
 
 /** Bed places: the room's beds plus the extra beds it can take. */
 export function roomMaxCapacity(room: RoomCapacity): number {
-  return (
-    room.capacity_base +
-    (room.allows_extra_beds ? room.max_extra_beds_per_room : 0)
-  );
+  return room.capacity_base + (room.allows_extra_beds ? room.max_extra_beds_per_room : 0);
 }
 
 function roomExtraBeds(room: RoomCapacity): number {
@@ -136,9 +133,7 @@ export function roomPlacementOptions(
   const maxCots = Math.min(group.infants, roomCots(room));
   for (let cots = 0; cots <= maxCots; cots += 1) {
     const babiesLeft = group.infants - cots;
-    const infantsWithParents = policy.infantsWithParents
-      ? Math.min(babiesLeft, group.adults)
-      : 0;
+    const infantsWithParents = policy.infantsWithParents ? Math.min(babiesLeft, group.adults) : 0;
     let infantsInBeds = babiesLeft - infantsWithParents;
     let children = group.children;
     let teens = group.teens;
@@ -378,7 +373,10 @@ export function rankRoomSetsForParty<R extends RankableRoom>(
   const out: R[][] = [];
   const seen = new Set<string>();
   const push = (set: R[]) => {
-    const key = set.map((room) => room.id).sort().join(",");
+    const key = set
+      .map((room) => room.id)
+      .sort()
+      .join(",");
     if (seen.has(key)) return;
     seen.add(key);
     out.push(set);
@@ -390,9 +388,7 @@ export function rankRoomSetsForParty<R extends RankableRoom>(
   // A family that fits in one room is never offered a split; adults alone may take two cheaper rooms.
   const pairs: R[][] = [];
   const offerPairs =
-    singles.length === 0 ||
-    party.childrenSeparateRoom ||
-    party.childAges.length === 0;
+    singles.length === 0 || party.childrenSeparateRoom || party.childAges.length === 0;
   if (rooms.length <= PAIR_SEARCH_LIMIT && offerPairs) {
     for (let i = 0; i < rooms.length; i += 1) {
       for (let j = i + 1; j < rooms.length; j += 1) {

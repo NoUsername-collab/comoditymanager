@@ -35,11 +35,7 @@ export function SettingsSection({
       </div>
       <div className="settings-section__head-actions">
         {previewHref && previewLabel ? (
-          <SettingsPreviewLink
-            href={previewHref}
-            label={previewLabel}
-            external={previewExternal}
-          />
+          <SettingsPreviewLink href={previewHref} label={previewLabel} external={previewExternal} />
         ) : null}
         {badge ? <div className="settings-section__badge">{badge}</div> : null}
       </div>

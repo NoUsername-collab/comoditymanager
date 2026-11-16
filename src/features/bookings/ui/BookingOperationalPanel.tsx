@@ -9,15 +9,9 @@ import {
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { GanttCheckTimeDialog } from "@/features/calendar/ui/GanttCheckTimeDialog";
 import { BookingCheckoutPanel } from "@/features/bookings/ui/BookingCheckoutPanel";
-import {
-  checkinPaymentBalance,
-  isCheckinPaymentSettled,
-} from "@/domain/checkin/payment-panel";
+import { checkinPaymentBalance, isCheckinPaymentSettled } from "@/domain/checkin/payment-panel";
 import type { StoredPaymentStatus } from "@/domain/checkin/types";
-import {
-  undoBookingCheckInAction,
-  undoBookingCheckOutAction,
-} from "@/features/bookings/actions";
+import { undoBookingCheckInAction, undoBookingCheckOutAction } from "@/features/bookings/actions";
 import { formatOperationalTimestamp } from "@/lib/operational-check";
 import {
   canOfferOperativeCheckIn,
@@ -90,9 +84,7 @@ export function BookingOperationalPanel({
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
   const [checkinModalOpen, setCheckinModalOpen] = useState(false);
-  const [checkinWizardMode, setCheckinWizardMode] = useState<"create" | "edit">(
-    "create",
-  );
+  const [checkinWizardMode, setCheckinWizardMode] = useState<"create" | "edit">("create");
   const [checkoutPanel, setCheckoutPanel] = useState<{
     intent: "set" | "edit";
   } | null>(null);
@@ -121,26 +113,18 @@ export function BookingOperationalPanel({
     }) && hasPhone;
 
   const isArrivalDay = isOperativeCheckInDay(plannedCheckIn, today);
-  const needsWizardForTouristSheet =
-    canWizardCheckIn && !!actualCheckInAt && !hasCheckinRecord;
+  const needsWizardForTouristSheet = canWizardCheckIn && !!actualCheckInAt && !hasCheckinRecord;
   const canNewCheckIn = canWizardCheckIn && !actualCheckInAt;
-  const canContinueRooms =
-    canWizardCheckIn && roomProgress.isPartial && roomProgress.remaining > 0;
-  const canEditCheckInTime =
-    !!actualCheckInAt && hasCheckinRecord && roomProgress.isComplete;
-  const canCheckOut =
-    !!actualCheckInAt && !actualCheckOutAt && roomProgress.isComplete;
+  const canContinueRooms = canWizardCheckIn && roomProgress.isPartial && roomProgress.remaining > 0;
+  const canEditCheckInTime = !!actualCheckInAt && hasCheckinRecord && roomProgress.isComplete;
+  const canCheckOut = !!actualCheckInAt && !actualCheckOutAt && roomProgress.isComplete;
   const canEditCheckOut = !!actualCheckOutAt;
   const postCheckoutLocked = !!actualCheckOutAt && !canEditAfterCheckout;
-  const canEditCheckInTimeEffective =
-    canEditCheckInTime && !postCheckoutLocked;
+  const canEditCheckInTimeEffective = canEditCheckInTime && !postCheckoutLocked;
   const canEditCheckOutEffective = canEditCheckOut && !postCheckoutLocked;
   const checkoutLockedTitle = postCheckoutLocked ? tServer("checkoutLocked") : "";
   const checkInEnabled =
-    canNewCheckIn ||
-    canContinueRooms ||
-    needsWizardForTouristSheet ||
-    canEditCheckInTimeEffective;
+    canNewCheckIn || canContinueRooms || needsWizardForTouristSheet || canEditCheckInTimeEffective;
 
   const checkInLabel = needsWizardForTouristSheet
     ? tStays("completeCheckinForTouristSheet")
@@ -157,27 +141,26 @@ export function BookingOperationalPanel({
     : postCheckoutLocked
       ? checkoutLockedTitle
       : !hasPhone
-      ? t("phoneRequiredForCheckIn")
-      : !isArrivalDay && !canContinueRooms
-        ? t("checkInOnlyOnArrivalDay", { date: plannedCheckIn })
-        : "";
+        ? t("phoneRequiredForCheckIn")
+        : !isArrivalDay && !canContinueRooms
+          ? t("checkInOnlyOnArrivalDay", { date: plannedCheckIn })
+          : "";
 
   const checkoutBlockedTitle = canEditCheckOutEffective
     ? checkoutLockedTitle
     : postCheckoutLocked
       ? checkoutLockedTitle
       : actualCheckOutAt
-      ? tStays("checkoutAlreadyDone")
-      : !actualCheckInAt
-        ? tStays("checkoutNeedsCheckin")
-        : !roomProgress.isComplete
-          ? tStays("checkInContinue")
-          : "";
+        ? tStays("checkoutAlreadyDone")
+        : !actualCheckInAt
+          ? tStays("checkoutNeedsCheckin")
+          : !roomProgress.isComplete
+            ? tStays("checkInContinue")
+            : "";
 
   const canEmitTouristSheet = hasCheckinRecord && roomProgress.isComplete;
 
-  const checkInStepDone =
-    roomProgress.isComplete || !!actualCheckInAt || roomProgress.checked > 0;
+  const checkInStepDone = roomProgress.isComplete || !!actualCheckInAt || roomProgress.checked > 0;
   const checkOutStepDone = !!actualCheckOutAt;
   const connectorDone = checkInStepDone && !actualCheckOutAt;
 
@@ -238,11 +221,7 @@ export function BookingOperationalPanel({
         total: roomProgress.total,
       });
 
-  const showRoomProgress = shouldShowRoomCheckinProgress(
-    plannedCheckIn,
-    today,
-    roomProgress,
-  );
+  const showRoomProgress = shouldShowRoomCheckinProgress(plannedCheckIn, today, roomProgress);
 
   return (
     <div className="bd-ops bd-ops--vertical">
@@ -264,9 +243,7 @@ export function BookingOperationalPanel({
             <div className="bd-ops__lane-meta">
               <p className="bd-ops__lane-label">{t("checkInLabel")}</p>
               <p className="bd-ops__lane-value">
-                {actualCheckInAt
-                  ? formatOperationalTimestamp(actualCheckInAt)
-                  : t("notRecorded")}
+                {actualCheckInAt ? formatOperationalTimestamp(actualCheckInAt) : t("notRecorded")}
               </p>
             </div>
             {canEditCheckInTimeEffective ? (
@@ -384,9 +361,7 @@ export function BookingOperationalPanel({
             <div className="bd-ops__lane-meta">
               <p className="bd-ops__lane-label">{t("checkOutLabel")}</p>
               <p className="bd-ops__lane-value">
-                {actualCheckOutAt
-                  ? formatOperationalTimestamp(actualCheckOutAt)
-                  : t("notRecorded")}
+                {actualCheckOutAt ? formatOperationalTimestamp(actualCheckOutAt) : t("notRecorded")}
               </p>
             </div>
             {canEditCheckOutEffective ? (
@@ -434,10 +409,7 @@ export function BookingOperationalPanel({
 
       {canEmitTouristSheet ? (
         <div className="bd-ops__footer">
-          <TouristSheetLauncher
-            bookingId={bookingId}
-            label={tStays("emitTouristSheet")}
-          />
+          <TouristSheetLauncher bookingId={bookingId} label={tStays("emitTouristSheet")} />
         </div>
       ) : null}
 

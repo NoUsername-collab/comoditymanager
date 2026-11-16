@@ -9,21 +9,15 @@ import {
 describe("resolveGuestAppThemeId", () => {
   it("inherits public site theme by default", () => {
     expect(resolveGuestAppThemeId({}, "alpine")).toBe("alpine");
-    expect(resolveGuestAppThemeId({ themeId: "inherit" }, "mediterranean")).toBe(
-      "mediterranean",
-    );
+    expect(resolveGuestAppThemeId({ themeId: "inherit" }, "mediterranean")).toBe("mediterranean");
   });
 
   it("uses explicit family when set", () => {
-    expect(
-      resolveGuestAppThemeId({ themeId: "noir" }, "alpine"),
-    ).toBe("noir");
+    expect(resolveGuestAppThemeId({ themeId: "noir" }, "alpine")).toBe("noir");
   });
 
   it("custom uses public family as base", () => {
-    expect(
-      resolveGuestAppThemeId({ themeId: "custom" }, "alpine"),
-    ).toBe("alpine");
+    expect(resolveGuestAppThemeId({ themeId: "custom" }, "alpine")).toBe("alpine");
   });
 
   it("migrates legacy keys", () => {

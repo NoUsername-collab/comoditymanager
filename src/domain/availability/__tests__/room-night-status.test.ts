@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  roomNightStatus,
-  type NightStay,
-} from "@/domain/availability/room-night-status";
+import { roomNightStatus, type NightStay } from "@/domain/availability/room-night-status";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -13,7 +10,7 @@ function stay(
   check_in: string,
   check_out: string,
   status: "confirmata" | "cerere_noua",
-  guest_name: string
+  guest_name: string,
 ): NightStay {
   return { room_id, check_in, check_out, status, guest_name };
 }

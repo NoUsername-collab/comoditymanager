@@ -12,13 +12,9 @@ const StayQuickOpsDynamic = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div
-        className="stay-quick-ops stay-quick-ops--skeleton"
-        aria-busy="true"
-        aria-hidden
-      />
+      <div className="stay-quick-ops stay-quick-ops--skeleton" aria-busy="true" aria-hidden />
     ),
-  }
+  },
 );
 
 export function StayQuickOpsLazy(props: ComponentProps<typeof StayQuickOps>) {

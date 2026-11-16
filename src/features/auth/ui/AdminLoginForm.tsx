@@ -2,10 +2,7 @@
 
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  loginAction,
-  type LoginFormState,
-} from "@/features/auth/login";
+import { loginAction, type LoginFormState } from "@/features/auth/login";
 import { useState } from "react";
 import { MfaChallengeForm } from "@/features/auth/ui/MfaChallengeForm";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
@@ -38,13 +35,8 @@ export function AdminLoginForm({
         <p className="text-xs font-medium uppercase tracking-wide text-blue-700">
           {tMfa("loginStep")}
         </p>
-        <h2 className="mt-1 text-lg font-semibold text-zinc-900">
-          {tMfa("loginTitle")}
-        </h2>
-        <MfaChallengeForm
-          next={next}
-          onCancel={() => setShowMfa(false)}
-        />
+        <h2 className="mt-1 text-lg font-semibold text-zinc-900">{tMfa("loginTitle")}</h2>
+        <MfaChallengeForm next={next} onCancel={() => setShowMfa(false)} />
       </div>
     );
   }
@@ -52,23 +44,14 @@ export function AdminLoginForm({
   return (
     <>
       {busy ? (
-        <div
-          className="admin-login-overlay"
-          role="status"
-          aria-live="polite"
-          aria-busy="true"
-        >
+        <div className="admin-login-overlay" role="status" aria-live="polite" aria-busy="true">
           <div className="admin-login-overlay__inner">
             <LocaleFlagSpinner label={t("submitting")} size="lg" />
             <p className="admin-login-overlay__label">{t("submitting")}</p>
           </div>
         </div>
       ) : null}
-      <form
-        className="admin-login-form mt-5 space-y-3"
-        action={formAction}
-        aria-busy={busy}
-      >
+      <form className="admin-login-form mt-5 space-y-3" action={formAction} aria-busy={busy}>
         <fieldset disabled={busy} className="admin-login-form__fieldset">
           <input type="hidden" name="next" value={next} />
           <label className="block text-sm">
@@ -97,19 +80,11 @@ export function AdminLoginForm({
             {t("forgotPassword")}
           </Link>
           {error ? (
-            <p
-              className="admin-login-form__error text-sm text-red-600"
-              role="alert"
-            >
+            <p className="admin-login-form__error text-sm text-red-600" role="alert">
               {error}
             </p>
           ) : null}
-          <button
-            type="submit"
-            disabled={busy}
-            aria-busy={busy}
-            className="admin-login-submit"
-          >
+          <button type="submit" disabled={busy} aria-busy={busy} className="admin-login-submit">
             {busy ? (
               <>
                 <span className="admin-login-submit__spinner" aria-hidden>

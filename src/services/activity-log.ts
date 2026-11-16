@@ -1,9 +1,5 @@
 import { cache } from "react";
-import type {
-  ActivityAction,
-  ActivityEntityType,
-  ActivityLogEntry,
-} from "@/domain/activity/types";
+import type { ActivityAction, ActivityEntityType, ActivityLogEntry } from "@/domain/activity/types";
 import { getStaffUser } from "@/lib/auth/require-admin";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
@@ -75,7 +71,7 @@ export async function logAdminActivity(input: LogInput): Promise<string | null> 
           metadata: input.metadata ?? {},
           undoable: input.undoable ?? false,
           reverts_log_id: input.revertsLogId ?? null,
-        })
+        }),
       )
       .select("id")
       .single();
@@ -92,7 +88,7 @@ export async function logAdminActivity(input: LogInput): Promise<string | null> 
 }
 
 export async function logAdminActivityFromSession(
-  input: Omit<LogInput, "actor">
+  input: Omit<LogInput, "actor">,
 ): Promise<string | null> {
   const user = await getStaffUser();
   return logAdminActivity({
@@ -104,7 +100,7 @@ export async function logAdminActivityFromSession(
 /** Cron / background jobs — no request tenant scope. */
 export async function logTenantActivity(
   tenantId: string,
-  input: Omit<LogInput, "actor">
+  input: Omit<LogInput, "actor">,
 ): Promise<string | null> {
   try {
     const supabase = createPublicAdminClient();
@@ -136,9 +132,7 @@ export async function logTenantActivity(
   }
 }
 
-const loadActivityLogEntryById = cache(async (
-  id: string
-): Promise<ActivityLogEntry | null> => {
+const loadActivityLogEntryById = cache(async (id: string): Promise<ActivityLogEntry | null> => {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("admin_activity_log")
@@ -151,15 +145,11 @@ const loadActivityLogEntryById = cache(async (
   return data ? mapRow(data as ActivityRow) : null;
 });
 
-export async function getActivityLogEntryById(
-  id: string
-): Promise<ActivityLogEntry | null> {
+export async function getActivityLogEntryById(id: string): Promise<ActivityLogEntry | null> {
   return loadActivityLogEntryById(id);
 }
 
-const loadRecentActivity = cache(async (
-  limit: number
-): Promise<ActivityLogEntry[]> => {
+const loadRecentActivity = cache(async (limit: number): Promise<ActivityLogEntry[]> => {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("admin_activity_log")
@@ -172,9 +162,7 @@ const loadRecentActivity = cache(async (
   return (data ?? []).map((row) => mapRow(row as ActivityRow));
 });
 
-export async function listRecentActivity(
-  limit = 100
-): Promise<ActivityLogEntry[]> {
+export async function listRecentActivity(limit = 100): Promise<ActivityLogEntry[]> {
   return loadRecentActivity(limit);
 }
 
@@ -183,10 +171,7 @@ const BOOKING_LINKED_CHECKIN_ACTIONS = [
   "checkin.updated",
 ] as const satisfies readonly ActivityAction[];
 
-function mergeActivityByRecency(
-  batches: ActivityLogEntry[][],
-  limit: number
-): ActivityLogEntry[] {
+function mergeActivityByRecency(batches: ActivityLogEntry[][], limit: number): ActivityLogEntry[] {
   const byId = new Map<string, ActivityLogEntry>();
   for (const batch of batches) {
     for (const entry of batch) {
@@ -194,53 +179,49 @@ function mergeActivityByRecency(
     }
   }
   return [...byId.values()]
-    .sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    )
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, limit);
 }
 
-const loadBookingActivity = cache(async (
-  bookingId: string,
-  limit: number
-): Promise<ActivityLogEntry[]> => {
-  const { tenantId, supabase } = await getTenantScope();
+const loadBookingActivity = cache(
+  async (bookingId: string, limit: number): Promise<ActivityLogEntry[]> => {
+    const { tenantId, supabase } = await getTenantScope();
 
-  const [bookingResult, checkinResult] = await Promise.all([
-    supabase
-      .from("admin_activity_log")
-      .select(ACTIVITY_SELECT)
-      .eq("tenant_id", tenantId)
-      .eq("entity_type", "booking")
-      .eq("entity_id", bookingId)
-      .order("created_at", { ascending: false })
-      .limit(limit),
-    supabase
-      .from("admin_activity_log")
-      .select(ACTIVITY_SELECT)
-      .eq("tenant_id", tenantId)
-      .in("action", [...BOOKING_LINKED_CHECKIN_ACTIONS])
-      .filter("metadata->>booking_id", "eq", bookingId)
-      .order("created_at", { ascending: false })
-      .limit(limit),
-  ]);
+    const [bookingResult, checkinResult] = await Promise.all([
+      supabase
+        .from("admin_activity_log")
+        .select(ACTIVITY_SELECT)
+        .eq("tenant_id", tenantId)
+        .eq("entity_type", "booking")
+        .eq("entity_id", bookingId)
+        .order("created_at", { ascending: false })
+        .limit(limit),
+      supabase
+        .from("admin_activity_log")
+        .select(ACTIVITY_SELECT)
+        .eq("tenant_id", tenantId)
+        .in("action", [...BOOKING_LINKED_CHECKIN_ACTIONS])
+        .filter("metadata->>booking_id", "eq", bookingId)
+        .order("created_at", { ascending: false })
+        .limit(limit),
+    ]);
 
-  if (bookingResult.error) throw new Error(bookingResult.error.message);
-  if (checkinResult.error) throw new Error(checkinResult.error.message);
+    if (bookingResult.error) throw new Error(bookingResult.error.message);
+    if (checkinResult.error) throw new Error(checkinResult.error.message);
 
-  return mergeActivityByRecency(
-    [
-      (bookingResult.data ?? []).map((row) => mapRow(row as ActivityRow)),
-      (checkinResult.data ?? []).map((row) => mapRow(row as ActivityRow)),
-    ],
-    limit
-  );
-});
+    return mergeActivityByRecency(
+      [
+        (bookingResult.data ?? []).map((row) => mapRow(row as ActivityRow)),
+        (checkinResult.data ?? []).map((row) => mapRow(row as ActivityRow)),
+      ],
+      limit,
+    );
+  },
+);
 
 export async function listBookingActivity(
   bookingId: string,
-  limit = 40
+  limit = 40,
 ): Promise<ActivityLogEntry[]> {
   return loadBookingActivity(bookingId, limit);
 }

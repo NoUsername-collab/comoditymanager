@@ -51,9 +51,7 @@ export default async function SettingsAppearancePage({
       description={t("visualsSubtitle")}
       previewHref="/admin"
       previewLabel={t("livePreview")}
-      previewPanel={
-        <AppearanceSettingsAsideLazy publicThemeId={publicSiteConfig.themeId} />
-      }
+      previewPanel={<AppearanceSettingsAsideLazy publicThemeId={publicSiteConfig.themeId} />}
     >
       <AdminPendingForm action={updateAppearanceSettingsAction} className="settings-form-stack">
         <input type="hidden" name="id" value={settings.id} />

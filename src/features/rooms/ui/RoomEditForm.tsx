@@ -53,7 +53,7 @@ export function RoomEditForm({
   const tEdit = useTranslations("admin.roomEditForm");
   const [buildingId, setBuildingId] = useState(room.building_id);
   const [typeId, setTypeId] = useState(
-    room.room_type_definition_id ?? types.find((t) => t.slug === "double")?.id ?? ""
+    room.room_type_definition_id ?? types.find((t) => t.slug === "double")?.id ?? "",
   );
   const floors = floorsByBuilding[buildingId] ?? [];
   const policies = policiesByBuilding[buildingId] ?? [];
@@ -92,11 +92,7 @@ export function RoomEditForm({
 
       <label className="block">
         <span className="text-sm font-medium">{tEdit("floor")}</span>
-        <AdminSelect
-          name="floor_id"
-          defaultValue={room.floor_id ?? ""}
-          className="mt-1"
-        >
+        <AdminSelect name="floor_id" defaultValue={room.floor_id ?? ""} className="mt-1">
           <option value="">{tEdit("withoutFloor")}</option>
           {floors.map((f) => (
             <option key={f.id} value={f.id}>
@@ -124,12 +120,7 @@ export function RoomEditForm({
 
       <label className="block">
         <span className="text-sm font-medium">{tCommon("name")}</span>
-        <AdminInput
-          name="name"
-          defaultValue={room.name}
-          required
-          className="mt-1"
-        />
+        <AdminInput name="name" defaultValue={room.name} required className="mt-1" />
       </label>
 
       <RoomOptionFields
@@ -199,9 +190,7 @@ export function RoomEditForm({
         />
       </label>
 
-      <AdminSubmitButton size="md">
-        {tEdit("saveChanges")}
-      </AdminSubmitButton>
+      <AdminSubmitButton size="md">{tEdit("saveChanges")}</AdminSubmitButton>
     </AdminPendingForm>
   );
 }

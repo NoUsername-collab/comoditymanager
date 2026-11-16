@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { updateGuestNotesAction } from "@/features/guests/actions";
-import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
+import {
+  useAdminPending,
+  useRunAdminAction,
+} from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { AdminAlertDialog } from "@/components/admin/overlay/AdminAlertDialog";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
@@ -45,7 +48,9 @@ export function GuestNotesForm({
           disabled={pending}
           className="guest-notes-form__trigger admin-requests-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
         >
-          {initialNotes.trim() ? tGuests("notes.editGeneralNotes") : tGuests("notes.addGeneralNotes")}
+          {initialNotes.trim()
+            ? tGuests("notes.editGeneralNotes")
+            : tGuests("notes.addGeneralNotes")}
         </button>
         <span className="text-xs text-zinc-500">
           {initialNotes.trim() ? tGuests("notes.savedForGuest") : tGuests("notes.noneYet")}

@@ -4,13 +4,7 @@ import { todayIso } from "@/lib/stay-dates";
 
 /** Visual timeline filter — see timeline-spec.md */
 export type GanttLayerFilter =
-  | "all"
-  | "requests"
-  | "confirmed"
-  | "in_house"
-  | "past"
-  | "hold"
-  | "block";
+  "all" | "requests" | "confirmed" | "in_house" | "past" | "hold" | "block";
 
 const LAYER_FROM_QUERY: Record<string, GanttLayerFilter> = {
   all: "all",
@@ -47,10 +41,7 @@ export function ganttLayerQueryValue(layer: GanttLayerFilter): string | null {
 
 type LayerFilterTranslator = (key: GanttLayerFilter) => string;
 
-export function layerFilterLabel(
-  layer: GanttLayerFilter,
-  t?: LayerFilterTranslator
-): string {
+export function layerFilterLabel(layer: GanttLayerFilter, t?: LayerFilterTranslator): string {
   if (t) return t(layer);
   switch (layer) {
     case "all":
@@ -79,7 +70,7 @@ function segmentPhase(seg: OccupancySegment, ref = todayIso()): string {
 function segmentMatchesLayerFilter(
   seg: OccupancySegment,
   layer: GanttLayerFilter,
-  ref = todayIso()
+  ref = todayIso(),
 ): boolean {
   if (layer === "all") return true;
   const phase = segmentPhase(seg, ref);
@@ -105,7 +96,7 @@ function segmentMatchesLayerFilter(
 export function filterOccupancyForLayer(
   segments: OccupancySegment[],
   layer: GanttLayerFilter,
-  ref?: string
+  ref?: string,
 ): OccupancySegment[] {
   if (layer === "all") return segments;
   return segments.filter((s) => segmentMatchesLayerFilter(s, layer, ref));

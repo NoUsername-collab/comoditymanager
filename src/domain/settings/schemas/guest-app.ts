@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { DEFAULT_GUEST_LOYALTY_PROGRAM } from "@/domain/guest-app/loyalty";
-import { formatZodError, hexColorSchema, optionalEmailSchema, optionalUrlSchema, type ParseResult } from "./shared";
+import {
+  formatZodError,
+  hexColorSchema,
+  optionalEmailSchema,
+  optionalUrlSchema,
+  type ParseResult,
+} from "./shared";
 
 const guestAppFeatureIdSchema = z.enum([
   "hotel_info",
@@ -109,9 +115,7 @@ const guestAppSettingsInputSchema = z
   })
   .strict();
 
-export type GuestAppSettingsInputParsed = z.infer<
-  typeof guestAppSettingsInputSchema
->;
+export type GuestAppSettingsInputParsed = z.infer<typeof guestAppSettingsInputSchema>;
 
 export function parseGuestAppSettingsInput(
   input: unknown,

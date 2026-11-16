@@ -17,7 +17,11 @@ export function BenefitsEditor({ section }: SectionEditorProps) {
   return (
     <>
       <div className="admin-settings-fields">
-        <EditorField label={te("sectionTitle")} value={ed.field("title")} onChange={ed.setField("title")} />
+        <EditorField
+          label={te("sectionTitle")}
+          value={ed.field("title")}
+          onChange={ed.setField("title")}
+        />
         <EditorField
           rows={2}
           label={te("sectionLead")}

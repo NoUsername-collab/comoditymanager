@@ -52,9 +52,7 @@ function splitMrzLineCanvases(cropped: HTMLCanvasElement): HTMLCanvasElement[] {
   for (let i = 0; i < 3; i++) {
     const sy = i * bandHeight;
     const sh = i === 2 ? cropped.height - sy : bandHeight;
-    canvases.push(
-      prepareCanvas(cropped, 0, sy, cropped.width, sh, 2),
-    );
+    canvases.push(prepareCanvas(cropped, 0, sy, cropped.width, sh, 2));
   }
 
   return canvases;
@@ -106,9 +104,7 @@ export async function runMrzOcrOnImage(
   const cropped = cropMrzRegion(source);
   const lineCanvases = splitMrzLineCanvases(cropped);
 
-  const lineTexts = await Promise.all(
-    lineCanvases.map((canvas) => recognizeMrzText(canvas)),
-  );
+  const lineTexts = await Promise.all(lineCanvases.map((canvas) => recognizeMrzText(canvas)));
   const perLineCombined = lineTexts.filter(Boolean).join("\n");
 
   const [croppedBlock, fullBlock] = await Promise.all([

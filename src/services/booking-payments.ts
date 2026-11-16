@@ -28,10 +28,7 @@ function mapPaymentRow(row: Record<string, unknown>): PaymentEntry {
   const kind = row.kind === "refund" ? "refund" : "payment";
   const method = row.method;
   const validMethod: PaymentMethod =
-    method === "card" ||
-    method === "transfer" ||
-    method === "online" ||
-    method === "other"
+    method === "card" || method === "transfer" || method === "online" || method === "other"
       ? method
       : "cash";
 
@@ -50,15 +47,13 @@ function mapPaymentRow(row: Record<string, unknown>): PaymentEntry {
   };
 }
 
-export const listBookingPayments = cache(async (
-  bookingId: string
-): Promise<PaymentEntry[]> => {
+export const listBookingPayments = cache(async (bookingId: string): Promise<PaymentEntry[]> => {
   const tenantId = await resolveTenantIdForData();
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("booking_payments")
     .select(
-      "id, booking_id, amount, kind, method, payer_name, payer_tax_id, paid_at, recorded_by, notes, invoice_id"
+      "id, booking_id, amount, kind, method, payer_name, payer_tax_id, paid_at, recorded_by, notes, invoice_id",
     )
     .eq("tenant_id", tenantId)
     .eq("booking_id", bookingId)
@@ -66,14 +61,12 @@ export const listBookingPayments = cache(async (
 
   if (error) throw new Error(error.message);
 
-  return (data ?? []).map((row) =>
-    mapPaymentRow(row as Record<string, unknown>)
-  );
+  return (data ?? []).map((row) => mapPaymentRow(row as Record<string, unknown>));
 });
 
 async function getBookingPaymentTotals(
   bookingId: string,
-  totalDue?: number | null
+  totalDue?: number | null,
 ): Promise<PaymentTotals> {
   const [payments, booking] = await Promise.all([
     listBookingPayments(bookingId),
@@ -100,7 +93,7 @@ type RecordBookingPaymentInput = {
 };
 
 export async function recordBookingPayment(
-  input: RecordBookingPaymentInput
+  input: RecordBookingPaymentInput,
 ): Promise<{ ok: true; entry: PaymentEntry } | { ok: false; error: string }> {
   const amount = roundMoney(input.amount);
   if (!Number.isFinite(amount) || amount <= 0) {
@@ -133,7 +126,7 @@ export async function recordBookingPayment(
       idempotency_key: input.idempotencyKey?.trim() || null,
     })
     .select(
-      "id, booking_id, amount, kind, method, payer_name, payer_tax_id, paid_at, recorded_by, notes, invoice_id"
+      "id, booking_id, amount, kind, method, payer_name, payer_tax_id, paid_at, recorded_by, notes, invoice_id",
     )
     .single();
 
@@ -155,7 +148,7 @@ async function applyBookingPaymentTarget(
     method?: PaymentMethod;
     recordedBy?: string | null;
     idempotencyKey?: string | null;
-  }
+  },
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const payments = await listBookingPayments(bookingId);
   const delta = paymentDeltaToTarget(payments, targetPaid);
@@ -176,7 +169,7 @@ async function applyBookingPaymentTarget(
 
 async function syncCheckinPaymentSnapshot(
   bookingId: string,
-  totalDue?: number | null
+  totalDue?: number | null,
 ): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   const payments = await listBookingPayments(bookingId);

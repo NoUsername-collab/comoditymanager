@@ -16,9 +16,7 @@ export function StatCard({
         small ? "px-3 py-2" : "px-4 py-3",
       ].join(" ")}
     >
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
-        {label}
-      </p>
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">{label}</p>
       <p
         className={[
           "mt-1 font-bold tabular-nums text-zinc-900",

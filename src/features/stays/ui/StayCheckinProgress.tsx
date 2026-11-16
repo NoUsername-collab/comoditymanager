@@ -37,10 +37,7 @@ export function StayCheckinProgress({
   const progress = computeRoomCheckinProgress(roomNames, checkedInRooms);
   if (!progress.isMultiRoom && progress.checked === 0) return null;
 
-  const pct =
-    progress.total > 0
-      ? Math.round((progress.checked / progress.total) * 100)
-      : 0;
+  const pct = progress.total > 0 ? Math.round((progress.checked / progress.total) * 100) : 0;
 
   const title = progress.isComplete
     ? labels.allRoomsDone
@@ -62,9 +59,7 @@ export function StayCheckinProgress({
           {progress.isComplete ? "✓" : "🔑"}
         </span>
         <div className="stay-checkin-progress__meta">
-          <p className="stay-checkin-progress__title">
-            {title}
-          </p>
+          <p className="stay-checkin-progress__title">{title}</p>
           {progress.isPartial ? (
             <p className="stay-checkin-progress__hint">{labels.partialHint}</p>
           ) : null}
@@ -79,24 +74,15 @@ export function StayCheckinProgress({
         aria-valuemin={0}
         aria-valuemax={progress.total}
       >
-        <span
-          className="stay-checkin-progress__bar-fill"
-          style={{ width: `${pct}%` }}
-        />
+        <span className="stay-checkin-progress__bar-fill" style={{ width: `${pct}%` }} />
       </div>
 
       {progress.isMultiRoom ? (
         <ul className="stay-checkin-progress__rooms">
           {progress.roomNames.map((room) => {
-            const done = progress.checkedRooms.some(
-              (r) => r.toLowerCase() === room.toLowerCase(),
-            );
-            const keyHanded = keysHandedRooms.some(
-              (r) => r.toLowerCase() === room.toLowerCase(),
-            );
-            const idOk = roomIdVerified.some(
-              (r) => r.toLowerCase() === room.toLowerCase(),
-            );
+            const done = progress.checkedRooms.some((r) => r.toLowerCase() === room.toLowerCase());
+            const keyHanded = keysHandedRooms.some((r) => r.toLowerCase() === room.toLowerCase());
+            const idOk = roomIdVerified.some((r) => r.toLowerCase() === room.toLowerCase());
             return (
               <li
                 key={room}

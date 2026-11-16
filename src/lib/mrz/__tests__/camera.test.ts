@@ -25,18 +25,14 @@ describe("camera helpers", () => {
 
   it("isUserFacingStream reads facingMode", () => {
     const stream = {
-      getVideoTracks: () => [
-        { label: "camera", getSettings: () => ({ facingMode: "user" }) },
-      ],
+      getVideoTracks: () => [{ label: "camera", getSettings: () => ({ facingMode: "user" }) }],
     } as unknown as MediaStream;
     expect(isUserFacingStream(stream)).toBe(true);
   });
 
   it("hasTorchSupport checks track capabilities", () => {
     const withTorch = {
-      getVideoTracks: () => [
-        { getCapabilities: () => ({ torch: true }) },
-      ],
+      getVideoTracks: () => [{ getCapabilities: () => ({ torch: true }) }],
     } as unknown as MediaStream;
     const withoutTorch = {
       getVideoTracks: () => [{ getCapabilities: () => ({}) }],

@@ -18,11 +18,7 @@ import {
 } from "@/features/platform-admin/ui/TenantDetailExtras";
 import { Link } from "@/i18n/navigation";
 
-export default async function TenantDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function TenantDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const [{ tenant, health, domains, activity }, t, locale] = await Promise.all([
     loadPlatformTenantDetailPage(id),
@@ -52,9 +48,7 @@ export default async function TenantDetailPage({
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5 space-y-2">
-          <h2 className="text-sm font-semibold uppercase text-neutral-500">
-            {t("info")}
-          </h2>
+          <h2 className="text-sm font-semibold uppercase text-neutral-500">{t("info")}</h2>
           <InfoRow label={t("id")} value={tenant.id} mono />
           <InfoRow label={t("slug")} value={tenant.slug} />
           <InfoRow label={t("ownerEmail")} value={tenant.owner_email || "—"} />
@@ -68,9 +62,7 @@ export default async function TenantDetailPage({
         </div>
 
         <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5 space-y-2">
-          <h2 className="text-sm font-semibold uppercase text-neutral-500">
-            {t("stats")}
-          </h2>
+          <h2 className="text-sm font-semibold uppercase text-neutral-500">{t("stats")}</h2>
           <InfoRow label={t("rooms")} value={String(tenant.room_count)} />
           <InfoRow label={t("bookings")} value={String(tenant.booking_count)} />
           <InfoRow label={t("teamMembers")} value={String(tenant.member_count)} />
@@ -94,19 +86,12 @@ export default async function TenantDetailPage({
           />
         </div>
 
-        <TenantOperatorPanel
-          tenantId={tenant.id}
-          ownerEmail={tenant.owner_email}
-        />
+        <TenantOperatorPanel tenantId={tenant.id} ownerEmail={tenant.owner_email} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <TenantOnboardingChecklistPanel tenantId={tenant.id} />
-        <TenantDomainsManager
-          tenantId={tenant.id}
-          domains={domains}
-          slug={tenant.slug}
-        />
+        <TenantDomainsManager tenantId={tenant.id} domains={domains} slug={tenant.slug} />
         <TenantActivityPanel activity={activity} locale={locale} />
         <TenantSiteLinksPanel slug={tenant.slug} />
       </div>
@@ -128,29 +113,17 @@ export default async function TenantDetailPage({
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5">
-          <h2 className="mb-2 text-sm font-semibold uppercase text-neutral-500">
-            {t("plan")}
-          </h2>
-          <TenantPlanForm
-            tenantId={tenant.id}
-            currentPlan={(tenant.plan_id || "free") as PlanId}
-          />
+          <h2 className="mb-2 text-sm font-semibold uppercase text-neutral-500">{t("plan")}</h2>
+          <TenantPlanForm tenantId={tenant.id} currentPlan={(tenant.plan_id || "free") as PlanId} />
         </div>
 
         <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5">
-          <h2 className="mb-2 text-sm font-semibold uppercase text-neutral-500">
-            {t("status")}
-          </h2>
-          <TenantStatusForm
-            tenantId={tenant.id}
-            currentStatus={tenant.status}
-          />
+          <h2 className="mb-2 text-sm font-semibold uppercase text-neutral-500">{t("status")}</h2>
+          <TenantStatusForm tenantId={tenant.id} currentStatus={tenant.status} />
         </div>
 
         <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5">
-          <h2 className="mb-2 text-sm font-semibold uppercase text-neutral-500">
-            {t("modules")}
-          </h2>
+          <h2 className="mb-2 text-sm font-semibold uppercase text-neutral-500">{t("modules")}</h2>
           <TenantModulesForm
             tenantId={tenant.id}
             currentModules={tenant.active_modules || []}
@@ -162,23 +135,11 @@ export default async function TenantDetailPage({
   );
 }
 
-function InfoRow({
-  label,
-  value,
-  mono,
-}: {
-  label: string;
-  value: string;
-  mono?: boolean;
-}) {
+function InfoRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="platform-tenant-detail__info-row flex items-baseline justify-between gap-2">
       <span className="text-xs text-neutral-500">{label}</span>
-      <span
-        className={`text-sm text-neutral-200 ${mono ? "font-mono text-xs" : ""}`}
-      >
-        {value}
-      </span>
+      <span className={`text-sm text-neutral-200 ${mono ? "font-mono text-xs" : ""}`}>{value}</span>
     </div>
   );
 }

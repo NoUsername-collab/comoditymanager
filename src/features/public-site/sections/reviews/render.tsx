@@ -27,7 +27,9 @@ export function renderReviews(section: PublicSiteSectionOf<"reviews">, locale: s
               </p>
             ) : null}
             <blockquote className="pub-review__quote">{item.quote}</blockquote>
-            {item.author ? <figcaption className="pub-review__author">{item.author}</figcaption> : null}
+            {item.author ? (
+              <figcaption className="pub-review__author">{item.author}</figcaption>
+            ) : null}
           </figure>
         ))}
       </div>

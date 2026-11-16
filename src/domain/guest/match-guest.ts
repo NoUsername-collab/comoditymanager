@@ -7,13 +7,7 @@ export type GuestContactMatchInput = {
 };
 
 type GuestMatchReason =
-  | "phone_email_name"
-  | "phone_email"
-  | "phone_name"
-  | "email_name"
-  | "phone"
-  | "email"
-  | "name";
+  "phone_email_name" | "phone_email" | "phone_name" | "email_name" | "phone" | "email" | "name";
 
 export type GuestContactMatchResult =
   | { status: "matched"; guestId: string; reason: GuestMatchReason }
@@ -27,7 +21,7 @@ function normalizeNamePart(value: string): string {
 function namesMatch(
   lastName: string,
   firstName: string,
-  guest: { last_name: string; first_name: string }
+  guest: { last_name: string; first_name: string },
 ): boolean {
   return (
     normalizeNamePart(lastName) === normalizeNamePart(guest.last_name) &&
@@ -62,9 +56,7 @@ export function pickGuestContactMatch(args: {
   emailNormalized: string | null;
 }): GuestContactMatchResult {
   const { input, candidates, phoneNormalized, emailNormalized } = args;
-  const pool = candidates.filter(
-    (row) => !input.excludeGuestId || row.id !== input.excludeGuestId
-  );
+  const pool = candidates.filter((row) => !input.excludeGuestId || row.id !== input.excludeGuestId);
   if (pool.length === 0) return { status: "none" };
 
   const byPhone = phoneNormalized
@@ -113,9 +105,7 @@ export function pickGuestContactMatch(args: {
     return { status: "matched", guestId: nameId, reason: "name" };
   }
 
-  const ambiguousIds = [
-    ...new Set([...byPhone, ...byEmail, ...byName]),
-  ];
+  const ambiguousIds = [...new Set([...byPhone, ...byEmail, ...byName])];
   if (ambiguousIds.length > 1) {
     return {
       status: "ambiguous",

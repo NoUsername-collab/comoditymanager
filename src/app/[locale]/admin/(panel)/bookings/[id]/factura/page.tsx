@@ -5,20 +5,14 @@ import {
   type BookingProformaListItem,
 } from "@/features/bookings/ui/BookingInvoicePanel";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
-import {
-  resolveDefaultInvoiceAmount,
-} from "@/domain/invoice/invoice-allocation";
+import { resolveDefaultInvoiceAmount } from "@/domain/invoice/invoice-allocation";
 import { resolveDefaultProformaAmount } from "@/domain/invoice/proforma";
 import { loadBookingInvoicePage, proformaCanConvert } from "@/features/bookings/loaders";
 import { getTranslations } from "next-intl/server";
 import { checkModule } from "@/core/hooks/use-feature-gate";
 import "@/styles/features/shared/invoice-print.css";
 
-export default async function BookingInvoicePage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function BookingInvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const [{ id }, tPage, tCommon, data] = await Promise.all([
     params,
     getTranslations("admin.pages.invoice"),
@@ -57,11 +51,7 @@ export default async function BookingInvoicePage({
     invoice_sequence: pf.invoice_sequence,
     converted_to_invoice_id: pf.converted_to_invoice_id,
     document: pf.document,
-    canConvert: proformaCanConvert(
-      pf,
-      financial.totalPaid,
-      financial.remainingToInvoice
-    ),
+    canConvert: proformaCanConvert(pf, financial.totalPaid, financial.remainingToInvoice),
   }));
 
   const invoicingEnabled = checkModule("invoicing");

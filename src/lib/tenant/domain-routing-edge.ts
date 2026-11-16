@@ -4,7 +4,10 @@ import { createEdgeMemo } from "@/lib/tenant/edge-memo";
 type DomainRouting = { tenantId: string; slug: string; routingKind: TenantDomainRoutingKind };
 
 /** A domain's property for a minute (ten seconds when it has none): the proxy asks on every request. */
-const domainRoutingMemo = createEdgeMemo<DomainRouting>({ foundTtlMs: 60_000, missingTtlMs: 10_000 });
+const domainRoutingMemo = createEdgeMemo<DomainRouting>({
+  foundTtlMs: 60_000,
+  missingTtlMs: 10_000,
+});
 
 function edgeConfig(): { url: string; key: string } | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();

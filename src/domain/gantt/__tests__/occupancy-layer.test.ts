@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  ganttLayerQueryValue,
-  parseGanttLayerFilter,
-} from "@/domain/gantt/occupancy-layer";
+import { ganttLayerQueryValue, parseGanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 
 describe("parseGanttLayerFilter", () => {
   it("maps Romanian query aliases to English internals", () => {

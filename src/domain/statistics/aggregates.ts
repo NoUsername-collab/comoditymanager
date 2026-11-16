@@ -9,12 +9,7 @@ import {
 } from "@/lib/stay-dates";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
 import { computeRevenueKpis } from "@/domain/statistics/kpi-metrics";
-import type {
-  BuildingYearStatistics,
-  MonthIndex,
-  MonthStatistics,
-  YearStatistics,
-} from "./types";
+import type { BuildingYearStatistics, MonthIndex, MonthStatistics, YearStatistics } from "./types";
 
 const MONTH_LABELS = [
   "Ian",
@@ -54,7 +49,7 @@ export function resolvedBookingRevenue(b: StatBooking): number | null {
   const total = computeStandardStayTotal(
     b.room_prices.map((price_per_night) => ({ price_per_night })),
     b.check_in,
-    b.check_out
+    b.check_out,
   );
   return total > 0 ? total : null;
 }
@@ -69,7 +64,7 @@ export function countOccupiedRoomNights(
   roomIds: string[],
   nights: string[],
   bookings: StatBooking[],
-  onlyConfirmed: boolean
+  onlyConfirmed: boolean,
 ): number {
   if (!roomIds.length || !nights.length) return 0;
   let total = 0;
@@ -80,7 +75,7 @@ export function countOccupiedRoomNights(
           (b) =>
             b.room_ids.includes(roomId) &&
             (!onlyConfirmed || b.status === "confirmata") &&
-            nightOccupied(night, b.check_in, b.check_out)
+            nightOccupied(night, b.check_in, b.check_out),
         )
       ) {
         total += 1;
@@ -121,14 +116,14 @@ function sumRevenueUnique(bookings: StatBooking[]): {
 export function buildYearStatistics(
   year: number,
   bookings: StatBooking[],
-  rooms: ActiveRoomSnapshot[]
+  rooms: ActiveRoomSnapshot[],
 ): YearStatistics {
   const activeRoomIds = rooms.map((r) => r.id);
   const yearNights = calendarNightsInYear(year);
   const capacity = activeRoomIds.length * daysInGregorianYear(year);
 
   const confirmed = bookings.filter(
-    (b) => b.status === "confirmata" && bookingTouchesYear(b, year)
+    (b) => b.status === "confirmata" && bookingTouchesYear(b, year),
   );
 
   let guestNights = 0;
@@ -136,21 +131,15 @@ export function buildYearStatistics(
   let children = 0;
   for (const b of confirmed) {
     guestNights += stayNightDates(b.check_in, b.check_out).filter((n) =>
-      n.startsWith(String(year))
+      n.startsWith(String(year)),
     ).length;
     adults += b.num_adults;
     children += b.num_children;
   }
 
-  const roomNightsOccupied = countOccupiedRoomNights(
-    activeRoomIds,
-    yearNights,
-    bookings,
-    true
-  );
+  const roomNightsOccupied = countOccupiedRoomNights(activeRoomIds, yearNights, bookings, true);
 
-  const { total: revenueRon, complete: revenueComplete } =
-    sumRevenueUnique(confirmed);
+  const { total: revenueRon, complete: revenueComplete } = sumRevenueUnique(confirmed);
 
   const buildingMap = new Map<string, BuildingYearStatistics>();
   for (const r of rooms) {
@@ -177,7 +166,7 @@ export function buildYearStatistics(
   for (const b of confirmed) {
     const buildingSet = new Set(b.building_ids);
     const nightsInY = stayNightDates(b.check_in, b.check_out).filter((n) =>
-      n.startsWith(String(year))
+      n.startsWith(String(year)),
     ).length;
     for (const bid of buildingSet) {
       const row = buildingMap.get(bid);
@@ -197,12 +186,7 @@ export function buildYearStatistics(
 
   for (const [bid, row] of buildingMap) {
     const bRoomIds = rooms.filter((r) => r.building_id === bid).map((r) => r.id);
-    row.roomNightsOccupied = countOccupiedRoomNights(
-      bRoomIds,
-      yearNights,
-      bookings,
-      true
-    );
+    row.roomNightsOccupied = countOccupiedRoomNights(bRoomIds, yearNights, bookings, true);
     row.occupancyPct =
       row.roomNightsCapacity > 0
         ? Math.round((row.roomNightsOccupied / row.roomNightsCapacity) * 100)
@@ -216,22 +200,15 @@ export function buildYearStatistics(
   for (let m = 0; m < 12; m++) {
     const { start, end } = monthBounds(year, m);
     const monthNights = nightsBetween(start, end);
-    const monthConfirmed = confirmed.filter(
-      (b) => b.check_in <= end && b.check_out > start
-    );
+    const monthConfirmed = confirmed.filter((b) => b.check_in <= end && b.check_out > start);
     let monthGuestNights = 0;
     for (const b of monthConfirmed) {
       monthGuestNights += stayNightDates(b.check_in, b.check_out).filter(
-        (n) => n >= start && n <= end
+        (n) => n >= start && n <= end,
       ).length;
     }
     const monthCapacity = activeRoomIds.length * monthNights.length;
-    const monthOccupied = countOccupiedRoomNights(
-      activeRoomIds,
-      monthNights,
-      bookings,
-      true
-    );
+    const monthOccupied = countOccupiedRoomNights(activeRoomIds, monthNights, bookings, true);
     months.push({
       month: m as MonthIndex,
       label: MONTH_LABELS[m],
@@ -239,10 +216,7 @@ export function buildYearStatistics(
       guestNights: monthGuestNights,
       roomNightsOccupied: monthOccupied,
       roomNightsCapacity: monthCapacity,
-      occupancyPct:
-        monthCapacity > 0
-          ? Math.round((monthOccupied / monthCapacity) * 100)
-          : 0,
+      occupancyPct: monthCapacity > 0 ? Math.round((monthOccupied / monthCapacity) * 100) : 0,
       revenueRon: sumRevenueUnique(monthConfirmed).total,
       ...computeRevenueKpis({
         revenueRon: sumRevenueUnique(monthConfirmed).total,
@@ -262,14 +236,12 @@ export function buildYearStatistics(
     year,
     confirmedStays: new Set(confirmed.map((b) => b.id)).size,
     requestsCreated: bookings.filter((b) => bookingCreatedInYear(b, year)).length,
-    cancelledStays: bookings.filter(
-      (b) => b.status === "anulata" && bookingTouchesYear(b, year)
-    ).length,
+    cancelledStays: bookings.filter((b) => b.status === "anulata" && bookingTouchesYear(b, year))
+      .length,
     guestNights,
     roomNightsOccupied,
     roomNightsCapacity: capacity,
-    occupancyPct:
-      capacity > 0 ? Math.round((roomNightsOccupied / capacity) * 100) : 0,
+    occupancyPct: capacity > 0 ? Math.round((roomNightsOccupied / capacity) * 100) : 0,
     revenueRon,
     revenueComplete,
     adrRon: yearKpis.adrRon,
@@ -278,15 +250,12 @@ export function buildYearStatistics(
     children,
     months,
     buildings: [...buildingMap.values()].sort((a, b) =>
-      a.buildingName.localeCompare(b.buildingName)
+      a.buildingName.localeCompare(b.buildingName),
     ),
   };
 }
 
-export function discoverYears(
-  bookings: StatBooking[],
-  currentYear: number
-): number[] {
+export function discoverYears(bookings: StatBooking[], currentYear: number): number[] {
   const set = new Set<number>([currentYear]);
   for (const b of bookings) {
     set.add(Number(b.check_in.slice(0, 4)));

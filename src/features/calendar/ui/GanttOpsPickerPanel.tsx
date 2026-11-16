@@ -22,11 +22,11 @@ type Props = {
 function filterForMode(
   bookings: BookingRow[],
   mode: GanttOpsPickerMode,
-  today: string = todayIso()
+  today: string = todayIso(),
 ): BookingRow[] {
   if (mode === "checkin") {
     return filterBookingsForOperativeCheckIn(bookings, today).sort((a, b) =>
-      a.guest_name.localeCompare(b.guest_name, "ro")
+      a.guest_name.localeCompare(b.guest_name, "ro"),
     );
   }
   return bookings
@@ -50,7 +50,8 @@ export function GanttOpsPickerPanel({
 
   if (!open) return null;
 
-  const title = mode === "checkin" ? tGantt("opsPicker.checkInToday") : tGantt("opsPicker.checkOut");
+  const title =
+    mode === "checkin" ? tGantt("opsPicker.checkInToday") : tGantt("opsPicker.checkOut");
 
   return (
     <AdminPortal>
@@ -74,9 +75,7 @@ export function GanttOpsPickerPanel({
         <ul className="max-h-[min(52vh,22rem)] overflow-y-auto p-2">
           {rows.length === 0 ? (
             <li className="px-3 py-4 text-center text-xs text-zinc-500">
-              {mode === "checkin"
-                ? tGantt("opsPicker.noCheckIn")
-                : tGantt("opsPicker.noCheckOut")}
+              {mode === "checkin" ? tGantt("opsPicker.noCheckIn") : tGantt("opsPicker.noCheckOut")}
             </li>
           ) : (
             rows.map((b) => (
@@ -89,14 +88,10 @@ export function GanttOpsPickerPanel({
                     onClose();
                   }}
                 >
-                  <span className="block text-sm font-semibold text-zinc-900">
-                    {b.guest_name}
-                  </span>
+                  <span className="block text-sm font-semibold text-zinc-900">{b.guest_name}</span>
                   <span className="block text-[11px] text-zinc-500">
                     {formatStayPeriod(b.check_in, b.check_out, locale, true)}
-                    {b.room_names.length > 0
-                      ? ` · ${b.room_names.join(", ")}`
-                      : ""}
+                    {b.room_names.length > 0 ? ` · ${b.room_names.join(", ")}` : ""}
                   </span>
                 </button>
               </li>

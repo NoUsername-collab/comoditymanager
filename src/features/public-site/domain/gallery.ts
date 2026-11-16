@@ -1,4 +1,10 @@
-import { MEDIA_ALBUMS, isMediaAlbum, mediaFocus, type MediaAlbum, type MediaAsset } from "@/domain/media/types";
+import {
+  MEDIA_ALBUMS,
+  isMediaAlbum,
+  mediaFocus,
+  type MediaAlbum,
+  type MediaAsset,
+} from "@/domain/media/types";
 import {
   GALLERY_LAYOUTS,
   type GalleryLayout,
@@ -8,7 +14,13 @@ import {
 
 /** A library photo as the public pages show it. */
 export function publicMediaPhoto(asset: MediaAsset): PublicMediaPhoto {
-  return { id: asset.id, url: asset.url, album: asset.album, alt: asset.alt, focus: mediaFocus(asset) };
+  return {
+    id: asset.id,
+    url: asset.url,
+    album: asset.album,
+    alt: asset.alt,
+    focus: mediaFocus(asset),
+  };
 }
 
 /** The albums a gallery shows, as stored; empty means every album. */
@@ -46,5 +58,7 @@ export function galleryPhotos(media: PublicMediaPhoto[], albums: MediaAlbum[]): 
 
 /** Albums that have photos among these, in order: the visitor's category filter. */
 export function galleryCategories(photos: PublicMediaPhoto[]): MediaAlbum[] {
-  return MEDIA_ALBUMS.filter((album) => photos.some((photo) => photo.album === album && isMediaAlbum(album)));
+  return MEDIA_ALBUMS.filter((album) =>
+    photos.some((photo) => photo.album === album && isMediaAlbum(album)),
+  );
 }

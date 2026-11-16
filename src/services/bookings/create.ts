@@ -8,33 +8,18 @@ import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import { assertBookingRoomAssignable } from "@/domain/booking/lifecycle-guards";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso } from "@/lib/stay-dates";
-import {
-  logAdminActivity,
-  logAdminActivityFromSession,
-} from "@/services/activity-log";
+import { logAdminActivity, logAdminActivityFromSession } from "@/services/activity-log";
 import {
   bookingHasSplitSegments,
   seedBookingRoomSegments,
   shiftAllSegmentsByDays,
   syncBookingRoomSegments,
 } from "@/services/booking-segments";
-import {
-  assertValidGuestPhone,
-  isValidGuestPhone,
-  normalizePhone,
-} from "@/domain/guest/normalize";
+import { assertValidGuestPhone, isValidGuestPhone, normalizePhone } from "@/domain/guest/normalize";
 import { resolveGuestForBooking } from "@/services/guest-booking-resolve";
-import {
-  saveBookingOccupants,
-  type BookingOccupantDraft,
-} from "@/services/bookings/occupants";
-import {
-  listGuestProfileSummaries,
-  resolveGuestAlertSnapshot,
-} from "@/services/guest-profiles";
-import {
-  assertRoomsAvailableForOccupancy,
-} from "@/services/room-occupancy";
+import { saveBookingOccupants, type BookingOccupantDraft } from "@/services/bookings/occupants";
+import { listGuestProfileSummaries, resolveGuestAlertSnapshot } from "@/services/guest-profiles";
+import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 import { getStaffUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp } from "@/lib/operational-check";
@@ -114,17 +99,11 @@ export async function createBookingRequest(input: {
   const timer = createServerTimer("createBookingRequest");
   assertValidGuestPhone(input.guest_phone);
 
-  const holdRooms = input.room_ids?.length
-    ? [...new Set(input.room_ids.filter(Boolean))]
-    : [];
+  const holdRooms = input.room_ids?.length ? [...new Set(input.room_ids.filter(Boolean))] : [];
 
   const availabilityPromise =
     holdRooms.length > 0 && !input.skipAvailabilityCheck
-      ? assertRoomsAvailableForStay(
-          input.check_in,
-          input.check_out,
-          holdRooms,
-        )
+      ? assertRoomsAvailableForStay(input.check_in, input.check_out, holdRooms)
       : Promise.resolve();
 
   const { tenantId, supabase } = await getTenantScope();
@@ -185,7 +164,7 @@ export async function createBookingRequest(input: {
         minor_age: null,
         notes: input.notes.trim() || null,
         total_price: input.total_price ?? null,
-      })
+      }),
     )
     .select("id")
     .single();
@@ -269,9 +248,7 @@ export async function createBookingRequest(input: {
         guest_alert_level: linkedAlert.level,
         guest_alert_note: linkedAlert.note,
         ...(linkedConflict ? { guest_merge_conflict: true } : {}),
-        ...(holdRooms.length > 0
-          ? { room_ids: holdRooms, soft_hold: true }
-          : {}),
+        ...(holdRooms.length > 0 ? { room_ids: holdRooms, soft_hold: true } : {}),
       },
       actor: null,
     });
@@ -294,4 +271,3 @@ export async function createBookingRequest(input: {
   timer.finish({ bookingId });
   return bookingId;
 }
-

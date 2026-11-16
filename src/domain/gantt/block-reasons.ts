@@ -7,10 +7,7 @@ export const BLOCK_REASON_PRESETS = [
 
 export type BlockReasonPresetId = (typeof BLOCK_REASON_PRESETS)[number]["id"];
 
-export function resolveBlockReason(
-  presetId: BlockReasonPresetId,
-  customText: string
-): string {
+export function resolveBlockReason(presetId: BlockReasonPresetId, customText: string): string {
   if (presetId === "other") return customText.trim();
   const preset = BLOCK_REASON_PRESETS.find((p) => p.id === presetId);
   const extra = customText.trim();

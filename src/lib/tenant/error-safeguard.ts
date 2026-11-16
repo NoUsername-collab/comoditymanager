@@ -1,15 +1,7 @@
-import {
-  parseTenantFromHost,
-  tenantDomainFromHost,
-  tenantSlugFromHost,
-} from "@/lib/tenant/host";
+import { parseTenantFromHost, tenantDomainFromHost, tenantSlugFromHost } from "@/lib/tenant/host";
 import { getTenantByDomain, getTenantBySlug } from "@/services/tenants";
 
-const FLOW_CONTROL_MARKERS = [
-  "NEXT_REDIRECT",
-  "NEXT_NOT_FOUND",
-  "Redirect",
-] as const;
+const FLOW_CONTROL_MARKERS = ["NEXT_REDIRECT", "NEXT_NOT_FOUND", "Redirect"] as const;
 
 export function isTenantRequestHost(hostInput: string | null | undefined): boolean {
   if (!hostInput?.trim()) return false;
@@ -24,7 +16,7 @@ export function shouldSkipTenantErrorLog(error: unknown): boolean {
 }
 
 export async function resolveTenantIdFromHost(
-  hostInput: string | null | undefined
+  hostInput: string | null | undefined,
 ): Promise<string | null> {
   if (!hostInput?.trim()) return null;
   if (!isTenantRequestHost(hostInput)) return null;
@@ -59,13 +51,13 @@ export function registerTenantProcessErrorHandlers(): void {
 
   nodeProcess.on("unhandledRejection", (reason) => {
     void import("@/services/dev-logs").then(({ captureTenantError }) =>
-      captureTenantError(reason, { source: "unhandledRejection" })
+      captureTenantError(reason, { source: "unhandledRejection" }),
     );
   });
 
   nodeProcess.on("uncaughtException", (error) => {
     void import("@/services/dev-logs").then(({ captureTenantError }) =>
-      captureTenantError(error, { source: "uncaughtException" })
+      captureTenantError(error, { source: "uncaughtException" }),
     );
   });
 }

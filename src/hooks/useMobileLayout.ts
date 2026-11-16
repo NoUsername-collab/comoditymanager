@@ -86,7 +86,7 @@ export function useCompactLayoutHints(): CompactLayoutHints {
   return useSyncExternalStore(
     subscribeCompactLayoutHints,
     getCompactLayoutHintsSnapshot,
-    () => SERVER_COMPACT_HINTS
+    () => SERVER_COMPACT_HINTS,
   );
 }
 
@@ -110,9 +110,7 @@ function readMobileLayoutState(): MobileLayoutState {
   const orientation = readLayoutOrientationFromDom();
   const chrome = readLayoutChromeFromDom();
   const { width, height } =
-    typeof window !== "undefined"
-      ? getLayoutViewportSize()
-      : { width: 1280, height: 800 };
+    typeof window !== "undefined" ? getLayoutViewportSize() : { width: 1280, height: 800 };
   return {
     mode,
     orientation,
@@ -184,6 +182,6 @@ export function useMobileLayout(): MobileLayoutState {
   return useSyncExternalStore(
     subscribeMobileLayoutState,
     getMobileLayoutStateSnapshot,
-    () => SERVER_LAYOUT_STATE
+    () => SERVER_LAYOUT_STATE,
   );
 }

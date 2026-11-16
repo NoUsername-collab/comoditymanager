@@ -7,13 +7,7 @@ import type { PlatformDevLogEntry } from "@/services/platform-debug";
 
 type DevLogLevelFilter = "all" | "error" | "warn" | "info" | "debug";
 
-const LEVEL_FILTER_IDS: DevLogLevelFilter[] = [
-  "all",
-  "error",
-  "warn",
-  "info",
-  "debug",
-];
+const LEVEL_FILTER_IDS: DevLogLevelFilter[] = ["all", "error", "warn", "info", "debug"];
 
 function isErrorLevel(level: string): boolean {
   return level === "error";
@@ -59,8 +53,8 @@ function DevLogDetails({ log }: { log: PlatformDevLogEntry }) {
       )}
       {log.duration_ms != null && (
         <p>
-          <span className="font-semibold text-neutral-300">{t("duration")}</span>{" "}
-          {log.duration_ms}ms
+          <span className="font-semibold text-neutral-300">{t("duration")}</span> {log.duration_ms}
+          ms
         </p>
       )}
       {log.stack && (
@@ -84,9 +78,7 @@ function defaultLevelFilter(logs: PlatformDevLogEntry[]): DevLogLevelFilter {
 export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
   const t = useTranslations("platformAdmin.logsPage.devLog");
   const locale = useLocale();
-  const [levelFilter, setLevelFilter] = useState<DevLogLevelFilter>(() =>
-    defaultLevelFilter(logs)
-  );
+  const [levelFilter, setLevelFilter] = useState<DevLogLevelFilter>(() => defaultLevelFilter(logs));
 
   const levelCounts = useMemo(() => {
     const counts: Record<string, number> = { all: logs.length };
@@ -126,10 +118,7 @@ export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
         })
       : t("entryCount", { count: filteredLogs.length });
 
-  const emptyMessage =
-    logs.length === 0
-      ? t("empty")
-      : t("emptyFilter", { level: levelFilter });
+  const emptyMessage = logs.length === 0 ? t("empty") : t("emptyFilter", { level: levelFilter });
 
   return (
     <div
@@ -140,20 +129,13 @@ export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
         <div>
           <h2 className="text-base font-semibold">
             {t("title")}
-            <span className="ml-2 text-sm font-normal text-neutral-500">
-              {entryCountLabel}
-            </span>
+            <span className="ml-2 text-sm font-normal text-neutral-500">{entryCountLabel}</span>
           </h2>
           <p className="mt-1 text-xs text-neutral-500">{t("hint")}</p>
         </div>
-        <div
-          className="flex flex-wrap gap-1.5"
-          role="group"
-          aria-label={t("filterAria")}
-        >
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label={t("filterAria")}>
           {LEVEL_FILTER_IDS.map((value) => {
-            const count =
-              value === "all" ? levelCounts.all : (levelCounts[value] ?? 0);
+            const count = value === "all" ? levelCounts.all : (levelCounts[value] ?? 0);
             const active = levelFilter === value;
             return (
               <button
@@ -169,9 +151,7 @@ export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
                 }`}
               >
                 {levelLabel(value)}
-                <span className="ml-1 tabular-nums text-neutral-500">
-                  ({count})
-                </span>
+                <span className="ml-1 tabular-nums text-neutral-500">({count})</span>
               </button>
             );
           })}
@@ -241,9 +221,7 @@ export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
                 <td className="whitespace-nowrap px-3 py-2 text-neutral-500">
                   {formatWhen(log.created_at)}
                 </td>
-                <td className="px-3 py-2 font-mono text-neutral-400">
-                  {log.tenant_slug}
-                </td>
+                <td className="px-3 py-2 font-mono text-neutral-400">{log.tenant_slug}</td>
                 <td className="px-3 py-2">
                   <span
                     className={`font-semibold uppercase ${DEV_LEVEL_COLOR[log.level] ?? "text-neutral-300"}`}

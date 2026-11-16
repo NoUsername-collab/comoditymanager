@@ -7,9 +7,7 @@
 import type { CheckinFlag } from "./types";
 
 /** Map a flag to its severity level for UI display */
-export function flagSeverity(
-  flag: CheckinFlag,
-): "error" | "warning" | "info" {
+export function flagSeverity(flag: CheckinFlag): "error" | "warning" | "info" {
   switch (flag) {
     case "unpaid":
     case "checkout_blocked":

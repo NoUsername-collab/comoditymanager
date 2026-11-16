@@ -49,7 +49,7 @@ function formatAddress(guest: GuestRow): string | null {
 /** Linii compacte pentru cardul profil — doar câmpuri populate. */
 export function buildGuestIdentitySummaryLines(
   guest: GuestRow,
-  labels: SummaryLabels
+  labels: SummaryLabels,
 ): GuestIdentitySummaryLine[] {
   const lines: GuestIdentitySummaryLine[] = [];
 
@@ -73,12 +73,7 @@ export function buildGuestIdentitySummaryLines(
   }
 
   if (guest.birth_date) {
-    const sexLabel =
-      guest.sex === "M"
-        ? labels.sexM
-        : guest.sex === "F"
-          ? labels.sexF
-          : null;
+    const sexLabel = guest.sex === "M" ? labels.sexM : guest.sex === "F" ? labels.sexF : null;
     const birthValue = sexLabel
       ? `${formatRoDate(guest.birth_date)} · ${sexLabel}`
       : formatRoDate(guest.birth_date);

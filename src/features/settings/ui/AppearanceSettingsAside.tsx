@@ -8,11 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { resolvePublicThemeStyle } from "@/features/public-site/themes/loader";
 import type { PublicThemeId } from "@/features/public-site/domain/types";
 
-export function AppearanceSettingsAside({
-  publicThemeId,
-}: {
-  publicThemeId: PublicThemeId;
-}) {
+export function AppearanceSettingsAside({ publicThemeId }: { publicThemeId: PublicThemeId }) {
   const t = useTranslations("admin.pages.settings");
   const { themeId, mode } = useAdminTheme();
   const theme = getDesignTheme(themeId);
@@ -26,9 +22,7 @@ export function AppearanceSettingsAside({
 
       <div className="settings-appearance-aside__dual">
         <div>
-          <p className="settings-appearance-aside__panel-label">
-            {t("appearancePreviewAdmin")}
-          </p>
+          <p className="settings-appearance-aside__panel-label">{t("appearancePreviewAdmin")}</p>
           <div
             className="settings-appearance-aside__admin-mock"
             style={adminThemeCssVars(themeId, mode) as React.CSSProperties}
@@ -42,9 +36,7 @@ export function AppearanceSettingsAside({
         </div>
 
         <div>
-          <p className="settings-appearance-aside__panel-label">
-            {t("appearancePreviewPublic")}
-          </p>
+          <p className="settings-appearance-aside__panel-label">{t("appearancePreviewPublic")}</p>
           <div
             className="settings-appearance-aside__public-mock"
             style={resolvePublicThemeStyle(publicThemeId)}

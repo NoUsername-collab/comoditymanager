@@ -7,25 +7,15 @@ import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import { assertBookingConfirmable } from "@/domain/booking/lifecycle-guards";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso } from "@/lib/stay-dates";
-import {
-  logAdminActivity,
-  logAdminActivityFromSession,
-} from "@/services/activity-log";
+import { logAdminActivity, logAdminActivityFromSession } from "@/services/activity-log";
 import {
   bookingHasSplitSegments,
   shiftAllSegmentsByDays,
   syncBookingRoomSegments,
 } from "@/services/booking-segments";
-import {
-  assertValidGuestPhone,
-  isValidGuestPhone,
-  normalizePhone,
-} from "@/domain/guest/normalize";
+import { assertValidGuestPhone, isValidGuestPhone, normalizePhone } from "@/domain/guest/normalize";
 import { resolveGuestForBooking } from "@/services/guest-booking-resolve";
-import {
-  listGuestProfileSummaries,
-  resolveGuestAlertSnapshot,
-} from "@/services/guest-profiles";
+import { listGuestProfileSummaries, resolveGuestAlertSnapshot } from "@/services/guest-profiles";
 import { partyFromBooking } from "@/domain/availability/party";
 import { quoteStayForRooms } from "@/services/stay-quote";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
@@ -43,7 +33,7 @@ export async function confirmBookingWithRooms(
   bookingId: string,
   roomIds: string[],
   totalPrice: number,
-  _options?: { assignedRoomsOnly?: boolean }
+  _options?: { assignedRoomsOnly?: boolean },
 ): Promise<void> {
   if (!Number.isFinite(totalPrice) || totalPrice <= 0) {
     throw new Error("booking.total_price_required_on_confirm");
@@ -57,12 +47,7 @@ export async function confirmBookingWithRooms(
 
   const [rooms] = await Promise.all([
     getRoomsByIds(roomIds),
-    assertRoomsAvailableForOccupancy(
-      booking.check_in,
-      booking.check_out,
-      roomIds,
-      bookingId
-    ),
+    assertRoomsAvailableForOccupancy(booking.check_in, booking.check_out, roomIds, bookingId),
   ]);
   if (rooms.length !== roomIds.length) {
     throw new Error("booking.one_or_more_rooms_unavailable_reload");
@@ -105,9 +90,7 @@ export async function confirmBookingWithRooms(
       undoable: true,
       metadata: activitySnapshot,
     });
-    const { issueGuestAccessForBooking } = await import(
-      "@/services/guest-app/access"
-    );
+    const { issueGuestAccessForBooking } = await import("@/services/guest-app/access");
     await issueGuestAccessForBooking(bookingId).catch(() => null);
   });
   timer.finish({ bookingId });
@@ -116,7 +99,7 @@ export async function confirmBookingWithRooms(
 export async function rescheduleBookingDates(
   bookingId: string,
   newCheckIn: string,
-  newCheckOut: string
+  newCheckOut: string,
 ): Promise<void> {
   if (!isAtLeastOneNight(newCheckIn, newCheckOut)) {
     throw new Error("booking.minimum_one_night_required");
@@ -134,12 +117,7 @@ export async function rescheduleBookingDates(
     throw new Error("booking.assign_rooms_before_shift");
   }
 
-  await assertRoomsAvailableForOccupancy(
-    newCheckIn,
-    newCheckOut,
-    booking.room_ids,
-    bookingId
-  );
+  await assertRoomsAvailableForOccupancy(newCheckIn, newCheckOut, booking.room_ids, bookingId);
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -152,8 +130,7 @@ export async function rescheduleBookingDates(
   if (error) throw new Error(error.message);
 
   const dayDelta = Math.round(
-    (parseIso(newCheckIn).getTime() - parseIso(booking.check_in).getTime()) /
-      86400000
+    (parseIso(newCheckIn).getTime() - parseIso(booking.check_in).getTime()) / 86400000,
   );
 
   if (await bookingHasSplitSegments(bookingId)) {
@@ -180,16 +157,13 @@ export async function rescheduleBookingDates(
 /** Prelungește (+1) sau scurtează (−1) sejurul la checkout. */
 export async function adjustBookingStayNights(
   bookingId: string,
-  nightDelta: number
+  nightDelta: number,
 ): Promise<{ check_in: string; check_out: string }> {
   if (nightDelta === 0 || !Number.isInteger(nightDelta)) {
     throw new Error("booking.invalid_adjustment");
   }
 
-  const [booking, scope] = await Promise.all([
-    getBookingById(bookingId),
-    getTenantScope(),
-  ]);
+  const [booking, scope] = await Promise.all([getBookingById(bookingId), getTenantScope()]);
   if (!booking) throw new Error("booking.not_found");
   if (booking.status === "anulata") {
     throw new Error("booking.cannot_update_cancelled");
@@ -246,10 +220,7 @@ export async function duplicateBookingAsRequest(bookingId: string): Promise<stri
     check_out: b.check_out,
     guest_name: b.guest_name,
     guest_last_name: b.guest_last_name ?? b.guest_name.split(" ")[0] ?? "",
-    guest_first_name:
-      b.guest_first_name ??
-      b.guest_name.split(" ").slice(1).join(" ") ??
-      "",
+    guest_first_name: b.guest_first_name ?? b.guest_name.split(" ").slice(1).join(" ") ?? "",
     guest_email: b.guest_email,
     guest_phone: b.guest_phone ?? "",
     party: partyFromBooking(b),
@@ -271,7 +242,7 @@ export async function duplicateBookingAsRequest(bookingId: string): Promise<stri
 /** Mută rezervarea cu același număr de nopți (drag pe Gantt). */
 export async function shiftBookingByDays(
   bookingId: string,
-  dayDelta: number
+  dayDelta: number,
 ): Promise<{ check_in: string; check_out: string }> {
   const booking = await getBookingById(bookingId);
   if (!booking) throw new Error("booking.not_found");
@@ -313,9 +284,7 @@ export async function cancelBooking(bookingId: string): Promise<void> {
 
   after(async () => {
     await syncBookingRoomSegments(bookingId).catch(() => null);
-    const { revokeGuestAccessForBooking } = await import(
-      "@/services/guest-app/access"
-    );
+    const { revokeGuestAccessForBooking } = await import("@/services/guest-app/access");
     await revokeGuestAccessForBooking(bookingId).catch(() => null);
     await logAdminActivityFromSession({
       action: "booking.cancelled",
@@ -329,4 +298,3 @@ export async function cancelBooking(bookingId: string): Promise<void> {
 
   timer.finish({ bookingId });
 }
-

@@ -13,7 +13,7 @@ export function acModeToPolicyMode(acMode: AcMode): OptionPolicyMode {
 export function policyModeForOption(
   policies: { option_id: string; mode: OptionPolicyMode }[],
   optionId: string,
-  fallback: OptionPolicyMode = "per_room"
+  fallback: OptionPolicyMode = "per_room",
 ): OptionPolicyMode {
   return policies.find((p) => p.option_id === optionId)?.mode ?? fallback;
 }
@@ -21,7 +21,7 @@ export function policyModeForOption(
 export function resolveOptionEnabled(
   mode: OptionPolicyMode,
   roomSelected: boolean,
-  typeDefault: boolean
+  typeDefault: boolean,
 ): { enabled: boolean; editable: boolean; source: ResolvedRoomOption["source"] } {
   if (mode === "all_rooms") {
     return { enabled: true, editable: false, source: "policy_all" };
@@ -53,7 +53,7 @@ export function computeRoomPrice(input: {
       : input.buildingDefaultPrice;
   const addons = input.enabledOptions.reduce(
     (sum, o) => sum + Number(o.price_per_night_addon ?? 0),
-    0
+    0,
   );
   return Math.max(0, base + addons);
 }

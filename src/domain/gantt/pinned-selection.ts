@@ -8,28 +8,20 @@ export type PinnedSelection = {
 export function pinnedSelectionFromRange(
   roomIds: string[],
   checkIn: string,
-  checkOut: string
+  checkOut: string,
 ): PinnedSelection | null {
   const unique = [...new Set(roomIds.filter(Boolean))];
   if (unique.length === 0) return null;
   return { roomIds: unique, checkIn, checkOut };
 }
 
-type CreateMenuLifecycle =
-  | "open"
-  | "dismiss-outside"
-  | "dismiss-escape"
-  | "pick-action";
+type CreateMenuLifecycle = "open" | "dismiss-outside" | "dismiss-escape" | "pick-action";
 
 /** Highlight stays while the create menu is open; every other event clears it. */
-export function shouldClearPinnedOnCreateMenuEvent(
-  event: CreateMenuLifecycle
-): boolean {
+export function shouldClearPinnedOnCreateMenuEvent(event: CreateMenuLifecycle): boolean {
   return event !== "open";
 }
 
-export function dismissClearsPinnedSelection(
-  menuKind: string | undefined
-): boolean {
+export function dismissClearsPinnedSelection(menuKind: string | undefined): boolean {
   return menuKind === "create";
 }

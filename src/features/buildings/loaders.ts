@@ -8,7 +8,5 @@ export async function loadBuildingsListPage(viewDate: string) {
 }
 
 export async function loadNewBuildingPage() {
-  return listRoomOptions().catch(
-    () => [] as Awaited<ReturnType<typeof listRoomOptions>>,
-  );
+  return listRoomOptions().catch(() => [] as Awaited<ReturnType<typeof listRoomOptions>>);
 }

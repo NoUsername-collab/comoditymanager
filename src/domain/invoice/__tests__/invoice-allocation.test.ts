@@ -16,7 +16,7 @@ describe("sumIssuedInvoiceTotals", () => {
         { total: 400, status: "issued" },
         { total: 800, status: "issued" },
         { total: 100, status: "void" },
-      ])
+      ]),
     ).toBe(1200);
   });
 });
@@ -37,7 +37,7 @@ describe("resolveNextInvoiceKind", () => {
         totalInvoiced: 0,
         invoiceAmount: 400,
         issuedCount: 0,
-      })
+      }),
     ).toBe("advance");
   });
 
@@ -48,7 +48,7 @@ describe("resolveNextInvoiceKind", () => {
         totalInvoiced: 400,
         invoiceAmount: 800,
         issuedCount: 1,
-      })
+      }),
     ).toBe("final");
   });
 
@@ -59,7 +59,7 @@ describe("resolveNextInvoiceKind", () => {
         totalInvoiced: 400,
         invoiceAmount: 300,
         issuedCount: 1,
-      })
+      }),
     ).toBe("partial");
   });
 });
@@ -70,7 +70,7 @@ describe("resolveDefaultInvoiceAmount", () => {
       resolveDefaultInvoiceAmount({
         remainingToInvoice: 800,
         uninvoicedPaid: 400,
-      })
+      }),
     ).toBe(400);
   });
 
@@ -79,7 +79,7 @@ describe("resolveDefaultInvoiceAmount", () => {
       resolveDefaultInvoiceAmount({
         remainingToInvoice: 1200,
         uninvoicedPaid: 0,
-      })
+      }),
     ).toBe(1200);
   });
 });
@@ -115,7 +115,7 @@ describe("paymentsToLinkForInvoice", () => {
         { ...base, id: "p2", amount: 200, invoice_id: "inv1" },
         { ...base, id: "p3", amount: 250 },
       ],
-      400
+      400,
     );
     expect(ids).toEqual(["p1", "p3"]);
   });

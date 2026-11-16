@@ -2,10 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
-import {
-  MAX_COTS_PER_ROOM,
-  MAX_ROOM_OCCUPANCY,
-} from "@/domain/room/sleeping-limits";
+import { MAX_COTS_PER_ROOM, MAX_ROOM_OCCUPANCY } from "@/domain/room/sleeping-limits";
 
 /** Baby cots (not extra beds) and the people limit, read by parseRoomSleepingLimits. */
 export function RoomSleepingLimitFields({

@@ -51,10 +51,7 @@ export function PlatformMobileMenu() {
       <MobileDrawerPortal>
         <button
           type="button"
-          className={[
-            "ml-drawer__backdrop",
-            open && "ml-drawer__backdrop--visible",
-          ]
+          className={["ml-drawer__backdrop", open && "ml-drawer__backdrop--visible"]
             .filter(Boolean)
             .join(" ")}
           aria-label={t("menuClose")}
@@ -98,11 +95,7 @@ export function PlatformMobileMenu() {
             >
               {t("pricing")}
             </Link>
-            <Link
-              href="/admin/login"
-              className="ml-drawer__link"
-              onClick={() => setOpen(false)}
-            >
+            <Link href="/admin/login" className="ml-drawer__link" onClick={() => setOpen(false)}>
               {t("login")}
             </Link>
             <Link

@@ -10,10 +10,7 @@ import {
   type ChildPolicy,
   type Party,
 } from "@/domain/availability/party";
-import {
-  UNLIMITED_INVENTORY,
-  type SharedInventory,
-} from "@/domain/availability/stay-capacity";
+import { UNLIMITED_INVENTORY, type SharedInventory } from "@/domain/availability/stay-capacity";
 import {
   buildStaffStaySuggestions,
   quoteStaffStaySelection,
@@ -41,9 +38,7 @@ export function useStaffStayPreview(args: {
   const party = useMemo(() => JSON.parse(partyKey) as Party, [partyKey]);
   const agesComplete = partyAgesComplete(party);
   const intervalValid =
-    Boolean(args.checkIn) &&
-    Boolean(args.checkOut) &&
-    args.checkIn < args.checkOut;
+    Boolean(args.checkIn) && Boolean(args.checkOut) && args.checkIn < args.checkOut;
 
   useEffect(() => {
     if (!args.enabled || !intervalValid || !agesComplete) {
@@ -84,15 +79,7 @@ export function useStaffStayPreview(args: {
       });
     }, 280);
     return () => window.clearTimeout(timer);
-  }, [
-    args.checkIn,
-    args.checkOut,
-    args.enabled,
-    party,
-    agesComplete,
-    preferredKey,
-    intervalValid,
-  ]);
+  }, [args.checkIn, args.checkOut, args.enabled, party, agesComplete, preferredKey, intervalValid]);
 
   function toggleRoom(roomId: string) {
     setSelectedIds((prev) =>

@@ -41,9 +41,7 @@ type LogInput = {
   durationMs?: number | null;
 };
 
-async function resolveTenantIdForLog(
-  requestHost?: string | null
-): Promise<string | null> {
+async function resolveTenantIdForLog(requestHost?: string | null): Promise<string | null> {
   if (requestHost && isTenantRequestHost(requestHost)) {
     const fromHost = await resolveTenantIdFromHost(requestHost);
     if (fromHost) return fromHost;
@@ -89,17 +87,12 @@ async function resolvePlatformLogTenantId(): Promise<string> {
 
   throwIfDbError("tenants (platform dev_log anchor)", error);
   if (!data?.id) {
-    throw new Error(
-      "[dev_logs] niciun tenant în DB — imposibil de scris log platformă"
-    );
+    throw new Error("[dev_logs] niciun tenant în DB — imposibil de scris log platformă");
   }
   return data.id;
 }
 
-async function insertDevLogRow(
-  tenantId: string,
-  input: LogInput
-): Promise<void> {
+async function insertDevLogRow(tenantId: string, input: LogInput): Promise<void> {
   let userId = input.userId ?? null;
   let userEmail = input.userEmail ?? null;
   if (!userId && !userEmail) {
@@ -135,7 +128,7 @@ async function writeDevLog(input: LogInput): Promise<void> {
   const tenantId = await resolveTenantIdForLog(input.requestHost);
   if (!tenantId) {
     throw new Error(
-      `[dev_logs] tenant_id nerezolvat — log pierdut (source=${input.source ?? "server"}, level=${input.level ?? "error"}, message=${input.message.slice(0, 160)})`
+      `[dev_logs] tenant_id nerezolvat — log pierdut (source=${input.source ?? "server"}, level=${input.level ?? "error"}, message=${input.message.slice(0, 160)})`,
     );
   }
 
@@ -146,9 +139,7 @@ async function writeDevLog(input: LogInput): Promise<void> {
  * Scrie dev_log din context Zalmox platform admin (fără subdomain tenant).
  * Aruncă la orice eșec — folosit când trebuie să știm exact ce s-a întâmplat.
  */
-async function writePlatformDevLog(
-  input: LogInput & { tenantId?: string }
-): Promise<void> {
+async function writePlatformDevLog(input: LogInput & { tenantId?: string }): Promise<void> {
   const tenantId = input.tenantId ?? (await resolvePlatformLogTenantId());
   await insertDevLogRow(tenantId, input);
 }
@@ -159,13 +150,12 @@ async function writePlatformDevLog(
  */
 export async function captureTenantError(
   error: unknown,
-  extra?: Omit<LogInput, "message" | "stack" | "level">
+  extra?: Omit<LogInput, "message" | "stack" | "level">,
 ): Promise<void> {
   if (shouldSkipTenantErrorLog(error)) return;
 
-  const message =
-    error instanceof Error ? error.message : String(error);
-  const stack = error instanceof Error ? error.stack ?? null : null;
+  const message = error instanceof Error ? error.message : String(error);
+  const stack = error instanceof Error ? (error.stack ?? null) : null;
   const digest =
     error instanceof Error && "digest" in error
       ? String((error as Error & { digest?: string }).digest ?? "")
@@ -193,12 +183,12 @@ export async function captureTenantError(
  */
 export async function capturePlatformAdminError(
   error: unknown,
-  extra?: Omit<LogInput, "message" | "stack" | "level">
+  extra?: Omit<LogInput, "message" | "stack" | "level">,
 ): Promise<void> {
   if (shouldSkipTenantErrorLog(error)) return;
 
   const message = error instanceof Error ? error.message : String(error);
-  const stack = error instanceof Error ? error.stack ?? null : null;
+  const stack = error instanceof Error ? (error.stack ?? null) : null;
   const digest =
     error instanceof Error && "digest" in error
       ? String((error as Error & { digest?: string }).digest ?? "")
@@ -229,7 +219,7 @@ async function captureSlowQuery(
   label: string,
   durationMs: number,
   threshold = 2000,
-  extra?: Partial<LogInput>
+  extra?: Partial<LogInput>,
 ): Promise<void> {
   if (durationMs < threshold) return;
   try {
@@ -245,36 +235,38 @@ async function captureSlowQuery(
   }
 }
 
-const loadDevLogs = cache(async (
-  level: DevLogLevel | undefined,
-  source: string | undefined,
-  limit: number,
-  offset: number
-): Promise<{ logs: DevLogEntry[]; total: number }> => {
-  const { tenantId, supabase } = await getTenantScope();
+const loadDevLogs = cache(
+  async (
+    level: DevLogLevel | undefined,
+    source: string | undefined,
+    limit: number,
+    offset: number,
+  ): Promise<{ logs: DevLogEntry[]; total: number }> => {
+    const { tenantId, supabase } = await getTenantScope();
 
-  let query = supabase
-    .from("dev_logs")
-    .select("*", { count: "exact" })
-    .eq("tenant_id", tenantId)
-    .order("created_at", { ascending: false })
-    .range(offset, offset + limit - 1);
+    let query = supabase
+      .from("dev_logs")
+      .select("*", { count: "exact" })
+      .eq("tenant_id", tenantId)
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
 
-  if (level) {
-    query = query.eq("level", level);
-  }
-  if (source) {
-    query = query.eq("source", source);
-  }
+    if (level) {
+      query = query.eq("level", level);
+    }
+    if (source) {
+      query = query.eq("source", source);
+    }
 
-  const { data, error, count } = await query;
-  if (error) throw new Error(error.message);
+    const { data, error, count } = await query;
+    if (error) throw new Error(error.message);
 
-  return {
-    logs: (data ?? []) as DevLogEntry[],
-    total: count ?? 0,
-  };
-});
+    return {
+      logs: (data ?? []) as DevLogEntry[],
+      total: count ?? 0,
+    };
+  },
+);
 
 /**
  * Listează loguri recente (admin devlog page).
@@ -285,10 +277,5 @@ export async function listDevLogs(options?: {
   limit?: number;
   offset?: number;
 }): Promise<{ logs: DevLogEntry[]; total: number }> {
-  return loadDevLogs(
-    options?.level,
-    options?.source,
-    options?.limit ?? 50,
-    options?.offset ?? 0
-  );
+  return loadDevLogs(options?.level, options?.source, options?.limit ?? 50, options?.offset ?? 0);
 }

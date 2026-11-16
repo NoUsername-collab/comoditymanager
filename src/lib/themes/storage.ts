@@ -1,8 +1,4 @@
-import {
-  DEFAULT_THEME_ID,
-  DEFAULT_THEME_MODE,
-  migrateLegacyPaletteKey,
-} from "./catalog";
+import { DEFAULT_THEME_ID, DEFAULT_THEME_MODE, migrateLegacyPaletteKey } from "./catalog";
 import type { ThemeMode, ThemeSettings } from "./types";
 import { readLocalStorageFirst } from "@/lib/storage/local";
 
@@ -25,17 +21,13 @@ export function readThemeSettings(): ThemeSettings {
     return { theme: DEFAULT_THEME_ID, mode: DEFAULT_THEME_MODE };
   }
   try {
-    const themeRaw = readLocalStorageFirst([
-      THEME_STORAGE_KEY,
-      ...LEGACY_THEME_STORAGE_KEYS,
-    ]);
+    const themeRaw = readLocalStorageFirst([THEME_STORAGE_KEY, ...LEGACY_THEME_STORAGE_KEYS]);
     const modeRaw = readLocalStorageFirst([
       THEME_MODE_STORAGE_KEY,
       ...LEGACY_THEME_MODE_STORAGE_KEYS,
     ]);
     const theme = themeRaw ? migrateLegacyPaletteKey(themeRaw) : DEFAULT_THEME_ID;
-    const mode: ThemeMode =
-      modeRaw === "day" || modeRaw === "night" ? modeRaw : DEFAULT_THEME_MODE;
+    const mode: ThemeMode = modeRaw === "day" || modeRaw === "night" ? modeRaw : DEFAULT_THEME_MODE;
     return { theme, mode };
   } catch {
     return { theme: DEFAULT_THEME_ID, mode: DEFAULT_THEME_MODE };

@@ -1,8 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import {
-  shiftStayDatesByYears,
-  shiftStayToNextFutureYear,
-} from "@/domain/guest/rebook-dates";
+import { shiftStayDatesByYears, shiftStayToNextFutureYear } from "@/domain/guest/rebook-dates";
 
 // ---------------------------------------------------------------------------
 // shiftStayDatesByYears

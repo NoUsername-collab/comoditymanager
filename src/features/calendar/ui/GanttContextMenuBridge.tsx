@@ -34,12 +34,7 @@ export function GanttContextMenuBridge({ shellRef, viewRange, occupancy }: Props
       e.preventDefault();
       e.stopPropagation();
 
-      const ctx = resolveGanttCreateContext(
-        e.clientX,
-        e.clientY,
-        dayIsos,
-        occupancy
-      );
+      const ctx = resolveGanttCreateContext(e.clientX, e.clientY, dayIsos, occupancy);
 
       openMenu({
         kind: "create",

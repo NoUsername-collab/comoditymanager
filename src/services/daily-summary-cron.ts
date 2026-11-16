@@ -97,11 +97,9 @@ export async function buildDailySummaryForTenant(
     ]);
 
   const totalRooms = roomsResult.count ?? 0;
-  const occupiedTonight = new Set(
-    (occupiedResult.data ?? []).map((row) => row.room_id as string),
-  ).size;
-  const occupancyPercent =
-    totalRooms > 0 ? Math.round((occupiedTonight / totalRooms) * 100) : 0;
+  const occupiedTonight = new Set((occupiedResult.data ?? []).map((row) => row.room_id as string))
+    .size;
+  const occupancyPercent = totalRooms > 0 ? Math.round((occupiedTonight / totalRooms) * 100) : 0;
 
   return {
     pensionName: tenant.display_name,

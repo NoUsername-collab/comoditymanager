@@ -17,8 +17,7 @@ import {
 import { getTenantById } from "@/services/tenants";
 import { headers } from "next/headers";
 
-const DOMAIN_RE =
-  /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i;
+const DOMAIN_RE = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i;
 
 function planHasFeature(planId: string, feature: CoreFeature): boolean {
   const plan = PLAN_CONFIGS[planId as PlanId];
@@ -42,7 +41,7 @@ export async function addCustomDomainAction(formData: FormData) {
     .toLowerCase()
     .trim();
   const routingKind = String(
-    formData.get("routing_kind") ?? "custom_public"
+    formData.get("routing_kind") ?? "custom_public",
   ) as TenantDomainRoutingKind;
 
   if (!DOMAIN_RE.test(domain)) {
@@ -55,8 +54,7 @@ export async function addCustomDomainAction(formData: FormData) {
   }
 
   const platform = platformDomainFromRequestHost(
-    (await headers()).get("x-forwarded-host") ??
-      (await headers()).get("host")
+    (await headers()).get("x-forwarded-host") ?? (await headers()).get("host"),
   );
   if (domain.endsWith(`.${platform}`) || domain === platform) {
     return { ok: false as const, error: "reserved_domain" };

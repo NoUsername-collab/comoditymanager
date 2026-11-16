@@ -18,7 +18,9 @@ export function GuestProfileCards({
       {showDetails && (
         <div className="guest-traits__details">
           <div className="guest-traits__detail">
-            <span className="guest-traits__detail-label">{tGuests("profileCards.currentState")}</span>
+            <span className="guest-traits__detail-label">
+              {tGuests("profileCards.currentState")}
+            </span>
             <span
               className={
                 profile.flag_level === "blacklist"
@@ -36,11 +38,15 @@ export function GuestProfileCards({
             </span>
           </div>
           <div className="guest-traits__detail">
-            <span className="guest-traits__detail-label">{tGuests("profileCards.totalNights")}</span>
+            <span className="guest-traits__detail-label">
+              {tGuests("profileCards.totalNights")}
+            </span>
             <span className="guest-traits__detail-value">{profile.total_nights}</span>
           </div>
           <div className="guest-traits__detail">
-            <span className="guest-traits__detail-label">{tGuests("profileCards.lastCheckout")}</span>
+            <span className="guest-traits__detail-label">
+              {tGuests("profileCards.lastCheckout")}
+            </span>
             <span className="guest-traits__detail-value">{profile.last_stay_check_out ?? "—"}</span>
           </div>
         </div>

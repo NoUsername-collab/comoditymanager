@@ -1,13 +1,6 @@
 import { formatGuestFullName } from "@/domain/guest-name";
-import {
-  shiftStayDatesByYears,
-  shiftStayToNextFutureYear,
-} from "@/domain/guest/rebook-dates";
-import {
-  assertValidGuestPhone,
-  normalizeEmail,
-  normalizePhone,
-} from "@/domain/guest/normalize";
+import { shiftStayDatesByYears, shiftStayToNextFutureYear } from "@/domain/guest/rebook-dates";
+import { assertValidGuestPhone, normalizeEmail, normalizePhone } from "@/domain/guest/normalize";
 import { parseGuestTags } from "@/domain/guest/tags";
 import type {
   GuestDocType,
@@ -40,10 +33,7 @@ import {
 
 import { getGuestBaseById } from "./lookup";
 
-export async function mergeGuests(
-  sourceId: string,
-  targetId: string
-): Promise<void> {
+export async function mergeGuests(sourceId: string, targetId: string): Promise<void> {
   if (sourceId === targetId) {
     throw new Error("guest.select_different_guest_for_merge");
   }
@@ -63,9 +53,7 @@ export async function mergeGuests(
   if (moveErr) throw new Error(moveErr.message);
 
   const mergedTags = [...new Set([...target.tags, ...source.tags])];
-  const mergedNotes = [target.notes, source.notes]
-    .filter(Boolean)
-    .join("\n---\n");
+  const mergedNotes = [target.notes, source.notes].filter(Boolean).join("\n---\n");
 
   const patch: Record<string, unknown> = {
     tags: mergedTags,
@@ -136,4 +124,3 @@ export async function mergeGuests(
     metadata: { source_id: sourceId },
   });
 }
-

@@ -7,10 +7,7 @@ import type {
   BookingForCheckin,
   PaymentStatus,
 } from "@/domain/checkin/types";
-import {
-  normalizePaymentStatusForDb,
-  paymentAmountForStatus,
-} from "@/domain/checkin/types";
+import { normalizePaymentStatusForDb, paymentAmountForStatus } from "@/domain/checkin/types";
 import { mapPersistedCheckinGuestsToInput } from "@/domain/checkin/map-persisted-guests";
 import { getCheckinGuests } from "@/services/checkin/queries";
 import { bridgeCheckinPaymentToLedger } from "@/services/booking-payments";

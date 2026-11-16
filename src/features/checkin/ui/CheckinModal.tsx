@@ -31,7 +31,7 @@ const CheckinStepper = dynamic(
   {
     ssr: false,
     loading: CheckinStepperSkeleton,
-  }
+  },
 );
 
 type Props = {

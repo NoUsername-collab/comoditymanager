@@ -48,11 +48,7 @@ export function TeamPermissionsPanel({ permissions: initial }: Props) {
   const [pending, startTransition] = useTransition();
 
   /** Each tick saves at once, like every other switch in settings. */
-  function setRolePermission(
-    role: "admin" | "operator",
-    group: PermissionGroupId,
-    value: boolean,
-  ) {
+  function setRolePermission(role: "admin" | "operator", group: PermissionGroupId, value: boolean) {
     const previous = permissions;
     const next = { ...permissions, [role]: { ...permissions[role], [group]: value } };
     setPermissions(next);

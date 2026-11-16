@@ -126,11 +126,7 @@ export function buildDefaultPublicSiteConfig(args: {
   };
 }
 
-export const PUBLIC_TEMPLATE_OPTIONS: PublicTemplateId[] = [
-  "classic",
-  "editorial",
-  "immersive",
-];
+export const PUBLIC_TEMPLATE_OPTIONS: PublicTemplateId[] = ["classic", "editorial", "immersive"];
 
 export const PUBLIC_THEME_OPTIONS: PublicThemeId[] = [
   "noir",

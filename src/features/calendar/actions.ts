@@ -21,10 +21,7 @@ import {
   extendRoomHoldOneNight,
   releaseRoomHold,
 } from "@/services/room-holds";
-import {
-  moveBookingRoomFromPivot,
-  previewRoomMoveFromPivot,
-} from "@/services/booking-segments";
+import { moveBookingRoomFromPivot, previewRoomMoveFromPivot } from "@/services/booking-segments";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
@@ -78,8 +75,7 @@ export async function createRoomHoldsFromGanttAction(input: {
   reason?: string;
   expiresHours?: number | null;
 }): Promise<
-  | { ok: true; ids: string[]; undo?: { kind: "hold"; ids: string[]; logId?: string } }
-  | ActionErr
+  { ok: true; ids: string[]; undo?: { kind: "hold"; ids: string[]; logId?: string } } | ActionErr
 > {
   const t = await getT();
   await requireAnyStaff();
@@ -201,7 +197,7 @@ export async function createRoomBlockFromGanttAction(input: {
 }
 
 export async function quickConfirmRequestFromGanttAction(
-  bookingId: string
+  bookingId: string,
 ): Promise<{ ok: true; booking: BookingRow } | ActionErr> {
   const t = await getT();
   const timer = createServerTimer("quickConfirmRequestFromGantt");
@@ -239,7 +235,7 @@ export async function quickConfirmRequestFromGanttAction(
 }
 
 export async function extendRoomHoldAction(
-  holdId: string
+  holdId: string,
 ): Promise<{ ok: true; check_out: string } | ActionErr> {
   const t = await getT();
   await requireAnyStaff();
@@ -256,7 +252,7 @@ export async function extendRoomHoldAction(
 }
 
 export async function extendRoomBlockAction(
-  blockId: string
+  blockId: string,
 ): Promise<{ ok: true; check_out: string } | ActionErr> {
   const t = await getT();
   await requireAnyStaff();
@@ -272,9 +268,7 @@ export async function extendRoomBlockAction(
   }
 }
 
-export async function releaseRoomHoldAction(
-  holdId: string
-): Promise<{ ok: true } | ActionErr> {
+export async function releaseRoomHoldAction(holdId: string): Promise<{ ok: true } | ActionErr> {
   const t = await getT();
   await requireAnyStaff();
   try {
@@ -290,9 +284,7 @@ export async function releaseRoomHoldAction(
   }
 }
 
-export async function deleteRoomBlockAction(
-  blockId: string
-): Promise<{ ok: true } | ActionErr> {
+export async function deleteRoomBlockAction(blockId: string): Promise<{ ok: true } | ActionErr> {
   const t = await getT();
   await requireAnyStaff();
   try {
@@ -343,11 +335,7 @@ export async function checkGanttIntervalAction(input: {
 }): Promise<{ ok: true; free: boolean } | ActionErr> {
   await requireAnyStaff();
   try {
-    await assertRoomsAvailableForOccupancy(
-      input.checkIn,
-      input.checkOut,
-      [input.roomId]
-    );
+    await assertRoomsAvailableForOccupancy(input.checkIn, input.checkOut, [input.roomId]);
     return { ok: true, free: true };
   } catch {
     return { ok: true, free: false };
@@ -356,7 +344,7 @@ export async function checkGanttIntervalAction(input: {
 
 export async function shiftBookingOnGanttAction(
   bookingId: string,
-  dayDelta: number
+  dayDelta: number,
 ): Promise<{ ok: true; check_in: string; check_out: string } | ActionErr> {
   const t = await getT();
   await requireStaffPermission("booking_management");
@@ -385,8 +373,7 @@ export async function previewRoomMoveAction(input: {
   targetRoomId: string;
   pivotDate?: string;
 }): Promise<
-  | { ok: true; preview: Awaited<ReturnType<typeof previewRoomMoveFromPivot>> }
-  | ActionErr
+  { ok: true; preview: Awaited<ReturnType<typeof previewRoomMoveFromPivot>> } | ActionErr
 > {
   const t = await getT();
   await requireStaffPermission("booking_management");
@@ -423,7 +410,7 @@ export async function moveBookingRoomFromPivotAction(input: {
 
 export async function adjustBookingStayNightsAction(
   bookingId: string,
-  nightDelta: number
+  nightDelta: number,
 ): Promise<{ ok: true; check_in: string; check_out: string } | ActionErr> {
   const t = await getT();
   await requireStaffPermission("booking_management");
@@ -446,7 +433,7 @@ export async function adjustBookingStayNightsAction(
 }
 
 export async function duplicateBookingAsRequestAction(
-  bookingId: string
+  bookingId: string,
 ): Promise<{ ok: true; id: string } | ActionErr> {
   const t = await getT();
   await requireAnyStaff();

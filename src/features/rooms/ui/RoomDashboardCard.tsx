@@ -14,10 +14,7 @@ export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
   const theme = getBuildingTheme(room.building_ac_mode, room.building_name);
   const st = ROOM_STATUS[room.status_on_date];
 
-  const datePct =
-    room.status_on_date === "occupied" || room.status_on_date === "pending"
-      ? 100
-      : 0;
+  const datePct = room.status_on_date === "occupied" || room.status_on_date === "pending" ? 100 : 0;
 
   return (
     <article
@@ -40,10 +37,9 @@ export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
                 </span>
               )}
               <span
-                className={[
-                  "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
-                  st.pill,
-                ].join(" ")}
+                className={["rounded-full px-2.5 py-0.5 text-[11px] font-semibold", st.pill].join(
+                  " ",
+                )}
               >
                 {st.label}
               </span>
@@ -64,13 +60,14 @@ export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
 
         <div className="mt-3 flex flex-wrap gap-4 text-sm">
           <span>
-            <strong className="text-zinc-800">{room.capacity_base}</strong> {tCommon("personsShort")}
+            <strong className="text-zinc-800">{room.capacity_base}</strong>{" "}
+            {tCommon("personsShort")}
           </span>
           <span>{room.has_ac ? tCommon("ac") : tCommon("withoutAc")}</span>
-          <span>{room.price_per_night} {tCommon("ronPerNight")}</span>
-          {room.allows_extra_beds && (
-            <span className="text-zinc-500">{tRooms("extraBed")}</span>
-          )}
+          <span>
+            {room.price_per_night} {tCommon("ronPerNight")}
+          </span>
+          {room.allows_extra_beds && <span className="text-zinc-500">{tRooms("extraBed")}</span>}
         </div>
       </div>
 
@@ -82,9 +79,9 @@ export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
           barTrack={theme.barBg}
           caption={
             room.status_on_date === "occupied"
-              ? room.guest_on_date ?? room.current_stay?.guest_name ?? tCommon("occupied")
+              ? (room.guest_on_date ?? room.current_stay?.guest_name ?? tCommon("occupied"))
               : room.status_on_date === "pending"
-                ? room.guest_on_date ?? tCommon("request")
+                ? (room.guest_on_date ?? tCommon("request"))
                 : room.status_on_date === "inactive"
                   ? tCommon("inactive")
                   : tCommon("free")

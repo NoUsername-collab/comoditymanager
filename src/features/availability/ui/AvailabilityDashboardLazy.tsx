@@ -13,11 +13,9 @@ const AvailabilityDashboardDynamic = dynamic(
   {
     ssr: false,
     loading: () => <AdminAvailabilitySkeleton />,
-  }
+  },
 );
 
-export function AvailabilityDashboardLazy(
-  props: ComponentProps<typeof AvailabilityDashboard>
-) {
+export function AvailabilityDashboardLazy(props: ComponentProps<typeof AvailabilityDashboard>) {
   return <AvailabilityDashboardDynamic {...props} />;
 }

@@ -29,15 +29,12 @@ export function TenantModulesForm({
 
   const toggle = (moduleId: string) => {
     setSelected((prev) =>
-      prev.includes(moduleId)
-        ? prev.filter((m) => m !== moduleId)
-        : [...prev, moduleId]
+      prev.includes(moduleId) ? prev.filter((m) => m !== moduleId) : [...prev, moduleId],
     );
   };
 
   const hasChanged =
-    JSON.stringify([...selected].sort()) !==
-    JSON.stringify([...currentModules].sort());
+    JSON.stringify([...selected].sort()) !== JSON.stringify([...currentModules].sort());
 
   const handleSave = () => {
     if (!hasChanged) return;
@@ -90,9 +87,7 @@ export function TenantModulesForm({
       </button>
 
       {feedback && (
-        <p
-          className={`text-xs ${feedback === t("success") ? "text-emerald-400" : "text-red-400"}`}
-        >
+        <p className={`text-xs ${feedback === t("success") ? "text-emerald-400" : "text-red-400"}`}>
           {feedback}
         </p>
       )}

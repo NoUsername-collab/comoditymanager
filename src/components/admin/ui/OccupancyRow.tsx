@@ -17,14 +17,8 @@ export function OccupancyRow({
 
   return (
     <div className="flex items-center gap-3 text-xs">
-      <span className="w-[4.5rem] shrink-0 font-medium text-zinc-600">
-        {label}
-      </span>
-      <div
-        className={["h-1.5 w-24 shrink-0 overflow-hidden rounded-full", barTrack].join(
-          " "
-        )}
-      >
+      <span className="w-[4.5rem] shrink-0 font-medium text-zinc-600">{label}</span>
+      <div className={["h-1.5 w-24 shrink-0 overflow-hidden rounded-full", barTrack].join(" ")}>
         <div
           className="h-full rounded-full transition-all duration-300"
           style={{

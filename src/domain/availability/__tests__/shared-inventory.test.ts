@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_CHILD_POLICY, type Party } from "@/domain/availability/party";
-import {
-  inventoryInUse,
-  remainingInventory,
-} from "@/domain/availability/shared-inventory";
+import { inventoryInUse, remainingInventory } from "@/domain/availability/shared-inventory";
 import type { RoomCapacity } from "@/domain/availability/stay-capacity";
 import { quoteStay } from "@/domain/availability/stay-quote";
 

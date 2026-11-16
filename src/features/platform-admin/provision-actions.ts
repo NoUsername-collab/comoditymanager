@@ -4,15 +4,11 @@ import { revalidatePath } from "next/cache";
 import type { PlanId } from "@/core/config/plans";
 import { runPlatformAdminAction } from "@/lib/platform-admin/platform-action";
 import { logPlatformAdminActivity } from "@/lib/platform-admin/platform-activity-log";
-import {
-  isValidTenantSlug,
-  slugifyTenantName,
-} from "@/lib/platform-admin/tenant-slug";
+import { isValidTenantSlug, slugifyTenantName } from "@/lib/platform-admin/tenant-slug";
 import { provisionPlatformTenant } from "@/services/platform-provision";
 
 export type ProvisionTenantActionResult =
-  | { success: true; tenantId: string; slug: string }
-  | { success: false; error: string };
+  { success: true; tenantId: string; slug: string } | { success: false; error: string };
 
 export async function provisionTenantAction(input: {
   displayName: string;

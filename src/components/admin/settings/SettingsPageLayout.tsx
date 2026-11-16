@@ -34,20 +34,12 @@ export function SettingsPageLayout({
   const headerActions =
     actions ??
     (previewHref && previewLabel ? (
-      <SettingsPreviewLink
-        href={previewHref}
-        label={previewLabel}
-        external={previewExternal}
-      />
+      <SettingsPreviewLink href={previewHref} label={previewLabel} external={previewExternal} />
     ) : null);
 
   return (
     <div
-      className={[
-        "settings-page",
-        compact && "settings-page--compact",
-        className,
-      ]
+      className={["settings-page", compact && "settings-page--compact", className]
         .filter(Boolean)
         .join(" ")}
     >

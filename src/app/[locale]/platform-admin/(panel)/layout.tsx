@@ -8,11 +8,7 @@ import { PlatformAdminMobileNav } from "@/layout/components/PlatformAdminMobileN
 import { MobileContent } from "@/layout/components/MobileContent";
 import { MobileShell } from "@/layout/components/MobileShell";
 
-export default async function PlatformAdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function PlatformAdminLayout({ children }: { children: React.ReactNode }) {
   const [admin, t] = await Promise.all([
     requirePlatformAdmin(),
     getTranslations("platformAdmin.nav"),
@@ -31,8 +27,7 @@ export default async function PlatformAdminLayout({
               href="/platform-admin"
               className="truncate text-lg font-semibold tracking-tight text-white"
             >
-              {PLATFORM_NAME}{" "}
-              <span className="text-xs font-normal text-neutral-400">Admin</span>
+              {PLATFORM_NAME} <span className="text-xs font-normal text-neutral-400">Admin</span>
             </Link>
           </div>
 
@@ -72,10 +67,7 @@ export default async function PlatformAdminLayout({
         </div>
       </header>
 
-      <MobileContent
-        as="main"
-        className="platform-admin-main mx-auto max-w-7xl"
-      >
+      <MobileContent as="main" className="platform-admin-main mx-auto max-w-7xl">
         {children}
       </MobileContent>
     </MobileShell>

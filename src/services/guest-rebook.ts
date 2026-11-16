@@ -6,11 +6,7 @@ import {
   getBookingById,
 } from "@/services/bookings";
 import { quoteStayForRooms } from "@/services/stay-quote";
-import {
-  partyFromBooking,
-  type ChildPolicy,
-  type Party,
-} from "@/domain/availability/party";
+import { partyFromBooking, type ChildPolicy, type Party } from "@/domain/availability/party";
 import type { SharedInventory } from "@/domain/availability/stay-capacity";
 import type { StayPricingRules } from "@/domain/settings/booking-rules";
 import {
@@ -51,43 +47,42 @@ export type GuestRebookPanelPayload = {
   checkOutTime: string;
 };
 
-const loadGuestRebookDraftCached = cache(async (
-  guestId: string,
-  sourceBookingId: string
-): Promise<GuestRebookDraft> => {
-  const [guest, booking] = await Promise.all([
-    getGuestBaseById(guestId),
-    getBookingById(sourceBookingId),
-  ]);
-  if (!guest) throw new Error("guest.not_found");
-  if (!booking) throw new Error("booking.not_found");
-  if (booking.guest_id && booking.guest_id !== guestId) {
-    throw new Error("guest.rebook_booking_mismatch");
-  }
+const loadGuestRebookDraftCached = cache(
+  async (guestId: string, sourceBookingId: string): Promise<GuestRebookDraft> => {
+    const [guest, booking] = await Promise.all([
+      getGuestBaseById(guestId),
+      getBookingById(sourceBookingId),
+    ]);
+    if (!guest) throw new Error("guest.not_found");
+    if (!booking) throw new Error("booking.not_found");
+    if (booking.guest_id && booking.guest_id !== guestId) {
+      throw new Error("guest.rebook_booking_mismatch");
+    }
 
-  const defaultNotes = `[Rebook] Din sejur ${booking.check_in} → ${booking.check_out}`;
+    const defaultNotes = `[Rebook] Din sejur ${booking.check_in} → ${booking.check_out}`;
 
-  return {
-    guestId,
-    sourceBookingId,
-    sourceCheckIn: booking.check_in,
-    sourceCheckOut: booking.check_out,
-    guestDisplayName: guest.display_name,
-    guestLastName: guest.last_name,
-    guestFirstName: guest.first_name,
-    guestEmail: guest.email ?? booking.guest_email,
-    guestPhone: guest.phone ?? booking.guest_phone ?? "",
-    checkIn: booking.check_in,
-    checkOut: booking.check_out,
-    party: partyFromBooking(booking),
-    notes: defaultNotes,
-    defaultRoomIds: booking.room_ids,
-  };
-});
+    return {
+      guestId,
+      sourceBookingId,
+      sourceCheckIn: booking.check_in,
+      sourceCheckOut: booking.check_out,
+      guestDisplayName: guest.display_name,
+      guestLastName: guest.last_name,
+      guestFirstName: guest.first_name,
+      guestEmail: guest.email ?? booking.guest_email,
+      guestPhone: guest.phone ?? booking.guest_phone ?? "",
+      checkIn: booking.check_in,
+      checkOut: booking.check_out,
+      party: partyFromBooking(booking),
+      notes: defaultNotes,
+      defaultRoomIds: booking.room_ids,
+    };
+  },
+);
 
 export async function loadGuestRebookDraft(
   guestId: string,
-  sourceBookingId: string
+  sourceBookingId: string,
 ): Promise<GuestRebookDraft> {
   return loadGuestRebookDraftCached(guestId, sourceBookingId);
 }
@@ -100,42 +95,41 @@ export async function previewGuestRebookRooms(input: {
   return loadAvailableRoomsForStay(input);
 }
 
-const loadGuestRebookPanelPayloadCached = cache(async (
-  guestId: string,
-  sourceBookingId: string
-): Promise<GuestRebookPanelPayload> => {
-  const draftPromise = loadGuestRebookDraftCached(guestId, sourceBookingId);
-  const roomsPromise = draftPromise.then((draft) =>
-    previewGuestRebookRooms({
-      checkIn: draft.checkIn,
-      checkOut: draft.checkOut,
-      party: draft.party,
-    })
-  );
-  const [draft, rooms] = await Promise.all([draftPromise, roomsPromise]);
-  return {
-    draft,
-    initialRooms: rooms.availableRooms,
-    initialCanFulfill: rooms.canFulfill,
-    initialMinRooms: rooms.minRoomsNeeded,
-    childPolicy: rooms.childPolicy,
-    inventory: rooms.inventory,
-    pricingRules: rooms.pricingRules,
-    checkInTime: rooms.checkInTime,
-    checkOutTime: rooms.checkOutTime,
-  };
-});
+const loadGuestRebookPanelPayloadCached = cache(
+  async (guestId: string, sourceBookingId: string): Promise<GuestRebookPanelPayload> => {
+    const draftPromise = loadGuestRebookDraftCached(guestId, sourceBookingId);
+    const roomsPromise = draftPromise.then((draft) =>
+      previewGuestRebookRooms({
+        checkIn: draft.checkIn,
+        checkOut: draft.checkOut,
+        party: draft.party,
+      }),
+    );
+    const [draft, rooms] = await Promise.all([draftPromise, roomsPromise]);
+    return {
+      draft,
+      initialRooms: rooms.availableRooms,
+      initialCanFulfill: rooms.canFulfill,
+      initialMinRooms: rooms.minRoomsNeeded,
+      childPolicy: rooms.childPolicy,
+      inventory: rooms.inventory,
+      pricingRules: rooms.pricingRules,
+      checkInTime: rooms.checkInTime,
+      checkOutTime: rooms.checkOutTime,
+    };
+  },
+);
 
 export async function loadGuestRebookPanelPayload(
   guestId: string,
-  sourceBookingId: string
+  sourceBookingId: string,
 ): Promise<GuestRebookPanelPayload> {
   return loadGuestRebookPanelPayloadCached(guestId, sourceBookingId);
 }
 
 function resolveSelectedRooms(
   roomIds: string[],
-  availableRooms: ConfirmRoomOption[]
+  availableRooms: ConfirmRoomOption[],
 ): ConfirmRoomOption[] {
   const idSet = new Set(roomIds);
   return availableRooms.filter((r) => idSet.has(r.id));

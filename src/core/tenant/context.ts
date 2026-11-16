@@ -3,12 +3,7 @@
  * Resolved from host/DB via `bindTenantContextFromRequest()` on the server.
  */
 
-import type {
-  PlanId,
-  ModuleId,
-  CoreFeature,
-  PlanConfig,
-} from "@/core/config/plans";
+import type { PlanId, ModuleId, CoreFeature, PlanConfig } from "@/core/config/plans";
 import { getPlanConfig } from "@/core/config/plans";
 import { PLATFORM_NAME } from "@/lib/platform/branding";
 
@@ -41,9 +36,7 @@ export interface TenantContext {
 
 export function buildTenantContext(tenant: TenantRecord): TenantContext {
   const plan = getPlanConfig(tenant.planId);
-  const allModules = Array.from(
-    new Set([...plan.includedModules, ...tenant.activeModules])
-  );
+  const allModules = Array.from(new Set([...plan.includedModules, ...tenant.activeModules]));
 
   return {
     tenant,
@@ -96,7 +89,7 @@ export function setTenantContext(tenant: TenantRecord): TenantContext {
 export class TenantContextMissingError extends Error {
   constructor() {
     super(
-      "Tenant context is not bound. Call bindTenantContextFromRequest() in a server layout or action."
+      "Tenant context is not bound. Call bindTenantContextFromRequest() in a server layout or action.",
     );
     this.name = "TenantContextMissingError";
   }

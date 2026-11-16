@@ -35,39 +35,27 @@ export const STAY_HORIZON_DAYS: Record<StayHorizonKey, number> = {
   "365d": 365,
 };
 
-export function firstStayQueryValue(
-  value: string | string[] | undefined
-): string {
+export function firstStayQueryValue(value: string | string[] | undefined): string {
   if (Array.isArray(value)) return value[0] ?? "";
   return value ?? "";
 }
 
-export function readStayHorizon(
-  input: string | string[] | undefined
-): StayHorizonKey {
+export function readStayHorizon(input: string | string[] | undefined): StayHorizonKey {
   const value = firstStayQueryValue(input).trim();
-  if (
-    value === "1d" ||
-    value === "7d" ||
-    value === "60d" ||
-    value === "180d" ||
-    value === "365d"
-  ) {
+  if (value === "1d" || value === "7d" || value === "60d" || value === "180d" || value === "365d") {
     return value;
   }
   return "30d";
 }
 
-export function readStayListTab(
-  input: string | string[] | undefined
-): StayListTab {
+export function readStayListTab(input: string | string[] | undefined): StayListTab {
   const value = firstStayQueryValue(input).trim();
   return TAB_FROM_QUERY[value] ?? "ops";
 }
 
 export function readStayListView(
   viewInput: string | string[] | undefined,
-  tabInput?: string | string[] | undefined
+  tabInput?: string | string[] | undefined,
 ): StayListView {
   const view = firstStayQueryValue(viewInput).trim();
   const mapped = VIEW_FROM_QUERY[view];
@@ -89,8 +77,7 @@ export function buildStaysPageHref(opts: {
   if (opts.q) params.set("q", opts.q);
   if (opts.h && opts.h !== "30d") params.set("h", opts.h);
   const view =
-    opts.view ??
-    (opts.tab === "refused" ? "cancelled" : opts.tab ? "confirmed" : undefined);
+    opts.view ?? (opts.tab === "refused" ? "cancelled" : opts.tab ? "confirmed" : undefined);
   const queryView = view ? VIEW_TO_QUERY[view] : null;
   if (queryView) params.set("view", queryView);
   const qs = params.toString();

@@ -3,10 +3,7 @@ import { readPlatformAdminEmailsRaw } from "@/lib/env/platform-admin-emails";
 import { isProductionRuntime } from "@/lib/security/production-runtime";
 
 const serverEnvSchema = z.object({
-  NODE_ENV: z
-    .enum(["development", "test", "production"])
-    .optional()
-    .default("development"),
+  NODE_ENV: z.enum(["development", "test", "production"]).optional().default("development"),
   VERCEL_ENV: z.enum(["development", "preview", "production"]).optional(),
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
@@ -31,35 +28,26 @@ export function getServerEnv(): ServerEnv {
 
   const parsed = serverEnvSchema.safeParse(process.env);
   if (!parsed.success) {
-    const lines = parsed.error.issues.map(
-      (i) => `${i.path.join(".")}: ${i.message}`
-    );
-    throw new Error(
-      `Invalid env configuration:\n${lines.join("\n")}\nRun: npm run env:check`
-    );
+    const lines = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`);
+    throw new Error(`Invalid env configuration:\n${lines.join("\n")}\nRun: npm run env:check`);
   }
 
-  if (
-    isProductionRuntime() &&
-    parsed.data.ADMIN_FACTORY_RESET_ENABLED === "true"
-  ) {
-    throw new Error(
-      "ADMIN_FACTORY_RESET_ENABLED=true is not allowed in production"
-    );
+  if (isProductionRuntime() && parsed.data.ADMIN_FACTORY_RESET_ENABLED === "true") {
+    throw new Error("ADMIN_FACTORY_RESET_ENABLED=true is not allowed in production");
   }
 
   if (isProductionRuntime()) {
     const adminEmails = readPlatformAdminEmailsRaw(parsed.data);
     if (!adminEmails) {
       throw new Error(
-        "ZALMOX_ADMIN_EMAILS must be set in production (comma-separated platform admin emails)."
+        "ZALMOX_ADMIN_EMAILS must be set in production (comma-separated platform admin emails).",
       );
     }
 
     const unlockSecret = parsed.data.ADMIN_LOCATION_UNLOCK_SECRET?.trim();
     if (!unlockSecret || unlockSecret.length < 32) {
       throw new Error(
-        "ADMIN_LOCATION_UNLOCK_SECRET must be set in production (min 32 chars). Run: npm run env:secret"
+        "ADMIN_LOCATION_UNLOCK_SECRET must be set in production (min 32 chars). Run: npm run env:secret",
       );
     }
   }
@@ -86,9 +74,7 @@ export function getLocationUnlockSecret(): string {
   if (secret && secret.length >= 32) return secret;
 
   if (isProductionRuntime()) {
-    throw new Error(
-      "ADMIN_LOCATION_UNLOCK_SECRET must be set in production (min 32 chars)"
-    );
+    throw new Error("ADMIN_LOCATION_UNLOCK_SECRET must be set in production (min 32 chars)");
   }
 
   return secret ?? "dev-insecure-unlock-secret";

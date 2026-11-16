@@ -33,8 +33,8 @@ export function AdminRoomCatalogPanel({
       <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
         {catalogError}
         <span className="mt-1 block">
-          {tCatalog("runMigration")}{" "}
-          <code className="text-xs">015_room_catalog.sql</code> în Supabase SQL
+          {tCatalog("runMigration")} <code className="text-xs">015_room_catalog.sql</code> în
+          Supabase SQL
           {tCatalog("inSqlEditor")}
         </span>
       </p>
@@ -45,33 +45,54 @@ export function AdminRoomCatalogPanel({
     <div className="space-y-4">
       <section>
         <h3 className="text-sm font-semibold text-zinc-900">{tCatalog("roomTypesTitle")}</h3>
-        <p className="mt-1 text-xs text-zinc-500">
-          {tCatalog("roomTypesSubtitle")}
-        </p>
+        <p className="mt-1 text-xs text-zinc-500">{tCatalog("roomTypesSubtitle")}</p>
         <ul className="mt-4 space-y-3">
           {types.map((t) => (
-            <li
-              key={t.id}
-              className="rounded-xl border border-zinc-200 bg-white p-4"
-            >
+            <li key={t.id} className="rounded-xl border border-zinc-200 bg-white p-4">
               <AdminPendingForm action={updateRoomTypeAction} className="space-y-3">
                 <input type="hidden" name="id" value={t.id} />
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="text-sm">
                     {tCommon("name")}
-                    <AdminInput name="name" defaultValue={t.name} required className="mt-1" fieldSize="sm" />
+                    <AdminInput
+                      name="name"
+                      defaultValue={t.name}
+                      required
+                      className="mt-1"
+                      fieldSize="sm"
+                    />
                   </label>
                   <label className="text-sm">
                     {tCatalog("capacity")}
-                    <AdminInput name="capacity_base" type="number" min={1} defaultValue={t.capacity_base} className="mt-1" fieldSize="sm" />
+                    <AdminInput
+                      name="capacity_base"
+                      type="number"
+                      min={1}
+                      defaultValue={t.capacity_base}
+                      className="mt-1"
+                      fieldSize="sm"
+                    />
                   </label>
                   <label className="text-sm">
                     {tCatalog("basePricePerNight")}
-                    <AdminInput name="base_price_per_night" type="number" min={0} defaultValue={t.base_price_per_night} className="mt-1" fieldSize="sm" />
+                    <AdminInput
+                      name="base_price_per_night"
+                      type="number"
+                      min={0}
+                      defaultValue={t.base_price_per_night}
+                      className="mt-1"
+                      fieldSize="sm"
+                    />
                   </label>
                   <label className="text-sm">
                     {tCommon("displayOrder")}
-                    <AdminInput name="sort_order" type="number" defaultValue={t.sort_order} className="mt-1" fieldSize="sm" />
+                    <AdminInput
+                      name="sort_order"
+                      type="number"
+                      defaultValue={t.sort_order}
+                      className="mt-1"
+                      fieldSize="sm"
+                    />
                   </label>
                 </div>
                 {options.length > 0 && (
@@ -94,15 +115,19 @@ export function AdminRoomCatalogPanel({
                 )}
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" name="is_active" defaultChecked={t.is_active} />
-                  {tCommon("active")} {t.is_system && <span className="text-zinc-400">({tCatalog("system")})</span>}
+                  {tCommon("active")}{" "}
+                  {t.is_system && <span className="text-zinc-400">({tCatalog("system")})</span>}
                 </label>
-                <AdminSubmitButton size="sm">
-                  {tCatalog("saveType")}
-                </AdminSubmitButton>
+                <AdminSubmitButton size="sm">{tCatalog("saveType")}</AdminSubmitButton>
               </AdminPendingForm>
-              <details className="room-type-photos" open={photos.some((p) => p.roomTypeId === t.id) ? undefined : true}>
+              <details
+                className="room-type-photos"
+                open={photos.some((p) => p.roomTypeId === t.id) ? undefined : true}
+              >
                 <summary>
-                  {tCatalog("photosTitle", { count: photos.filter((p) => p.roomTypeId === t.id).length })}
+                  {tCatalog("photosTitle", {
+                    count: photos.filter((p) => p.roomTypeId === t.id).length,
+                  })}
                 </summary>
                 <MediaLibrary
                   initial={photos}
@@ -114,37 +139,62 @@ export function AdminRoomCatalogPanel({
           ))}
         </ul>
 
-        <AdminPendingForm action={createRoomTypeAction} className="mt-4 space-y-3 rounded-xl border border-dashed border-zinc-300 p-4">
+        <AdminPendingForm
+          action={createRoomTypeAction}
+          className="mt-4 space-y-3 rounded-xl border border-dashed border-zinc-300 p-4"
+        >
           <p className="text-sm font-medium">{tCatalog("newCustomType")}</p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <label className="text-sm">
               {tCommon("name")}
-              <AdminInput name="name" placeholder={tCatalog("familySuite")} required className="mt-1" fieldSize="sm" />
+              <AdminInput
+                name="name"
+                placeholder={tCatalog("familySuite")}
+                required
+                className="mt-1"
+                fieldSize="sm"
+              />
             </label>
             <label className="text-sm">
               {tCatalog("capacity")}
-              <AdminInput name="capacity_base" type="number" min={1} defaultValue={2} className="mt-1" fieldSize="sm" />
+              <AdminInput
+                name="capacity_base"
+                type="number"
+                min={1}
+                defaultValue={2}
+                className="mt-1"
+                fieldSize="sm"
+              />
             </label>
             <label className="text-sm">
               {tCatalog("basePrice")}
-              <AdminInput name="base_price_per_night" type="number" min={0} defaultValue={0} className="mt-1" fieldSize="sm" />
+              <AdminInput
+                name="base_price_per_night"
+                type="number"
+                min={0}
+                defaultValue={0}
+                className="mt-1"
+                fieldSize="sm"
+              />
             </label>
             <label className="text-sm">
               {tCommon("displayOrder")}
-              <AdminInput name="sort_order" type="number" defaultValue={types.length + 1} className="mt-1" fieldSize="sm" />
+              <AdminInput
+                name="sort_order"
+                type="number"
+                defaultValue={types.length + 1}
+                className="mt-1"
+                fieldSize="sm"
+              />
             </label>
           </div>
-          <AdminSubmitButton size="sm">
-            {tCatalog("addType")}
-          </AdminSubmitButton>
+          <AdminSubmitButton size="sm">{tCatalog("addType")}</AdminSubmitButton>
         </AdminPendingForm>
       </section>
 
       <section>
         <h3 className="text-sm font-semibold text-zinc-900">{tCatalog("modularOptionsTitle")}</h3>
-        <p className="mt-1 text-xs text-zinc-500">
-          {tCatalog("modularOptionsSubtitle")}
-        </p>
+        <p className="mt-1 text-xs text-zinc-500">{tCatalog("modularOptionsSubtitle")}</p>
         <ul className="mt-4 space-y-3">
           {options.map((o) => (
             <li key={o.id} className="rounded-xl border border-zinc-200 bg-white p-4">
@@ -153,52 +203,93 @@ export function AdminRoomCatalogPanel({
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="text-sm">
                     {tCommon("name")}
-                    <AdminInput name="name" defaultValue={o.name} required className="mt-1" fieldSize="sm" />
+                    <AdminInput
+                      name="name"
+                      defaultValue={o.name}
+                      required
+                      className="mt-1"
+                      fieldSize="sm"
+                    />
                   </label>
                   <label className="text-sm">
                     {tCatalog("addonPerNight")}
-                    <AdminInput name="price_per_night_addon" type="number" min={0} defaultValue={o.price_per_night_addon} className="mt-1" fieldSize="sm" />
+                    <AdminInput
+                      name="price_per_night_addon"
+                      type="number"
+                      min={0}
+                      defaultValue={o.price_per_night_addon}
+                      className="mt-1"
+                      fieldSize="sm"
+                    />
                   </label>
                   <label className="text-sm">
                     {tCommon("displayOrder")}
-                    <AdminInput name="sort_order" type="number" defaultValue={o.sort_order} className="mt-1" fieldSize="sm" />
+                    <AdminInput
+                      name="sort_order"
+                      type="number"
+                      defaultValue={o.sort_order}
+                      className="mt-1"
+                      fieldSize="sm"
+                    />
                   </label>
                   <label className="text-sm sm:col-span-2 lg:col-span-1">
                     {tCommon("description")}
-                    <AdminInput name="description" defaultValue={o.description ?? ""} className="mt-1" fieldSize="sm" />
+                    <AdminInput
+                      name="description"
+                      defaultValue={o.description ?? ""}
+                      className="mt-1"
+                      fieldSize="sm"
+                    />
                   </label>
                 </div>
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" name="is_active" defaultChecked={o.is_active} />
-                  {tCommon("active")} {o.is_system && <span className="text-zinc-400">({tCatalog("system")} · {o.slug})</span>}
+                  {tCommon("active")}{" "}
+                  {o.is_system && (
+                    <span className="text-zinc-400">
+                      ({tCatalog("system")} · {o.slug})
+                    </span>
+                  )}
                 </label>
-                <AdminSubmitButton size="sm">
-                  {tCatalog("saveOption")}
-                </AdminSubmitButton>
+                <AdminSubmitButton size="sm">{tCatalog("saveOption")}</AdminSubmitButton>
               </AdminPendingForm>
             </li>
           ))}
         </ul>
 
-        <AdminPendingForm action={createRoomOptionAction} className="mt-4 space-y-3 rounded-xl border border-dashed border-zinc-300 p-4">
+        <AdminPendingForm
+          action={createRoomOptionAction}
+          className="mt-4 space-y-3 rounded-xl border border-dashed border-zinc-300 p-4"
+        >
           <p className="text-sm font-medium">{tCatalog("newCustomOption")}</p>
           <div className="grid gap-3 sm:grid-cols-3">
             <label className="text-sm">
               {tCommon("name")}
-              <AdminInput name="name" placeholder={tCatalog("balcony")} required className="mt-1" fieldSize="sm" />
+              <AdminInput
+                name="name"
+                placeholder={tCatalog("balcony")}
+                required
+                className="mt-1"
+                fieldSize="sm"
+              />
             </label>
             <label className="text-sm">
               {tCatalog("addonPerNight")}
-              <AdminInput name="price_per_night_addon" type="number" min={0} defaultValue={0} className="mt-1" fieldSize="sm" />
+              <AdminInput
+                name="price_per_night_addon"
+                type="number"
+                min={0}
+                defaultValue={0}
+                className="mt-1"
+                fieldSize="sm"
+              />
             </label>
             <label className="text-sm">
               {tCommon("description")}
               <AdminInput name="description" className="mt-1" fieldSize="sm" />
             </label>
           </div>
-          <AdminSubmitButton size="sm">
-            {tCatalog("addOption")}
-          </AdminSubmitButton>
+          <AdminSubmitButton size="sm">{tCatalog("addOption")}</AdminSubmitButton>
         </AdminPendingForm>
       </section>
     </div>

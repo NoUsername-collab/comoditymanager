@@ -84,15 +84,11 @@ export function GanttStickyViewportHeader({
         const scrollRect = scrollEl.getBoundingClientRect();
         const shellRect = shell.getBoundingClientRect();
         const theadRect = thead.getBoundingClientRect();
-        const roomHeader =
-          thead.querySelector<HTMLTableCellElement>(".gantt-head-main-row__room");
+        const roomHeader = thead.querySelector<HTMLTableCellElement>(".gantt-head-main-row__room");
         const roomColumnWidth = roomHeader?.getBoundingClientRect().width ?? 0;
         const daysContentWidth = Math.max(0, scrollEl.scrollWidth - roomColumnWidth);
-        const stickyOn = stickyActiveRef.current
-          ? theadRect.top <= 4
-          : theadRect.top <= -4;
-        const active =
-          stickyOn && shellRect.bottom > Math.max(theadRect.height, 1);
+        const stickyOn = stickyActiveRef.current ? theadRect.top <= 4 : theadRect.top <= -4;
+        const active = stickyOn && shellRect.bottom > Math.max(theadRect.height, 1);
         stickyActiveRef.current = active;
         const scrollLeft = scrollEl.scrollLeft;
         if (scrollLeft !== scrollLeftRef.current) {
@@ -122,7 +118,7 @@ export function GanttStickyViewportHeader({
           prev.roomColumnWidth === next.roomColumnWidth &&
           prev.daysContentWidth === next.daysContentWidth
             ? prev
-            : { ...next, scrollLeft: prev.scrollLeft }
+            : { ...next, scrollLeft: prev.scrollLeft },
         );
       });
     };
@@ -209,9 +205,7 @@ export function GanttStickyViewportHeader({
           >
             <span className="gantt-summary-row__label-title">{tCommon("free")}</span>
             {filterActive && activeFocusIso && (
-              <span className="gantt-summary-row__label-state">
-                {tCommon("activeFilter")}
-              </span>
+              <span className="gantt-summary-row__label-state">{tCommon("activeFilter")}</span>
             )}
           </div>
           <div className="gantt-viewport-header__days-viewport">
@@ -237,9 +231,7 @@ export function GanttStickyViewportHeader({
                 dayTitle={(iso, free, total) =>
                   total === 0 ? iso : tCommon("freeRoomsFilterTitle", { count: free })
                 }
-                dayAriaLabel={(iso, free) =>
-                  tCommon("freeRoomsForDate", { iso, count: free })
-                }
+                dayAriaLabel={(iso, free) => tCommon("freeRoomsForDate", { iso, count: free })}
                 dayGridOptions={dayGridOptions}
               />
             </div>

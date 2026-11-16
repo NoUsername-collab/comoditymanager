@@ -10,11 +10,7 @@ vi.mock("@/services/tenant-members", () => ({ getTenantMemberRole: vi.fn() }));
 vi.mock("@/lib/tenant/active", () => ({ resolveRequestTenant: vi.fn() }));
 vi.mock("@/lib/tenant/guards", () => ({ requireTenantIdForData: vi.fn() }));
 
-import {
-  withTenantId,
-  tenantCacheKey,
-  tenantCacheTag,
-} from "@/lib/tenant/scope";
+import { withTenantId, tenantCacheKey, tenantCacheTag } from "@/lib/tenant/scope";
 
 // ---------------------------------------------------------------------------
 // withTenantId
@@ -47,12 +43,7 @@ describe("tenantCacheKey", () => {
   });
 
   it("returns [tenantId, ...parts] for multiple parts", () => {
-    expect(tenantCacheKey("t1", "rooms", "list", "v2")).toEqual([
-      "t1",
-      "rooms",
-      "list",
-      "v2",
-    ]);
+    expect(tenantCacheKey("t1", "rooms", "list", "v2")).toEqual(["t1", "rooms", "list", "v2"]);
   });
 
   it("returns [tenantId] when no parts are provided", () => {

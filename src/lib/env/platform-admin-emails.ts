@@ -5,7 +5,7 @@
 
 /** Raw comma-separated emails, or undefined when ZALMOX_ADMIN_EMAILS is not set. */
 export function readPlatformAdminEmailsRaw(
-  env: { [key: string]: string | undefined } = process.env
+  env: { [key: string]: string | undefined } = process.env,
 ): string | undefined {
   return env.ZALMOX_ADMIN_EMAILS?.trim() || undefined;
 }

@@ -10,15 +10,8 @@ import {
   type SharedInventory,
 } from "@/domain/availability/stay-capacity";
 import { quoteStay } from "@/domain/availability/stay-quote";
-import {
-  partyHeadcount,
-  type ChildPolicy,
-  type Party,
-} from "@/domain/availability/party";
-import {
-  computeRoomStayPricing,
-  computeStandardStayTotal,
-} from "@/domain/pricing/nightly-rates";
+import { partyHeadcount, type ChildPolicy, type Party } from "@/domain/availability/party";
+import { computeRoomStayPricing, computeStandardStayTotal } from "@/domain/pricing/nightly-rates";
 import type { StayPricingRules } from "@/domain/settings/booking-rules";
 
 export type StaffStayQuoteRoom = RoomCapacity & {
@@ -64,14 +57,9 @@ export function staffStaySelectionKey(roomIds: string[]): string {
   return [...roomIds].sort().join(",");
 }
 
-function roomsByIds(
-  availableRooms: StaffStayQuoteRoom[],
-  ids: string[],
-): StaffStayQuoteRoom[] {
+function roomsByIds(availableRooms: StaffStayQuoteRoom[], ids: string[]): StaffStayQuoteRoom[] {
   const byId = new Map(availableRooms.map((room) => [room.id, room]));
-  return ids
-    .map((id) => byId.get(id))
-    .filter((room): room is StaffStayQuoteRoom => Boolean(room));
+  return ids.map((id) => byId.get(id)).filter((room): room is StaffStayQuoteRoom => Boolean(room));
 }
 
 export function buildStaffStaySuggestions(args: {
@@ -148,9 +136,7 @@ export function resolveStaffStaySelection(args: {
     return preferred.map((room) => room.id);
   }
 
-  return (
-    buildStaffStaySuggestions(args)[0]?.roomIds ?? preferred.map((room) => room.id)
-  );
+  return buildStaffStaySuggestions(args)[0]?.roomIds ?? preferred.map((room) => room.id);
 }
 
 export function quoteStaffStaySelection(args: {
@@ -191,12 +177,7 @@ export function quoteStaffStaySelection(args: {
     extrasTotal: quote?.extrasTotal ?? 0,
     placement: quote?.placement ?? [],
     lines: selected.map((room) => {
-      const pricing = computeRoomStayPricing(
-        room,
-        args.checkIn,
-        args.checkOut,
-        args.pricingRules,
-      );
+      const pricing = computeRoomStayPricing(room, args.checkIn, args.checkOut, args.pricingRules);
       return {
         roomId: room.id,
         roomName: room.name,

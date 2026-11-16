@@ -1,16 +1,10 @@
 "use client";
 
-import {
-  type DailyFreeCount,
-  dailyFreeHeatLevel,
-} from "@/domain/gantt/daily-free-counts";
+import { type DailyFreeCount, dailyFreeHeatLevel } from "@/domain/gantt/daily-free-counts";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import { useTranslations } from "next-intl";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
-import {
-  ganttDayGridStyle,
-  type GanttDayGridOptions,
-} from "./GanttGridHelpers";
+import { ganttDayGridStyle, type GanttDayGridOptions } from "./GanttGridHelpers";
 
 export function GanttDailySummaryRow({
   counts,
@@ -38,19 +32,14 @@ export function GanttDailySummaryRow({
   const tCommon = useTranslations("admin.common");
   const { compactChrome } = useCompactLayoutHints();
   const dayCount = viewRange.days.length;
-  const summaryCellPy =
-    compactChrome ? "py-0" : compact ? "py-[0.25rem]" : "py-[0.36rem]";
+  const summaryCellPy = compactChrome ? "py-0" : compact ? "py-[0.25rem]" : "py-[0.36rem]";
 
   return (
     <tr className="gantt-summary-row">
       <td className="gantt-summary-row__label sticky left-0 z-30 align-middle">
-        <span className="gantt-summary-row__label-title">
-          {tCommon("free")}
-        </span>
+        <span className="gantt-summary-row__label-title">{tCommon("free")}</span>
         {filterActive && activeFocusIso && (
-          <span className="gantt-summary-row__label-state">
-            {tCommon("activeFilter")}
-          </span>
+          <span className="gantt-summary-row__label-state">{tCommon("activeFilter")}</span>
         )}
       </td>
       <td className="gantt-summary-row__days p-0 align-middle">
@@ -73,10 +62,7 @@ export function GanttDailySummaryRow({
             const { free, total } = counts[i]!;
             const heat = dailyFreeHeatLevel(free, total);
             const isSelected = filterActive && activeFocusIso === col.iso;
-            const title =
-              total === 0
-                ? col.iso
-                : tCommon("freeRoomsFilterTitle", { count: free });
+            const title = total === 0 ? col.iso : tCommon("freeRoomsFilterTitle", { count: free });
 
             return (
               <button
@@ -98,9 +84,7 @@ export function GanttDailySummaryRow({
                   .filter(Boolean)
                   .join(" ")}
               >
-                <span className="gantt-summary-cell__value tabular-nums">
-                  {free}
-                </span>
+                <span className="gantt-summary-cell__value tabular-nums">{free}</span>
               </button>
             );
           })}

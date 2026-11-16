@@ -9,19 +9,32 @@ import { createBillingPortal, createSubscriptionCheckout } from "@/services/bill
 
 type Fail = {
   ok: false;
-  error: "owner_only" | "invalid_plan" | "not_configured" | "already_subscribed" | "manual_plan" | "no_customer" | "stripe_error";
+  error:
+    | "owner_only"
+    | "invalid_plan"
+    | "not_configured"
+    | "already_subscribed"
+    | "manual_plan"
+    | "no_customer"
+    | "stripe_error";
 };
 
 async function ownerContext() {
   const { memberRole } = await requireStaff();
   if (memberRole !== "owner") return null;
-  const [tenantId, origin, locale] = await Promise.all([resolveTenantIdForData(), requestOrigin(), getLocale()]);
+  const [tenantId, origin, locale] = await Promise.all([
+    resolveTenantIdForData(),
+    requestOrigin(),
+    getLocale(),
+  ]);
   const prefix = locale === "ro" ? "" : `/${locale}`;
   return { tenantId, locale, returnUrl: `${origin}${prefix}/admin/settings/billing` };
 }
 
 /** Opens Stripe Checkout for Light or PRO. Owner only. */
-export async function startSubscriptionCheckoutAction(plan: string): Promise<{ ok: true; url: string } | Fail> {
+export async function startSubscriptionCheckoutAction(
+  plan: string,
+): Promise<{ ok: true; url: string } | Fail> {
   const ctx = await ownerContext();
   if (!ctx) return { ok: false, error: "owner_only" };
   if (!isCardPlan(plan)) return { ok: false, error: "invalid_plan" };

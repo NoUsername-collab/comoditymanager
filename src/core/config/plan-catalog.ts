@@ -1,4 +1,10 @@
-import { MODULE_CATALOG, PLAN_CONFIGS, type CoreFeature, type ModuleId, type PlanId } from "@/core/config/plans";
+import {
+  MODULE_CATALOG,
+  PLAN_CONFIGS,
+  type CoreFeature,
+  type ModuleId,
+  type PlanId,
+} from "@/core/config/plans";
 
 type PlanLimitsSummary = {
   maxRooms: number;

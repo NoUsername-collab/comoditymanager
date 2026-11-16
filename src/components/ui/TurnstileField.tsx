@@ -37,7 +37,8 @@ function loadTurnstile(): Promise<TurnstileApi> {
       script.src = SCRIPT_URL;
       script.async = true;
       script.defer = true;
-      script.onload = () => (window.turnstile ? resolve(window.turnstile) : reject(new Error("turnstile")));
+      script.onload = () =>
+        window.turnstile ? resolve(window.turnstile) : reject(new Error("turnstile"));
       script.onerror = () => {
         scriptPromise = null;
         reject(new Error("turnstile"));
@@ -58,7 +59,10 @@ export function TurnstileField({ locale, resetKey = 0 }: { locale: string; reset
   const configuredKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim();
   // Known only in the browser: the widget loads where the server also asks for it.
   const [covered, setCovered] = useState(false);
-  useEffect(() => setCovered(turnstileCoversHost(window.location.host, turnstilePlatformDomain())), []);
+  useEffect(
+    () => setCovered(turnstileCoversHost(window.location.host, turnstilePlatformDomain())),
+    [],
+  );
   const siteKey = covered ? configuredKey : undefined;
   const container = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
@@ -88,7 +92,8 @@ export function TurnstileField({ locale, resetKey = 0 }: { locale: string; reset
   }, [siteKey, locale]);
 
   useEffect(() => {
-    if (resetKey > 0 && widgetId.current && window.turnstile) window.turnstile.reset(widgetId.current);
+    if (resetKey > 0 && widgetId.current && window.turnstile)
+      window.turnstile.reset(widgetId.current);
   }, [resetKey]);
 
   if (!siteKey) return null;

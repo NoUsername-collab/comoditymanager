@@ -51,12 +51,8 @@ export function GanttCreateActionMenu({
               .filter(Boolean)
               .join(" ")}
           >
-            <span className="gantt-create-action__label">
-              {t(ACTION_LABEL_KEY[id])}
-            </span>
-            <span className="gantt-create-action__hint">
-              {t(ACTION_HINT_KEY[id])}
-            </span>
+            <span className="gantt-create-action__label">{t(ACTION_LABEL_KEY[id])}</span>
+            <span className="gantt-create-action__hint">{t(ACTION_HINT_KEY[id])}</span>
           </button>
         );
       })}

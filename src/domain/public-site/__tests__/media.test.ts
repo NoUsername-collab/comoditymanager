@@ -38,9 +38,7 @@ describe("detectPublicSiteImage", () => {
 describe("validatePublicSiteUpload", () => {
   it("rejects empty, oversized, wrong kind and non-image bytes", () => {
     expect(validatePublicSiteUpload({ kind: "hero", bytes: new Uint8Array() }).ok).toBe(false);
-    expect(
-      validatePublicSiteUpload({ kind: "bogus", bytes: jpegHeader() }).ok,
-    ).toBe(false);
+    expect(validatePublicSiteUpload({ kind: "bogus", bytes: jpegHeader() }).ok).toBe(false);
     expect(
       validatePublicSiteUpload({ kind: "gallery", bytes: new Uint8Array([1, 2, 3, 4]) }).ok,
     ).toBe(false);
@@ -94,7 +92,9 @@ describe("isOptimizablePublicImageUrl", () => {
       ),
     ).toBe(true);
     expect(isOptimizablePublicImageUrl("https://example.com/hero.jpg")).toBe(false);
-    expect(isOptimizablePublicImageUrl("https://abc.supabase.co/storage/v1/object/sign/x.jpg")).toBe(false);
+    expect(
+      isOptimizablePublicImageUrl("https://abc.supabase.co/storage/v1/object/sign/x.jpg"),
+    ).toBe(false);
     expect(isOptimizablePublicImageUrl("not a url")).toBe(false);
   });
 });

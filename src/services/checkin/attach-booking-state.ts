@@ -29,16 +29,11 @@ function attachCheckinFields(
   return stays.map((stay) => {
     const checkin = latestByBooking.get(stay.id);
     const has_checkin_record = !!checkin;
-    const actual_check_in_at =
-      stay.actual_check_in_at ?? checkin?.checked_in_at ?? null;
+    const actual_check_in_at = stay.actual_check_in_at ?? checkin?.checked_in_at ?? null;
 
     let checked_in_rooms = checkedRoomsByBooking.get(stay.id) ?? [];
     const rooms = bookingRoomNames(stay.room_names);
-    if (
-      has_checkin_record &&
-      checked_in_rooms.length === 0 &&
-      rooms.length === 1
-    ) {
+    if (has_checkin_record && checked_in_rooms.length === 0 && rooms.length === 1) {
       checked_in_rooms = [rooms[0]];
     }
 
@@ -50,9 +45,7 @@ function attachCheckinFields(
       keys_handed_rooms: keysHandedByBooking.get(stay.id) ?? [],
       checkin_payment_status: checkin?.payment_status ?? null,
       room_id_verified: roomIdVerifiedByBooking.get(stay.id) ?? [],
-      guest_identity_status: stay.guest_id
-        ? identityByGuest.get(stay.guest_id) ?? "draft"
-        : null,
+      guest_identity_status: stay.guest_id ? (identityByGuest.get(stay.guest_id) ?? "draft") : null,
     };
   });
 }
@@ -74,10 +67,7 @@ async function loadGuestIdentityStatuses(
 
   for (const row of data ?? []) {
     const id = row.id as string;
-    map.set(
-      id,
-      (row.identity_status as GuestIdentityStatus | null) ?? "draft",
-    );
+    map.set(id, (row.identity_status as GuestIdentityStatus | null) ?? "draft");
   }
 
   return map;
@@ -96,31 +86,22 @@ export async function attachCheckinRecordState(
 
   const bookingIds = stays.map((s) => s.id);
 
-  const guestIds = [
-    ...new Set(
-      stays.map((stay) => stay.guest_id).filter(Boolean) as string[],
-    ),
-  ];
+  const guestIds = [...new Set(stays.map((stay) => stay.guest_id).filter(Boolean) as string[])];
 
-  const [{ latestByBooking, checkedRoomsByBooking, keysHandedByBooking, roomIdVerifiedByBooking }, identityByGuest] =
-    await Promise.all([
-      loadCheckinEnrichmentByBookingIds(bookingIds),
-      loadGuestIdentityStatuses(guestIds).catch(
-        () => new Map<string, GuestIdentityStatus>(),
-      ),
-    ]);
+  const [
+    { latestByBooking, checkedRoomsByBooking, keysHandedByBooking, roomIdVerifiedByBooking },
+    identityByGuest,
+  ] = await Promise.all([
+    loadCheckinEnrichmentByBookingIds(bookingIds),
+    loadGuestIdentityStatuses(guestIds).catch(() => new Map<string, GuestIdentityStatus>()),
+  ]);
 
-  const orphans = stays.filter(
-    (stay) => latestByBooking.has(stay.id) && !stay.actual_check_in_at,
-  );
+  const orphans = stays.filter((stay) => latestByBooking.has(stay.id) && !stay.actual_check_in_at);
 
   if (repairOrphans && orphans.length > 0) {
     await Promise.allSettled(
       orphans.map((stay) =>
-        syncBookingOperativeCheckInFromRecord(
-          stay.id,
-          latestByBooking.get(stay.id) ?? null,
-        ),
+        syncBookingOperativeCheckInFromRecord(stay.id, latestByBooking.get(stay.id) ?? null),
       ),
     );
   }

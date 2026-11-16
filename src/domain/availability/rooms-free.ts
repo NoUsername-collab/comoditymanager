@@ -22,7 +22,7 @@ export function isRoomFreeForStay(
   checkOut: string,
   bookings: ExistingBooking[],
   checkInTime?: string,
-  checkOutTime?: string
+  checkOutTime?: string,
 ): boolean {
   return !bookings.some(
     (b) =>
@@ -31,8 +31,8 @@ export function isRoomFreeForStay(
         { checkIn, checkOut },
         { checkIn: b.check_in, checkOut: b.check_out },
         checkInTime,
-        checkOutTime
-      )
+        checkOutTime,
+      ),
   );
 }
 
@@ -41,17 +41,10 @@ export function countFreeRooms(
   checkIn: string,
   checkOut: string,
   bookings: ExistingBooking[],
-  times?: { checkIn: string; checkOut: string }
+  times?: { checkIn: string; checkOut: string },
 ): number {
   if (!isAtLeastOneNight(checkIn, checkOut)) return 0;
   return rooms.filter((r) =>
-    isRoomFreeForStay(
-      r.id,
-      checkIn,
-      checkOut,
-      bookings,
-      times?.checkIn,
-      times?.checkOut
-    )
+    isRoomFreeForStay(r.id, checkIn, checkOut, bookings, times?.checkIn, times?.checkOut),
   ).length;
 }

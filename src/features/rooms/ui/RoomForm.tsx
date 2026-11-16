@@ -14,7 +14,11 @@ import {
   type BulkNamingMode,
 } from "@/domain/room/bulk-names";
 import { roomScopeKey } from "@/domain/room/scope-key";
-import { computeRoomPrice, policyModeForOption, resolveOptionEnabled } from "@/lib/room-catalog-pricing";
+import {
+  computeRoomPrice,
+  policyModeForOption,
+  resolveOptionEnabled,
+} from "@/lib/room-catalog-pricing";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
@@ -44,7 +48,7 @@ function suggestPrice(
   building: Building | undefined,
   selectedType: RoomTypeDefinition | null,
   options: RoomOptionDefinition[],
-  policies: { option_id: string; mode: OptionPolicyMode }[]
+  policies: { option_id: string; mode: OptionPolicyMode }[],
 ): number {
   if (!building) return 0;
   const defaultOptionIds = selectedType?.default_option_ids ?? [];
@@ -53,7 +57,7 @@ function suggestPrice(
     return resolveOptionEnabled(
       mode,
       defaultOptionIds.includes(opt.id),
-      defaultOptionIds.includes(opt.id)
+      defaultOptionIds.includes(opt.id),
     ).enabled;
   });
   return computeRoomPrice({
@@ -80,24 +84,21 @@ export function RoomForm({
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const tRooms = useTranslations("admin.roomForm");
-  const [mode, setMode] = useState<"single" | "bulk">(
-    defaultBulk === "prefix" ? "bulk" : "single"
-  );
+  const [mode, setMode] = useState<"single" | "bulk">(defaultBulk === "prefix" ? "bulk" : "single");
   const initial =
     defaultBuildingId && buildings.some((b) => b.id === defaultBuildingId)
       ? defaultBuildingId
       : (buildings[0]?.id ?? "");
   const [buildingId, setBuildingId] = useState(initial);
   const initialFloor =
-    defaultFloorId &&
-    (floorsByBuilding[initial] ?? []).some((f) => f.id === defaultFloorId)
+    defaultFloorId && (floorsByBuilding[initial] ?? []).some((f) => f.id === defaultFloorId)
       ? defaultFloorId
       : "";
   const [floorId, setFloorId] = useState(initialFloor);
   const defaultTypeId = types.find((t) => t.slug === "double")?.id ?? types[0]?.id ?? "";
   const [typeId, setTypeId] = useState(defaultTypeId);
   const [bulkNaming, setBulkNaming] = useState<BulkNamingMode>(
-    defaultBulk === "prefix" ? "prefix" : "number_only"
+    defaultBulk === "prefix" ? "prefix" : "number_only",
   );
   const [namePrefix, setNamePrefix] = useState("");
   const [startNumber, setStartNumber] = useState(1);
@@ -117,12 +118,12 @@ export function RoomForm({
 
   const suggestedPrice = useMemo(
     () => suggestPrice(building, selectedType, options, policies),
-    [building, selectedType, options, policies]
+    [building, selectedType, options, policies],
   );
 
   const existingNames = useMemo(
     () => existingNamesByScope[roomScopeKey(buildingId, floorId || null)] ?? [],
-    [existingNamesByScope, buildingId, floorId]
+    [existingNamesByScope, buildingId, floorId],
   );
 
   useEffect(() => {
@@ -132,7 +133,7 @@ export function RoomForm({
     const nextStart = suggestNextBulkStartNumber(
       existingNames,
       bulkNaming,
-      bulkNaming === "number_only" ? "" : namePrefix
+      bulkNaming === "number_only" ? "" : namePrefix,
     );
     setStartNumber(nextStart);
     setEndNumber(nextStart + 9);
@@ -159,7 +160,7 @@ export function RoomForm({
       bulkNaming,
       bulkNaming === "number_only" ? "" : namePrefix,
       startNumber || 1,
-      count
+      count,
     );
   }, [mode, bulkNaming, namePrefix, startNumber, bulkCount]);
 
@@ -442,10 +443,7 @@ export function RoomForm({
 
         <RoomSleepingLimitFields />
 
-        <AdminSubmitButton
-          disabled={bulkBlocked}
-          size="md"
-        >
+        <AdminSubmitButton disabled={bulkBlocked} size="md">
           {mode === "bulk" ? tRooms("createRooms") : tRooms("saveRoom")}
         </AdminSubmitButton>
       </AdminPendingForm>

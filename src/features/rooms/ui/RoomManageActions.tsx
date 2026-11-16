@@ -1,16 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  deleteRoomFromBuildingAction,
-  setRoomActiveAction,
-} from "@/features/buildings/actions";
+import { deleteRoomFromBuildingAction, setRoomActiveAction } from "@/features/buildings/actions";
 import { DeleteConfirmButton } from "@/components/admin/ui/DeleteConfirmButton";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
-import {
-  AdminTextActionButton,
-  AdminTextActionLink,
-} from "@/components/admin/ui/AdminTextAction";
+import { AdminTextActionButton, AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 
 type Props = {
   roomId: string;
@@ -49,10 +43,7 @@ export function RoomManageActions({
       <form action={(formData) => runAdminAction(() => setRoomActiveAction(formData))}>
         <input type="hidden" name="room_id" value={roomId} />
         <input type="hidden" name="is_active" value={isActive ? "0" : "1"} />
-        <AdminTextActionButton
-          type="submit"
-          variant={isActive ? "warning" : "primary"}
-        >
+        <AdminTextActionButton type="submit" variant={isActive ? "warning" : "primary"}>
           {isActive ? tStruct("deactivateRoom") : tStruct("activateRoom")}
         </AdminTextActionButton>
       </form>

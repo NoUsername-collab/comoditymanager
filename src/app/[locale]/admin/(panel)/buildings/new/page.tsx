@@ -11,31 +11,25 @@ export default async function NewBuildingPage({
   searchParams: Promise<{ return_to?: string }>;
 }) {
   await guardOperatorRoute("/admin/buildings/new");
-  const [tPage, tCommon, tStruct, { return_to }, catalogOptions] =
-    await Promise.all([
-      getTranslations("admin.pages.buildingsNew"),
-      getTranslations("admin.common"),
-      getTranslations("admin.locationStructure"),
-      searchParams,
-      loadNewBuildingPage(),
-    ]);
+  const [tPage, tCommon, tStruct, { return_to }, catalogOptions] = await Promise.all([
+    getTranslations("admin.pages.buildingsNew"),
+    getTranslations("admin.common"),
+    getTranslations("admin.locationStructure"),
+    searchParams,
+    loadNewBuildingPage(),
+  ]);
   const backToStructure = return_to === "structure";
 
   return (
     <AdminPageFrame
       title={tCommon("newBuilding")}
-      backHref={
-        backToStructure
-          ? "/admin/settings/location/structure"
-          : "/admin/buildings"
-      }
-      backLabel={
-        backToStructure ? tStruct("pageTitle") : tCommon("buildings")
-      }
+      backHref={backToStructure ? "/admin/settings/location/structure" : "/admin/buildings"}
+      backLabel={backToStructure ? tStruct("pageTitle") : tCommon("buildings")}
       className="max-w-lg"
       description={
         <>
-          {tPage("descriptionPrefix")} <strong>{tPage("newRooms")}</strong>. {tPage("descriptionSuffix")}
+          {tPage("descriptionPrefix")} <strong>{tPage("newRooms")}</strong>.{" "}
+          {tPage("descriptionSuffix")}
         </>
       }
     >

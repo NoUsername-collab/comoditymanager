@@ -17,9 +17,7 @@ import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 import { getPlanConfig } from "@/core/config/plans";
 import { getTenantById } from "@/services/tenants";
 
-type ActionResult =
-  | { ok: true }
-  | { ok: false; error: string };
+type ActionResult = { ok: true } | { ok: false; error: string };
 
 /** Only owner and admin can manage staff */
 async function requireStaffManager() {
@@ -36,15 +34,15 @@ export async function listStaffAction() {
 }
 
 // ─── Invite new staff member ──────────────────────────────────────
-export async function inviteStaffAction(
-  formData: FormData
-): Promise<ActionResult> {
+export async function inviteStaffAction(formData: FormData): Promise<ActionResult> {
   const t = await getTranslations("admin.serverActions");
 
   try {
     const { tenant, user } = await requireStaffManager();
 
-    const email = String(formData.get("email") ?? "").trim().toLowerCase();
+    const email = String(formData.get("email") ?? "")
+      .trim()
+      .toLowerCase();
     const role = String(formData.get("role") ?? "operator") as TenantMemberRole;
 
     if (!email) {
@@ -104,9 +102,7 @@ export async function inviteStaffAction(
 }
 
 // ─── Change staff role ─────────────────────────────────────────────
-export async function changeStaffRoleAction(
-  formData: FormData
-): Promise<ActionResult> {
+export async function changeStaffRoleAction(formData: FormData): Promise<ActionResult> {
   const t = await getTranslations("admin.serverActions");
 
   try {
@@ -143,9 +139,7 @@ export async function changeStaffRoleAction(
 }
 
 // ─── Deactivate staff ──────────────────────────────────────────────
-export async function deactivateStaffAction(
-  formData: FormData
-): Promise<ActionResult> {
+export async function deactivateStaffAction(formData: FormData): Promise<ActionResult> {
   const t = await getTranslations("admin.serverActions");
 
   try {
@@ -177,9 +171,7 @@ export async function deactivateStaffAction(
 }
 
 // ─── Reactivate staff ──────────────────────────────────────────────
-export async function reactivateStaffAction(
-  formData: FormData
-): Promise<ActionResult> {
+export async function reactivateStaffAction(formData: FormData): Promise<ActionResult> {
   const t = await getTranslations("admin.serverActions");
 
   try {

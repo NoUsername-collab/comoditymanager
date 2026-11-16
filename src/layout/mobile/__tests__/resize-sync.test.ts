@@ -67,13 +67,11 @@ describe("subscribeLayoutViewportChanges", () => {
     const root = {
       getAttribute: vi.fn(),
       setAttribute: vi.fn(),
-      hasAttribute: vi.fn((name: string) =>
-        name === "data-layout-mode" || name === "data-layout-chrome"
+      hasAttribute: vi.fn(
+        (name: string) => name === "data-layout-mode" || name === "data-layout-chrome",
       ),
       style: {
-        getPropertyValue: vi.fn((prop: string) =>
-          prop === "--ml-vvw" ? "390px" : ""
-        ),
+        getPropertyValue: vi.fn((prop: string) => (prop === "--ml-vvw" ? "390px" : "")),
         setProperty: vi.fn(),
       },
       classList: { toggle: vi.fn() },

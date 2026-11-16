@@ -49,10 +49,7 @@ export const loadAdminShellContext = cache(async (): Promise<AdminShellContext> 
   ]);
 
   const teamPermissions = pensionTeamPermissions(pension);
-  const locationUnlocked = await locationAccessibleForMemberRole(
-    staff.memberRole,
-    teamPermissions,
-  );
+  const locationUnlocked = await locationAccessibleForMemberRole(staff.memberRole, teamPermissions);
 
   const stayTimes = resolvePensionStayTimes(pension);
 
@@ -65,9 +62,7 @@ export const loadAdminShellContext = cache(async (): Promise<AdminShellContext> 
     statisticsAccess:
       canStaffPermission(staff.memberRole, "reports_tools", teamPermissions) &&
       canAccessStatistics(staff.memberRole, pensionStatisticsVisibility(pension)),
-    appearanceSettings: pension
-      ? pensionAppearanceSettings(pension)
-      : DEFAULT_APPEARANCE,
+    appearanceSettings: pension ? pensionAppearanceSettings(pension) : DEFAULT_APPEARANCE,
     teamPermissions,
     checkInTime: stayTimes.checkIn,
     checkOutTime: stayTimes.checkOut,

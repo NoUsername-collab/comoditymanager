@@ -4,10 +4,7 @@ import { ADMIN_LOCATION_UNLOCK_COOKIE } from "@/lib/auth/admin-location-unlock-c
 import { isAdminLocationUnlockTokenValidEdge } from "@/lib/auth/admin-location-unlock-edge";
 import { MFA_SETUP_PATH } from "@/lib/auth/admin-path";
 import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
-import {
-  pathPermissionGroup,
-  pathRequiresOwner,
-} from "@/domain/settings/team-permission-paths";
+import { pathPermissionGroup, pathRequiresOwner } from "@/domain/settings/team-permission-paths";
 import { canStaffPermission } from "@/domain/settings/team-permissions";
 import { getTeamPermissionsOnEdge } from "@/lib/auth/team-permissions-edge";
 import {
@@ -29,7 +26,7 @@ type User = { id: string; email?: string };
 
 function tenantHostRef(
   slug: string | undefined,
-  customDomain: string | undefined
+  customDomain: string | undefined,
 ): TenantHostRef | null {
   if (slug != null) return { slug };
   if (customDomain != null) return { customDomain };
@@ -41,10 +38,7 @@ function memberRoleOnHost(userId: string, host: TenantHostRef | null, supabase: 
 }
 
 /** Forward proxy-injected headers to RSC (intl middleware only sees a cloned request). */
-function applyForwardedRequestHeaders(
-  source: NextResponse,
-  requestHeaders: Headers
-): NextResponse {
+function applyForwardedRequestHeaders(source: NextResponse, requestHeaders: Headers): NextResponse {
   if (source.status >= 300 && source.status < 400) {
     return source;
   }
@@ -84,14 +78,14 @@ async function staffAccessRedirect(
   user: User,
   path: string,
   slug: string | undefined,
-  customDomain: string | undefined
+  customDomain: string | undefined,
 ): Promise<NextResponse | null> {
   const effectiveRole = await resolveEffectiveStaffRole(
     user.id,
     user.email,
     slug,
     customDomain,
-    supabase
+    supabase,
   );
   if (!effectiveRole) return unauthorizedRedirect(request, supabase);
 
@@ -135,7 +129,7 @@ async function signedInLoginRedirect(
   user: User,
   path: string,
   slug: string | undefined,
-  customDomain: string | undefined
+  customDomain: string | undefined,
 ): Promise<NextResponse> {
   const blockedOnLogin = await blockedTenantRedirectIfNeeded(request, path, slug, customDomain);
   if (blockedOnLogin) {
@@ -148,7 +142,7 @@ async function signedInLoginRedirect(
     user.email,
     slug,
     customDomain,
-    supabase
+    supabase,
   );
   if ((slug || customDomain) && !effectiveRole) {
     return unauthorizedRedirect(request, supabase);
@@ -180,7 +174,7 @@ export async function runTenantAppProxy(
   request: NextRequest,
   slug: string | undefined,
   customDomain: string | undefined,
-  routingKind: TenantDomainRoutingKind = "platform_subdomain"
+  routingKind: TenantDomainRoutingKind = "platform_subdomain",
 ): Promise<NextResponse> {
   const path = stripLocalePrefix(request.nextUrl.pathname, routing.locales);
   const requestHeaders = new Headers(request.headers);
@@ -193,12 +187,7 @@ export async function runTenantAppProxy(
     headers: requestHeaders,
   });
 
-  const blockedRedirect = await blockedTenantRedirectIfNeeded(
-    request,
-    path,
-    slug,
-    customDomain
-  );
+  const blockedRedirect = await blockedTenantRedirectIfNeeded(request, path, slug, customDomain);
   if (blockedRedirect) return blockedRedirect;
 
   if (path === "/landing" || path === "/signup" || path === "/preturi") {
@@ -218,8 +207,7 @@ export async function runTenantAppProxy(
   } = await supabase.auth.getUser();
 
   const isLoginPage = path === "/admin/login";
-  const staffOnly =
-    path === "/receptie" || path.startsWith("/calendar/confirm/");
+  const staffOnly = path === "/receptie" || path.startsWith("/calendar/confirm/");
   const needsStaff = (path.startsWith("/admin") && !isLoginPage) || staffOnly;
 
   if (needsStaff && !user) {

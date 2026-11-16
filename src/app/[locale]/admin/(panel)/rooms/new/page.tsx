@@ -53,19 +53,14 @@ export default async function NewRoomPage({
   let loadError: string | null = null;
   let catalogMissing = false;
   if (loadErrorRaw) {
-    loadError =
-      loadErrorRaw instanceof Error ? loadErrorRaw.message : tCommon("error");
+    loadError = loadErrorRaw instanceof Error ? loadErrorRaw.message : tCommon("error");
     if (String(loadError).includes("room_type_definitions")) {
       catalogMissing = true;
     }
   }
 
-  const floorsByBuilding: Record<
-    string,
-    (typeof allFloors)[number][]
-  > = {};
-  const policiesByBuilding: Record<string, (typeof policyResults)[number]> =
-    {};
+  const floorsByBuilding: Record<string, (typeof allFloors)[number][]> = {};
+  const policiesByBuilding: Record<string, (typeof policyResults)[number]> = {};
 
   const existingNamesByScope: Record<string, string[]> = {};
   const nextSortByBuilding: Record<string, number> = {};
@@ -94,17 +89,14 @@ export default async function NewRoomPage({
 
     try {
       for (const b of buildings) {
-        floorsByBuilding[b.id] = allFloors.filter(
-          (floor) => floor.building_id === b.id
-        );
+        floorsByBuilding[b.id] = allFloors.filter((floor) => floor.building_id === b.id);
         const rooms = allRooms.filter((r) => r.building_id === b.id);
         for (const room of rooms) {
           const key = roomScopeKey(b.id, room.floor_id);
           if (!existingNamesByScope[key]) existingNamesByScope[key] = [];
           existingNamesByScope[key].push(room.name);
         }
-        nextSortByBuilding[b.id] =
-          rooms.reduce((max, r) => Math.max(max, r.sort_order), 0) + 1;
+        nextSortByBuilding[b.id] = rooms.reduce((max, r) => Math.max(max, r.sort_order), 0) + 1;
       }
     } catch {
       for (const b of buildings) {
@@ -117,26 +109,18 @@ export default async function NewRoomPage({
   return (
     <AdminPageFrame
       title={tCommon("newRoomTitle")}
-      backHref={
-        backToStructure
-          ? "/admin/settings/location/structure"
-          : "/admin/rooms"
-      }
-      backLabel={
-        backToStructure ? tStruct("pageTitle") : tCommon("rooms")
-      }
+      backHref={backToStructure ? "/admin/settings/location/structure" : "/admin/rooms"}
+      backLabel={backToStructure ? tStruct("pageTitle") : tCommon("rooms")}
       className="max-w-lg"
     >
       {catalogMissing && (
         <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          {tPage("catalogRunMigration")}{" "}
-          <code className="text-xs">015_room_catalog.sql</code> {tCommon("catalogSqlHint")}.
+          {tPage("catalogRunMigration")} <code className="text-xs">015_room_catalog.sql</code>{" "}
+          {tCommon("catalogSqlHint")}.
         </p>
       )}
 
-      {loadError && !catalogMissing && (
-        <p className="text-sm text-red-600">{loadError}</p>
-      )}
+      {loadError && !catalogMissing && <p className="text-sm text-red-600">{loadError}</p>}
 
       {buildings.length === 0 && !loadError ? (
         <p className="text-zinc-600">

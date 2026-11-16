@@ -63,10 +63,7 @@ export function GanttStayTapPopoverProvider({ children }: { children: ReactNode 
     setPayload((prev) => (prev?.key === next.key ? null : next));
   }, []);
 
-  const isTapOpen = useCallback(
-    (key: string) => payload?.key === key,
-    [payload]
-  );
+  const isTapOpen = useCallback((key: string) => payload?.key === key, [payload]);
 
   useEffect(() => {
     if (!payload) return;
@@ -89,7 +86,7 @@ export function GanttStayTapPopoverProvider({ children }: { children: ReactNode 
       closeTapPopover,
       isTapOpen,
     }),
-    [payload, openTapPopover, closeTapPopover, isTapOpen]
+    [payload, openTapPopover, closeTapPopover, isTapOpen],
   );
 
   return (
@@ -103,9 +100,7 @@ export function GanttStayTapPopoverProvider({ children }: { children: ReactNode 
 export function useGanttStayTapPopover(): GanttStayTapPopoverActions {
   const ctx = useContext(Ctx);
   if (!ctx) {
-    throw new Error(
-      "useGanttStayTapPopover must be used within GanttStayTapPopoverProvider"
-    );
+    throw new Error("useGanttStayTapPopover must be used within GanttStayTapPopoverProvider");
   }
   return ctx;
 }

@@ -10,11 +10,7 @@ import { normalizeBenefitIcon } from "@/features/public-site/domain/benefit-icon
 
 describe("writeLocalized", () => {
   it("patches only the active locale", () => {
-    const next = writeLocalized(
-      { ro: "Casa", en: "House", bg: "Kashta" },
-      "en",
-      "Home",
-    );
+    const next = writeLocalized({ ro: "Casa", en: "House", bg: "Kashta" }, "en", "Home");
     expect(next).toEqual({ ro: "Casa", en: "Home", bg: "Kashta" });
   });
 
@@ -40,10 +36,7 @@ describe("storedTitle", () => {
 
 describe("writeLocalizedMap", () => {
   it("writes every supplied locale and leaves omitted keys alone", () => {
-    const next = writeLocalizedMap(
-      { ro: "Casa", en: "House" },
-      { en: "Home", bg: "Kashta" },
-    );
+    const next = writeLocalizedMap({ ro: "Casa", en: "House" }, { en: "Home", bg: "Kashta" });
     expect(next).toEqual({ ro: "Casa", en: "Home", bg: "Kashta" });
   });
 });

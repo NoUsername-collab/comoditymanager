@@ -2,10 +2,7 @@ import type { TenantCountry } from "@/domain/fiscal/country-fiscal-profile";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { resolveTenantCountryForRequest } from "@/lib/tenant/resolve-fiscal-tenant";
-import type {
-  FiscalSubmissionStatus,
-  FiscalSubmitContext,
-} from "@/domain/fiscal/fiscal-provider";
+import type { FiscalSubmissionStatus, FiscalSubmitContext } from "@/domain/fiscal/fiscal-provider";
 import { createAnafFiscalProvider } from "@/domain/fiscal/providers/anaf-stub";
 import {
   buildIdempotencyKey,
@@ -62,9 +59,7 @@ function mapJobRow(row: JobRow): FiscalSubmissionJobRecord {
   };
 }
 
-async function resolveTenantCountryById(
-  tenantId: string
-): Promise<TenantCountry> {
+async function resolveTenantCountryById(tenantId: string): Promise<TenantCountry> {
   const supabase = createPublicAdminClient();
   const { data } = await supabase
     .from("tenants")
@@ -75,11 +70,9 @@ async function resolveTenantCountryById(
   return "RO";
 }
 
-
 function documentFromInvoiceRow(row: JobRow): IssuedInvoiceDocument | null {
   const lines = Array.isArray(row.lines) ? row.lines : [];
-  const currency =
-    row.currency === "BGN" || row.currency === "MDL" ? row.currency : "RON";
+  const currency = row.currency === "BGN" || row.currency === "MDL" ? row.currency : "RON";
   if (!row.series || row.invoice_number == null) return null;
   return {
     series: String(row.series),
@@ -88,10 +81,8 @@ function documentFromInvoiceRow(row: JobRow): IssuedInvoiceDocument | null {
     issued_at: String(row.issued_at ?? row.created_at ?? new Date().toISOString()),
     seller_name: String(row.seller_name ?? ""),
     seller_cui: row.seller_cui != null ? String(row.seller_cui) : null,
-    seller_reg_com:
-      row.seller_reg_com != null ? String(row.seller_reg_com) : null,
-    seller_address:
-      row.seller_address != null ? String(row.seller_address) : null,
+    seller_reg_com: row.seller_reg_com != null ? String(row.seller_reg_com) : null,
+    seller_address: row.seller_address != null ? String(row.seller_address) : null,
     buyer_name: String(row.buyer_name ?? ""),
     buyer_email: String(row.buyer_email ?? ""),
     buyer_phone: row.buyer_phone != null ? String(row.buyer_phone) : null,
@@ -114,7 +105,7 @@ function documentFromInvoiceRow(row: JobRow): IssuedInvoiceDocument | null {
 async function syncInvoiceFiscalStatus(
   tenantId: string,
   invoiceId: string,
-  status: FiscalSubmissionStatus | null
+  status: FiscalSubmissionStatus | null,
 ): Promise<void> {
   const supabase = createPublicAdminClient();
   const { error } = await supabase
@@ -133,7 +124,7 @@ async function logFiscalActivity(
   invoiceId: string,
   displayNumber: string,
   action: "fiscal.submitted" | "fiscal.accepted" | "fiscal.rejected",
-  metadata: Record<string, unknown> = {}
+  metadata: Record<string, unknown> = {},
 ): Promise<void> {
   const summaries: Record<typeof action, string> = {
     "fiscal.submitted": `ANAF: transmis ${displayNumber}`,
@@ -151,7 +142,7 @@ async function logFiscalActivity(
 
 export async function enqueueFiscalSubmission(
   invoiceId: string,
-  tenantId?: string
+  tenantId?: string,
 ): Promise<{ ok: true; jobId: string } | { ok: false; error: string }> {
   const resolvedTenantId = tenantId ?? (await resolveTenantIdForData());
   const [settings, tenantCountry] = await Promise.all([
@@ -192,9 +183,7 @@ export async function enqueueFiscalSubmission(
 
   if (existingError) return { ok: false, error: existingError.message };
 
-  const latest = existingJobs?.[0]
-    ? mapJobRow(existingJobs[0] as JobRow)
-    : null;
+  const latest = existingJobs?.[0] ? mapJobRow(existingJobs[0] as JobRow) : null;
   if (latest && hasActiveFiscalJob(latest.status)) {
     return { ok: false, error: "fiscal.job_already_active" };
   }
@@ -226,7 +215,7 @@ export async function enqueueFiscalSubmission(
 }
 
 export async function getFiscalStatusMapForInvoices(
-  invoiceIds: string[]
+  invoiceIds: string[],
 ): Promise<Record<string, FiscalSubmissionStatus>> {
   if (invoiceIds.length === 0) return {};
   const tenantId = await resolveTenantIdForData();
@@ -300,7 +289,7 @@ async function applyJobUpdate(
     submitted_at: string | null;
     resolved_at: string | null;
     attempt_count: number;
-  }>
+  }>,
 ): Promise<void> {
   const { job, invoice } = bundle;
   if (!canTransitionFiscalStatus(job.status, nextStatus)) {
@@ -326,8 +315,7 @@ async function applyJobUpdate(
 
   await syncInvoiceFiscalStatus(job.tenantId, job.bookingInvoiceId, nextStatus);
 
-  const bookingId =
-    invoice.booking_id != null ? String(invoice.booking_id) : null;
+  const bookingId = invoice.booking_id != null ? String(invoice.booking_id) : null;
   const displayNumber = String(invoice.display_number ?? job.bookingInvoiceId);
 
   if (nextStatus === "submitted" && job.status !== "submitted") {
@@ -337,7 +325,7 @@ async function applyJobUpdate(
       job.bookingInvoiceId,
       displayNumber,
       "fiscal.submitted",
-      { upload_id: patch.anaf_upload_id ?? job.anafUploadId }
+      { upload_id: patch.anaf_upload_id ?? job.anafUploadId },
     );
   }
   if (nextStatus === "accepted") {
@@ -346,7 +334,7 @@ async function applyJobUpdate(
       bookingId,
       job.bookingInvoiceId,
       displayNumber,
-      "fiscal.accepted"
+      "fiscal.accepted",
     );
   }
   if (nextStatus === "rejected") {
@@ -356,7 +344,7 @@ async function applyJobUpdate(
       job.bookingInvoiceId,
       displayNumber,
       "fiscal.rejected",
-      { error: patch.last_error ?? job.lastError }
+      { error: patch.last_error ?? job.lastError },
     );
   }
 }
@@ -387,9 +375,7 @@ async function processSingleJob(bundle: ProcessJobBundle): Promise<void> {
       last_error: result.error ?? null,
       anaf_upload_id: result.uploadId ?? null,
       submitted_at:
-        nextStatus === "submitted" || nextStatus === "accepted"
-          ? new Date().toISOString()
-          : null,
+        nextStatus === "submitted" || nextStatus === "accepted" ? new Date().toISOString() : null,
     });
     return;
   }
@@ -404,9 +390,7 @@ async function processSingleJob(bundle: ProcessJobBundle): Promise<void> {
     await applyJobUpdate(bundle, nextStatus, {
       attempt_count: bundle.job.attemptCount + 1,
       last_error: result.error ?? null,
-      resolved_at: isTerminalFiscalStatus(nextStatus)
-        ? new Date().toISOString()
-        : null,
+      resolved_at: isTerminalFiscalStatus(nextStatus) ? new Date().toISOString() : null,
     });
   }
 }
@@ -418,7 +402,7 @@ type ProcessPendingFiscalJobsResult = {
 };
 
 export async function processPendingFiscalJobs(
-  limit = 25
+  limit = 25,
 ): Promise<ProcessPendingFiscalJobsResult> {
   // Nothing can reach ANAF yet: leave the queue as it is rather than mark it.
   if (!isAnafSubmissionAvailable()) return { processed: 0, failed: 0, skipped: 0 };

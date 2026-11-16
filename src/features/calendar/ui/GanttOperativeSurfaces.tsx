@@ -2,9 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { GanttContextMenuPanel } from "@/features/calendar/ui/GanttContextMenuPanel";
-import {
-  useGanttOperativeCheck,
-} from "@/features/calendar/ui/GanttOperativeCheckProvider";
+import { useGanttOperativeCheck } from "@/features/calendar/ui/GanttOperativeCheckProvider";
 import type { GanttOpsPickerMode } from "@/features/calendar/ui/GanttOpsPickerPanel";
 import type { BookingRow } from "@/services/bookings";
 
@@ -13,7 +11,7 @@ const GanttOpsPickerPanel = dynamic(
     import("@/features/calendar/ui/GanttOpsPickerPanel").then((m) => ({
       default: m.GanttOpsPickerPanel,
     })),
-  { ssr: false }
+  { ssr: false },
 );
 
 export function GanttOperativeSurfaces({

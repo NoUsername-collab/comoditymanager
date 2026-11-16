@@ -8,16 +8,9 @@ const DISPLAY_LAYOUT_STORAGE_KEY = "platform-display-layout";
 
 export const DISPLAY_LAYOUT_CHANGED_EVENT = "zalmox:display-layout-changed";
 
-const MANUAL_PROFILES: DisplayProfileId[] = [
-  "wide",
-  "laptop",
-  "compact-laptop",
-  "narrow",
-];
+const MANUAL_PROFILES: DisplayProfileId[] = ["wide", "laptop", "compact-laptop", "narrow"];
 
-function isDisplayProfileId(
-  value: string | null | undefined
-): value is DisplayProfileId {
+function isDisplayProfileId(value: string | null | undefined): value is DisplayProfileId {
   return MANUAL_PROFILES.includes(value as DisplayProfileId);
 }
 

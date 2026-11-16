@@ -16,20 +16,14 @@ import {
 } from "@/domain/checkin/payment-panel";
 import type { PaymentStatus } from "@/domain/checkin/types";
 import { assertBookingPostCheckoutEditAllowed } from "@/services/bookings/post-checkout-guard";
-import {
-  getCheckinByBookingId,
-  getCheckedInRoomsForBooking,
-} from "@/services/checkin/queries";
+import { getCheckinByBookingId, getCheckedInRoomsForBooking } from "@/services/checkin/queries";
 import { mapBookingToForCheckin } from "@/domain/checkin/map-booking";
 import { listRegisteredGuestsForCheckin } from "@/services/checkin/booking-guests";
 import { updateCheckinPayment } from "@/services/checkin/update-payment";
 
 export async function loadBookingCheckinPaymentPanelAction(
   bookingId: string,
-): Promise<
-  | { ok: true; data: BookingCheckinPaymentPanelData }
-  | { ok: false; error: string }
-> {
+): Promise<{ ok: true; data: BookingCheckinPaymentPanelData } | { ok: false; error: string }> {
   await requireAnyStaff();
 
   try {
@@ -54,11 +48,7 @@ export async function loadBookingCheckinPaymentPanelAction(
 
     const [checkedInRooms, registeredGuests] = await Promise.all([
       getCheckedInRoomsForBooking(id).catch(() => [] as string[]),
-      listRegisteredGuestsForCheckin(
-        id,
-        booking.guest_id,
-        booking.room_names,
-      ).catch(() => []),
+      listRegisteredGuestsForCheckin(id, booking.guest_id, booking.room_names).catch(() => []),
     ]);
 
     const bookingForCheckin = mapBookingToForCheckin({
@@ -110,8 +100,7 @@ export async function updateCheckinPaymentAction(
     if (!checkinId) return { ok: false, error: "checkin_id required" };
     if (!bookingId) return { ok: false, error: "booking_id required" };
 
-    const paymentStatus =
-      (formData.get("payment_status") as PaymentStatus) ?? "unpaid";
+    const paymentStatus = (formData.get("payment_status") as PaymentStatus) ?? "unpaid";
     const paymentAmountPaid = Number(formData.get("payment_amount_paid")) || 0;
     const depositAmount = Number(formData.get("deposit_amount")) || 0;
 

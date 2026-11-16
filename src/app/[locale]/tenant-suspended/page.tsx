@@ -7,10 +7,7 @@ export default async function TenantSuspendedPage({
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
-  const [t, params] = await Promise.all([
-    getTranslations("tenantSuspended"),
-    searchParams,
-  ]);
+  const [t, params] = await Promise.all([getTranslations("tenantSuspended"), searchParams]);
   const status = normalizeTenantLifecycleStatus(params.status);
   const isCancelled = status === "cancelled";
 

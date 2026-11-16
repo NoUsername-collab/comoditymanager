@@ -5,9 +5,7 @@ test.describe("Authentication", () => {
     // Use empty storage = not logged in
     test.use({ storageState: { cookies: [], origins: [] } });
 
-    test("admin pages redirect to login when not authenticated", async ({
-      page,
-    }) => {
+    test("admin pages redirect to login when not authenticated", async ({ page }) => {
       await page.goto("/admin");
 
       // Should redirect to login page or show login form
@@ -25,17 +23,14 @@ test.describe("Authentication", () => {
       expect(isOnLogin || hasAuthPrompt).toBeTruthy();
     });
 
-    test("admin API returns appropriate error for unauthenticated requests", async ({
-      page,
-    }) => {
+    test("admin API returns appropriate error for unauthenticated requests", async ({ page }) => {
       // The admin bookings page should not show booking data
       await page.goto("/admin/bookings");
       await page.waitForTimeout(3000);
 
       const url = page.url();
       // Should have been redirected away from bookings
-      const redirectedAway =
-        !url.endsWith("/admin/bookings") || url.includes("login");
+      const redirectedAway = !url.endsWith("/admin/bookings") || url.includes("login");
       expect(redirectedAway).toBeTruthy();
     });
   });
@@ -43,9 +38,7 @@ test.describe("Authentication", () => {
   test.describe("Login flow", () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
-    test("login page renders with username and password fields", async ({
-      page,
-    }) => {
+    test("login page renders with username and password fields", async ({ page }) => {
       await page.goto("/admin/login");
 
       await expect(page.locator("form")).toBeVisible({ timeout: 15_000 });
@@ -54,9 +47,7 @@ test.describe("Authentication", () => {
       await expect(page.locator('button[type="submit"]')).toBeVisible();
     });
 
-    test("login with empty password shows error or stays on login", async ({
-      page,
-    }) => {
+    test("login with empty password shows error or stays on login", async ({ page }) => {
       await page.goto("/admin/login");
       await expect(page.locator("form")).toBeVisible({ timeout: 15_000 });
 
@@ -76,9 +67,7 @@ test.describe("Authentication", () => {
     test("admin can access dashboard after login", async ({ page }) => {
       await page.goto("/admin");
       await expect(page).toHaveURL(/\/admin/);
-      await expect(
-        page.locator("text=Application error")
-      ).not.toBeVisible();
+      await expect(page.locator("text=Application error")).not.toBeVisible();
     });
 
     test("logout button exists and is accessible", async ({ page }) => {
@@ -86,7 +75,7 @@ test.describe("Authentication", () => {
 
       // Look for logout button or link
       const logout = page.locator(
-        'button:has-text("Logout"), button:has-text("Deconectare"), a:has-text("Logout"), a:has-text("Deconectare"), [data-action="logout"]'
+        'button:has-text("Logout"), button:has-text("Deconectare"), a:has-text("Logout"), a:has-text("Deconectare"), [data-action="logout"]',
       );
       // It may be in a menu, so we don't assert visibility — just that it exists in DOM
       const count = await logout.count();

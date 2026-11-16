@@ -29,19 +29,14 @@ export class PlatformAdminDbError extends Error {
   }
 }
 
-export function throwIfDbError(
-  context: string,
-  error: PostgrestError | null
-): void {
+export function throwIfDbError(context: string, error: PostgrestError | null): void {
   if (error) {
     throw new PlatformAdminDbError(context, error);
   }
 }
 
 /** Works across RSC → client error boundaries where instanceof breaks. */
-export function isPlatformAdminDbError(
-  error: unknown
-): error is PlatformAdminDbError {
+export function isPlatformAdminDbError(error: unknown): error is PlatformAdminDbError {
   if (error instanceof PlatformAdminDbError) return true;
   return error instanceof Error && error.name === "PlatformAdminDbError";
 }

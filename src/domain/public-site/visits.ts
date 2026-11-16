@@ -3,7 +3,8 @@
  * is its path and the site the visitor came from, nothing else.
  */
 
-const BOT = /bot|crawl|spider|slurp|preview|headless|lighthouse|pingdom|monitor|facebookexternalhit|embedly|python|curl|wget/i;
+const BOT =
+  /bot|crawl|spider|slurp|preview|headless|lighthouse|pingdom|monitor|facebookexternalhit|embedly|python|curl|wget/i;
 
 /** Robots, link previews and monitors are not visitors. */
 export function isLikelyBot(userAgent: string | null | undefined): boolean {

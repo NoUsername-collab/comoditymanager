@@ -6,10 +6,7 @@ import { effectivePublicTemplate } from "@/features/public-site/domain/template"
 import { PublicSiteBody } from "@/features/public-site/templates/PublicSiteTemplates";
 import { PublicOwnPageBody } from "@/features/public-site/templates/PublicOwnPage";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
-import {
-  publicThemeClassName,
-  resolvePublicSiteStyle,
-} from "@/features/public-site/themes/loader";
+import { publicThemeClassName, resolvePublicSiteStyle } from "@/features/public-site/themes/loader";
 import { PublicFooter } from "@/features/public-site/ui/PublicFooter";
 import { PublicHeader } from "@/features/public-site/ui/PublicHeader";
 import "@/styles/features/public/public-site.css";
@@ -38,7 +35,11 @@ export function PublicSitePreview({
     checkIn: config.checkInTime,
     checkOut: config.checkOutTime,
   });
-  const style = resolvePublicSiteStyle(config.themeId, config.chrome, effectivePublicTemplate(config));
+  const style = resolvePublicSiteStyle(
+    config.themeId,
+    config.chrome,
+    effectivePublicTemplate(config),
+  );
 
   return (
     <div
@@ -48,7 +49,12 @@ export function PublicSitePreview({
       style={style}
       data-pub-template={effectivePublicTemplate(config)}
     >
-      <PublicHeader config={config} locale={previewLocale} preview previewPath={page ? `/${page.slug}` : "/"} />
+      <PublicHeader
+        config={config}
+        locale={previewLocale}
+        preview
+        previewPath={page ? `/${page.slug}` : "/"}
+      />
 
       {page ? (
         <PublicOwnPageBody config={config} page={page} locale={previewLocale} preview />

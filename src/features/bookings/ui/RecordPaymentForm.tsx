@@ -13,13 +13,7 @@ type Props = {
   balanceDue: number;
 };
 
-const METHODS: PaymentMethod[] = [
-  "cash",
-  "card",
-  "transfer",
-  "online",
-  "other",
-];
+const METHODS: PaymentMethod[] = ["cash", "card", "transfer", "online", "other"];
 
 export function RecordPaymentForm({ bookingId, balanceDue }: Props) {
   const t = useTranslations("admin.financial");
@@ -29,7 +23,7 @@ export function RecordPaymentForm({ bookingId, balanceDue }: Props) {
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [amount, setAmount] = useState(
-    balanceDue > 0 ? String(Math.round(balanceDue * 100) / 100) : ""
+    balanceDue > 0 ? String(Math.round(balanceDue * 100) / 100) : "",
   );
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -123,11 +117,7 @@ export function RecordPaymentForm({ bookingId, balanceDue }: Props) {
         >
           {t("cancel")}
         </button>
-        <button
-          type="submit"
-          className="admin-btn admin-btn--primary"
-          disabled={pending}
-        >
+        <button type="submit" className="admin-btn admin-btn--primary" disabled={pending}>
           {pending ? t("saving") : t("savePayment")}
         </button>
       </div>

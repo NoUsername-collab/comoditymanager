@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export async function requireBuildingInTenant(
   supabase: SupabaseClient,
   tenantId: string,
-  buildingId: string
+  buildingId: string,
 ): Promise<void> {
   const { data, error } = await supabase
     .from("buildings")
@@ -20,7 +20,7 @@ export async function requireBuildingInTenant(
 export async function requireRoomInTenant(
   supabase: SupabaseClient,
   tenantId: string,
-  roomId: string
+  roomId: string,
 ): Promise<void> {
   const { data, error } = await supabase
     .from("rooms")
@@ -36,7 +36,7 @@ export async function requireRoomInTenant(
 export async function requireRoomsInTenant(
   supabase: SupabaseClient,
   tenantId: string,
-  roomIds: string[]
+  roomIds: string[],
 ): Promise<void> {
   const unique = [...new Set(roomIds.filter(Boolean))];
   if (unique.length === 0) return;
@@ -56,7 +56,7 @@ export async function requireRoomsInTenant(
 export async function requireRoomTypeInTenant(
   supabase: SupabaseClient,
   tenantId: string,
-  typeId: string
+  typeId: string,
 ): Promise<void> {
   const { data, error } = await supabase
     .from("room_type_definitions")

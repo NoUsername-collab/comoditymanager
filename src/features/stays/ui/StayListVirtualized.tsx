@@ -1,16 +1,10 @@
 "use client";
 
 import { useCallback, useRef } from "react";
-import {
-  STAY_CARD_VIRTUAL_ROW_H,
-} from "@/domain/stays/confirmed-buckets";
+import { STAY_CARD_VIRTUAL_ROW_H } from "@/domain/stays/confirmed-buckets";
 import { useWindowVirtualRange } from "@/hooks/useWindowVirtualRange";
 import { StayListItem } from "@/features/stays/ui/StayListItem";
-import type {
-  StayListLabels,
-  StayCardRow,
-  StayListVariant,
-} from "@/features/stays/ui/types";
+import type { StayListLabels, StayCardRow, StayListVariant } from "@/features/stays/ui/types";
 
 function StayListSpacer({ height }: { height: number }) {
   if (height <= 0) return null;

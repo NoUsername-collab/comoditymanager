@@ -16,9 +16,7 @@ export function StatisticsBarChart({
   return (
     <div className="statistics-bar-chart admin-surface-card p-4">
       <h3 className="text-sm font-semibold text-zinc-900">{title}</h3>
-      {caption && (
-        <p className="mt-0.5 text-xs text-zinc-500">{caption}</p>
-      )}
+      {caption && <p className="mt-0.5 text-xs text-zinc-500">{caption}</p>}
       <div className="mt-3 flex items-end justify-between gap-2 sm:gap-2.5">
         {items.map((item) => {
           const h = max > 0 ? Math.max(8, Math.round((item.value / max) * 100)) : 8;
@@ -31,10 +29,7 @@ export function StatisticsBarChart({
                   ? "bg-blue-500"
                   : "bg-zinc-400";
           return (
-            <div
-              key={item.label}
-              className="flex min-w-0 flex-1 flex-col items-center gap-1"
-            >
+            <div key={item.label} className="flex min-w-0 flex-1 flex-col items-center gap-1">
               <span className="text-[10px] font-bold tabular-nums text-zinc-700">
                 {item.value}
                 {valueSuffix}
@@ -44,9 +39,7 @@ export function StatisticsBarChart({
                 style={{ height: `${h}px` }}
                 title={`${item.label}: ${item.value}${valueSuffix}`}
               />
-              <span className="text-[10px] font-medium text-zinc-500">
-                {item.label}
-              </span>
+              <span className="text-[10px] font-medium text-zinc-500">{item.label}</span>
             </div>
           );
         })}

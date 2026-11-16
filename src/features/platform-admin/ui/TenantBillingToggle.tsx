@@ -43,9 +43,7 @@ export function TenantBillingToggle({
         onClick={toggle}
         disabled={pending}
         className={`tenant-billing-toggle min-h-[var(--ml-touch-min,2.75rem)] rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-          paying
-            ? "tenant-billing-toggle--paying"
-            : "tenant-billing-toggle--free"
+          paying ? "tenant-billing-toggle--paying" : "tenant-billing-toggle--free"
         } disabled:opacity-50`}
       >
         {pending ? t("pending") : paying ? t("paying") : t("free")}

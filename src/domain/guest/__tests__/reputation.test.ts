@@ -27,7 +27,7 @@ describe("computeCompletedStayStats", () => {
         { check_in: "2026-01-01", check_out: "2026-01-04" },
         { check_in: "2026-06-01", check_out: "2026-06-10" },
       ],
-      "2026-06-05"
+      "2026-06-05",
     );
 
     expect(stats.completed_stays).toBe(1);
@@ -38,7 +38,7 @@ describe("computeCompletedStayStats", () => {
   it("returns zeros when no completed stays", () => {
     const stats = computeCompletedStayStats(
       [{ check_in: "2026-06-01", check_out: "2026-06-10" }],
-      "2026-06-01"
+      "2026-06-01",
     );
 
     expect(stats.completed_stays).toBe(0);
@@ -100,7 +100,7 @@ describe("isReturningGuest", () => {
         completed_stays: 3,
         total_nights: 2,
         last_stay_check_out: null,
-      })
+      }),
     ).toBe(true);
   });
 
@@ -110,7 +110,7 @@ describe("isReturningGuest", () => {
         completed_stays: 1,
         total_nights: 10,
         last_stay_check_out: null,
-      })
+      }),
     ).toBe(true);
   });
 
@@ -122,8 +122,8 @@ describe("isReturningGuest", () => {
           total_nights: 4,
           last_stay_check_out: "2026-01-01",
         },
-        new Date("2026-06-01")
-      )
+        new Date("2026-06-01"),
+      ),
     ).toBe(true);
   });
 
@@ -133,7 +133,7 @@ describe("isReturningGuest", () => {
         completed_stays: 0,
         total_nights: 0,
         last_stay_check_out: null,
-      })
+      }),
     ).toBe(false);
   });
 });
@@ -154,7 +154,7 @@ describe("computeStayReviewEffectiveStars", () => {
       computeStayReviewEffectiveStars({
         polarity: "positive",
         intensity: 5,
-      })
+      }),
     ).toBe(5);
   });
 
@@ -163,7 +163,7 @@ describe("computeStayReviewEffectiveStars", () => {
       computeStayReviewEffectiveStars({
         polarity: "negative",
         intensity: 5,
-      })
+      }),
     ).toBe(1);
   });
 
@@ -172,7 +172,7 @@ describe("computeStayReviewEffectiveStars", () => {
       computeStayReviewEffectiveStars({
         polarity: "negative",
         intensity: 1,
-      })
+      }),
     ).toBe(5);
   });
 });
@@ -183,9 +183,7 @@ describe("computeGuestProfileSnapshot", () => {
     const snapshot = computeGuestProfileSnapshot({
       current,
       today: "2026-06-10",
-      completedStayBookings: [
-        { check_in: "2026-01-01", check_out: "2026-01-04" },
-      ],
+      completedStayBookings: [{ check_in: "2026-01-01", check_out: "2026-01-04" }],
       reviews: [
         {
           booking_id: "b1",

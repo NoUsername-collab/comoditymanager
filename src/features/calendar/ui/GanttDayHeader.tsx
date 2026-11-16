@@ -2,10 +2,7 @@
 
 import { memo, type PointerEvent as ReactPointerEvent } from "react";
 import { useTranslations } from "next-intl";
-import {
-  formatWeekdayNarrow,
-  formatWeekdayShort,
-} from "@/lib/ro-calendar";
+import { formatWeekdayNarrow, formatWeekdayShort } from "@/lib/ro-calendar";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import {
   ganttDayGridStyle,
@@ -78,10 +75,7 @@ export const GanttDayHeader = memo(function GanttDayHeader({
       {columns.map((col) => (
         <div key={col.iso} className="gantt-day-header-col flex min-w-0 flex-col">
           <span
-            className={[
-              "gantt-day-today-above",
-              !col.isToday && "invisible",
-            ].join(" ")}
+            className={["gantt-day-today-above", !col.isToday && "invisible"].join(" ")}
             aria-hidden={!col.isToday}
           >
             {todayLabel}
@@ -97,9 +91,7 @@ export const GanttDayHeader = memo(function GanttDayHeader({
               .join(" ")}
             onClick={() => handleDayClick(col.iso)}
             aria-label={
-              onDayDrillDown
-                ? tCommon("ganttDrillDownAria", { date: col.iso })
-                : undefined
+              onDayDrillDown ? tCommon("ganttDrillDownAria", { date: col.iso }) : undefined
             }
             disabled={!onDayDrillDown}
           >
@@ -109,9 +101,7 @@ export const GanttDayHeader = memo(function GanttDayHeader({
                 : col.dayNum}
             </span>
             <span className="gantt-day-header-cell__weekday">
-              {compact
-                ? formatWeekdayNarrow(col.iso, locale)
-                : formatWeekdayShort(col.iso, locale)}
+              {compact ? formatWeekdayNarrow(col.iso, locale) : formatWeekdayShort(col.iso, locale)}
             </span>
             {columnGranularity !== "week" ? (
               <span

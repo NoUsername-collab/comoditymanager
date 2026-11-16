@@ -97,8 +97,7 @@ function parseTimeField(raw: unknown): string | null {
 function mapRow(row: Record<string, unknown>): CheckinSettings {
   return {
     pension_display_name:
-      String(row.display_name ?? "").trim() ||
-      DEFAULT_CHECKIN_SETTINGS.pension_display_name,
+      String(row.display_name ?? "").trim() || DEFAULT_CHECKIN_SETTINGS.pension_display_name,
     checkin_doc_rule:
       (row.checkin_doc_rule as CheckinSettings["checkin_doc_rule"]) ??
       DEFAULT_CHECKIN_SETTINGS.checkin_doc_rule,
@@ -112,8 +111,7 @@ function mapRow(row: Record<string, unknown>): CheckinSettings {
       (row.checkin_payment_rule as CheckinSettings["checkin_payment_rule"]) ??
       DEFAULT_CHECKIN_SETTINGS.checkin_payment_rule,
     checkin_min_payment_pct:
-      Number(row.checkin_min_payment_pct) ||
-      DEFAULT_CHECKIN_SETTINGS.checkin_min_payment_pct,
+      Number(row.checkin_min_payment_pct) || DEFAULT_CHECKIN_SETTINGS.checkin_min_payment_pct,
     checkin_deposit: Boolean(row.checkin_deposit),
     checkin_deposit_amount: Number(row.checkin_deposit_amount) || 0,
     walkin_allowed:
@@ -161,27 +159,18 @@ function mapRow(row: Record<string, unknown>): CheckinSettings {
       (row.checkin_ids_per_room as CheckinSettings["checkin_ids_per_room"]) ??
       DEFAULT_CHECKIN_SETTINGS.checkin_ids_per_room,
     checkin_ids_per_room_custom:
-      row.checkin_ids_per_room_custom != null
-        ? Number(row.checkin_ids_per_room_custom)
-        : null,
+      row.checkin_ids_per_room_custom != null ? Number(row.checkin_ids_per_room_custom) : null,
     fisa_property_address:
-      row.fisa_property_address != null
-        ? String(row.fisa_property_address)
-        : null,
-    fisa_owner_cui:
-      row.fisa_owner_cui != null ? String(row.fisa_owner_cui) : null,
+      row.fisa_property_address != null ? String(row.fisa_property_address) : null,
+    fisa_owner_cui: row.fisa_owner_cui != null ? String(row.fisa_owner_cui) : null,
     fisa_tourism_license:
-      row.fisa_tourism_license != null
-        ? String(row.fisa_tourism_license)
-        : null,
+      row.fisa_tourism_license != null ? String(row.fisa_tourism_license) : null,
   };
 }
 
 // ── Read ────────────────────────────────────────────────────
 
-async function loadCheckinSettingsRow(
-  tenantId: string,
-): Promise<Record<string, unknown> | null> {
+async function loadCheckinSettingsRow(tenantId: string): Promise<Record<string, unknown> | null> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("pension_settings")
@@ -193,31 +182,23 @@ async function loadCheckinSettingsRow(
   return (data as Record<string, unknown> | null) ?? null;
 }
 
-async function getCheckinSettingsUncached(
-  tenantId: string,
-): Promise<CheckinSettings> {
+async function getCheckinSettingsUncached(tenantId: string): Promise<CheckinSettings> {
   const data = await loadCheckinSettingsRow(tenantId);
   if (!data) return { ...DEFAULT_CHECKIN_SETTINGS };
   return mapRow(data);
 }
 
 const getCachedCheckinSettings = (tenantId: string) =>
-  unstable_cache(
-    () => getCheckinSettingsUncached(tenantId),
-    ["checkin-settings", tenantId],
-    {
-      tags: [
-        CACHE_TAGS.pensionSettings,
-        tenantTag(tenantId, CACHE_TAGS.pensionSettings),
-        checkinSettingsCacheTag(tenantId),
-      ],
-      revalidate: 300,
-    }
-  );
+  unstable_cache(() => getCheckinSettingsUncached(tenantId), ["checkin-settings", tenantId], {
+    tags: [
+      CACHE_TAGS.pensionSettings,
+      tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+      checkinSettingsCacheTag(tenantId),
+    ],
+    revalidate: 300,
+  });
 
-const loadCheckinSettings = cache((tenantId: string) =>
-  getCachedCheckinSettings(tenantId)()
-);
+const loadCheckinSettings = cache((tenantId: string) => getCachedCheckinSettings(tenantId)());
 
 type CheckinDeparturePolicy = {
   earlyCheckoutAllowed: boolean;
@@ -228,9 +209,7 @@ type CheckinDeparturePolicy = {
 const DEPARTURE_POLICY_SELECT =
   "default_check_out_time, early_checkout_allowed, early_checkout_fee, checkout_time_until";
 
-function mapDeparturePolicyRow(
-  row: Record<string, unknown>,
-): CheckinDeparturePolicy {
+function mapDeparturePolicyRow(row: Record<string, unknown>): CheckinDeparturePolicy {
   return {
     earlyCheckoutAllowed:
       row.early_checkout_allowed != null
@@ -297,51 +276,37 @@ export async function getCheckinSettings(): Promise<CheckinSettings> {
 
 // ── Update ──────────────────────────────────────────────────
 
-export async function updateCheckinSettings(
-  input: Partial<CheckinSettings>,
-): Promise<void> {
+export async function updateCheckinSettings(input: Partial<CheckinSettings>): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
 
   // Build the update object — only include fields that were provided
   const update: Record<string, unknown> = {};
-  if (input.checkin_doc_rule != null)
-    update.checkin_doc_rule = input.checkin_doc_rule;
-  if (input.checkin_phone_rule != null)
-    update.checkin_phone_rule = input.checkin_phone_rule;
-  if (input.checkin_cnp_rule != null)
-    update.checkin_cnp_rule = input.checkin_cnp_rule;
-  if (input.checkin_payment_rule != null)
-    update.checkin_payment_rule = input.checkin_payment_rule;
+  if (input.checkin_doc_rule != null) update.checkin_doc_rule = input.checkin_doc_rule;
+  if (input.checkin_phone_rule != null) update.checkin_phone_rule = input.checkin_phone_rule;
+  if (input.checkin_cnp_rule != null) update.checkin_cnp_rule = input.checkin_cnp_rule;
+  if (input.checkin_payment_rule != null) update.checkin_payment_rule = input.checkin_payment_rule;
   if (input.checkin_min_payment_pct != null)
     update.checkin_min_payment_pct = input.checkin_min_payment_pct;
-  if (input.checkin_deposit != null)
-    update.checkin_deposit = input.checkin_deposit;
+  if (input.checkin_deposit != null) update.checkin_deposit = input.checkin_deposit;
   if (input.checkin_deposit_amount != null)
     update.checkin_deposit_amount = input.checkin_deposit_amount;
-  if (input.walkin_allowed != null)
-    update.walkin_allowed = input.walkin_allowed;
-  if (input.group_checkin_mode != null)
-    update.group_checkin_mode = input.group_checkin_mode;
+  if (input.walkin_allowed != null) update.walkin_allowed = input.walkin_allowed;
+  if (input.group_checkin_mode != null) update.group_checkin_mode = input.group_checkin_mode;
   if (input.late_checkout_allowed != null)
     update.late_checkout_allowed = input.late_checkout_allowed;
-  if (input.late_checkout_fee != null)
-    update.late_checkout_fee = input.late_checkout_fee;
+  if (input.late_checkout_fee != null) update.late_checkout_fee = input.late_checkout_fee;
   if (input.checkout_block_unpaid != null)
     update.checkout_block_unpaid = input.checkout_block_unpaid;
   if (input.allow_post_checkout_edits != null)
     update.allow_post_checkout_edits = input.allow_post_checkout_edits;
   if (input.early_checkin_allowed != null)
     update.early_checkin_allowed = input.early_checkin_allowed;
-  if (input.early_checkin_fee != null)
-    update.early_checkin_fee = input.early_checkin_fee;
+  if (input.early_checkin_fee != null) update.early_checkin_fee = input.early_checkin_fee;
   if (input.early_checkout_allowed != null)
     update.early_checkout_allowed = input.early_checkout_allowed;
-  if (input.early_checkout_fee != null)
-    update.early_checkout_fee = input.early_checkout_fee;
-  if (input.checkin_key_rule != null)
-    update.checkin_key_rule = input.checkin_key_rule;
-  if (input.checkin_ids_per_room != null)
-    update.checkin_ids_per_room = input.checkin_ids_per_room;
+  if (input.early_checkout_fee != null) update.early_checkout_fee = input.early_checkout_fee;
+  if (input.checkin_key_rule != null) update.checkin_key_rule = input.checkin_key_rule;
+  if (input.checkin_ids_per_room != null) update.checkin_ids_per_room = input.checkin_ids_per_room;
   if (input.checkin_ids_per_room_custom !== undefined)
     update.checkin_ids_per_room_custom = input.checkin_ids_per_room_custom;
 
@@ -364,7 +329,7 @@ export async function updateCheckinSettings(
 
 async function ensurePensionSettingsRow(
   tenantId: string,
-  supabase: Awaited<ReturnType<typeof getTenantScope>>["supabase"]
+  supabase: Awaited<ReturnType<typeof getTenantScope>>["supabase"],
 ): Promise<void> {
   const { data: existing, error: readError } = await supabase
     .from("pension_settings")

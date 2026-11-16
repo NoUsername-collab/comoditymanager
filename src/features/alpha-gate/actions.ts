@@ -14,9 +14,7 @@ export async function unlockAlphaGateAction(formData: FormData) {
   }
 
   const password = String(formData.get("password") ?? "");
-  const next = sanitizeAlphaGateReturnPath(
-    String(formData.get("next") ?? "/")
-  );
+  const next = sanitizeAlphaGateReturnPath(String(formData.get("next") ?? "/"));
 
   if (!verifyAlphaGatePassword(password)) {
     return { error: "wrongPassword" as const };

@@ -11,20 +11,16 @@ describe("tourist-sheet-address", () => {
         street: "Str. Mihai Viteazu nr. 12",
         locality: "Sinaia",
         county: "Prahova",
-      })
+      }),
     ).toBe("Str. Mihai Viteazu nr. 12, Sinaia, Prahova");
   });
 
   it("returns null when all parts are empty", () => {
-    expect(
-      formatTouristSheetAddress({ street: "", locality: "", county: "" })
-    ).toBeNull();
+    expect(formatTouristSheetAddress({ street: "", locality: "", county: "" })).toBeNull();
   });
 
   it("parses legacy comma-separated addresses", () => {
-    expect(
-      parseTouristSheetAddress("Str. X nr. 1, Brașov, Brașov")
-    ).toEqual({
+    expect(parseTouristSheetAddress("Str. X nr. 1, Brașov, Brașov")).toEqual({
       street: "Str. X nr. 1",
       locality: "Brașov",
       county: "Brașov",

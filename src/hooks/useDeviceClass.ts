@@ -1,21 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  detectDeviceFromUserAgent,
-  type DeviceClass,
-  isTouchDeviceClass,
-} from "@/lib/device";
+import { detectDeviceFromUserAgent, type DeviceClass, isTouchDeviceClass } from "@/lib/device";
 
 function readDeviceFromDom(): DeviceClass {
   if (typeof document === "undefined") return "desktop";
   const attr = document.documentElement.getAttribute("data-device");
-  if (
-    attr === "android" ||
-    attr === "ios" ||
-    attr === "mobile" ||
-    attr === "desktop"
-  ) {
+  if (attr === "android" || attr === "ios" || attr === "mobile" || attr === "desktop") {
     return attr;
   }
   return detectDeviceFromUserAgent(navigator.userAgent);

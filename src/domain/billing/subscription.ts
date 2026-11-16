@@ -57,20 +57,25 @@ export function billingStateFromSubscription(
   prices: StripePrices,
 ): TenantBillingState {
   const plan = planForPrice(sub.priceId, prices);
-  const keepsPlan = sub.status === "active" || sub.status === "trialing" || sub.status === "past_due";
+  const keepsPlan =
+    sub.status === "active" || sub.status === "trialing" || sub.status === "past_due";
   const paid = keepsPlan && plan != null;
   return {
     planId: paid ? plan : "free",
     isPaying: paid,
     subscriptionStatus: sub.status,
-    currentPeriodEnd: sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd * 1000).toISOString() : null,
+    currentPeriodEnd: sub.currentPeriodEnd
+      ? new Date(sub.currentPeriodEnd * 1000).toISOString()
+      : null,
     cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
   };
 }
 
 /** Whether the tenant already pays by card (then plan changes go through the portal). */
 export function hasLiveSubscription(status: string | null | undefined): boolean {
-  return status === "active" || status === "trialing" || status === "past_due" || status === "incomplete";
+  return (
+    status === "active" || status === "trialing" || status === "past_due" || status === "incomplete"
+  );
 }
 
 /** What the billing page says about how the plan is paid. */

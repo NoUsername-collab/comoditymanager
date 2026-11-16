@@ -9,12 +9,7 @@ export type LayoutOrientation = "portrait" | "landscape";
 export type LayoutChrome = "compact" | "wide";
 
 /** Which app surface owns the shell. */
-export type LayoutSurface =
-  | "admin"
-  | "public"
-  | "platform"
-  | "platform-admin"
-  | "auth";
+export type LayoutSurface = "admin" | "public" | "platform" | "platform-admin" | "auth";
 
 export type MobileLayoutState = {
   mode: LayoutMode;

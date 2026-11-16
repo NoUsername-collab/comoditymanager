@@ -54,7 +54,11 @@ export function MenuEditor() {
   // Every place a link can go, grouped as the picker lists them.
   const pageOptions: TargetOption[] = [
     { value: "home", label: te("targets.home") },
-    ...draft.pages.map((page) => ({ value: `page:${page.key}`, label: pageName(page.key), hidden: !page.visible })),
+    ...draft.pages.map((page) => ({
+      value: `page:${page.key}`,
+      label: pageName(page.key),
+      hidden: !page.visible,
+    })),
   ];
   const sectionOptions: TargetOption[] = [
     ...draft.sections.map((section) => ({
@@ -100,9 +104,19 @@ export function MenuEditor() {
     }
   }
 
-  const newItem = (): PublicMenuItem => ({ id: crypto.randomUUID(), kind: "page", ref: "", label: {} });
+  const newItem = (): PublicMenuItem => ({
+    id: crypto.randomUUID(),
+    kind: "page",
+    ref: "",
+    label: {},
+  });
 
-  function renderItem(item: PublicMenuItem, index: number, list: PublicMenuItem[], parentId: string | null) {
+  function renderItem(
+    item: PublicMenuItem,
+    index: number,
+    list: PublicMenuItem[],
+    parentId: string | null,
+  ) {
     const value = menuTargetValue(item);
     const fallback = defaultName(item);
     const ownLabel = item.label[locale] ?? "";
@@ -118,7 +132,9 @@ export function MenuEditor() {
     return (
       <li key={item.id} className="pub-menu-editor__item" data-sub={parentId ? "1" : undefined}>
         <div className="pub-menu-editor__head">
-          <span className="pub-menu-editor__name">{ownLabel.trim() || fallback || te("unnamed")}</span>
+          <span className="pub-menu-editor__name">
+            {ownLabel.trim() || fallback || te("unnamed")}
+          </span>
           <div className="pub-menu-editor__tools">
             <button
               type="button"
@@ -177,7 +193,11 @@ export function MenuEditor() {
             <select
               value={missing ? "" : value === "page:" || value === "section:" ? "" : value}
               disabled={readOnly}
-              onChange={(event) => setMenu((m) => patchMenuItem(m, item.id, (row) => withMenuTarget(row, event.target.value)))}
+              onChange={(event) =>
+                setMenu((m) =>
+                  patchMenuItem(m, item.id, (row) => withMenuTarget(row, event.target.value)),
+                )
+              }
             >
               <option value="" disabled>
                 {missing ? te("targetGone") : te("pick")}
@@ -203,7 +223,9 @@ export function MenuEditor() {
                 placeholder="https://"
                 disabled={readOnly}
                 onChange={(event) =>
-                  setMenu((m) => patchMenuItem(m, item.id, (row) => ({ ...row, ref: event.target.value })))
+                  setMenu((m) =>
+                    patchMenuItem(m, item.id, (row) => ({ ...row, ref: event.target.value })),
+                  )
                 }
               />
             </label>
@@ -216,7 +238,9 @@ export function MenuEditor() {
               placeholder={fallback || (item.kind === "group" ? te("groupPlaceholder") : "")}
               disabled={readOnly}
               aria-invalid={needsLabel || undefined}
-              onChange={(event) => setMenu((m) => setMenuLabel(m, item.id, locale, event.target.value))}
+              onChange={(event) =>
+                setMenu((m) => setMenuLabel(m, item.id, locale, event.target.value))
+              }
             />
           </label>
         </div>
@@ -227,7 +251,9 @@ export function MenuEditor() {
         ) : null}
         {parentId === null && item.children?.length ? (
           <ol className="pub-menu-editor__list pub-menu-editor__list--sub">
-            {item.children.map((child, childIndex) => renderItem(child, childIndex, item.children!, item.id))}
+            {item.children.map((child, childIndex) =>
+              renderItem(child, childIndex, item.children!, item.id),
+            )}
           </ol>
         ) : null}
         {parentId === null && (item.kind === "group" || item.children?.length) ? (
@@ -248,7 +274,9 @@ export function MenuEditor() {
     <div className="pub-menu-editor">
       <p className="pub-menu-editor__hint">{te("hint")}</p>
       {menu.length === 0 ? <p className="pub-menu-editor__empty">{te("empty")}</p> : null}
-      <ol className="pub-menu-editor__list">{menu.map((item, index) => renderItem(item, index, menu, null))}</ol>
+      <ol className="pub-menu-editor__list">
+        {menu.map((item, index) => renderItem(item, index, menu, null))}
+      </ol>
       <AdminButton
         type="button"
         variant="secondary"

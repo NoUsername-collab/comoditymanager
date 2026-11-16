@@ -23,7 +23,12 @@ export async function AdminCorner({
   const t = await getTranslations("public.staffBar");
 
   return (
-    <div className={["pub-staff-bar", className].filter(Boolean).join(" ")} style={style} role="region" aria-label={t("aria")}>
+    <div
+      className={["pub-staff-bar", className].filter(Boolean).join(" ")}
+      style={style}
+      role="region"
+      aria-label={t("aria")}
+    >
       <span className="pub-staff-bar__note">{t("signedIn")}</span>
       <Link href="/admin" className="pub-staff-bar__link">
         {t("panel")}

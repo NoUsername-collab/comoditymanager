@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  rebookLastStayAction,
-  rebookNextYearAction,
-} from "@/features/guests/actions";
+import { rebookLastStayAction, rebookNextYearAction } from "@/features/guests/actions";
 import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
@@ -27,11 +24,7 @@ function RebookButton({
     <AdminPendingForm
       action={action}
       onSubmit={(e) => {
-        if (
-          !confirm(
-            tGuests("rebook.confirm", { label })
-          )
-        ) {
+        if (!confirm(tGuests("rebook.confirm", { label }))) {
           e.preventDefault();
         }
       }}

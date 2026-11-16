@@ -12,15 +12,9 @@ describe("fiscal submission idempotency", () => {
   it("builds stable keys per tenant and invoice", () => {
     const tenant = "11111111-1111-1111-1111-111111111111";
     const invoice = "22222222-2222-2222-2222-222222222222";
-    expect(buildIdempotencyKey(tenant, invoice)).toBe(
-      `fiscal:${tenant}:${invoice}`
-    );
-    expect(buildIdempotencyKey(tenant, invoice)).toBe(
-      buildIdempotencyKey(tenant, invoice)
-    );
-    expect(buildIdempotencyKey(tenant, "other")).not.toBe(
-      buildIdempotencyKey(tenant, invoice)
-    );
+    expect(buildIdempotencyKey(tenant, invoice)).toBe(`fiscal:${tenant}:${invoice}`);
+    expect(buildIdempotencyKey(tenant, invoice)).toBe(buildIdempotencyKey(tenant, invoice));
+    expect(buildIdempotencyKey(tenant, "other")).not.toBe(buildIdempotencyKey(tenant, invoice));
   });
 
   it("hashes payload deterministically", () => {
@@ -65,7 +59,7 @@ describe("fiscal submission retry eligibility", () => {
         maxAttempts: 5,
         updatedAt,
         now: new Date("2026-01-01T12:00:30Z"),
-      })
+      }),
     ).toBe(false);
     expect(
       isFiscalRetryEligible({
@@ -74,7 +68,7 @@ describe("fiscal submission retry eligibility", () => {
         maxAttempts: 5,
         updatedAt,
         now: new Date("2026-01-01T12:02:00Z"),
-      })
+      }),
     ).toBe(true);
   });
 
@@ -86,7 +80,7 @@ describe("fiscal submission retry eligibility", () => {
         maxAttempts: 5,
         updatedAt: new Date("2020-01-01"),
         now: new Date("2030-01-01"),
-      })
+      }),
     ).toBe(false);
   });
 });

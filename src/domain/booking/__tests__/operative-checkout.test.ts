@@ -13,7 +13,7 @@ describe("isOverdueUnclosedStay", () => {
         plannedCheckOut: "2026-06-12",
         today: "2026-06-24",
         actualCheckOutAt: null,
-      })
+      }),
     ).toBe(true);
   });
 
@@ -23,7 +23,7 @@ describe("isOverdueUnclosedStay", () => {
         plannedCheckOut: "2026-06-12",
         today: "2026-06-24",
         actualCheckOutAt: "2026-06-12T12:00:00.000Z",
-      })
+      }),
     ).toBe(false);
   });
 
@@ -33,7 +33,7 @@ describe("isOverdueUnclosedStay", () => {
         plannedCheckOut: "2026-06-12",
         today: "2026-06-12",
         actualCheckOutAt: null,
-      })
+      }),
     ).toBe(false);
   });
 });
@@ -50,28 +50,20 @@ describe("daysSincePlannedCheckout", () => {
 
 describe("defaultOperativeCheckoutDatetime", () => {
   it("uses planned checkout date and configured hour", () => {
-    expect(
-      defaultOperativeCheckoutDatetime("2026-06-12", "12:00:00")
-    ).toBe("2026-06-12T12:00");
+    expect(defaultOperativeCheckoutDatetime("2026-06-12", "12:00:00")).toBe("2026-06-12T12:00");
   });
 
   it("falls back to default checkout time when hour missing", () => {
-    expect(defaultOperativeCheckoutDatetime("2026-06-12", null)).toBe(
-      "2026-06-12T11:00"
-    );
+    expect(defaultOperativeCheckoutDatetime("2026-06-12", null)).toBe("2026-06-12T11:00");
   });
 });
 
 describe("shouldApplyEarlyDeparturePolicy", () => {
   it("skips policy for overdue unclosed stays", () => {
-    expect(
-      shouldApplyEarlyDeparturePolicy("2026-06-12", "2026-06-24", null)
-    ).toBe(false);
+    expect(shouldApplyEarlyDeparturePolicy("2026-06-12", "2026-06-24", null)).toBe(false);
   });
 
   it("applies policy on departure day", () => {
-    expect(
-      shouldApplyEarlyDeparturePolicy("2026-06-12", "2026-06-12", null)
-    ).toBe(true);
+    expect(shouldApplyEarlyDeparturePolicy("2026-06-12", "2026-06-12", null)).toBe(true);
   });
 });

@@ -4,8 +4,7 @@ import { undoActivityLogAction } from "@/features/activity/actions";
 import { undoGanttCreateAction } from "@/features/calendar/actions";
 
 type UndoPayload =
-  | { logId: string }
-  | { kind: "hold" | "block"; id?: string; ids?: string[]; logId?: string };
+  { logId: string } | { kind: "hold" | "block"; id?: string; ids?: string[]; logId?: string };
 
 export function showGanttCreateUndoToast(
   showToast: ReturnType<typeof useAdminFx>["showToast"],
@@ -17,7 +16,7 @@ export function showGanttCreateUndoToast(
     actionLabel: string;
     undoneTitle: string;
     undoneMessage: string;
-  }
+  },
 ) {
   showToast({
     kind: "success",
@@ -28,9 +27,7 @@ export function showGanttCreateUndoToast(
       const run =
         "logId" in undo && undo.logId
           ? undoActivityLogAction(undo.logId)
-          : undoGanttCreateAction(
-              undo as { kind: "hold" | "block"; id?: string; ids?: string[] }
-            );
+          : undoGanttCreateAction(undo as { kind: "hold" | "block"; id?: string; ids?: string[] });
 
       void run.then((res) => {
         if (res.ok) {

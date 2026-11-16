@@ -26,18 +26,12 @@ async function countNewRequestsUncached(tenantId: string): Promise<number> {
 }
 
 const getCachedNewRequestCount = (tenantId: string) =>
-  unstable_cache(
-    () => countNewRequestsUncached(tenantId),
-    ["new-request-count", tenantId],
-    {
-      tags: [CACHE_TAGS.bookingCounts, `tenant-${tenantId}-requests`],
-      revalidate: 30,
-    }
-  );
+  unstable_cache(() => countNewRequestsUncached(tenantId), ["new-request-count", tenantId], {
+    tags: [CACHE_TAGS.bookingCounts, `tenant-${tenantId}-requests`],
+    revalidate: 30,
+  });
 
-const loadNewRequestCount = cache((tenantId: string) =>
-  getCachedNewRequestCount(tenantId)()
-);
+const loadNewRequestCount = cache((tenantId: string) => getCachedNewRequestCount(tenantId)());
 
 /** Per-request dedupe + 30s cross-request cache (busted via bookingCounts tag). */
 export async function countNewRequests(): Promise<number> {
@@ -51,9 +45,7 @@ export const REQUEST_LIST_PAGE_SIZE = 30;
 /** Hard cap per page load — keeps guest profile batch bounded. */
 export const REQUEST_LIST_MAX_SHOWN = 200;
 
-async function listNewRequestsUnassignedQuery(
-  tenantId: string
-): Promise<BookingRow[]> {
+async function listNewRequestsUnassignedQuery(tenantId: string): Promise<BookingRow[]> {
   const supabase = createPublicAdminClient();
   const [assignedResult, requestResult] = await Promise.all([
     supabase
@@ -73,11 +65,9 @@ async function listNewRequestsUnassignedQuery(
   if (assignedResult.error) throw new Error(assignedResult.error.message);
   if (requestResult.error) throw new Error(requestResult.error.message);
 
-  const assignedIds = new Set(
-    (assignedResult.data ?? []).map((row) => String(row.booking_id))
-  );
+  const assignedIds = new Set((assignedResult.data ?? []).map((row) => String(row.booking_id)));
   const unassigned = ((requestResult.data ?? []) as unknown as BookingSelectRow[]).filter(
-    (row) => !assignedIds.has(row.id)
+    (row) => !assignedIds.has(row.id),
   );
 
   return attachGuestProfiles(mapBookingRows(unassigned));
@@ -88,22 +78,17 @@ const getCachedUnassignedRequests = (tenantId: string) =>
     () => listNewRequestsUnassignedQuery(tenantId),
     ["new-requests-unassigned", tenantId],
     {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-      ],
+      tags: [CACHE_TAGS.bookingCounts, tenantTag(tenantId, CACHE_TAGS.bookingCounts)],
       revalidate: 30,
-    }
+    },
   );
 
-const loadUnassignedRequests = cache((tenantId: string) =>
-  getCachedUnassignedRequests(tenantId)()
-);
+const loadUnassignedRequests = cache((tenantId: string) => getCachedUnassignedRequests(tenantId)());
 
 async function listNewRequestsWithSelect(
   tenantId: string,
   select: string,
-  options?: { limit?: number; offset?: number }
+  options?: { limit?: number; offset?: number },
 ): Promise<BookingRow[]> {
   const supabase = createPublicAdminClient();
   let query = supabase
@@ -122,33 +107,27 @@ async function listNewRequestsWithSelect(
   const { data, error } = await query;
   if (error) throw new Error(error.message);
 
-  return attachGuestProfiles(
-    mapBookingRows((data ?? []) as unknown as BookingSelectRow[])
-  );
+  return attachGuestProfiles(mapBookingRows((data ?? []) as unknown as BookingSelectRow[]));
 }
 
 const getCachedNewRequestPreview = (tenantId: string, limit: number) =>
   unstable_cache(
-    () =>
-      listNewRequestsWithSelect(tenantId, BOOKING_ROW_SELECT, { limit }),
+    () => listNewRequestsWithSelect(tenantId, BOOKING_ROW_SELECT, { limit }),
     ["new-requests-preview", tenantId, String(limit)],
     {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-      ],
+      tags: [CACHE_TAGS.bookingCounts, tenantTag(tenantId, CACHE_TAGS.bookingCounts)],
       revalidate: 30,
-    }
+    },
   );
 
 const loadNewRequestPreview = cache((tenantId: string, limit: number) =>
-  getCachedNewRequestPreview(tenantId, limit)()
+  getCachedNewRequestPreview(tenantId, limit)(),
 );
 
 /** Paginated new requests for the bookings queue (light select, no full-table scan). */
 export async function listNewRequestsPage(
   limit = REQUEST_LIST_PAGE_SIZE,
-  offset = 0
+  offset = 0,
 ): Promise<BookingRow[]> {
   const capped = Math.min(Math.max(1, limit), REQUEST_LIST_MAX_SHOWN);
   const tenantId = await resolveTenantIdForData();

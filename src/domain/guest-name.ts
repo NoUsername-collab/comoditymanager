@@ -1,8 +1,5 @@
 /** Nume complet pentru liste / detalii: „Popescu Maria” */
-export function formatGuestFullName(
-  lastName: string,
-  firstName: string
-): string {
+export function formatGuestFullName(lastName: string, firstName: string): string {
   return `${lastName.trim()} ${firstName.trim()}`.trim();
 }
 
@@ -10,7 +7,7 @@ export function formatGuestFullName(
 export function formatGuestGanttLabel(
   lastName: string | null | undefined,
   firstName: string | null | undefined,
-  fallbackFullName?: string | null
+  fallbackFullName?: string | null,
 ): string {
   const last = lastName?.trim() ?? "";
   const first = firstName?.trim() ?? "";
@@ -37,7 +34,7 @@ export function formatGuestGanttLabel(
 export function formatGuestGanttCompactLabel(
   lastName: string | null | undefined,
   firstName: string | null | undefined,
-  fallbackFullName?: string | null
+  fallbackFullName?: string | null,
 ): string {
   const last = lastName?.trim() ?? "";
   const first = firstName?.trim() ?? "";
@@ -49,9 +46,7 @@ export function formatGuestGanttCompactLabel(
   }
   if (last) {
     const li = last.charAt(0).toLocaleUpperCase("ro-RO");
-    return last.length >= 2
-      ? `${li}.${last.charAt(1).toLocaleUpperCase("ro-RO")}.`
-      : `${li}.`;
+    return last.length >= 2 ? `${li}.${last.charAt(1).toLocaleUpperCase("ro-RO")}.` : `${li}.`;
   }
 
   const fb = fallbackFullName?.trim();
@@ -73,7 +68,7 @@ export function formatGuestGanttCompactLabel(
 export function guestInitials(
   lastName: string | null | undefined,
   firstName: string | null | undefined,
-  fallbackFullName?: string | null
+  fallbackFullName?: string | null,
 ): string {
   const last = lastName?.trim() ?? "";
   const first = firstName?.trim() ?? "";
@@ -86,9 +81,7 @@ export function guestInitials(
   const fb = fallbackFullName?.trim() ?? "";
   const parts = fb.split(/\s+/).filter(Boolean);
   if (parts.length >= 2) {
-    return `${parts[0].charAt(0)}${parts[1].charAt(0)}`.toLocaleUpperCase(
-      "ro-RO"
-    );
+    return `${parts[0].charAt(0)}${parts[1].charAt(0)}`.toLocaleUpperCase("ro-RO");
   }
   if (fb.length >= 2) return fb.slice(0, 2).toLocaleUpperCase("ro-RO");
   return fb.slice(0, 1).toLocaleUpperCase("ro-RO") || "?";

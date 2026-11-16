@@ -41,7 +41,7 @@ function lineDescription(lines: unknown): string {
 
 function mapInvoiceRow(
   row: Record<string, unknown>,
-  source: "invoice" | "proforma"
+  source: "invoice" | "proforma",
 ): AccountingExportRow {
   return {
     source,
@@ -64,13 +64,13 @@ function mapInvoiceRow(
 
 async function loadFiscalInvoicesForPeriod(
   tenantId: string,
-  bounds: PeriodBounds
+  bounds: PeriodBounds,
 ): Promise<AccountingExportRow[]> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("booking_invoices")
     .select(
-      "booking_id, series, invoice_number, display_number, issued_at, buyer_name, buyer_email, buyer_phone, seller_cui, check_in, check_out, subtotal, total, lines, invoice_kind"
+      "booking_id, series, invoice_number, display_number, issued_at, buyer_name, buyer_email, buyer_phone, seller_cui, check_in, check_out, subtotal, total, lines, invoice_kind",
     )
     .eq("tenant_id", tenantId)
     .eq("status", "issued")
@@ -89,13 +89,13 @@ async function loadFiscalInvoicesForPeriod(
 
 async function loadProformasForPeriod(
   tenantId: string,
-  bounds: PeriodBounds
+  bounds: PeriodBounds,
 ): Promise<AccountingExportRow[]> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("booking_invoices")
     .select(
-      "booking_id, series, invoice_number, display_number, issued_at, buyer_name, buyer_email, buyer_phone, seller_cui, check_in, check_out, subtotal, total, lines"
+      "booking_id, series, invoice_number, display_number, issued_at, buyer_name, buyer_email, buyer_phone, seller_cui, check_in, check_out, subtotal, total, lines",
     )
     .eq("tenant_id", tenantId)
     .eq("status", "issued")
@@ -109,14 +109,12 @@ async function loadProformasForPeriod(
     throw new Error(error.message);
   }
 
-  return (data ?? []).map((row) =>
-    mapInvoiceRow(row as Record<string, unknown>, "proforma")
-  );
+  return (data ?? []).map((row) => mapInvoiceRow(row as Record<string, unknown>, "proforma"));
 }
 
 async function loadPaymentsForPeriod(
   tenantId: string,
-  bounds: PeriodBounds
+  bounds: PeriodBounds,
 ): Promise<AccountingExportRow[]> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
@@ -125,7 +123,7 @@ async function loadPaymentsForPeriod(
       `
       id, amount, kind, method, payer_name, paid_at, booking_id,
       bookings ( guest_name, guest_email, guest_phone, check_in, check_out )
-    `
+    `,
     )
     .eq("tenant_id", tenantId)
     .gte("paid_at", `${bounds.startIso}T00:00:00.000Z`)
@@ -161,8 +159,7 @@ async function loadPaymentsForPeriod(
     const amount = Number(row.amount);
     const signedAmount = row.kind === "refund" ? -amount : amount;
     const method = String(row.method ?? "cash");
-    const payer =
-      row.payer_name != null ? String(row.payer_name).trim() : "";
+    const payer = row.payer_name != null ? String(row.payer_name).trim() : "";
 
     rows.push({
       source: "payment",
@@ -176,10 +173,7 @@ async function loadPaymentsForPeriod(
       seller_cui: null,
       check_in: String(b.check_in),
       check_out: String(b.check_out),
-      description:
-        row.kind === "refund"
-          ? `Rambursare (${method})`
-          : `Incasare (${method})`,
+      description: row.kind === "refund" ? `Rambursare (${method})` : `Incasare (${method})`,
       subtotal: signedAmount,
       total: signedAmount,
       booking_id: String(row.booking_id),
@@ -192,7 +186,7 @@ async function loadPaymentsForPeriod(
 async function loadUninvoicedBookingsForPeriod(
   tenantId: string,
   bounds: PeriodBounds,
-  invoicedTotalsByBooking: Map<string, number>
+  invoicedTotalsByBooking: Map<string, number>,
 ): Promise<AccountingExportRow[]> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
@@ -201,7 +195,7 @@ async function loadUninvoicedBookingsForPeriod(
       `
       id, guest_name, guest_email, guest_phone, check_in, check_out, total_price, confirmed_at,
       booking_rooms ( rooms ( name, building_id, buildings ( name ) ) )
-    `
+    `,
     )
     .eq("tenant_id", tenantId)
     .eq("status", "confirmata")
@@ -239,9 +233,7 @@ async function loadUninvoicedBookingsForPeriod(
     }
 
     const issuedAt =
-      row.confirmed_at != null
-        ? String(row.confirmed_at).slice(0, 10)
-        : String(row.check_out);
+      row.confirmed_at != null ? String(row.confirmed_at).slice(0, 10) : String(row.check_out);
 
     rows.push({
       source: "booking",
@@ -270,7 +262,7 @@ async function loadUninvoicedBookingsForPeriod(
 
 function resolveExportSlice(
   slice?: AccountingExportSlice,
-  includeUninvoiced?: boolean
+  includeUninvoiced?: boolean,
 ): AccountingExportSlice {
   if (slice) return slice;
   if (includeUninvoiced) return "uninvoiced";
@@ -301,16 +293,9 @@ async function loadAccountingExportRows(input: {
     const invoicedTotalsByBooking = new Map<string, number>();
     for (const row of fiscal) {
       const prev = invoicedTotalsByBooking.get(row.booking_id) ?? 0;
-      invoicedTotalsByBooking.set(
-        row.booking_id,
-        Math.round((prev + row.total) * 100) / 100
-      );
+      invoicedTotalsByBooking.set(row.booking_id, Math.round((prev + row.total) * 100) / 100);
     }
-    return loadUninvoicedBookingsForPeriod(
-      tenantId,
-      bounds,
-      invoicedTotalsByBooking
-    );
+    return loadUninvoicedBookingsForPeriod(tenantId, bounds, invoicedTotalsByBooking);
   }
 
   return loadFiscalInvoicesForPeriod(tenantId, bounds);

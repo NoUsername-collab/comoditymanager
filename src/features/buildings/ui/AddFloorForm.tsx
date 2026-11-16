@@ -2,10 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  createFloorFormAction,
-  type FloorFormState,
-} from "@/features/buildings/actions";
+import { createFloorFormAction, type FloorFormState } from "@/features/buildings/actions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
@@ -105,9 +102,7 @@ export function AddFloorForm({
                 className="mt-1 w-16"
               />
             </label>
-            <AdminSubmitButton size="sm">
-              + {tFloor("floor")}
-            </AdminSubmitButton>
+            <AdminSubmitButton size="sm">+ {tFloor("floor")}</AdminSubmitButton>
           </form>
         </div>
       )}

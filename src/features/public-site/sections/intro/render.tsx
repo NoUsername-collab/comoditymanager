@@ -24,7 +24,11 @@ export function renderIntro(
         section.payload.imageUrl,
       )}
     >
-      <WithSectionPhoto imageUrl={section.payload.imageUrl} imageAlt={section.payload.imageAlt} locale={locale}>
+      <WithSectionPhoto
+        imageUrl={section.payload.imageUrl}
+        imageAlt={section.payload.imageAlt}
+        locale={locale}
+      >
         <SectionHead title={title} lead={lead} />
         {body ? <div className="pub-section__body">{body}</div> : null}
       </WithSectionPhoto>

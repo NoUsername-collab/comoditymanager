@@ -1,24 +1,15 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
-import {
-  getViewportClampMargin,
-  getVisualViewportBox,
-} from "@/lib/ui/viewport-position";
+import { getViewportClampMargin, getVisualViewportBox } from "@/lib/ui/viewport-position";
 
-function computePopoverStyle(
-  anchorRect: DOMRect,
-  width: number
-): CSSProperties {
+function computePopoverStyle(anchorRect: DOMRect, width: number): CSSProperties {
   const pad = 4;
   const margin = getViewportClampMargin(12);
   const { width: vw, height: vh, offsetTop, offsetLeft } = getVisualViewportBox();
   const maxH = Math.min(420, vh - margin * 2);
   let left = anchorRect.left + anchorRect.width / 2 - width / 2;
-  left = Math.max(
-    offsetLeft + margin,
-    Math.min(left, offsetLeft + vw - width - margin)
-  );
+  left = Math.max(offsetLeft + margin, Math.min(left, offsetLeft + vw - width - margin));
 
   let top = anchorRect.top - pad;
   let transform = "translateY(-100%)";
@@ -29,10 +20,7 @@ function computePopoverStyle(
     transform = "none";
   }
 
-  top = Math.min(
-    Math.max(top, offsetTop + margin),
-    offsetTop + vh - maxH - margin
-  );
+  top = Math.min(Math.max(top, offsetTop + margin), offsetTop + vh - maxH - margin);
 
   return { top, left, transform, maxHeight: maxH };
 }
@@ -41,7 +29,7 @@ export function useFloatingPosition(
   open: boolean,
   anchorRect: DOMRect | null,
   width: number,
-  variant: "popover" | "modal"
+  variant: "popover" | "modal",
 ) {
   const [style, setStyle] = useState<CSSProperties>(() => {
     if (!open || variant === "modal" || !anchorRect || typeof window === "undefined") {
@@ -74,7 +62,7 @@ export function useFloatingPosition(
         prev.left === centered.left &&
         prev.transform === centered.transform
           ? prev
-          : centered
+          : centered,
       );
       return;
     }
@@ -86,7 +74,7 @@ export function useFloatingPosition(
       prev.transform === next.transform &&
       prev.maxHeight === next.maxHeight
         ? prev
-        : next
+        : next,
     );
   }, [open, anchorKey, anchorRect, width, variant]);
 

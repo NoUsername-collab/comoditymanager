@@ -7,10 +7,7 @@ import type { PlanEmailScope } from "@/core/config/plans";
  */
 export type TenantEmailKind = "confirmation" | "stay" | "staff";
 
-export function planAllowsEmailKind(
-  scope: PlanEmailScope,
-  kind: TenantEmailKind,
-): boolean {
+export function planAllowsEmailKind(scope: PlanEmailScope, kind: TenantEmailKind): boolean {
   if (kind === "staff") return true;
   if (scope === "none") return false;
   if (scope === "confirmation") return kind === "confirmation";

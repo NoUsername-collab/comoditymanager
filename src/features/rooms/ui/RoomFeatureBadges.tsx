@@ -3,7 +3,15 @@ import { roomMatchesFeatureFilter as domainRoomMatchesFeatureFilter } from "@/do
 function FeatureIcon({ type }: { type: "ac" | "fridge" }) {
   if (type === "ac") {
     return (
-      <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+      <svg
+        viewBox="0 0 24 24"
+        className="h-3 w-3"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        aria-hidden
+      >
         <path d="M12 2.5v19" />
         <path d="M12 12 6.8 7.5" />
         <path d="M12 12 17.2 7.5" />
@@ -16,7 +24,16 @@ function FeatureIcon({ type }: { type: "ac" | "fridge" }) {
   }
 
   return (
-    <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg
+      viewBox="0 0 24 24"
+      className="h-3 w-3"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
       <rect x="7" y="3.5" width="10" height="17" rx="1.8" />
       <path d="M7 10.5h10" />
       <path d="M10 7.2h.01" />
@@ -109,7 +126,7 @@ export function RoomFeatureBadges({
 
 export function roomMatchesFeatureFilter(
   room: { has_ac?: boolean; option_slugs?: string[] },
-  feature: "all" | "ac" | "fridge"
+  feature: "all" | "ac" | "fridge",
 ): boolean {
   return domainRoomMatchesFeatureFilter(room, feature);
 }

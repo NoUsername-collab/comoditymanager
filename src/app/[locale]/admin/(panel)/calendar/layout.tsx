@@ -3,10 +3,6 @@ import "@/styles/features/admin/admin-availability-route.css";
 import "@/styles/features/admin/gantt-mobile.css";
 import "@/styles/features/layout/mobile-gantt.css";
 
-export default function AdminCalendarLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminCalendarLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

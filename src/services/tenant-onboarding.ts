@@ -21,9 +21,7 @@ export const getTenantOnboardingChecklist = cache(
 
     const planId = resolvePlanId(tenant.plan_id) as PlanId;
     const modules = breakdownTenantModules(planId, tenant.active_modules ?? []);
-    const modulesSynced = modules.includedInPlan.every((m) =>
-      modules.effective.includes(m),
-    );
+    const modulesSynced = modules.includedInPlan.every((m) => modules.effective.includes(m));
 
     const statusOk = tenant.status === "active" || tenant.status === "trial";
     const emailReady = emailSnapshot?.sendResolution.canSend === true;

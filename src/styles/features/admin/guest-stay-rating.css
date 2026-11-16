@@ -17,7 +17,10 @@
   font-weight: 700;
   text-align: center;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.06s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.06s ease;
 }
 
 .guest-stay-rating__polarity-btn:disabled {
@@ -43,7 +46,9 @@
   background: var(--admin-tint-danger-bg);
 }
 
-.guest-stay-rating__polarity-btn:hover:not(:disabled):not(.guest-stay-rating__polarity-btn--active) {
+.guest-stay-rating__polarity-btn:hover:not(:disabled):not(
+    .guest-stay-rating__polarity-btn--active
+  ) {
   background: color-mix(in srgb, var(--surface) 88%, var(--border));
 }
 
@@ -84,7 +89,10 @@
   border: 1px solid var(--border);
   background: var(--surface);
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.06s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.06s ease;
 }
 
 .guest-stay-rating__scale-btn:disabled {
@@ -112,11 +120,13 @@
   background: var(--admin-tint-success-bg);
 }
 
-.guest-stay-rating__scale-btn--positive.guest-stay-rating__scale-btn--active .guest-stay-rating__scale-num {
+.guest-stay-rating__scale-btn--positive.guest-stay-rating__scale-btn--active
+  .guest-stay-rating__scale-num {
   color: var(--admin-tint-success-text);
 }
 
-.guest-stay-rating__scale-btn--positive.guest-stay-rating__scale-btn--active .guest-stay-rating__scale-caption {
+.guest-stay-rating__scale-btn--positive.guest-stay-rating__scale-btn--active
+  .guest-stay-rating__scale-caption {
   color: var(--admin-tint-success-text);
 }
 
@@ -125,11 +135,13 @@
   background: var(--admin-tint-danger-bg);
 }
 
-.guest-stay-rating__scale-btn--negative.guest-stay-rating__scale-btn--active .guest-stay-rating__scale-num {
+.guest-stay-rating__scale-btn--negative.guest-stay-rating__scale-btn--active
+  .guest-stay-rating__scale-num {
   color: var(--admin-tint-danger-text);
 }
 
-.guest-stay-rating__scale-btn--negative.guest-stay-rating__scale-btn--active .guest-stay-rating__scale-caption {
+.guest-stay-rating__scale-btn--negative.guest-stay-rating__scale-btn--active
+  .guest-stay-rating__scale-caption {
   color: var(--admin-tint-danger-text);
 }
 

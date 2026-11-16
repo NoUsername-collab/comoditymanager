@@ -38,11 +38,7 @@ export default async function SettingsBookingPage({
   }
 
   return (
-    <SettingsPageLayout
-      alerts={alerts}
-      title={t("navBooking")}
-      description={t("bookingSubtitle")}
-    >
+    <SettingsPageLayout alerts={alerts} title={t("navBooking")} description={t("bookingSubtitle")}>
       <SettingsSection title={t("bookingTitle")} description={t("bookingSubtitle")}>
         <BookingRulesSettingsPanel
           settings={bookingRules}

@@ -94,13 +94,9 @@ export function BuildingPoliciesForm({
             </label>
           ))}
 
-          {acOption && (
-            <input type="hidden" name={`policy_${acOption.id}`} value={acMode} />
-          )}
+          {acOption && <input type="hidden" name={`policy_${acOption.id}`} value={acMode} />}
 
-          <AdminSubmitButton size="sm">
-            {tPolicies("savePolicies")}
-          </AdminSubmitButton>
+          <AdminSubmitButton size="sm">{tPolicies("savePolicies")}</AdminSubmitButton>
         </AdminPendingForm>
       )}
     </div>

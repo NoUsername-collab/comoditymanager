@@ -14,29 +14,19 @@ export type StaffAccount = {
   role: TenantMemberRole;
 };
 
-const PASSWORD_MANAGEABLE_ROLES: TenantMemberRole[] = [
-  "owner",
-  "admin",
-  "operator",
-];
+const PASSWORD_MANAGEABLE_ROLES: TenantMemberRole[] = ["owner", "admin", "operator"];
 
-const loadStaffAccountsForCurrentTenant = cache(async (): Promise<
-  StaffAccount[]
-> => {
+const loadStaffAccountsForCurrentTenant = cache(async (): Promise<StaffAccount[]> => {
   const tenant = await resolveRequestTenant();
   if (!tenant) return [];
   return listStaffAccountsForTenant(tenant.id);
 });
 
-export async function listStaffAccountsForCurrentTenant(): Promise<
-  StaffAccount[]
-> {
+export async function listStaffAccountsForCurrentTenant(): Promise<StaffAccount[]> {
   return loadStaffAccountsForCurrentTenant();
 }
 
-async function listStaffAccountsForTenant(
-  tenantId: string
-): Promise<StaffAccount[]> {
+async function listStaffAccountsForTenant(tenantId: string): Promise<StaffAccount[]> {
   const members = await listActiveTenantMembers(tenantId);
   return members
     .filter((m) => PASSWORD_MANAGEABLE_ROLES.includes(m.role))
@@ -51,7 +41,7 @@ async function listStaffAccountsForTenant(
 export async function updateStaffPasswordByEmail(
   email: string,
   newPassword: string,
-  tenantId: string
+  tenantId: string,
 ): Promise<void> {
   if (!newPassword || newPassword.length < 8) {
     throw new Error("staff.password_min_8_chars");
@@ -82,9 +72,7 @@ export async function updateStaffPasswordByEmail(
   });
   if (listError) throw new Error(listError.message);
 
-  const user = list.users.find(
-    (u) => u.email?.toLowerCase() === normalized
-  );
+  const user = list.users.find((u) => u.email?.toLowerCase() === normalized);
   if (!user) {
     throw new Error("staff.account_missing_in_supabase_run_setup_staff");
   }

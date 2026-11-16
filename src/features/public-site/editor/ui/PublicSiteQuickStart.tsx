@@ -150,7 +150,11 @@ export function PublicSiteQuickStart({
           ) : null}
 
           {current === "style" ? (
-            <div className="pub-editor-choices" role="radiogroup" aria-label={t("steps.style.title")}>
+            <div
+              className="pub-editor-choices"
+              role="radiogroup"
+              aria-label={t("steps.style.title")}
+            >
               {PUBLIC_STYLE_PRESETS.map((preset) => (
                 <button
                   key={preset.id}
@@ -201,7 +205,12 @@ export function PublicSiteQuickStart({
           </button>
           <div className="pub-quickstart__nav">
             {step > 0 ? (
-              <AdminButton type="button" variant="secondary" size="sm" onClick={() => setStep(step - 1)}>
+              <AdminButton
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => setStep(step - 1)}
+              >
                 {t("back")}
               </AdminButton>
             ) : null}

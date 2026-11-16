@@ -7,11 +7,7 @@ import {
 import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
 
 type GanttRollingZoom = "today" | "days7" | "days15" | "days30";
-export type GanttZoom =
-  | GanttRollingZoom
-  | "quarter"
-  | "month"
-  | "week";
+export type GanttZoom = GanttRollingZoom | "quarter" | "month" | "week";
 
 export type GanttDayColumn = {
   iso: string;
@@ -63,7 +59,7 @@ export function mondayOfWeekContaining(iso: string): string {
 function buildWeekColumns(
   weekStartIsos: string[],
   locale: string,
-  today?: string
+  today?: string,
 ): GanttDayColumn[] {
   const ref = today ?? todayIso();
   return weekStartIsos.map((iso) => {
@@ -120,12 +116,7 @@ function buildDayColumns(isoDates: string[], locale: string, today?: string): Ga
 }
 
 function isRollingZoom(zoom: GanttZoom): zoom is GanttRollingZoom {
-  return (
-    zoom === "today" ||
-    zoom === "days7" ||
-    zoom === "days15" ||
-    zoom === "days30"
-  );
+  return zoom === "today" || zoom === "days7" || zoom === "days15" || zoom === "days30";
 }
 
 function isMonthLikeZoom(zoom: GanttZoom): zoom is "month" {
@@ -171,7 +162,7 @@ function buildFixedLengthRange(
   periodKey: string,
   title: string,
   locale: string,
-  today?: string
+  today?: string,
 ): GanttViewRange {
   const days: string[] = [];
   let cur = startIso;
@@ -195,7 +186,7 @@ export function buildRollingRange(
   zoom: GanttRollingZoom,
   locale: string,
   labels: GanttRangeLabels = DEFAULT_LABELS,
-  today?: string
+  today?: string,
 ): GanttViewRange {
   const len = rollingZoomLength(zoom);
   const days: string[] = [];
@@ -212,7 +203,7 @@ export function buildRollingRange(
       : `${formatDateWithDay(days[0], locale, true)} – ${formatDateWithDay(
           days[days.length - 1],
           locale,
-          true
+          true,
         )}`;
 
   return {
@@ -229,14 +220,12 @@ export function buildMonthRange(
   year: number,
   month: number,
   locale: string,
-  today?: string
+  today?: string,
 ): GanttViewRange {
   const dim = daysInMonth(year, month);
   const days: string[] = [];
   for (let d = 1; d <= dim; d++) {
-    days.push(
-      `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`
-    );
+    days.push(`${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`);
   }
   const cols = buildDayColumns(days, locale, today);
   return {
@@ -253,7 +242,7 @@ function buildAnchoredMonthRange(
   startIso: string,
   zoom: "days30" | "month",
   locale: string,
-  today?: string
+  today?: string,
 ): GanttViewRange {
   const anchor = parseIso(startIso);
   const canonicalStart = `${anchor.getFullYear()}-${String(anchor.getMonth() + 1).padStart(2, "0")}-01`;
@@ -264,15 +253,7 @@ function buildAnchoredMonthRange(
       ? monthYearLabel(anchor.getFullYear(), anchor.getMonth(), locale)
       : `${formatDateWithDay(startIso, locale, true)} – ${formatDateWithDay(endIso, locale, true)}`;
 
-  return buildFixedLengthRange(
-    startIso,
-    length,
-    zoom,
-    `${zoom}-${startIso}`,
-    title,
-    locale,
-    today
-  );
+  return buildFixedLengthRange(startIso, length, zoom, `${zoom}-${startIso}`, title, locale, today);
 }
 
 export function buildQuarterRange(
@@ -280,16 +261,14 @@ export function buildQuarterRange(
   quarter: number,
   locale: string,
   labels: GanttRangeLabels = DEFAULT_LABELS,
-  today?: string
+  today?: string,
 ): GanttViewRange {
   const startMonth = quarter * 3;
   const days: string[] = [];
   for (let m = startMonth; m < startMonth + 3; m++) {
     const dim = daysInMonth(year, m);
     for (let d = 1; d <= dim; d++) {
-      days.push(
-        `${year}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`
-      );
+      days.push(`${year}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`);
     }
   }
   const rangeStart = days[0];
@@ -310,7 +289,7 @@ function buildAnchoredQuarterRange(
   startIso: string,
   locale: string,
   labels: GanttRangeLabels = DEFAULT_LABELS,
-  today?: string
+  today?: string,
 ): GanttViewRange {
   const anchor = parseIso(startIso);
   const quarter = Math.floor(anchor.getMonth() / 3);
@@ -358,8 +337,7 @@ export function resolveGanttRange(params: {
   const year = params.y ?? refDate.getFullYear();
   const month = params.m ?? refDate.getMonth();
   const zoom = (params.zoom as GanttZoom) || "days30";
-  const validWs =
-    params.ws && /^\d{4}-\d{2}-\d{2}$/.test(params.ws) ? params.ws : undefined;
+  const validWs = params.ws && /^\d{4}-\d{2}-\d{2}$/.test(params.ws) ? params.ws : undefined;
 
   if (isRollingZoom(zoom)) {
     const ws = validWs ?? ganttTodayStartAnchor(effectiveToday, zoom);
@@ -383,9 +361,7 @@ export function resolveGanttRange(params: {
   if (zoom === "quarter") {
     if (validWs) return buildAnchoredQuarterRange(validWs, locale, labels, effectiveToday);
     const q =
-      params.q !== undefined && params.q >= 0 && params.q <= 3
-        ? params.q
-        : Math.floor(month / 3);
+      params.q !== undefined && params.q >= 0 && params.q <= 3 ? params.q : Math.floor(month / 3);
     return buildQuarterRange(year, q, locale, labels, effectiveToday);
   }
 
@@ -396,7 +372,7 @@ export function navigateRange(
   range: GanttViewRange,
   direction: -1 | 1,
   year: number,
-  month: number
+  month: number,
 ): { y: number; m: number; zoom: GanttZoom; ws?: string; q?: number } {
   const isAnchoredFixedRange =
     (range.zoom === "quarter" && range.periodKey.startsWith("quarter-")) ||
@@ -461,7 +437,7 @@ export function navigateRange(
 /** Anchor the visible range to a picked date while keeping the current zoom. */
 export function jumpToDateInView(
   iso: string,
-  zoom: GanttZoom
+  zoom: GanttZoom,
 ): { y: number; m: number; zoom: GanttZoom; ws: string; q?: number } {
   const d = parseIso(iso);
   const y = d.getFullYear();

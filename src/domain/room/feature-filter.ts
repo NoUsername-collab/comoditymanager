@@ -1,6 +1,6 @@
 export function roomMatchesFeatureFilter(
   room: { has_ac?: boolean; option_slugs?: string[] },
-  feature: "all" | "ac" | "fridge"
+  feature: "all" | "ac" | "fridge",
 ): boolean {
   if (feature === "all") return true;
   const slugs = new Set(room.option_slugs ?? []);

@@ -8,17 +8,10 @@ import {
 } from "@/domain/public-site/media";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 
-type PublicSiteMediaUploadError =
-  | "kind"
-  | "empty"
-  | "tooLarge"
-  | "type"
-  | "tenant"
-  | "storage";
+type PublicSiteMediaUploadError = "kind" | "empty" | "tooLarge" | "type" | "tenant" | "storage";
 
 type PublicSiteMediaUploadResult =
-  | { ok: true; url: string; path: string }
-  | { ok: false; reason: PublicSiteMediaUploadError };
+  { ok: true; url: string; path: string } | { ok: false; reason: PublicSiteMediaUploadError };
 
 async function ensurePublicSiteMediaBucket(
   supabase: ReturnType<typeof createPublicAdminClient>,
@@ -53,28 +46,19 @@ export async function uploadPublicSiteImage(args: {
   await ensurePublicSiteMediaBucket(supabase);
 
   const fileId = crypto.randomUUID();
-  const path = publicSiteObjectPath(
-    args.tenantId,
-    validated.kind,
-    fileId,
-    validated.ext,
-  );
+  const path = publicSiteObjectPath(args.tenantId, validated.kind, fileId, validated.ext);
 
-  const { error } = await supabase.storage
-    .from(PUBLIC_SITE_MEDIA_BUCKET)
-    .upload(path, args.bytes, {
-      contentType: validated.mime,
-      cacheControl: "31536000",
-      upsert: false,
-    });
+  const { error } = await supabase.storage.from(PUBLIC_SITE_MEDIA_BUCKET).upload(path, args.bytes, {
+    contentType: validated.mime,
+    cacheControl: "31536000",
+    upsert: false,
+  });
 
   if (error) {
     return { ok: false, reason: "storage" };
   }
 
-  const { data } = supabase.storage
-    .from(PUBLIC_SITE_MEDIA_BUCKET)
-    .getPublicUrl(path);
+  const { data } = supabase.storage.from(PUBLIC_SITE_MEDIA_BUCKET).getPublicUrl(path);
 
   return { ok: true, url: data.publicUrl, path };
 }

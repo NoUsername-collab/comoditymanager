@@ -24,8 +24,5 @@ export type StayPageLoadResult = {
 
 export type StaySidebarHistoryLoadResult = {
   data: Pick<StayPageLists, "history" | "confirmedRecentHistory">;
-  errors: Pick<
-    StayPageLoadResult["errors"],
-    "history" | "confirmedRecentHistory"
-  >;
+  errors: Pick<StayPageLoadResult["errors"], "history" | "confirmedRecentHistory">;
 };

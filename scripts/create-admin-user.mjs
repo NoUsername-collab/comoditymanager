@@ -28,15 +28,11 @@ const email = process.env.ADMIN_EMAIL ?? "admin@casaemil.ro";
 const password = process.env.ADMIN_INITIAL_PASSWORD;
 
 if (!url || !serviceKey) {
-  console.error(
-    `Lipsește NEXT_PUBLIC_SUPABASE_URL sau SUPABASE_SERVICE_ROLE_KEY în ${envFile}`
-  );
+  console.error(`Lipsește NEXT_PUBLIC_SUPABASE_URL sau SUPABASE_SERVICE_ROLE_KEY în ${envFile}`);
   process.exit(1);
 }
 if (!password) {
-  console.error(
-    `Adaugă ADMIN_INITIAL_PASSWORD în ${envFile}, apoi rulează din nou setup-admin`
-  );
+  console.error(`Adaugă ADMIN_INITIAL_PASSWORD în ${envFile}, apoi rulează din nou setup-admin`);
   process.exit(1);
 }
 
@@ -45,9 +41,7 @@ const supabase = createClient(url, serviceKey, {
 });
 
 const { data: list } = await supabase.auth.admin.listUsers({ perPage: 200 });
-const existing = list?.users?.find(
-  (u) => u.email?.toLowerCase() === email.toLowerCase()
-);
+const existing = list?.users?.find((u) => u.email?.toLowerCase() === email.toLowerCase());
 
 if (existing) {
   const { error } = await supabase.auth.admin.updateUserById(existing.id, {

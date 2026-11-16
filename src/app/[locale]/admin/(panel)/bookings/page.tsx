@@ -19,10 +19,7 @@ export default async function AdminBookingsPage({
   const params = await searchParams;
   const shown = Math.min(
     REQUEST_LIST_MAX_SHOWN,
-    Math.max(
-      REQUEST_LIST_PAGE_SIZE,
-      Number(params.shown) || REQUEST_LIST_PAGE_SIZE
-    )
+    Math.max(REQUEST_LIST_PAGE_SIZE, Number(params.shown) || REQUEST_LIST_PAGE_SIZE),
   );
 
   const [t, { total, requestsResult }] = await Promise.all([
@@ -57,9 +54,7 @@ export default async function AdminBookingsPage({
               <div className="request-item__head">
                 <div className="request-item__lead">
                   <p className="request-item__name">{c.guest_name}</p>
-                  <p className="request-item__dates">
-                    {formatStayPeriod(c.check_in, c.check_out)}
-                  </p>
+                  <p className="request-item__dates">{formatStayPeriod(c.check_in, c.check_out)}</p>
                 </div>
                 <Link
                   href={`/admin/bookings/${c.id}`}
@@ -81,10 +76,7 @@ export default async function AdminBookingsPage({
                   </p>
                 ) : null}
                 {c.guest_id ? (
-                  <Link
-                    href={`/admin/guests/${c.guest_id}`}
-                    className="request-item__profile-link"
-                  >
+                  <Link href={`/admin/guests/${c.guest_id}`} className="request-item__profile-link">
                     {t("openClientProfile")} →
                   </Link>
                 ) : null}

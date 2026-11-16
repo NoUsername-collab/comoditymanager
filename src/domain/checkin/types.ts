@@ -9,33 +9,24 @@ export type PaymentStatus = "paid" | "partial" | "unpaid" | "online";
 /** DB check constraint — `online` is UI-only mock, stored as `paid`. */
 export type StoredPaymentStatus = "paid" | "partial" | "unpaid";
 
-export const CHECKIN_PAYMENT_OPTIONS: PaymentStatus[] = [
-  "paid",
-  "partial",
-  "unpaid",
-  "online",
-];
+export const CHECKIN_PAYMENT_OPTIONS: PaymentStatus[] = ["paid", "partial", "unpaid", "online"];
 
 export function paymentAmountForStatus(
   status: PaymentStatus,
   totalPrice: number,
-  partialAmount: number
+  partialAmount: number,
 ): number {
   if (status === "paid" || status === "online") return totalPrice;
   if (status === "partial") return partialAmount;
   return 0;
 }
 
-export function normalizePaymentStatusForDb(
-  status: PaymentStatus
-): StoredPaymentStatus {
+export function normalizePaymentStatusForDb(status: PaymentStatus): StoredPaymentStatus {
   return status === "online" ? "paid" : status;
 }
 
 /** Empty strings must become null before writing to Postgres `date` columns. */
-export function optionalDateForDb(
-  value: string | null | undefined
-): string | null {
+export function optionalDateForDb(value: string | null | undefined): string | null {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
 }
@@ -166,7 +157,7 @@ export interface BookingForCheckin {
   id: string;
   status: string;
   total_price: number;
-  check_in: string;  // YYYY-MM-DD
+  check_in: string; // YYYY-MM-DD
   check_out: string;
   actual_check_in_at?: string | null;
   guest_name: string;

@@ -21,9 +21,7 @@ function tenantDomainsCacheTag(tenantId: string): string {
   return `tenant-${tenantId}-domains`;
 }
 
-async function listTenantDomainsUncached(
-  tenantId: string
-): Promise<TenantDomainRow[]> {
+async function listTenantDomainsUncached(tenantId: string): Promise<TenantDomainRow[]> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("tenant_domains")
@@ -37,29 +35,23 @@ async function listTenantDomainsUncached(
 }
 
 const getCachedTenantDomains = (tenantId: string) =>
-  unstable_cache(
-    () => listTenantDomainsUncached(tenantId),
-    ["tenant-domains", tenantId],
-    {
-      tags: [tenantDomainsCacheTag(tenantId)],
-      revalidate: 300,
-    }
-  );
+  unstable_cache(() => listTenantDomainsUncached(tenantId), ["tenant-domains", tenantId], {
+    tags: [tenantDomainsCacheTag(tenantId)],
+    revalidate: 300,
+  });
 
 const loadTenantDomains = cache(async (tenantId: string): Promise<TenantDomainRow[]> =>
-  getCachedTenantDomains(tenantId)()
+  getCachedTenantDomains(tenantId)(),
 );
 
-export async function listTenantDomains(
-  tenantId: string
-): Promise<TenantDomainRow[]> {
+export async function listTenantDomains(tenantId: string): Promise<TenantDomainRow[]> {
   return loadTenantDomains(tenantId);
 }
 
 export async function addCustomTenantDomain(
   tenantId: string,
   domain: string,
-  routingKind: TenantDomainRoutingKind
+  routingKind: TenantDomainRoutingKind,
 ): Promise<string> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase.rpc("add_tenant_domain", {
@@ -72,10 +64,7 @@ export async function addCustomTenantDomain(
   return String(data);
 }
 
-export async function markTenantDomainVerified(
-  domainId: string,
-  tenantId: string
-): Promise<void> {
+export async function markTenantDomainVerified(domainId: string, tenantId: string): Promise<void> {
   const supabase = createPublicAdminClient();
   const { error } = await supabase
     .from("tenant_domains")
@@ -91,10 +80,7 @@ export async function markTenantDomainVerified(
   if (error) throw new Error(error.message);
 }
 
-export async function removeCustomTenantDomain(
-  domainId: string,
-  tenantId: string
-): Promise<void> {
+export async function removeCustomTenantDomain(domainId: string, tenantId: string): Promise<void> {
   const supabase = createPublicAdminClient();
   const { error } = await supabase
     .from("tenant_domains")

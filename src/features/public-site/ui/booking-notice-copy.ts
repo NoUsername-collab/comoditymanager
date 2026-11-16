@@ -1,18 +1,13 @@
 import type { BookingNoticePresetCopy } from "@/features/public-site/domain/booking-notice";
 
-type CalendarTranslate = (
-  key: string,
-  values?: Record<string, string>
-) => string;
+type CalendarTranslate = (key: string, values?: Record<string, string>) => string;
 
 const HOURS_PLACEHOLDERS = {
   checkIn: "{checkIn}",
   checkOut: "{checkOut}",
 };
 
-export function buildBookingNoticePresetCopy(
-  t: CalendarTranslate
-): BookingNoticePresetCopy {
+export function buildBookingNoticePresetCopy(t: CalendarTranslate): BookingNoticePresetCopy {
   return {
     noPay: { title: t("asideNoPayTitle"), text: t("asideNoPayText") },
     hold: { title: t("asideHoldTitle"), text: t("asideHoldText") },

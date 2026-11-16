@@ -21,7 +21,7 @@ type StatusFilter = "all" | "active" | "trial" | "suspended" | "cancelled";
 
 function tenantStatusLabel(
   t: ReturnType<typeof useTranslations<"platformAdmin.tenants">>,
-  status: string
+  status: string,
 ): string {
   switch (status) {
     case "active":
@@ -37,11 +37,7 @@ function tenantStatusLabel(
   }
 }
 
-export function TenantList({
-  tenants,
-}: {
-  tenants: PlatformTenantSummary[];
-}) {
+export function TenantList({ tenants }: { tenants: PlatformTenantSummary[] }) {
   const t = useTranslations("platformAdmin.tenants");
   const locale = useLocale();
   const [query, setQuery] = useState("");
@@ -64,7 +60,7 @@ export function TenantList({
       if (planFilter !== "all" && plan !== planFilter) return false;
       if (!q) return true;
       const domainMatch = (tenant.domain_hosts ?? []).some((host) =>
-        host.toLowerCase().includes(q)
+        host.toLowerCase().includes(q),
       );
       return (
         tenant.display_name.toLowerCase().includes(q) ||
@@ -78,9 +74,7 @@ export function TenantList({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-xl font-bold">
-          {t("title", { count: tenants.length })}
-        </h1>
+        <h1 className="text-xl font-bold">{t("title", { count: tenants.length })}</h1>
         <p className="text-sm text-neutral-500">
           {t("showing", { filtered: filtered.length, total: tenants.length })}
         </p>
@@ -151,9 +145,7 @@ export function TenantList({
                 <td className="px-3 py-2 font-medium text-white">
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span>{tenant.display_name}</span>
-                    {tenant.setup_incomplete && (
-                      <TenantSetupBadge label={t("badgeSetup")} />
-                    )}
+                    {tenant.setup_incomplete && <TenantSetupBadge label={t("badgeSetup")} />}
                     <TenantEmailAlertBadge
                       alert={tenant.email_alert}
                       sent={tenant.email_sent_month}
@@ -184,20 +176,11 @@ export function TenantList({
                     {tenantStatusLabel(t, tenant.status)}
                   </span>
                 </td>
-                <td className="px-3 py-2 text-right text-neutral-300">
-                  {tenant.room_count}
-                </td>
-                <td className="px-3 py-2 text-right text-neutral-300">
-                  {tenant.booking_count}
-                </td>
-                <td className="px-3 py-2 text-right text-neutral-300">
-                  {tenant.member_count}
-                </td>
+                <td className="px-3 py-2 text-right text-neutral-300">{tenant.room_count}</td>
+                <td className="px-3 py-2 text-right text-neutral-300">{tenant.booking_count}</td>
+                <td className="px-3 py-2 text-right text-neutral-300">{tenant.member_count}</td>
                 <td className="px-3 py-2">
-                  <TenantBillingToggle
-                    tenantId={tenant.id}
-                    isPaying={tenant.is_paying ?? false}
-                  />
+                  <TenantBillingToggle tenantId={tenant.id} isPaying={tenant.is_paying ?? false} />
                 </td>
                 <td className="px-3 py-2 text-xs text-neutral-500">
                   {new Date(tenant.created_at).toLocaleDateString(locale)}
@@ -214,10 +197,7 @@ export function TenantList({
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td
-                  colSpan={10}
-                  className="px-4 py-4 text-center text-neutral-500"
-                >
+                <td colSpan={10} className="px-4 py-4 text-center text-neutral-500">
                   {tenants.length === 0 ? t("empty") : t("noMatches")}
                 </td>
               </tr>
@@ -255,13 +235,9 @@ function PlatformTenantsMobileCards({
         >
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
-              <p className="truncate text-base font-semibold text-white">
-                {tenant.display_name}
-              </p>
+              <p className="truncate text-base font-semibold text-white">{tenant.display_name}</p>
               <div className="mt-1 flex flex-wrap gap-1">
-                {tenant.setup_incomplete && (
-                  <TenantSetupBadge label={t("badgeSetup")} />
-                )}
+                {tenant.setup_incomplete && <TenantSetupBadge label={t("badgeSetup")} />}
                 <TenantEmailAlertBadge
                   alert={tenant.email_alert}
                   sent={tenant.email_sent_month}
@@ -298,10 +274,7 @@ function PlatformTenantsMobileCards({
           </div>
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-            <TenantBillingToggle
-              tenantId={tenant.id}
-              isPaying={tenant.is_paying ?? false}
-            />
+            <TenantBillingToggle tenantId={tenant.id} isPaying={tenant.is_paying ?? false} />
             <Link
               href={`/platform-admin/tenants/${tenant.id}`}
               className="platform-tenant-card__detail inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center rounded-md border border-neutral-700 bg-neutral-800 px-4 text-sm font-medium text-sky-400 hover:bg-neutral-700"

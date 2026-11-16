@@ -1,21 +1,12 @@
 import { getBookingRulesSettings } from "@/services/booking-rules-settings";
-import {
-  DEFAULT_CHECKIN_SETTINGS,
-  getCheckinSettings,
-} from "@/services/checkin";
+import { DEFAULT_CHECKIN_SETTINGS, getCheckinSettings } from "@/services/checkin";
 import { resolveTransactionalEmailIdentity } from "@/services/email-identity";
-import {
-  DEFAULT_EMAIL_SETTINGS,
-  getEmailSettings,
-} from "@/services/email-settings";
+import { DEFAULT_EMAIL_SETTINGS, getEmailSettings } from "@/services/email-settings";
 import { ensureGuestAppSettingsRow } from "@/services/guest-app/mutations";
 import { listLocationStructure } from "@/services/location-structure";
 import { getPensionIdentity } from "@/services/pension-identity";
 import { EMPTY_PENSION_CONTACT } from "@/domain/settings/pension-identity";
-import {
-  getPensionSettings,
-  pensionStatisticsVisibility,
-} from "@/services/pension-settings";
+import { getPensionSettings, pensionStatisticsVisibility } from "@/services/pension-settings";
 import { loadMonthComparison } from "@/services/month-comparison";
 import { loadStatisticsReport } from "@/services/statistics";
 import { loadSiteStatistics } from "@/services/statistics-site";
@@ -91,13 +82,12 @@ export async function loadSettingsEmailPage() {
 }
 
 export async function loadSettingsFiscalPage() {
-  const [bookingRules, checkinSettings, tenantFiscalSettings, tenant] =
-    await Promise.all([
-      getBookingRulesSettings().catch(() => null),
-      getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
-      getTenantFiscalSettings().catch(() => null),
-      resolveRequestTenant(),
-    ]);
+  const [bookingRules, checkinSettings, tenantFiscalSettings, tenant] = await Promise.all([
+    getBookingRulesSettings().catch(() => null),
+    getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
+    getTenantFiscalSettings().catch(() => null),
+    resolveRequestTenant(),
+  ]);
   return { bookingRules, checkinSettings, tenantFiscalSettings, tenant };
 }
 
@@ -165,31 +155,28 @@ export async function loadLocationSetupCatalog() {
 
 export async function loadLocationStructurePage() {
   const structuresPromise = listLocationStructure();
-  const [structuresResult, catalogResult, policyEntriesResult] =
-    await Promise.allSettled([
-      structuresPromise,
-      listRoomOptions(true),
-      structuresPromise.then((loadedStructures) =>
-        Promise.all(
-          loadedStructures.map(async (s) => {
-            try {
-              const policies = await ensureBuildingPoliciesFromLegacy(
-                s.building.id,
-                s.building.ac_mode,
-              );
-              return [s.building.id, policies] as const;
-            } catch {
-              return [
-                s.building.id,
-                [] as Awaited<
-                  ReturnType<typeof ensureBuildingPoliciesFromLegacy>
-                >,
-              ] as const;
-            }
-          }),
-        ),
+  const [structuresResult, catalogResult, policyEntriesResult] = await Promise.allSettled([
+    structuresPromise,
+    listRoomOptions(true),
+    structuresPromise.then((loadedStructures) =>
+      Promise.all(
+        loadedStructures.map(async (s) => {
+          try {
+            const policies = await ensureBuildingPoliciesFromLegacy(
+              s.building.id,
+              s.building.ac_mode,
+            );
+            return [s.building.id, policies] as const;
+          } catch {
+            return [
+              s.building.id,
+              [] as Awaited<ReturnType<typeof ensureBuildingPoliciesFromLegacy>>,
+            ] as const;
+          }
+        }),
       ),
-    ]);
+    ),
+  ]);
 
   if (structuresResult.status === "rejected") {
     throw structuresResult.reason;
@@ -207,8 +194,7 @@ export async function loadLocationStructurePage() {
 
   return {
     structures: structuresResult.value,
-    catalogOptions:
-      catalogResult.status === "fulfilled" ? catalogResult.value : [],
+    catalogOptions: catalogResult.status === "fulfilled" ? catalogResult.value : [],
     policiesByBuilding,
   };
 }
@@ -227,7 +213,10 @@ export async function loadStatisticsMonthCompare() {
 
 /** The photo library and the room types a photo can belong to. */
 export async function loadMediaLibraryPage() {
-  const [assets, types] = await Promise.all([listMediaAssets(), listRoomTypes(true).catch(() => [])]);
+  const [assets, types] = await Promise.all([
+    listMediaAssets(),
+    listRoomTypes(true).catch(() => []),
+  ]);
   return { assets, roomTypes: types.map((t) => ({ id: t.id, name: t.name })) };
 }
 

@@ -14,10 +14,7 @@ import {
 import { mergeAvailabilityPanelSearch } from "@/lib/availability-panel-query";
 import { parseIso } from "@/lib/stay-dates";
 import type { GanttFeatureFilter, GanttFilter } from "@/domain/gantt/filters";
-import {
-  parseGanttLayerFilter,
-  type GanttLayerFilter,
-} from "@/domain/gantt/occupancy-layer";
+import { parseGanttLayerFilter, type GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import {
   normalizeZoomChoice,
   periodStepMeta,
@@ -84,10 +81,7 @@ export function useGanttCalendarNavigation({
         room: searchParams.get("room") ?? undefined,
         zoom: viewRange.zoom,
         ws: viewRange.zoom === "week" ? viewRange.days[0]?.iso : undefined,
-        q:
-          viewRange.zoom === "quarter"
-            ? Number(viewRange.periodKey.split("-")[2])
-            : undefined,
+        q: viewRange.zoom === "quarter" ? Number(viewRange.periodKey.split("-")[2]) : undefined,
         filter: isActive ? "all" : "free",
         layer: parseGanttLayerFilter(searchParams.get("layer") ?? undefined),
         feat: (searchParams.get("feat") as "ac" | "fridge") ?? undefined,
@@ -95,27 +89,20 @@ export function useGanttCalendarNavigation({
       });
       router.push(`/admin/calendar?${q}`);
     },
-    [filter, focusDay, router, searchParams, viewRange, suppressHeaderClickUntilRef]
+    [filter, focusDay, router, searchParams, viewRange, suppressHeaderClickUntilRef],
   );
 
-  const zoomChoice = useMemo(
-    () => normalizeZoomChoice(viewRange.zoom),
-    [viewRange.zoom]
-  );
+  const zoomChoice = useMemo(() => normalizeZoomChoice(viewRange.zoom), [viewRange.zoom]);
   const todayStartAnchor = useMemo(
     () => ganttTodayStartAnchor(effectiveToday, viewRange.zoom),
-    [effectiveToday, viewRange.zoom]
+    [effectiveToday, viewRange.zoom],
   );
   const firstIso = viewRange.days[0]?.iso ?? effectiveToday;
   const firstDate = parseIso(firstIso);
   const currentYear =
-    searchParams.get("y") !== null
-      ? Number(searchParams.get("y"))
-      : firstDate.getFullYear();
+    searchParams.get("y") !== null ? Number(searchParams.get("y")) : firstDate.getFullYear();
   const currentMonth =
-    searchParams.get("m") !== null
-      ? Number(searchParams.get("m"))
-      : firstDate.getMonth();
+    searchParams.get("m") !== null ? Number(searchParams.get("m")) : firstDate.getMonth();
   const currentWs = searchParams.get("ws") ?? undefined;
   const currentBuildingId = searchParams.get("building") ?? null;
   const selectedFeature = featureFilter;
@@ -129,18 +116,16 @@ export function useGanttCalendarNavigation({
         y: patch.y ?? (Number.isFinite(currentYear) ? currentYear : firstDate.getFullYear()),
         m: patch.m ?? (Number.isFinite(currentMonth) ? currentMonth : firstDate.getMonth()),
         view: patch.view ?? "all",
-        room: patch.room !== undefined ? patch.room ?? undefined : undefined,
+        room: patch.room !== undefined ? (patch.room ?? undefined) : undefined,
         zoom: patch.zoom ?? viewRange.zoom,
-        ws: patch.ws !== undefined ? patch.ws ?? undefined : currentWs,
+        ws: patch.ws !== undefined ? (patch.ws ?? undefined) : currentWs,
         q:
           patch.q ??
-          (viewRange.zoom === "quarter"
-            ? Number(viewRange.periodKey.split("-")[2])
-            : undefined),
+          (viewRange.zoom === "quarter" ? Number(viewRange.periodKey.split("-")[2]) : undefined),
         filter: patch.filter ?? filter,
         layer: patch.layer ?? layerFilter,
         feat: patch.feat ?? selectedFeature,
-        fd: patch.fd !== undefined ? patch.fd ?? undefined : focusDay || undefined,
+        fd: patch.fd !== undefined ? (patch.fd ?? undefined) : focusDay || undefined,
       });
       router.push(`/admin/calendar?${q}`);
     },
@@ -156,7 +141,7 @@ export function useGanttCalendarNavigation({
       selectedFeature,
       viewRange.periodKey,
       viewRange.zoom,
-    ]
+    ],
   );
 
   const handleInlineZoomChange = useCallback(
@@ -193,12 +178,11 @@ export function useGanttCalendarNavigation({
       pushCalendarPatch,
       viewRange.periodKey,
       viewRange.zoom,
-    ]
+    ],
   );
 
   const jumpToToday = useCallback(() => {
-    const nextZoom: GanttZoom =
-      viewRange.zoom === "month" ? "days30" : viewRange.zoom;
+    const nextZoom: GanttZoom = viewRange.zoom === "month" ? "days30" : viewRange.zoom;
     const ws = ganttTodayStartAnchor(effectiveToday, nextZoom);
     const anchorDate = parseIso(ws);
     pushCalendarPatch({
@@ -206,10 +190,7 @@ export function useGanttCalendarNavigation({
       m: anchorDate.getMonth(),
       zoom: nextZoom,
       ws,
-      q:
-        nextZoom === "quarter"
-          ? Math.floor(anchorDate.getMonth() / 3)
-          : undefined,
+      q: nextZoom === "quarter" ? Math.floor(anchorDate.getMonth() / 3) : undefined,
     });
   }, [effectiveToday, pushCalendarPatch, viewRange.zoom]);
 
@@ -231,7 +212,7 @@ export function useGanttCalendarNavigation({
         viewRange,
         direction,
         Number.isFinite(currentYear) ? currentYear : firstDate.getFullYear(),
-        Number.isFinite(currentMonth) ? currentMonth : firstDate.getMonth()
+        Number.isFinite(currentMonth) ? currentMonth : firstDate.getMonth(),
       );
       pushCalendarPatch({
         y: next.y,
@@ -241,7 +222,7 @@ export function useGanttCalendarNavigation({
         q: next.q,
       });
     },
-    [currentMonth, currentYear, firstDate, pushCalendarPatch, viewRange]
+    [currentMonth, currentYear, firstDate, pushCalendarPatch, viewRange],
   );
 
   const jumpToDate = useCallback(
@@ -265,7 +246,7 @@ export function useGanttCalendarNavigation({
         q: patch.q,
       });
     },
-    [pushCalendarPatch, viewRange.zoom]
+    [pushCalendarPatch, viewRange.zoom],
   );
 
   const handleHeaderDayDrillDown = useCallback(
@@ -278,7 +259,7 @@ export function useGanttCalendarNavigation({
         ws: iso,
       });
     },
-    [pushCalendarPatch, suppressHeaderClickUntilRef, zoomChoice]
+    [pushCalendarPatch, suppressHeaderClickUntilRef, zoomChoice],
   );
 
   const toggleAvailabilityPanel = useCallback(() => {

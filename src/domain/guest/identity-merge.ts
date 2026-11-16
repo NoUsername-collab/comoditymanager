@@ -1,9 +1,6 @@
 import type { GuestIdentityInput, GuestRow } from "./types";
 
-function pickString(
-  patch: string | null | undefined,
-  current: string | null
-): string | null {
+function pickString(patch: string | null | undefined, current: string | null): string | null {
   const next = patch?.trim();
   return next ? next : current;
 }
@@ -11,7 +8,7 @@ function pickString(
 /** Păstrează datele existente din profil; check-in completează doar câmpurile noi. */
 export function mergeGuestIdentityPatch(
   current: GuestRow,
-  patch: GuestIdentityInput
+  patch: GuestIdentityInput,
 ): GuestIdentityInput {
   return {
     doc_type: patch.doc_type ?? current.doc_type,

@@ -1,7 +1,5 @@
 /** Verificare rapidă expiry — safe pentru Edge Middleware (fără HMAC). */
-export function isAlphaGateCookieFresh(
-  token: string | undefined | null
-): boolean {
+export function isAlphaGateCookieFresh(token: string | undefined | null): boolean {
   if (!token) return false;
   const [payload] = token.split(".");
   if (!payload) return false;

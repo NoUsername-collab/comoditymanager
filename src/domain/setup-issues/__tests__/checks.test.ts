@@ -15,9 +15,7 @@ afterEach(() => {
 
 describe("shouldResolveSetupIssues", () => {
   it("skips work for operators", () => {
-    expect(
-      shouldResolveSetupIssues({ memberRole: "operator", email: "op@test.ro" })
-    ).toBe(false);
+    expect(shouldResolveSetupIssues({ memberRole: "operator", email: "op@test.ro" })).toBe(false);
   });
 
   it("runs for owners and admins", () => {
@@ -46,7 +44,7 @@ describe("resolveMfaSetupIssue", () => {
       resolveMfaSetupIssue({
         memberRole: "owner",
         factors: { totp: [{ status: "verified" }] },
-      })
+      }),
     ).toBeNull();
   });
 
@@ -56,7 +54,7 @@ describe("resolveMfaSetupIssue", () => {
         email: "staff@pension.ro",
         memberRole: "admin",
         factors: null,
-      })
+      }),
     ).toBeNull();
   });
 
@@ -80,7 +78,7 @@ describe("hasConfiguredContactEmail", () => {
         pensionEmail: "contact@pensiune.ro",
         publicSiteEmail: null,
         usePrimaryContact: true,
-      })
+      }),
     ).toBe(true);
   });
 
@@ -90,7 +88,7 @@ describe("hasConfiguredContactEmail", () => {
         pensionEmail: null,
         publicSiteEmail: "site@pensiune.ro",
         usePrimaryContact: false,
-      })
+      }),
     ).toBe(true);
   });
 });
@@ -119,7 +117,7 @@ describe("resolveContactEmailSetupIssue", () => {
         pensionEmail: "contact@pensiune.ro",
         publicSiteEmail: null,
         usePrimaryContact: true,
-      })
+      }),
     ).toBeNull();
   });
 });
@@ -144,7 +142,7 @@ describe("resolveRoomsMissingSetupIssue", () => {
       resolveRoomsMissingSetupIssue({
         memberRole: "owner",
         roomCount: 2,
-      })
+      }),
     ).toBeNull();
   });
 
@@ -153,7 +151,7 @@ describe("resolveRoomsMissingSetupIssue", () => {
       resolveRoomsMissingSetupIssue({
         memberRole: "operator",
         roomCount: 0,
-      })
+      }),
     ).toBeNull();
   });
 });

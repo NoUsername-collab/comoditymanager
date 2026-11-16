@@ -10,7 +10,7 @@ describe("canEditAfterCheckout", () => {
       canEditAfterCheckout({
         memberRole: "owner",
         allowPostCheckoutEdits: false,
-      })
+      }),
     ).toBe(true);
   });
 
@@ -19,7 +19,7 @@ describe("canEditAfterCheckout", () => {
       canEditAfterCheckout({
         memberRole: "operator",
         allowPostCheckoutEdits: true,
-      })
+      }),
     ).toBe(true);
   });
 
@@ -28,7 +28,7 @@ describe("canEditAfterCheckout", () => {
       canEditAfterCheckout({
         memberRole: "admin",
         allowPostCheckoutEdits: false,
-      })
+      }),
     ).toBe(false);
   });
 });
@@ -38,8 +38,8 @@ describe("assertBookingEditableAfterCheckout", () => {
     expect(() =>
       assertBookingEditableAfterCheckout(
         { actual_check_out_at: null },
-        { memberRole: "operator", allowPostCheckoutEdits: false }
-      )
+        { memberRole: "operator", allowPostCheckoutEdits: false },
+      ),
     ).not.toThrow();
   });
 
@@ -47,8 +47,8 @@ describe("assertBookingEditableAfterCheckout", () => {
     expect(() =>
       assertBookingEditableAfterCheckout(
         { actual_check_out_at: "2026-06-14T10:00:00Z" },
-        { memberRole: "operator", allowPostCheckoutEdits: false }
-      )
+        { memberRole: "operator", allowPostCheckoutEdits: false },
+      ),
     ).toThrow("booking.checkout_locked");
   });
 });

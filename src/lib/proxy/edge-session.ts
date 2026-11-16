@@ -10,7 +10,7 @@ export type ProxySupabase = ReturnType<typeof createServerClient>;
  */
 export function createProxySupabase(
   request: NextRequest,
-  response: NextResponse
+  response: NextResponse,
 ): ProxySupabase | null {
   const { configured, url, key } = getEdgeSupabaseConfig();
   if (!configured || !url || !key) return null;
@@ -23,7 +23,7 @@ export function createProxySupabase(
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
         cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options)
+          response.cookies.set(name, value, options),
         );
       },
     },

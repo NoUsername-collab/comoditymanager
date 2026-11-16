@@ -27,7 +27,10 @@ export function renderGallery(
         .filter(Boolean)
         .join(" ")}
     >
-      <SectionHead title={copy(section.payload.title, ctx.locale)} lead={copy(section.payload.lead, ctx.locale)} />
+      <SectionHead
+        title={copy(section.payload.title, ctx.locale)}
+        lead={copy(section.payload.lead, ctx.locale)}
+      />
       <PublicGallery
         photos={photos.map((photo) => ({
           id: photo.id,

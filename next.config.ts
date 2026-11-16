@@ -52,9 +52,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-    experimental: {
-      // The 404 for unmatched addresses: the root layout is per language.
-      globalNotFound: true,
+  experimental: {
+    // The 404 for unmatched addresses: the root layout is per language.
+    globalNotFound: true,
     optimizePackageImports: [
       "date-fns",
       "@supabase/supabase-js",

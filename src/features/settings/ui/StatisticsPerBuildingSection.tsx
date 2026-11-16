@@ -42,9 +42,7 @@ export function StatisticsPerBuildingSection({
             key={building.buildingId}
             className="statistics-card rounded-xl border border-zinc-200 bg-zinc-50/80 p-3"
           >
-            <p className="text-sm font-semibold text-zinc-900">
-              {building.buildingName}
-            </p>
+            <p className="text-sm font-semibold text-zinc-900">{building.buildingName}</p>
             <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
               <Stat label={labels.roomsCol} value={String(building.activeRooms)} />
               <Stat label={labels.staysCol} value={String(building.confirmedStays)} />
@@ -75,20 +73,12 @@ export function StatisticsPerBuildingSection({
           <tbody>
             {buildings.map((building) => (
               <tr key={building.buildingId} className="border-t border-zinc-100">
-                <td className="px-4 py-2.5 font-medium text-zinc-900">
-                  {building.buildingName}
-                </td>
+                <td className="px-4 py-2.5 font-medium text-zinc-900">{building.buildingName}</td>
                 <td className="px-4 py-2.5 tabular-nums">{building.activeRooms}</td>
-                <td className="px-4 py-2.5 tabular-nums">
-                  {building.confirmedStays}
-                </td>
-                <td className="px-4 py-2.5 tabular-nums">
-                  {building.occupancyPct}%
-                </td>
+                <td className="px-4 py-2.5 tabular-nums">{building.confirmedStays}</td>
+                <td className="px-4 py-2.5 tabular-nums">{building.occupancyPct}%</td>
                 <td className="px-4 py-2.5 tabular-nums">{building.guestNights}</td>
-                <td className="px-4 py-2.5 tabular-nums">
-                  {formatRevenue(building.revenueRon)}
-                </td>
+                <td className="px-4 py-2.5 tabular-nums">{formatRevenue(building.revenueRon)}</td>
               </tr>
             ))}
           </tbody>
@@ -98,20 +88,10 @@ export function StatisticsPerBuildingSection({
   );
 }
 
-function Stat({
-  label,
-  value,
-  className,
-}: {
-  label: string;
-  value: string;
-  className?: string;
-}) {
+function Stat({ label, value, className }: { label: string; value: string; className?: string }) {
   return (
     <div className={className}>
-      <dt className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
-        {label}
-      </dt>
+      <dt className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">{label}</dt>
       <dd className="mt-0.5 font-semibold tabular-nums text-zinc-800">{value}</dd>
     </div>
   );

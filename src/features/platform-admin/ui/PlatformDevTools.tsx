@@ -5,11 +5,7 @@ import { useTranslations } from "next-intl";
 import { revalidatePlatformAdminCacheAction } from "@/features/platform-admin/dev-actions";
 import type { MigrationMarker } from "@/lib/platform-admin/migration-audit";
 
-export function PlatformDevTools({
-  migrations,
-}: {
-  migrations: MigrationMarker[];
-}) {
+export function PlatformDevTools({ migrations }: { migrations: MigrationMarker[] }) {
   const t = useTranslations("platformAdmin.devTools");
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);

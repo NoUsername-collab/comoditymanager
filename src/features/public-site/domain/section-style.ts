@@ -41,7 +41,8 @@ function pick<K extends keyof SectionStyle>(key: K, raw: unknown): SectionStyle[
 }
 
 export function readSectionStyle(raw: unknown): SectionStyle {
-  const row = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
+  const row =
+    raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
   return {
     look: pick("look", row.look),
     background: pick("background", row.background),

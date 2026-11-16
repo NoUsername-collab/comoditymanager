@@ -18,20 +18,16 @@ async function listBuildingsUncached(tenantId: string): Promise<Building[]> {
   return (data ?? []).map((row) => ({
     ...(row as Building),
     default_price_per_night: Number(
-      (row as { default_price_per_night?: number }).default_price_per_night ?? 0
+      (row as { default_price_per_night?: number }).default_price_per_night ?? 0,
     ),
   }));
 }
 
 const getCachedBuildings = (tenantId: string) =>
-  unstable_cache(
-    () => listBuildingsUncached(tenantId),
-    ["buildings", tenantId],
-    {
-      tags: [CACHE_TAGS.buildings, `tenant-${tenantId}-buildings`],
-      revalidate: 300,
-    }
-  );
+  unstable_cache(() => listBuildingsUncached(tenantId), ["buildings", tenantId], {
+    tags: [CACHE_TAGS.buildings, `tenant-${tenantId}-buildings`],
+    revalidate: 300,
+  });
 
 const loadBuildings = cache((tenantId: string) => getCachedBuildings(tenantId)());
 
@@ -56,7 +52,7 @@ const loadBuildingDefaultPrice = cache(async (buildingId: string): Promise<numbe
 
   if (error) throw new Error(error.message);
   return Number(
-    (data as { default_price_per_night?: number } | null)?.default_price_per_night ?? 0
+    (data as { default_price_per_night?: number } | null)?.default_price_per_night ?? 0,
   );
 });
 
@@ -81,7 +77,7 @@ const loadBuildingById = cache(async (buildingId: string): Promise<Building | nu
   return {
     ...(data as Building),
     default_price_per_night: Number(
-      (data as { default_price_per_night?: number }).default_price_per_night ?? 0
+      (data as { default_price_per_night?: number }).default_price_per_night ?? 0,
     ),
   };
 });
@@ -111,7 +107,7 @@ export async function updateBuilding(input: {
 
 export async function updateBuildingDefaultPrice(
   buildingId: string,
-  default_price_per_night: number
+  default_price_per_night: number,
 ): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
@@ -134,13 +130,13 @@ export async function createBuilding(input: {
     .from("buildings")
     .insert(
       withTenantId(tenantId, {
-      name: input.name.trim(),
-      sort_order: input.sort_order,
-      color_hex: input.color_hex || null,
-      ac_mode: input.ac_mode,
-      default_price_per_night: input.default_price_per_night ?? 0,
-      is_active: true,
-      })
+        name: input.name.trim(),
+        sort_order: input.sort_order,
+        color_hex: input.color_hex || null,
+        ac_mode: input.ac_mode,
+        default_price_per_night: input.default_price_per_night ?? 0,
+        is_active: true,
+      }),
     )
     .select("id")
     .single();

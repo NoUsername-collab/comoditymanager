@@ -1,8 +1,5 @@
 import { describe, expect, test } from "vitest";
-import {
-  findDuplicateNationalIdsInForm,
-  holderNationalIdMatches,
-} from "../identity-guards";
+import { findDuplicateNationalIdsInForm, holderNationalIdMatches } from "../identity-guards";
 import type { CheckinGuestInput } from "../types";
 
 const baseGuest = (overrides: Partial<CheckinGuestInput>): CheckinGuestInput => ({
@@ -52,21 +49,11 @@ describe("findDuplicateNationalIdsInForm", () => {
 
 describe("holderNationalIdMatches", () => {
   test("matches cleaned CNP on holder profile", () => {
-    expect(
-      holderNationalIdMatches("1850101410014", "1850101410014", null),
-    ).toBe(true);
-    expect(
-      holderNationalIdMatches("185-0101-410014", null, "1850101410014"),
-    ).toBe(true);
+    expect(holderNationalIdMatches("1850101410014", "1850101410014", null)).toBe(true);
+    expect(holderNationalIdMatches("185-0101-410014", null, "1850101410014")).toBe(true);
   });
 
   test("rejects mismatched CNP", () => {
-    expect(
-      holderNationalIdMatches(
-        "2850101410018",
-        "1850101410014",
-        "1850101410014",
-      ),
-    ).toBe(false);
+    expect(holderNationalIdMatches("2850101410018", "1850101410014", "1850101410014")).toBe(false);
   });
 });

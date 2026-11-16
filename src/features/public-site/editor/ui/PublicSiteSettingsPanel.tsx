@@ -45,8 +45,10 @@ export function PublicSiteSettingsPanel({
   const te = useTranslations("admin.pages.publicSite.editor");
   const { config, draft, copy, primaryContact } = usePublicSiteEditor();
 
-  const phone = draft.contactPhone.trim() || (draft.usePrimaryContact ? primaryContact.phone : null);
-  const email = draft.contactEmail.trim() || (draft.usePrimaryContact ? primaryContact.email : null);
+  const phone =
+    draft.contactPhone.trim() || (draft.usePrimaryContact ? primaryContact.phone : null);
+  const email =
+    draft.contactEmail.trim() || (draft.usePrimaryContact ? primaryContact.email : null);
   const bookingPositions = {
     both: te("bookingPosBoth"),
     nav: te("bookingPosNav"),

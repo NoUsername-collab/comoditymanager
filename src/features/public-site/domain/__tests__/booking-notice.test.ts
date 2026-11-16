@@ -20,11 +20,7 @@ describe("normalizeBookingNotice", () => {
   it("falls back to platform presets when storage is empty", () => {
     const notice = normalizeBookingNotice(undefined);
     expect(notice.enabled).toBe(true);
-    expect(notice.items.map((item) => item.preset)).toEqual([
-      "noPay",
-      "hold",
-      "hours",
-    ]);
+    expect(notice.items.map((item) => item.preset)).toEqual(["noPay", "hold", "hours"]);
   });
 
   it("keeps an explicit empty list so the owner can hide every item", () => {
@@ -78,9 +74,7 @@ describe("buildBookingNoticeView", () => {
     });
 
     expect(view.title).toBe("Please note");
-    expect(view.items).toEqual([
-      { id: "pets", icon: "ℹ", title: "Pets", text: "On request." },
-    ]);
+    expect(view.items).toEqual([{ id: "pets", icon: "ℹ", title: "Pets", text: "On request." }]);
   });
 
   it("resolves a generic extra preset from platform copy", () => {
@@ -117,9 +111,7 @@ describe("buildBookingNoticeView", () => {
       enabled: true,
       title: "",
       footer: "",
-      items: [
-        { id: "noPay", preset: "noPay", icon: "check", title: "", text: "" },
-      ],
+      items: [{ id: "noPay", preset: "noPay", icon: "check", title: "", text: "" }],
     });
     const view = buildBookingNoticeView({
       notice,
@@ -182,9 +174,7 @@ describe("alignNoticeDraft", () => {
         enabled: false,
         title: "RO title",
         footer: "",
-        items: [
-          { id: "noPay", preset: "noPay", icon: "check", title: "RO pay", text: "" },
-        ],
+        items: [{ id: "noPay", preset: "noPay", icon: "check", title: "RO pay", text: "" }],
       },
       {
         enabled: true,
@@ -206,8 +196,8 @@ describe("alignNoticeDraft", () => {
 
 describe("interpolateNoticePlaceholders", () => {
   it("replaces check-in and check-out tokens", () => {
-    expect(
-      interpolateNoticePlaceholders("In {checkIn} out {checkOut}", "14:00", "11:00")
-    ).toBe("In 14:00 out 11:00");
+    expect(interpolateNoticePlaceholders("In {checkIn} out {checkOut}", "14:00", "11:00")).toBe(
+      "In 14:00 out 11:00",
+    );
   });
 });

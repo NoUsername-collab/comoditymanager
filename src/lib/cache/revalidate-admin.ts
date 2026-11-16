@@ -20,10 +20,7 @@ type BookingSurfaceOptions = {
  * Marks booking data caches stale. Cheap — does not rebuild RSC trees.
  * Call on the mutation hot path so the next occupancy/list read is fresh.
  */
-function bustBookingDataCache(
-  tenantId?: string,
-  extra?: { checkins?: boolean },
-) {
+function bustBookingDataCache(tenantId?: string, extra?: { checkins?: boolean }) {
   if (tenantId) {
     revalidateTag(tenantTag(tenantId, CACHE_TAGS.bookingCounts), "max");
     if (extra?.checkins) {
@@ -152,10 +149,7 @@ export function revalidateBookingSurfacesExtended(options?: {
 }
 
 /** Check-in / payment on booking — calendar + stays + detail (no statistics/history). */
-export function revalidateBookingOperativeSurfaces(
-  bookingId: string,
-  tenantId?: string,
-) {
+export function revalidateBookingOperativeSurfaces(bookingId: string, tenantId?: string) {
   invalidateBookingSurfaces({
     tenantId,
     bookingId,

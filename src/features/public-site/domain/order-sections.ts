@@ -5,13 +5,52 @@ import type {
 } from "@/features/public-site/domain/types";
 
 /** Per-layout section rhythm. Leftover types keep their relative sortOrder. */
-export const PUBLIC_TEMPLATE_SECTION_ORDER: Record<
-  PublicTemplateId,
-  PublicSectionType[]
-> = {
-  classic: ["intro", "benefits", "amenities", "gallery", "video", "steps", "reviews", "text", "attractions", "faq", "stays", "place", "cta"],
-  editorial: ["intro", "gallery", "video", "benefits", "amenities", "steps", "reviews", "text", "attractions", "faq", "stays", "place", "cta"],
-  immersive: ["gallery", "video", "intro", "benefits", "amenities", "steps", "reviews", "text", "attractions", "faq", "stays", "place", "cta"],
+export const PUBLIC_TEMPLATE_SECTION_ORDER: Record<PublicTemplateId, PublicSectionType[]> = {
+  classic: [
+    "intro",
+    "benefits",
+    "amenities",
+    "gallery",
+    "video",
+    "steps",
+    "reviews",
+    "text",
+    "attractions",
+    "faq",
+    "stays",
+    "place",
+    "cta",
+  ],
+  editorial: [
+    "intro",
+    "gallery",
+    "video",
+    "benefits",
+    "amenities",
+    "steps",
+    "reviews",
+    "text",
+    "attractions",
+    "faq",
+    "stays",
+    "place",
+    "cta",
+  ],
+  immersive: [
+    "gallery",
+    "video",
+    "intro",
+    "benefits",
+    "amenities",
+    "steps",
+    "reviews",
+    "text",
+    "attractions",
+    "faq",
+    "stays",
+    "place",
+    "cta",
+  ],
 };
 
 /** Live and preview order: what the operator saved. */
@@ -30,8 +69,7 @@ export function assignTemplateSectionSort(
 
   return [...sections]
     .sort((a, b) => {
-      const byType =
-        (rank.get(a.sectionType) ?? 99) - (rank.get(b.sectionType) ?? 99);
+      const byType = (rank.get(a.sectionType) ?? 99) - (rank.get(b.sectionType) ?? 99);
       if (byType !== 0) return byType;
       return a.sortOrder - b.sortOrder;
     })

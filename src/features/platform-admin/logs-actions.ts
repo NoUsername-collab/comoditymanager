@@ -16,12 +16,12 @@ async function runPlatformLogsProbe(mode: PlatformLogsProbeMode): Promise<never>
   const session = await getPlatformAdminWithMfaOrNull();
   if (!session) {
     throw new Error(
-      `[platform-admin/logs:probe${mode === "ssr" ? "-ssr" : ""}] Neautorizat — sesiune platform admin lipsă.`
+      `[platform-admin/logs:probe${mode === "ssr" ? "-ssr" : ""}] Neautorizat — sesiune platform admin lipsă.`,
     );
   }
 
   const probe = new Error(
-    `[platform-admin/logs:probe${mode === "ssr" ? "-ssr" : ""}] Test throw ${new Date().toISOString()} (admin=${session.email})`
+    `[platform-admin/logs:probe${mode === "ssr" ? "-ssr" : ""}] Test throw ${new Date().toISOString()} (admin=${session.email})`,
   );
 
   await capturePlatformAdminError(probe, {

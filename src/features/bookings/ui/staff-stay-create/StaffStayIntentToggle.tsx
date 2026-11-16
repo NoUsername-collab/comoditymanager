@@ -22,10 +22,7 @@ export function StaffStayIntentToggle({
     <div className={root} role="group" aria-label={t("intentLabel")}>
       <button
         type="button"
-        className={[
-          "staff-stay-intent__btn",
-          value === "request" && "staff-stay-intent__btn--on",
-        ]
+        className={["staff-stay-intent__btn", value === "request" && "staff-stay-intent__btn--on"]
           .filter(Boolean)
           .join(" ")}
         aria-pressed={value === "request"}
@@ -36,10 +33,7 @@ export function StaffStayIntentToggle({
       </button>
       <button
         type="button"
-        className={[
-          "staff-stay-intent__btn",
-          value === "direct" && "staff-stay-intent__btn--on",
-        ]
+        className={["staff-stay-intent__btn", value === "direct" && "staff-stay-intent__btn--on"]
           .filter(Boolean)
           .join(" ")}
         aria-pressed={value === "direct"}

@@ -77,11 +77,15 @@ export function PublicSiteBody({
 }) {
   const template = effectivePublicTemplate(config);
   const ordered = orderPublicSections(config.sections);
-  const pinnedLast = (section: PublicSiteSection) => Boolean(sectionKind(section.sectionType).pinnedLast);
+  const pinnedLast = (section: PublicSiteSection) =>
+    Boolean(sectionKind(section.sectionType).pinnedLast);
   const body = (
     <>
       <TemplateSections
-        sections={[...ordered.filter((section) => !pinnedLast(section)), ...ordered.filter(pinnedLast)]}
+        sections={[
+          ...ordered.filter((section) => !pinnedLast(section)),
+          ...ordered.filter(pinnedLast),
+        ]}
         config={config}
         locale={locale}
         template={template}

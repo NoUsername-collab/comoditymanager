@@ -11,7 +11,8 @@
 
 .booking-checkout-panel__hero {
   border-radius: 0.75rem;
-  border: 1px solid var(--admin-tint-warning-border, color-mix(in srgb, var(--border, #e4e4e7) 90%, transparent));
+  border: 1px solid
+    var(--admin-tint-warning-border, color-mix(in srgb, var(--border, #e4e4e7) 90%, transparent));
   background: var(--admin-tint-warning-bg, var(--surface, #fff));
   padding: 0.7rem 0.8rem;
 }

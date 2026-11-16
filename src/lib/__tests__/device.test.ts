@@ -1,50 +1,35 @@
 import { describe, it, expect } from "vitest";
-import {
-  detectDeviceFromUserAgent,
-  isTouchDeviceClass,
-} from "@/lib/device";
+import { detectDeviceFromUserAgent, isTouchDeviceClass } from "@/lib/device";
 
 // ---------------------------------------------------------------------------
 // detectDeviceFromUserAgent
 // ---------------------------------------------------------------------------
 describe("detectDeviceFromUserAgent", () => {
   it('returns "android" for Android user agents', () => {
-    expect(
-      detectDeviceFromUserAgent(
-        "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36"
-      )
-    ).toBe("android");
+    expect(detectDeviceFromUserAgent("Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36")).toBe(
+      "android",
+    );
   });
 
   it('returns "ios" for iPhone user agents', () => {
     expect(
-      detectDeviceFromUserAgent(
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)"
-      )
+      detectDeviceFromUserAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)"),
     ).toBe("ios");
   });
 
   it('returns "ios" for iPad user agents', () => {
-    expect(
-      detectDeviceFromUserAgent(
-        "Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X)"
-      )
-    ).toBe("ios");
+    expect(detectDeviceFromUserAgent("Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X)")).toBe("ios");
   });
 
   it('returns "mobile" for generic mobile user agents', () => {
-    expect(
-      detectDeviceFromUserAgent(
-        "Mozilla/5.0 (Mobile; rv:48.0) Gecko/48.0 Firefox/48.0"
-      )
-    ).toBe("mobile");
+    expect(detectDeviceFromUserAgent("Mozilla/5.0 (Mobile; rv:48.0) Gecko/48.0 Firefox/48.0")).toBe(
+      "mobile",
+    );
   });
 
   it('returns "desktop" for desktop user agents', () => {
     expect(
-      detectDeviceFromUserAgent(
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-      )
+      detectDeviceFromUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"),
     ).toBe("desktop");
   });
 

@@ -43,9 +43,7 @@ export function PublicBookingNotice({
           </li>
         ))}
       </ul>
-      {view.footer ? (
-        <p className="pub-booking-surplus-note">{view.footer}</p>
-      ) : null}
+      {view.footer ? <p className="pub-booking-surplus-note">{view.footer}</p> : null}
     </aside>
   );
 }

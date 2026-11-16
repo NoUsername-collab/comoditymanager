@@ -20,7 +20,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { config, page } = await findPage(slug);
   if (!page) return publicNotFoundMetadata(config);
   const title = pickOwnLocalized(page.title, locale) || config.displayName;
-  const description = pickOwnLocalized(page.seoDescription, locale) || pickOwnLocalized(page.lead, locale);
+  const description =
+    pickOwnLocalized(page.seoDescription, locale) || pickOwnLocalized(page.lead, locale);
   return {
     ...(await publicPageMetadata(config, { title, description, path: `/${page.slug}` })),
     // A page the operator hid stays out of search results while staff look at it.

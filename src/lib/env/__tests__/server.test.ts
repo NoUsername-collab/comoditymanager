@@ -2,10 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const BASE_ENV = {
   NEXT_PUBLIC_SUPABASE_URL: "https://ci-placeholder.supabase.co",
-  NEXT_PUBLIC_SUPABASE_ANON_KEY:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ci-anon-placeholder-key",
-  SUPABASE_SERVICE_ROLE_KEY:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ci-service-placeholder-key",
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ci-anon-placeholder-key",
+  SUPABASE_SERVICE_ROLE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ci-service-placeholder-key",
   ADMIN_LOCATION_UNLOCK_SECRET: "x".repeat(32),
 };
 

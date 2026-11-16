@@ -3,10 +3,7 @@ import { readLocalStorageFirst } from "@/lib/storage/local";
 
 const STAY_SEARCH_HISTORY_MAX = 10;
 const STORAGE_PREFIX = "zalmox-stays-search-history";
-const LEGACY_STORAGE_PREFIXES = [
-  "zalmox-cazari-search-history",
-  "casaemil-cazari-search-history",
-];
+const LEGACY_STORAGE_PREFIXES = ["zalmox-cazari-search-history", "casaemil-cazari-search-history"];
 
 function normalizeSearchHistoryTerm(raw: string): string {
   return raw.trim().replace(/\s+/g, " ");
@@ -20,10 +17,7 @@ export function dedupeSearchHistory(terms: string[], next: string): string[] {
   return [normalized, ...filtered].slice(0, STAY_SEARCH_HISTORY_MAX);
 }
 
-export function searchHistoryStorageKey(
-  hostInput: string,
-  prefix = STORAGE_PREFIX,
-): string {
+export function searchHistoryStorageKey(hostInput: string, prefix = STORAGE_PREFIX): string {
   const slug = tenantSlugFromHost(hostInput);
   if (slug) return `${prefix}:${slug}`;
   const domain = tenantDomainFromHost(hostInput);
@@ -52,9 +46,7 @@ export function readStaySearchHistory(hostInput?: string): string[] {
     const host = hostInput ?? window.location.host;
     const keys = [
       searchHistoryStorageKey(host),
-      ...LEGACY_STORAGE_PREFIXES.map((prefix) =>
-        searchHistoryStorageKey(host, prefix),
-      ),
+      ...LEGACY_STORAGE_PREFIXES.map((prefix) => searchHistoryStorageKey(host, prefix)),
     ];
     return parseSearchHistory(readLocalStorageFirst(keys));
   } catch {
@@ -62,10 +54,7 @@ export function readStaySearchHistory(hostInput?: string): string[] {
   }
 }
 
-function writeStaySearchHistory(
-  terms: string[],
-  hostInput?: string,
-): void {
+function writeStaySearchHistory(terms: string[], hostInput?: string): void {
   if (typeof window === "undefined") return;
   try {
     const host = hostInput ?? window.location.host;
@@ -73,30 +62,21 @@ function writeStaySearchHistory(
     if (terms.length === 0) {
       localStorage.removeItem(key);
     } else {
-      localStorage.setItem(
-        key,
-        JSON.stringify(terms.slice(0, STAY_SEARCH_HISTORY_MAX)),
-      );
+      localStorage.setItem(key, JSON.stringify(terms.slice(0, STAY_SEARCH_HISTORY_MAX)));
     }
   } catch {
     // localStorage may be unavailable
   }
 }
 
-export function addStaySearchHistoryTerm(
-  term: string,
-  hostInput?: string,
-): string[] {
+export function addStaySearchHistoryTerm(term: string, hostInput?: string): string[] {
   const current = readStaySearchHistory(hostInput);
   const next = dedupeSearchHistory(current, term);
   writeStaySearchHistory(next, hostInput);
   return next;
 }
 
-export function removeStaySearchHistoryTerm(
-  term: string,
-  hostInput?: string,
-): string[] {
+export function removeStaySearchHistoryTerm(term: string, hostInput?: string): string[] {
   const normalized = normalizeSearchHistoryTerm(term).toLowerCase();
   const current = readStaySearchHistory(hostInput);
   const next = current.filter((item) => item.toLowerCase() !== normalized);
@@ -108,10 +88,7 @@ export function clearStaySearchHistory(hostInput?: string): void {
   writeStaySearchHistory([], hostInput);
 }
 
-export function filterVisibleSearchHistory(
-  items: string[],
-  query: string,
-): string[] {
+export function filterVisibleSearchHistory(items: string[], query: string): string[] {
   const normalizedQuery = normalizeSearchHistoryTerm(query).toLowerCase();
   if (!normalizedQuery) return items;
   return items.filter((item) => {

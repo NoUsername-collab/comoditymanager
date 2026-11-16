@@ -45,9 +45,7 @@ function platformMailDomain(): string | null {
   return platformDomain ? platformDomain.toLowerCase() : null;
 }
 
-export async function getTenantEmailDelivery(
-  tenantId: string,
-): Promise<TenantEmailDeliveryRecord> {
+export async function getTenantEmailDelivery(tenantId: string): Promise<TenantEmailDeliveryRecord> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("tenant_email_delivery")
@@ -107,16 +105,10 @@ export const getTenantEmailOperatorSnapshot = cache(
     const keyResolution = await resolveTenantResendApiKeyForTenant(tenantId, tenant.slug);
     const effectiveMonthlyCap = effectiveMonthlySendCap(plan, delivery);
     const usagePeriodMonth = currentUtcMonthPeriod();
-    const monthlySentCount = await getTenantEmailSentCountForMonth(
-      tenantId,
-      usagePeriodMonth,
-    );
+    const monthlySentCount = await getTenantEmailSentCountForMonth(tenantId, usagePeriodMonth);
     const verifiedCustom = domains
       .filter(
-        (d) =>
-          d.verified &&
-          d.routing_kind !== "platform_subdomain" &&
-          d.domain.trim().length > 0,
+        (d) => d.verified && d.routing_kind !== "platform_subdomain" && d.domain.trim().length > 0,
       )
       .map((d) => d.domain);
 
@@ -135,8 +127,7 @@ export const getTenantEmailOperatorSnapshot = cache(
       },
     );
 
-    const capBlocked =
-      effectiveMonthlyCap != null && monthlySentCount >= effectiveMonthlyCap;
+    const capBlocked = effectiveMonthlyCap != null && monthlySentCount >= effectiveMonthlyCap;
     const sendResolution =
       capBlocked && baseSendResolution.canSend
         ? {
@@ -199,17 +190,18 @@ export async function resolveTenantEmailSendForTenant(
 
   let apiKey: string | null = null;
   if (resolution.canSend && resolution.provider === "resend") {
-    if (
-      resolution.apiKeySource === "tenant_env" ||
-      resolution.apiKeySource === "tenant_vault"
-    ) {
+    if (resolution.apiKeySource === "tenant_env" || resolution.apiKeySource === "tenant_vault") {
       apiKey = keyResolution.apiKey;
     } else if (resolution.apiKeySource === "platform_env") {
       apiKey = process.env.RESEND_API_KEY?.trim() ?? null;
     }
   }
 
-  return { ...resolution, apiKey, monthlyCap: tenant ? effectiveMonthlySendCap(getPlanConfig(tenant.plan_id), delivery) : null };
+  return {
+    ...resolution,
+    apiKey,
+    monthlyCap: tenant ? effectiveMonthlySendCap(getPlanConfig(tenant.plan_id), delivery) : null,
+  };
 }
 
 export type UpdateTenantEmailDeliveryInput = {

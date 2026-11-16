@@ -15,10 +15,7 @@ export default async function LogsPage({
 }) {
   const params = await searchParams;
 
-  if (
-    process.env.NODE_ENV !== "production" &&
-    (params.throw === "page" || params.throw === "1")
-  ) {
+  if (process.env.NODE_ENV !== "production" && (params.throw === "page" || params.throw === "1")) {
     await probePlatformLogsPageThrow();
   }
 
@@ -27,13 +24,7 @@ export default async function LogsPage({
     getTranslations("platformAdmin.logsPage"),
   ]);
 
-  const {
-    healthChecks,
-    activityLogs,
-    devLogs,
-    filterOptions,
-    activeTenantName,
-  } = pageData;
+  const { healthChecks, activityLogs, devLogs, filterOptions, activeTenantName } = pageData;
 
   return (
     <div className="space-y-4">

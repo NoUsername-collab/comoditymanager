@@ -21,8 +21,7 @@ function roomRowSelector(roomId: string): string {
 }
 
 function roomDragLayerSelector(roomId: string): string {
-  const escaped =
-    escapeSelectorValue(roomId);
+  const escaped = escapeSelectorValue(roomId);
   return `${ROOM_DRAG_LAYER_SELECTOR}[data-gantt-room-drag-layer="${escaped}"]`;
 }
 
@@ -49,7 +48,7 @@ function getRoomDragLayer(roomId: string): HTMLElement | null {
 export function findGanttRoomAtPoint(
   clientX: number,
   clientY: number,
-  excludeRoomId?: string
+  excludeRoomId?: string,
 ): string | null {
   if (typeof document === "undefined") return null;
 
@@ -90,10 +89,7 @@ export function listGanttRoomIdsInDomOrder(): string[] {
     .filter(Boolean);
 }
 
-export function setGanttRoomDragSpan(
-  roomIds: string[],
-  preview?: GanttRoomDragPreview
-): void {
+export function setGanttRoomDragSpan(roomIds: string[], preview?: GanttRoomDragPreview): void {
   if (typeof document === "undefined") return;
   const nextIds = new Set(roomIds);
   const touchedIds = new Set([...activeDragSpanIds, ...nextIds]);
@@ -104,16 +100,10 @@ export function setGanttRoomDragSpan(
     const layer = getRoomDragLayer(roomId);
 
     row?.classList.toggle("gantt-room-row--drag-span", active);
-    row?.classList.toggle(
-      "gantt-room-row--drag-span-conflict",
-      active && !!preview?.hasConflict
-    );
+    row?.classList.toggle("gantt-room-row--drag-span-conflict", active && !!preview?.hasConflict);
 
     layer?.classList.toggle("gantt-room-row--drag-span", active);
-    layer?.classList.toggle(
-      "gantt-room-row--drag-span-conflict",
-      active && !!preview?.hasConflict
-    );
+    layer?.classList.toggle("gantt-room-row--drag-span-conflict", active && !!preview?.hasConflict);
 
     if (active && preview) {
       layer?.style.setProperty("--gantt-drag-left", `${preview.leftPct}%`);
@@ -131,10 +121,7 @@ export function clearGanttRoomDragSpan(): void {
   setGanttRoomDragSpan([]);
 }
 
-export function setGanttRoomPinnedSpan(
-  roomIds: string[],
-  preview?: GanttRoomDragPreview
-): void {
+export function setGanttRoomPinnedSpan(roomIds: string[], preview?: GanttRoomDragPreview): void {
   if (typeof document === "undefined") return;
   const nextIds = new Set(roomIds);
   const touchedIds = new Set([...activePinnedIds, ...nextIds]);

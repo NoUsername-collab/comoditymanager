@@ -51,7 +51,7 @@ describe("useMobileLayout server snapshots", () => {
         "data-layout-chrome": "compact",
         "data-layout-orientation": "portrait",
       },
-      "390px"
+      "390px",
     );
     vi.stubGlobal("document", { documentElement: root });
 
@@ -67,26 +67,19 @@ describe("useMobileLayout server snapshots", () => {
 });
 
 describe("useMobileLayout snapshot helpers (source audit)", () => {
-  const source = readFileSync(
-    join(process.cwd(), "src/hooks/useMobileLayout.ts"),
-    "utf8"
-  );
+  const source = readFileSync(join(process.cwd(), "src/hooks/useMobileLayout.ts"), "utf8");
 
   it("uses bootstrapped DOM for useSyncExternalStore server snapshots", () => {
     expect(source).toContain("isDocumentLayoutBootstrapped");
     expect(source).toContain("getCompactLayoutHintsSnapshot");
     expect(source).toContain("getMobileLayoutStateSnapshot");
     expect(source).toMatch(
-      /getCompactLayoutHintsSnapshot[\s\S]*isDocumentLayoutBootstrapped[\s\S]*readCompactLayoutHints/
+      /getCompactLayoutHintsSnapshot[\s\S]*isDocumentLayoutBootstrapped[\s\S]*readCompactLayoutHints/,
     );
     expect(source).toMatch(
-      /getMobileLayoutStateSnapshot[\s\S]*isDocumentLayoutBootstrapped[\s\S]*readMobileLayoutState/
+      /getMobileLayoutStateSnapshot[\s\S]*isDocumentLayoutBootstrapped[\s\S]*readMobileLayoutState/,
     );
-    expect(source).toMatch(
-      /useSyncExternalStore\([\s\S]*getCompactLayoutHintsSnapshot/
-    );
-    expect(source).toMatch(
-      /useSyncExternalStore\([\s\S]*getMobileLayoutStateSnapshot/
-    );
+    expect(source).toMatch(/useSyncExternalStore\([\s\S]*getCompactLayoutHintsSnapshot/);
+    expect(source).toMatch(/useSyncExternalStore\([\s\S]*getMobileLayoutStateSnapshot/);
   });
 });

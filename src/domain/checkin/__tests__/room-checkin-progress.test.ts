@@ -7,10 +7,7 @@ import {
 
 describe("room-checkin-progress", () => {
   test("multi-room partial progress", () => {
-    const p = computeRoomCheckinProgress(
-      ["Camera 1", "Camera 2", "Camera 3"],
-      ["Camera 1"],
-    );
+    const p = computeRoomCheckinProgress(["Camera 1", "Camera 2", "Camera 3"], ["Camera 1"]);
     expect(p.total).toBe(3);
     expect(p.checked).toBe(1);
     expect(p.remaining).toBe(2);
@@ -30,22 +27,16 @@ describe("room-checkin-progress", () => {
 
   test("shouldShowRoomCheckinProgress hides future multi-room stays", () => {
     const future = computeRoomCheckinProgress(["7", "1"], []);
-    expect(
-      shouldShowRoomCheckinProgress("2026-06-24", "2026-06-09", future),
-    ).toBe(false);
+    expect(shouldShowRoomCheckinProgress("2026-06-24", "2026-06-09", future)).toBe(false);
   });
 
   test("shouldShowRoomCheckinProgress shows on arrival day", () => {
     const arrival = computeRoomCheckinProgress(["7", "1"], []);
-    expect(
-      shouldShowRoomCheckinProgress("2026-06-24", "2026-06-24", arrival),
-    ).toBe(true);
+    expect(shouldShowRoomCheckinProgress("2026-06-24", "2026-06-24", arrival)).toBe(true);
   });
 
   test("shouldShowRoomCheckinProgress shows after partial check-in", () => {
     const partial = computeRoomCheckinProgress(["7", "1"], ["7"]);
-    expect(
-      shouldShowRoomCheckinProgress("2026-06-24", "2026-06-09", partial),
-    ).toBe(true);
+    expect(shouldShowRoomCheckinProgress("2026-06-24", "2026-06-09", partial)).toBe(true);
   });
 });

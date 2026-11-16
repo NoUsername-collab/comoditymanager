@@ -3,7 +3,9 @@
  * https:// (as Airbnb and Google show it), and only https addresses on public
  * host names are accepted, so the server never fetches its own network.
  */
-export function normalizeIcalFeedUrl(raw: string): { ok: true; url: string } | { ok: false; error: "invalid_url" | "not_https" | "private_host" } {
+export function normalizeIcalFeedUrl(
+  raw: string,
+): { ok: true; url: string } | { ok: false; error: "invalid_url" | "not_https" | "private_host" } {
   const trimmed = raw.trim().replace(/^webcals?:\/\//i, "https://");
   let url: URL;
   try {
@@ -22,7 +24,12 @@ export function normalizeIcalFeedUrl(raw: string): { ok: true; url: string } | {
 
 function isPrivateHost(host: string): boolean {
   if (!host.includes(".")) return true;
-  if (host === "localhost" || host.endsWith(".localhost") || host.endsWith(".local") || host.endsWith(".internal")) {
+  if (
+    host === "localhost" ||
+    host.endsWith(".localhost") ||
+    host.endsWith(".local") ||
+    host.endsWith(".internal")
+  ) {
     return true;
   }
   // IP literals: other sites publish calendars on names, never on bare addresses.

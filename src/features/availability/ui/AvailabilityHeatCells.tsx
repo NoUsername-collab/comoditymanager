@@ -37,10 +37,7 @@ export function AvailabilityHeatLegend({
       <div className="avail-heat-legend__items">
         {labels.legendItems.map((item) => (
           <span key={item.key} className="avail-heat-legend__item">
-            <span
-              className={`avail-heat-legend__swatch ${item.className}`}
-              aria-hidden
-            />
+            <span className={`avail-heat-legend__swatch ${item.className}`} aria-hidden />
             {item.label}
           </span>
         ))}

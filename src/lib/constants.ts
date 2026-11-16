@@ -44,9 +44,7 @@ export function resolveStayWindowTimes(input: {
 }): { checkIn: string; checkOut: string } {
   return {
     checkIn:
-      clockHm(input.checkinTimeFrom) ??
-      clockHm(input.defaultCheckInTime) ??
-      DEFAULT_CHECK_IN_TIME,
+      clockHm(input.checkinTimeFrom) ?? clockHm(input.defaultCheckInTime) ?? DEFAULT_CHECK_IN_TIME,
     checkOut:
       clockHm(input.checkoutTimeUntil) ??
       clockHm(input.defaultCheckOutTime) ??

@@ -2,9 +2,7 @@ import { describe, expect, it } from "vitest";
 import { ganttCreateActionsDisabled, ganttCreateDraftFromMenu } from "../actions";
 import type { GanttCreateTarget } from "@/domain/gantt/context-menu";
 
-function createTarget(
-  overrides: Partial<GanttCreateTarget> = {}
-): GanttCreateTarget {
+function createTarget(overrides: Partial<GanttCreateTarget> = {}): GanttCreateTarget {
   return {
     kind: "create",
     clientX: 10,
@@ -29,12 +27,7 @@ describe("ganttCreateActionsDisabled", () => {
   });
 
   it("allows request, direct stay, and hold for a multi-room selection", () => {
-    expect(
-      ganttCreateActionsDisabled(
-        createTarget({ roomIds: ["r1", "r2"] }),
-        false
-      )
-    ).toEqual({
+    expect(ganttCreateActionsDisabled(createTarget({ roomIds: ["r1", "r2"] }), false)).toEqual({
       request: false,
       direct: false,
       hold: false,
@@ -43,17 +36,13 @@ describe("ganttCreateActionsDisabled", () => {
   });
 
   it("disables every action on conflict or missing room", () => {
-    expect(
-      ganttCreateActionsDisabled(createTarget({ hasConflict: true }), false)
-    ).toEqual({
+    expect(ganttCreateActionsDisabled(createTarget({ hasConflict: true }), false)).toEqual({
       request: true,
       direct: true,
       hold: true,
       block: true,
     });
-    expect(
-      ganttCreateActionsDisabled(createTarget({ roomId: null }), false)
-    ).toEqual({
+    expect(ganttCreateActionsDisabled(createTarget({ roomId: null }), false)).toEqual({
       request: true,
       direct: true,
       hold: true,

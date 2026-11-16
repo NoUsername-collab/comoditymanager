@@ -15,7 +15,7 @@ export function ganttTimeHourLabel(time: string): string {
 
 export function ganttDayTimeStyle(
   checkInTime: string,
-  checkOutTime: string
+  checkOutTime: string,
 ): Record<string, string> {
   const outPct = timeToDayFraction(checkOutTime) * 100;
   const inPct = timeToDayFraction(checkInTime) * 100;

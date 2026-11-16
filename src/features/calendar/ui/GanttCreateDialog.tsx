@@ -16,12 +16,7 @@ type Props = {
   onClose: () => void;
 };
 
-export function GanttCreateDialog({
-  draft,
-  rooms,
-  bookings = [],
-  onClose,
-}: Props) {
+export function GanttCreateDialog({ draft, rooms, bookings = [], onClose }: Props) {
   if (!draft?.initialMode) return null;
 
   return (

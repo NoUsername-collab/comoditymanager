@@ -36,11 +36,7 @@ describe("orderPublicSections", () => {
       section("intro", "intro", 10),
       section("benefits", "benefits", 20),
     ];
-    expect(orderPublicSections(custom).map((s) => s.id)).toEqual([
-      "gallery",
-      "intro",
-      "benefits",
-    ]);
+    expect(orderPublicSections(custom).map((s) => s.id)).toEqual(["gallery", "intro", "benefits"]);
   });
 
   it("classic layout seed is intro → benefits → gallery", () => {
@@ -80,5 +76,4 @@ describe("orderPublicSections", () => {
       "cta",
     ]);
   });
-
 });

@@ -3,10 +3,7 @@ import {
   effectiveMonthlySendCap,
   type TenantEmailDeliveryRecord,
 } from "@/domain/email/delivery-policy";
-import {
-  emailUsageAlertLevel,
-  type EmailUsageAlertLevel,
-} from "@/domain/email/usage-alert";
+import { emailUsageAlertLevel, type EmailUsageAlertLevel } from "@/domain/email/usage-alert";
 import { getPlanConfig, resolvePlanId } from "@/core/config/plans";
 import { loadAllTenantEmailUsageForMonth } from "@/services/tenant-email-usage";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
@@ -45,9 +42,7 @@ export async function loadTenantEmailListAlerts(
   return out;
 }
 
-async function loadAllTenantDeliveryCaps(): Promise<
-  Map<string, TenantEmailDeliveryRecord>
-> {
+async function loadAllTenantDeliveryCaps(): Promise<Map<string, TenantEmailDeliveryRecord>> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("tenant_email_delivery")

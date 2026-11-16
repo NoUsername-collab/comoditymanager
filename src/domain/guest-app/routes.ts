@@ -20,16 +20,11 @@ function guestAppFeatureSlug(id: GuestAppFeatureId): string {
   return FEATURE_SLUG[id];
 }
 
-export function parseGuestAppFeatureSlug(
-  slug: string,
-): GuestAppFeatureId | null {
+export function parseGuestAppFeatureSlug(slug: string): GuestAppFeatureId | null {
   return SLUG_TO_FEATURE[slug] ?? null;
 }
 
-export function guestAppFeatureHref(
-  accessCode: string,
-  id: GuestAppFeatureId,
-): string {
+export function guestAppFeatureHref(accessCode: string, id: GuestAppFeatureId): string {
   return `/stay/${accessCode}/${guestAppFeatureSlug(id)}`;
 }
 

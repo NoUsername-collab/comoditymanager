@@ -13,7 +13,11 @@ export function IntroEditor({ section }: SectionEditorProps) {
   const ed = useSectionEditing(section);
   return (
     <div className="admin-settings-fields">
-      <EditorField label={te("sectionTitle")} value={ed.field("title")} onChange={ed.setField("title")} />
+      <EditorField
+        label={te("sectionTitle")}
+        value={ed.field("title")}
+        onChange={ed.setField("title")}
+      />
       <EditorField
         rows={4}
         label={te("introText")}

@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { computeGuestStayOptions, type GuestOptionRoom } from "@/domain/availability/guest-stay-options";
+import {
+  computeGuestStayOptions,
+  type GuestOptionRoom,
+} from "@/domain/availability/guest-stay-options";
 import { DEFAULT_CHILD_POLICY } from "@/domain/availability/party";
 
 function room(id: string, typeId: string, price: number): GuestOptionRoom {
@@ -57,6 +60,8 @@ describe("variants for a room picked on the site", () => {
       preferRoomTypeId: "suite",
     });
     expect(taken.options.length).toBeGreaterThan(0);
-    expect(taken.options.every((o) => o.rooms.every((r) => r.room_type_id === "double"))).toBe(true);
+    expect(taken.options.every((o) => o.rooms.every((r) => r.room_type_id === "double"))).toBe(
+      true,
+    );
   });
 });

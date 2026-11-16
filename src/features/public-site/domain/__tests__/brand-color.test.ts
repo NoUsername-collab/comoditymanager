@@ -5,7 +5,11 @@ import {
   normalizeBrandColor,
   readableTextOn,
 } from "@/features/public-site/domain/brand-color";
-import { normalizePublicChrome, publicChromeFontStack, PUBLIC_FONT_OPTIONS } from "@/features/public-site/domain/chrome";
+import {
+  normalizePublicChrome,
+  publicChromeFontStack,
+  PUBLIC_FONT_OPTIONS,
+} from "@/features/public-site/domain/chrome";
 import { resolvePublicSiteStyle } from "@/features/public-site/themes/loader";
 
 describe("brand colour", () => {
@@ -38,7 +42,10 @@ describe("brand colour", () => {
 
 describe("site style", () => {
   it("lays the colour over the palette, with readable text on buttons", () => {
-    const style = resolvePublicSiteStyle("noir", { accentColor: "#1d4ed8" }) as Record<string, string>;
+    const style = resolvePublicSiteStyle("noir", { accentColor: "#1d4ed8" }) as Record<
+      string,
+      string
+    >;
     expect(style["--pub-accent"]).toBe("#1d4ed8");
     expect(style["--pub-accent-fg"]).toBe("#ffffff");
     expect(style["--site-accent"]).toBe("#1d4ed8");
@@ -48,14 +55,21 @@ describe("site style", () => {
 
   it("keeps the palette when there is no colour of one's own", () => {
     const plain = resolvePublicSiteStyle("noir", {}) as Record<string, string>;
-    const junk = resolvePublicSiteStyle("noir", { accentColor: "javascript:x" }) as Record<string, string>;
+    const junk = resolvePublicSiteStyle("noir", { accentColor: "javascript:x" }) as Record<
+      string,
+      string
+    >;
     expect(junk["--pub-accent"]).toBe(plain["--pub-accent"]);
   });
 
   it("lets each layout suggest a heading font, and the operator's pick win", () => {
     const font = (fontId: "theme" | "lora", layout: "classic" | "editorial" | "immersive") =>
-      (resolvePublicSiteStyle("noir", { fontId }, layout) as Record<string, string>)["--pub-font-display"];
-    const palette = (resolvePublicSiteStyle("noir", {}) as Record<string, string>)["--pub-font-display"];
+      (resolvePublicSiteStyle("noir", { fontId }, layout) as Record<string, string>)[
+        "--pub-font-display"
+      ];
+    const palette = (resolvePublicSiteStyle("noir", {}) as Record<string, string>)[
+      "--pub-font-display"
+    ];
     expect(font("theme", "classic")).toBe(palette);
     expect(font("theme", "editorial")).toContain("--font-pub-playfair");
     expect(font("theme", "immersive")).toContain("--font-pub-cormorant");

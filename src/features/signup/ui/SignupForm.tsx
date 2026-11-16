@@ -33,8 +33,7 @@ export function SignupForm() {
         if (value.length > 100) return t("pensionNameTooLong");
         return null;
       case "email":
-        if (!value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
-          return t("invalidEmail");
+        if (!value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return t("invalidEmail");
         return null;
       case "password":
         if (value.length < 8) return t("passwordMinLength");
@@ -77,9 +76,7 @@ export function SignupForm() {
         <p className="signup-form__success-text">
           {t("successMessage", { name: success.pensionName })}
         </p>
-        <p className="signup-form__success-email">
-          {t("successEmail", { email: success.email })}
-        </p>
+        <p className="signup-form__success-email">{t("successEmail", { email: success.email })}</p>
         <p className="signup-form__success-redirect">{t("successRedirecting")}</p>
         <a href={success.redirectTo} className="signup-form__success-link">
           {t("successManualLink")}
@@ -169,9 +166,7 @@ export function SignupForm() {
           onBlur={handleBlur}
           className={`signup-form__input ${errorField === "email" || fieldErrors.email ? "signup-form__input--error" : ""}`}
         />
-        {fieldErrors.email && (
-          <p className="signup-form__field-error">{fieldErrors.email}</p>
-        )}
+        {fieldErrors.email && <p className="signup-form__field-error">{fieldErrors.email}</p>}
       </div>
 
       <div className="signup-form__field">
@@ -221,12 +216,7 @@ export function SignupForm() {
         <label htmlFor="signup-country" className="signup-form__label">
           {t("countryLabel")}
         </label>
-        <select
-          id="signup-country"
-          name="country"
-          defaultValue="RO"
-          className="signup-form__input"
-        >
+        <select id="signup-country" name="country" defaultValue="RO" className="signup-form__input">
           <option value="RO">{t("countryRO")}</option>
           <option value="MD">{t("countryMD")}</option>
           <option value="BG">{t("countryBG")}</option>
@@ -248,11 +238,7 @@ export function SignupForm() {
 
       <TurnstileField locale={locale} resetKey={sendAttempts} />
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="signup-form__submit"
-      >
+      <button type="submit" disabled={pending} className="signup-form__submit">
         {pending ? t("submitting") : t("submitButton")}
       </button>
 

@@ -4,17 +4,13 @@ import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { getTenantScope } from "@/lib/tenant/scope";
 
-import {
-  GANTT_BOOKING_ROW_SELECT,
-  type BookingRow,
-  type BookingSelectRow,
-} from "../types";
+import { GANTT_BOOKING_ROW_SELECT, type BookingRow, type BookingSelectRow } from "../types";
 import { mapBookingRows } from "../map";
 
 async function listBookingsForRangeImpl(
   tenantId: string,
   rangeStart: string,
-  rangeEnd: string
+  rangeEnd: string,
 ): Promise<BookingRow[]> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
@@ -29,9 +25,7 @@ async function listBookingsForRangeImpl(
   if (error) throw new Error(error.message);
 
   const rows = mapBookingRows((data ?? []) as BookingSelectRow[]);
-  const { attachCheckinRecordState } = await import(
-    "@/services/checkin/attach-booking-state"
-  );
+  const { attachCheckinRecordState } = await import("@/services/checkin/attach-booking-state");
   try {
     return await attachCheckinRecordState(rows);
   } catch {
@@ -39,31 +33,23 @@ async function listBookingsForRangeImpl(
   }
 }
 
-const getCachedBookingsForRange = (
-  tenantId: string,
-  rangeStart: string,
-  rangeEnd: string
-) =>
+const getCachedBookingsForRange = (tenantId: string, rangeStart: string, rangeEnd: string) =>
   unstable_cache(
     () => listBookingsForRangeImpl(tenantId, rangeStart, rangeEnd),
     ["bookings-range", tenantId, rangeStart, rangeEnd],
     {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-      ],
+      tags: [CACHE_TAGS.bookingCounts, tenantTag(tenantId, CACHE_TAGS.bookingCounts)],
       revalidate: 45,
-    }
+    },
   );
 
-const loadBookingsForRange = cache(
-  (tenantId: string, rangeStart: string, rangeEnd: string) =>
-    getCachedBookingsForRange(tenantId, rangeStart, rangeEnd)()
+const loadBookingsForRange = cache((tenantId: string, rangeStart: string, rangeEnd: string) =>
+  getCachedBookingsForRange(tenantId, rangeStart, rangeEnd)(),
 );
 
 export async function listBookingsForRange(
   rangeStart: string,
-  rangeEnd: string
+  rangeEnd: string,
 ): Promise<BookingRow[]> {
   const { tenantId } = await getTenantScope();
   return loadBookingsForRange(tenantId, rangeStart, rangeEnd);

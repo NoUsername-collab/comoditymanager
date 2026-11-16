@@ -2,10 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { useLocale } from "next-intl";
-import {
-  LOCALE_FLAG_SPINNER,
-  normalizeAppLocale,
-} from "@/lib/i18n/locale-flag-colors";
+import { LOCALE_FLAG_SPINNER, normalizeAppLocale } from "@/lib/i18n/locale-flag-colors";
 
 type Props = {
   /** Accessible label (e.g. "Se încarcă…") */
@@ -19,10 +16,7 @@ export function LocaleFlagSpinner({ label, size = "lg" }: Props) {
 
   return (
     <div
-      className={[
-        "locale-dots",
-        size === "lg" ? "locale-dots--lg" : "locale-dots--md",
-      ].join(" ")}
+      className={["locale-dots", size === "lg" ? "locale-dots--lg" : "locale-dots--md"].join(" ")}
       role="status"
       aria-live="polite"
       aria-busy="true"

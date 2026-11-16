@@ -10,7 +10,15 @@ import { isGuestRetentionMonths } from "@/domain/guest/privacy";
 /** The word the owner types to confirm an erasure that cannot be undone. */
 const ERASE_CONFIRM_WORDS = ["STERGE", "ȘTERGE", "ERASE", "ИЗТРИЙ"];
 
-type Fail = { ok: false; error: "owner_only" | "confirm_mismatch" | "guest.not_found" | "guest.has_open_stay" | "retention_invalid" };
+type Fail = {
+  ok: false;
+  error:
+    | "owner_only"
+    | "confirm_mismatch"
+    | "guest.not_found"
+    | "guest.has_open_stay"
+    | "retention_invalid";
+};
 
 /**
  * Erases a guest's personal data on their request (GDPR art. 17). Only the

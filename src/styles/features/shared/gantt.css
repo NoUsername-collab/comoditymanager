@@ -316,7 +316,9 @@
   height: 0.5rem;
   border-radius: 50%;
   flex-shrink: 0;
-  transition: background 0.2s, box-shadow 0.2s;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
 }
 
 .gantt-room-led--green {
@@ -344,11 +346,7 @@
 
 /* Weekend: column veil — mix ink, not pale --border-strong */
 .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell--weekend {
-  background-color: color-mix(
-    in srgb,
-    var(--gantt-zone-clean) 88%,
-    var(--text-muted, #5a6080)
-  );
+  background-color: color-mix(in srgb, var(--gantt-zone-clean) 88%, var(--text-muted, #5a6080));
 }
 
 .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell--today {
@@ -362,7 +360,8 @@
 }
 
 /* Turnover: checkout + check-in the same day — bands live in gantt-premium-grid.css */
-.gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell--turnover:not(.gantt-day-cell--past) {
+.gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--turnover:not(.gantt-day-cell--past) {
   box-shadow: none;
 }
 
@@ -390,7 +389,11 @@
 }
 
 .gantt-day-header-grid .gantt-day-header-cell--past {
-  background: color-mix(in srgb, var(--past-bg, #e8eaf0) 70%, var(--gantt-zone-clean, var(--surface)));
+  background: color-mix(
+    in srgb,
+    var(--past-bg, #e8eaf0) 70%,
+    var(--gantt-zone-clean, var(--surface))
+  );
   color: var(--past-text, #7a809a);
 }
 

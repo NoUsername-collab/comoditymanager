@@ -9,9 +9,7 @@ export function guestNationalIdKey(guest: CheckinGuestInput): string | null {
 }
 
 /** Duplicate CNP / cod personal în același formular de check-in. */
-export function findDuplicateNationalIdsInForm(
-  guests: CheckinGuestInput[],
-): string[] {
+export function findDuplicateNationalIdsInForm(guests: CheckinGuestInput[]): string[] {
   const seen = new Map<string, string>();
   const blockers: string[] = [];
 
@@ -21,9 +19,7 @@ export function findDuplicateNationalIdsInForm(
     const name = guestFullName(guest) || "Oaspete";
     const previous = seen.get(key);
     if (previous) {
-      blockers.push(
-        `Cod personal duplicat în formular (${key}): ${previous} și ${name}`,
-      );
+      blockers.push(`Cod personal duplicat în formular (${key}): ${previous} și ${name}`);
       continue;
     }
     seen.set(key, name);

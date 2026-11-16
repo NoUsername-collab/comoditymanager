@@ -13,15 +13,11 @@ export type CheckinIdentityResult = {
 
 const CHECKIN_TRANSFER_REQUIRED_PREFIX = "checkin.transfer_required:";
 
-export function encodeCheckinTransferRequired(
-  offer: CheckinTransferOffer,
-): string {
+export function encodeCheckinTransferRequired(offer: CheckinTransferOffer): string {
   return `${CHECKIN_TRANSFER_REQUIRED_PREFIX}${JSON.stringify(offer)}`;
 }
 
-export function decodeCheckinTransferRequired(
-  message: string,
-): CheckinTransferOffer | null {
+export function decodeCheckinTransferRequired(message: string): CheckinTransferOffer | null {
   if (!message.startsWith(CHECKIN_TRANSFER_REQUIRED_PREFIX)) return null;
   try {
     return JSON.parse(

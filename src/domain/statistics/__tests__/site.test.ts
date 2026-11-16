@@ -23,7 +23,12 @@ describe("site statistics", () => {
         { day: "2026-11-01", source: "phone", requests: 1, confirmed: 0 },
       ],
     });
-    expect(stats.last30).toMatchObject({ visits: 40, visitors: 25, siteRequests: 2, siteConfirmed: 1 });
+    expect(stats.last30).toMatchObject({
+      visits: 40,
+      visitors: 25,
+      siteRequests: 2,
+      siteConfirmed: 1,
+    });
     expect(stats.last30.conversion).toBeCloseTo(0.08);
     expect(stats.last30.bySource).toEqual({ site: 2, staff: 4, phone: 1, unknown: 0 });
   });

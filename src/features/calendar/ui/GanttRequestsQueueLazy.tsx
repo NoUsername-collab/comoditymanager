@@ -17,11 +17,9 @@ const GanttRequestsQueueDynamic = dynamic(
         aria-busy="true"
       />
     ),
-  }
+  },
 );
 
-export function GanttRequestsQueueLazy(
-  props: ComponentProps<typeof GanttRequestsQueue>
-) {
+export function GanttRequestsQueueLazy(props: ComponentProps<typeof GanttRequestsQueue>) {
   return <GanttRequestsQueueDynamic {...props} />;
 }

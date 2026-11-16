@@ -105,7 +105,7 @@ export function GanttContextMenuPanel() {
     const panel = menuRef.current;
     panel
       ?.querySelector<HTMLElement>(
-        ".gantt-create-action:not([disabled]), .gantt-ctx-menu__item:not([disabled])"
+        ".gantt-create-action:not([disabled]), .gantt-ctx-menu__item:not([disabled])",
       )
       ?.focus();
   }, [menu, compactChrome, cancelConfirm]);
@@ -124,11 +124,7 @@ export function GanttContextMenuPanel() {
   const sheetMode = compactChrome;
   const style = sheetMode
     ? undefined
-    : computeFixedPointerMenuPosition(
-        menu.clientX,
-        menu.clientY,
-        GANTT_CTX_MENU_BOUNDS
-      );
+    : computeFixedPointerMenuPosition(menu.clientX, menu.clientY, GANTT_CTX_MENU_BOUNDS);
 
   function openBooking(bookingId: string) {
     closeMenu();
@@ -140,7 +136,7 @@ export function GanttContextMenuPanel() {
     guestName: string,
     checkIn: string,
     checkOut: string,
-    isRequest: boolean
+    isRequest: boolean,
   ) {
     if (sheetMode) {
       setCancelConfirm({ bookingId, guestName, checkIn, checkOut, isRequest });
@@ -151,7 +147,7 @@ export function GanttContextMenuPanel() {
       !confirm(
         isRequest
           ? t("cancelRequestConfirm", { name: guestName, period })
-          : t("cancelStayConfirm", { name: guestName, period })
+          : t("cancelStayConfirm", { name: guestName, period }),
       )
     ) {
       return;
@@ -159,11 +155,7 @@ export function GanttContextMenuPanel() {
     void executeCancelBooking(bookingId, guestName, isRequest);
   }
 
-  function executeCancelBooking(
-    bookingId: string,
-    guestName: string,
-    isRequest: boolean
-  ) {
+  function executeCancelBooking(bookingId: string, guestName: string, isRequest: boolean) {
     void runAdminAction(async () => {
       const res = await cancelBookingOperativeAction(bookingId);
       if (!res.ok) {
@@ -258,10 +250,7 @@ export function GanttContextMenuPanel() {
         />
         <div
           ref={menuRef}
-          className={[
-            "gantt-ctx-menu fixed z-[200]",
-            sheetMode && "gantt-ctx-menu--sheet",
-          ]
+          className={["gantt-ctx-menu fixed z-[200]", sheetMode && "gantt-ctx-menu--sheet"]
             .filter(Boolean)
             .join(" ")}
           style={style}
@@ -280,7 +269,7 @@ export function GanttContextMenuPanel() {
                         cancelConfirm.checkIn,
                         cancelConfirm.checkOut,
                         locale,
-                        true
+                        true,
                       ),
                     })
                   : t("cancelStayConfirm", {
@@ -289,7 +278,7 @@ export function GanttContextMenuPanel() {
                         cancelConfirm.checkIn,
                         cancelConfirm.checkOut,
                         locale,
-                        true
+                        true,
                       ),
                     })}
               </p>
@@ -301,15 +290,12 @@ export function GanttContextMenuPanel() {
                   executeCancelBooking(
                     cancelConfirm.bookingId,
                     cancelConfirm.guestName,
-                    cancelConfirm.isRequest
+                    cancelConfirm.isRequest,
                   )
                 }
               />
               <MenuDivider />
-              <MenuItem
-                label={t("dismiss")}
-                onClick={() => setCancelConfirm(null)}
-              />
+              <MenuItem label={t("dismiss")} onClick={() => setCancelConfirm(null)} />
             </>
           ) : null}
 
@@ -334,16 +320,10 @@ export function GanttContextMenuPanel() {
             <>
               <p className="gantt-ctx-menu__head">{menu.guestName}</p>
               {menu.occupancyPhase === "past" ? (
-                <MenuItem
-                  label={t("viewDetails")}
-                  onClick={() => openBooking(menu.bookingId)}
-                />
+                <MenuItem label={t("viewDetails")} onClick={() => openBooking(menu.bookingId)} />
               ) : menu.status === "cerere_noua" ? (
                 <>
-                  <MenuItem
-                    label={t("openDetails")}
-                    onClick={() => openBooking(menu.bookingId)}
-                  />
+                  <MenuItem label={t("openDetails")} onClick={() => openBooking(menu.bookingId)} />
                   {menu.canMoveRoom && menu.moveRoomDraft ? (
                     <MenuItem
                       label={t("moveRoom")}
@@ -368,17 +348,14 @@ export function GanttContextMenuPanel() {
                         menu.guestName,
                         menu.popover.checkIn,
                         menu.popover.checkOut,
-                        true
+                        true,
                       )
                     }
                   />
                 </>
               ) : (
                 <>
-                  <MenuItem
-                    label={t("openDetails")}
-                    onClick={() => openBooking(menu.bookingId)}
-                  />
+                  <MenuItem label={t("openDetails")} onClick={() => openBooking(menu.bookingId)} />
                   {menu.canMoveRoom && menu.moveRoomDraft ? (
                     <MenuItem
                       label={t("moveRoom")}
@@ -441,7 +418,7 @@ export function GanttContextMenuPanel() {
                         menu.guestName,
                         menu.popover.checkIn,
                         menu.popover.checkOut,
-                        false
+                        false,
                       )
                     }
                   />

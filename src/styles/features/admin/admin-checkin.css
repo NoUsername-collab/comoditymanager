@@ -295,9 +295,15 @@
   margin-bottom: 0.75rem;
 }
 
-.checkin-validation--ok .checkin-validation__status { color: var(--status-confirmed-text); }
-.checkin-validation--warning .checkin-validation__status { color: var(--status-pending-text); }
-.checkin-validation--blocked .checkin-validation__status { color: var(--admin-tint-danger-text); }
+.checkin-validation--ok .checkin-validation__status {
+  color: var(--status-confirmed-text);
+}
+.checkin-validation--warning .checkin-validation__status {
+  color: var(--status-pending-text);
+}
+.checkin-validation--blocked .checkin-validation__status {
+  color: var(--admin-tint-danger-text);
+}
 
 .checkin-validation__list {
   list-style: none;
@@ -1012,7 +1018,11 @@
 }
 
 .tourist-sheet__platform-name {
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -1231,7 +1241,11 @@
   margin: 1rem 0 0;
   padding-top: 0.55rem;
   border-top: 1px solid var(--sheet-rule);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -1656,7 +1670,9 @@ html[data-layout-chrome="compact"] .checkin-identity-scope__options {
   background: var(--admin-panel-bg);
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .checkin-room-picker__card--active {
@@ -2574,15 +2590,15 @@ html[data-layout-chrome="compact"] .checkin-identity-scope__options {
   }
 
   .admin-hud,
-.admin-hud-alert,
-.ml-bottom-nav,
-.onboarding-bar,
-.admin-page-back,
-.admin-page-toolbar,
-.admin-page-desc,
-.admin-panel__titlebar,
-.admin-theme-loading,
-.no-print {
+  .admin-hud-alert,
+  .ml-bottom-nav,
+  .onboarding-bar,
+  .admin-page-back,
+  .admin-page-toolbar,
+  .admin-page-desc,
+  .admin-panel__titlebar,
+  .admin-theme-loading,
+  .no-print {
     display: none !important;
   }
 

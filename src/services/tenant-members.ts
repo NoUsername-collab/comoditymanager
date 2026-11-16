@@ -61,29 +61,21 @@ async function listTenantMembersUncached(tenantId: string): Promise<TenantMember
 }
 
 const getCachedTenantMembers = (tenantId: string) =>
-  unstable_cache(
-    () => listTenantMembersUncached(tenantId),
-    ["tenant-members", tenantId],
-    {
-      tags: [tenantMembersCacheTag(tenantId)],
-      revalidate: 120,
-    }
-  );
+  unstable_cache(() => listTenantMembersUncached(tenantId), ["tenant-members", tenantId], {
+    tags: [tenantMembersCacheTag(tenantId)],
+    revalidate: 120,
+  });
 
 const loadTenantMembers = cache(async (tenantId: string): Promise<TenantMember[]> =>
-  getCachedTenantMembers(tenantId)()
+  getCachedTenantMembers(tenantId)(),
 );
 
-async function listTenantMembers(
-  tenantId: string
-): Promise<TenantMember[]> {
+async function listTenantMembers(tenantId: string): Promise<TenantMember[]> {
   return loadTenantMembers(tenantId);
 }
 
 // ─── List only active members ──────────────────────────────────────
-export async function listActiveTenantMembers(
-  tenantId: string
-): Promise<TenantMember[]> {
+export async function listActiveTenantMembers(tenantId: string): Promise<TenantMember[]> {
   const members = await listTenantMembers(tenantId);
   return members.filter((m) => m.is_active);
 }
@@ -97,7 +89,7 @@ export async function hasTeamBesidesOwner(tenantId: string): Promise<boolean> {
 // ─── Get a member by email within a tenant ─────────────────────────
 export async function getTenantMemberByEmail(
   tenantId: string,
-  email: string
+  email: string,
 ): Promise<TenantMember | null> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
@@ -114,7 +106,7 @@ export async function getTenantMemberByEmail(
 // ─── Get a member's role by user_id ────────────────────────────────
 async function getTenantMemberRoleImpl(
   tenantId: string,
-  userId: string
+  userId: string,
 ): Promise<TenantMemberRole | null> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
@@ -132,28 +124,21 @@ async function getTenantMemberRoleImpl(
 export const getTenantMemberRole = cache(getTenantMemberRoleImpl);
 
 // ─── Invite a new staff member ─────────────────────────────────────
-export async function inviteTenantMember(
-  input: InviteMemberInput
-): Promise<TenantMember> {
+export async function inviteTenantMember(input: InviteMemberInput): Promise<TenantMember> {
   const supabase = createPublicAdminClient();
   const email = input.email.toLowerCase().trim();
 
   // Check: can't have 2 owners
   if (input.role === "owner") {
     const existing = await listTenantMembers(input.tenantId);
-    const existingOwner = existing.find(
-      (m) => m.role === "owner" && m.is_active
-    );
+    const existingOwner = existing.find((m) => m.role === "owner" && m.is_active);
     if (existingOwner) {
       throw new Error("tenant.already_has_owner");
     }
   }
 
   // Check: member not already in tenant
-  const existingMember = await getTenantMemberByEmail(
-    input.tenantId,
-    email
-  );
+  const existingMember = await getTenantMemberByEmail(input.tenantId, email);
   if (existingMember?.is_active) {
     throw new Error("tenant.member_already_exists");
   }
@@ -183,21 +168,18 @@ export async function inviteTenantMember(
   const { data: existingUsers } = await supabase.auth.admin.listUsers({
     perPage: 1000,
   });
-  let userId = existingUsers?.users.find(
-    (u) => u.email?.toLowerCase() === email
-  )?.id;
+  let userId = existingUsers?.users.find((u) => u.email?.toLowerCase() === email)?.id;
 
   if (!userId) {
     // Create new user with a temporary password
     // Owner will need to send them a password reset link
     const tempPassword = generateTempPassword();
-    const { data: newUser, error: createError } =
-      await supabase.auth.admin.createUser({
-        email,
-        password: tempPassword,
-        email_confirm: true,
-        app_metadata: { role: input.role },
-      });
+    const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
+      email,
+      password: tempPassword,
+      email_confirm: true,
+      app_metadata: { role: input.role },
+    });
 
     if (createError) throw new Error(createError.message);
     userId = newUser.user.id;
@@ -231,7 +213,7 @@ export async function inviteTenantMember(
 export async function updateTenantMemberRole(
   tenantId: string,
   memberId: string,
-  newRole: TenantMemberRole
+  newRole: TenantMemberRole,
 ): Promise<void> {
   const supabase = createPublicAdminClient();
 
@@ -239,7 +221,7 @@ export async function updateTenantMemberRole(
   if (newRole === "owner") {
     const members = await listTenantMembers(tenantId);
     const existingOwner = members.find(
-      (m) => m.role === "owner" && m.is_active && m.id !== memberId
+      (m) => m.role === "owner" && m.is_active && m.id !== memberId,
     );
     if (existingOwner) {
       throw new Error("tenant.already_has_owner");
@@ -251,7 +233,7 @@ export async function updateTenantMemberRole(
   if (member?.role === "owner" && newRole !== "owner") {
     const members = await listTenantMembers(tenantId);
     const otherOwners = members.filter(
-      (m) => m.role === "owner" && m.is_active && m.id !== memberId
+      (m) => m.role === "owner" && m.is_active && m.id !== memberId,
     );
     if (otherOwners.length === 0) {
       throw new Error("tenant.cannot_demote_last_owner");
@@ -282,10 +264,7 @@ export async function updateTenantMemberRole(
 }
 
 // ─── Deactivate member (soft delete) ──────────────────────────────
-export async function deactivateTenantMember(
-  tenantId: string,
-  memberId: string
-): Promise<void> {
+export async function deactivateTenantMember(tenantId: string, memberId: string): Promise<void> {
   const supabase = createPublicAdminClient();
 
   // Can't deactivate the owner
@@ -308,10 +287,7 @@ export async function deactivateTenantMember(
 }
 
 // ─── Reactivate member ────────────────────────────────────────────
-export async function reactivateTenantMember(
-  tenantId: string,
-  memberId: string
-): Promise<void> {
+export async function reactivateTenantMember(tenantId: string, memberId: string): Promise<void> {
   const supabase = createPublicAdminClient();
   const { error } = await supabase
     .from("tenant_members")
@@ -327,9 +303,7 @@ export async function reactivateTenantMember(
 }
 
 // ─── Get member by ID ──────────────────────────────────────────────
-async function getTenantMemberById(
-  memberId: string
-): Promise<TenantMember | null> {
+async function getTenantMemberById(memberId: string): Promise<TenantMember | null> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("tenant_members")
@@ -345,7 +319,7 @@ async function getTenantMemberById(
 export async function getPrimaryTenantSlugForUser(
   supabase: SupabaseClient,
   userId: string,
-  email?: string | null
+  email?: string | null,
 ): Promise<string | null> {
   const { data: slug, error } = await supabase.rpc("prepare_platform_session");
 
@@ -357,7 +331,7 @@ export async function getPrimaryTenantSlugForUser(
     console.error(
       "[tenant-members] prepare_platform_session:",
       error.message,
-      "— using service-role fallback (run migration 038 on Supabase)"
+      "— using service-role fallback (run migration 038 on Supabase)",
     );
   }
 
@@ -367,7 +341,7 @@ export async function getPrimaryTenantSlugForUser(
 /** Works without RPC 038; relinks by email when Auth UUID diverged. */
 async function resolvePrimaryTenantSlugAdmin(
   userId: string,
-  email?: string | null
+  email?: string | null,
 ): Promise<string | null> {
   const admin = createPublicAdminClient();
   const normalized = email?.toLowerCase().trim();
@@ -382,11 +356,10 @@ async function resolvePrimaryTenantSlugAdmin(
     rows: Array<{
       role: string;
       tenants: { slug: string } | { slug: string }[] | null;
-    }>
+    }>,
   ): string | null => {
     const sorted = [...rows].sort(
-      (a, b) =>
-        (roleOrder[String(a.role)] ?? 9) - (roleOrder[String(b.role)] ?? 9)
+      (a, b) => (roleOrder[String(a.role)] ?? 9) - (roleOrder[String(b.role)] ?? 9),
     );
     for (const row of sorted) {
       const nested = row.tenants;
@@ -411,9 +384,7 @@ async function resolvePrimaryTenantSlugAdmin(
         for (const row of byEmail) {
           if (row.user_id === userId) continue;
           if (row.role === "owner") {
-            const { data: oldAuth } = await admin.auth.admin.getUserById(
-              row.user_id
-            );
+            const { data: oldAuth } = await admin.auth.admin.getUserById(row.user_id);
             if (oldAuth.user) continue;
           }
           await admin
@@ -443,8 +414,7 @@ async function resolvePrimaryTenantSlugAdmin(
 
 // ─── Helpers ───────────────────────────────────────────────────────
 function generateTempPassword(): string {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
   let password = "";
   for (let i = 0; i < 16; i++) {
     password += chars.charAt(Math.floor(Math.random() * chars.length));

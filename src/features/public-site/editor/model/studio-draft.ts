@@ -162,7 +162,10 @@ export function switchStudioLocale(
     editLocale: nextLocale,
     copies: {
       ...draft.copies,
-      [nextLocale]: { ...target, noticeDraft: alignNoticeDraft(target.noticeDraft, source.noticeDraft) },
+      [nextLocale]: {
+        ...target,
+        noticeDraft: alignNoticeDraft(target.noticeDraft, source.noticeDraft),
+      },
     },
   };
 }
@@ -182,7 +185,10 @@ export function patchStudioCopy(
 }
 
 /** The sections of a page: the first page's (null), or an own page's by key. */
-export function sectionsOf(draft: Pick<PublicSiteStudioDraft, "sections" | "pages">, pageKey: string | null): SectionDraft[] {
+export function sectionsOf(
+  draft: Pick<PublicSiteStudioDraft, "sections" | "pages">,
+  pageKey: string | null,
+): SectionDraft[] {
   if (!pageKey) return draft.sections;
   return draft.pages.find((page) => page.key === pageKey)?.sections ?? [];
 }
@@ -194,17 +200,26 @@ export function withSections(
   sections: SectionDraft[],
 ): PublicSiteStudioDraft {
   if (!pageKey) return { ...draft, sections };
-  return { ...draft, pages: draft.pages.map((page) => (page.key === pageKey ? { ...page, sections } : page)) };
+  return {
+    ...draft,
+    pages: draft.pages.map((page) => (page.key === pageKey ? { ...page, sections } : page)),
+  };
 }
 
 /** The page a section is on: null for the first page, undefined when it is nowhere. */
-export function pageKeyOfSection(draft: PublicSiteStudioDraft, sectionKey: string): string | null | undefined {
+export function pageKeyOfSection(
+  draft: PublicSiteStudioDraft,
+  sectionKey: string,
+): string | null | undefined {
   if (draft.sections.some((section) => section.key === sectionKey)) return null;
-  return draft.pages.find((page) => page.sections.some((section) => section.key === sectionKey))?.key;
+  return draft.pages.find((page) => page.sections.some((section) => section.key === sectionKey))
+    ?.key;
 }
 
 /** Every section of the site with the page it is on, first page first. */
-export function allSections(draft: Pick<PublicSiteStudioDraft, "sections" | "pages">): SectionDraft[] {
+export function allSections(
+  draft: Pick<PublicSiteStudioDraft, "sections" | "pages">,
+): SectionDraft[] {
   return [...draft.sections, ...draft.pages.flatMap((page) => page.sections)];
 }
 
@@ -238,7 +253,10 @@ export function patchStudioPage(
   return { ...draft, pages: draft.pages.map((page) => (page.key === key ? update(page) : page)) };
 }
 
-function menuWithout(menu: PublicMenuItem[], gone: (item: PublicMenuItem) => boolean): PublicMenuItem[] {
+function menuWithout(
+  menu: PublicMenuItem[],
+  gone: (item: PublicMenuItem) => boolean,
+): PublicMenuItem[] {
   return menu
     .filter((item) => !gone(item))
     .map((item) =>
@@ -257,17 +275,24 @@ export function removeStudioPage(draft: PublicSiteStudioDraft, key: string): Pub
     menu: menuWithout(
       draft.menu,
       (item) =>
-        (item.kind === "page" && item.ref === key) || (item.kind === "section" && sectionKeys.has(item.ref ?? "")),
+        (item.kind === "page" && item.ref === key) ||
+        (item.kind === "section" && sectionKeys.has(item.ref ?? "")),
     ),
   };
 }
 
 /** Take a section away from its page, and the menu links to it. */
-export function removeStudioSection(draft: PublicSiteStudioDraft, key: string): PublicSiteStudioDraft {
+export function removeStudioSection(
+  draft: PublicSiteStudioDraft,
+  key: string,
+): PublicSiteStudioDraft {
   const pageKey = pageKeyOfSection(draft, key);
   if (pageKey === undefined) return draft;
   const next = withSections(draft, pageKey, removeSectionDraft(sectionsOf(draft, pageKey), key));
-  return { ...next, menu: menuWithout(draft.menu, (item) => item.kind === "section" && item.ref === key) };
+  return {
+    ...next,
+    menu: menuWithout(draft.menu, (item) => item.kind === "section" && item.ref === key),
+  };
 }
 
 /** Every text of one language's site: the first page, the own pages, their sections and rows. */

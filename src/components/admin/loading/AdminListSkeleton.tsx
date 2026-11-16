@@ -1,10 +1,4 @@
-export function AdminListSkeleton({
-  rows = 6,
-  label,
-}: {
-  rows?: number;
-  label?: string;
-}) {
+export function AdminListSkeleton({ rows = 6, label }: { rows?: number; label?: string }) {
   return (
     <div
       className="admin-route-skeleton admin-route-skeleton--list"

@@ -16,10 +16,7 @@ import { createRoomBlockFromGanttAction } from "@/features/calendar/actions";
 import { showGanttCreateUndoToast } from "@/features/calendar/ui/gantt-create-undo";
 import { publishGanttHoldOrBlock } from "@/lib/gantt/live-bookings";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import {
-  GANTT_QUICK_LABEL_CLASS,
-  type GanttQuickCreateDraft,
-} from "./types";
+import { GANTT_QUICK_LABEL_CLASS, type GanttQuickCreateDraft } from "./types";
 
 export function BlockBody({
   roomId,
@@ -50,8 +47,7 @@ export function BlockBody({
   const router = useRouter();
   const { showToast } = useAdminFx();
   const runAdminAction = useRunAdminAction();
-  const [blockPreset, setBlockPreset] =
-    useState<BlockReasonPresetId>("maintenance");
+  const [blockPreset, setBlockPreset] = useState<BlockReasonPresetId>("maintenance");
   const [blockCustom, setBlockCustom] = useState("");
   const hasMultiRoomDraft = (draft?.roomIds?.length ?? 0) > 1;
 
@@ -97,7 +93,7 @@ export function BlockBody({
             actionLabel: tGantt("quick.undoAction"),
             undoneTitle: tGantt("quick.undoneTitle"),
             undoneMessage: tGantt("quick.undoneMessage"),
-          }
+          },
         );
       } else {
         showToast({ kind: "success", title: tGantt("quick.blockCreated"), message: period });
@@ -122,9 +118,7 @@ export function BlockBody({
         <AdminSelect
           className="mt-1"
           value={blockPreset}
-          onChange={(e) =>
-            setBlockPreset(e.target.value as BlockReasonPresetId)
-          }
+          onChange={(e) => setBlockPreset(e.target.value as BlockReasonPresetId)}
         >
           {BLOCK_REASON_PRESETS.map((preset) => (
             <option key={preset.id} value={preset.id}>
@@ -149,13 +143,7 @@ export function BlockBody({
           variant="primary"
           size="sm"
           className="gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
-          disabled={
-            pending ||
-            !roomId ||
-            hasConflict ||
-            hasMultiRoomDraft ||
-            intervalInvalid
-          }
+          disabled={pending || !roomId || hasConflict || hasMultiRoomDraft || intervalInvalid}
           onClick={submitBlock}
         >
           {pending ? tCommon("saving") : tGantt("quick.createBlock")}

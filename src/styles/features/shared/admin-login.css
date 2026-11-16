@@ -16,8 +16,8 @@
   border-radius: 1.5rem;
   overflow: hidden;
   box-shadow:
-    0 4px 6px -1px rgba(0,0,0,0.06),
-    0 20px 50px -10px rgba(79,70,229,0.18);
+    0 4px 6px -1px rgba(0, 0, 0, 0.06),
+    0 20px 50px -10px rgba(79, 70, 229, 0.18);
 }
 
 /* Left decorative panel */
@@ -47,7 +47,7 @@
 .admin-login-panel__icon {
   font-size: 1.75rem;
   line-height: 1;
-  filter: drop-shadow(0 0 8px rgba(255,255,255,0.4));
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
 }
 
 .admin-login-panel__name {
@@ -87,7 +87,7 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: rgba(255,255,255,0.22);
+  background: rgba(255, 255, 255, 0.22);
   font-size: 0.7rem;
   font-weight: 700;
 }
@@ -236,7 +236,9 @@
 
 .admin-login-card {
   color: #18181b;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.06), 0 10px 30px -5px rgba(0,0,0,0.1);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.06),
+    0 10px 30px -5px rgba(0, 0, 0, 0.1);
 }
 
 .admin-login-form label {
@@ -344,7 +346,6 @@
   filter: brightness(0.92);
   transition-duration: 0.06s;
 }
-
 
 .admin-login-forgot {
   display: block;

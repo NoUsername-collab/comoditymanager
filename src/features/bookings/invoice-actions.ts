@@ -24,7 +24,7 @@ async function invoicingPlanError(): Promise<string | null> {
 
 export async function issueBookingInvoiceAction(
   bookingId: string,
-  amount?: number
+  amount?: number,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   await ensureTenantContextFromRequest();
   const t = await getTranslations("admin.serverActions");
@@ -32,10 +32,7 @@ export async function issueBookingInvoiceAction(
   if (planError) return { ok: false, error: planError };
   await requireLocationAdmin();
 
-  const result = await issueBookingInvoice(
-    bookingId,
-    amount != null ? { amount } : undefined
-  );
+  const result = await issueBookingInvoice(bookingId, amount != null ? { amount } : undefined);
   if (!result.ok) {
     const key = result.error;
     const mapped =
@@ -43,13 +40,13 @@ export async function issueBookingInvoiceAction(
         ? t("invoiceSellerDetailsMissing")
         : key === "invoice.booking_not_confirmed"
           ? t("invoiceBookingNotConfirmed")
-            : key === "invoice.fully_invoiced"
-              ? t("invoiceFullyInvoiced")
-              : key === "invoice.amount_exceeds_remaining"
-                ? t("invoiceAmountExceedsRemaining")
-                : key === "invoice.invalid_amount"
-                  ? t("invoiceInvalidAmount")
-                  : key;
+          : key === "invoice.fully_invoiced"
+            ? t("invoiceFullyInvoiced")
+            : key === "invoice.amount_exceeds_remaining"
+              ? t("invoiceAmountExceedsRemaining")
+              : key === "invoice.invalid_amount"
+                ? t("invoiceInvalidAmount")
+                : key;
     return { ok: false, error: mapped };
   }
 
@@ -74,7 +71,7 @@ export async function issueBookingInvoiceAction(
 
 export async function issueBookingProformaAction(
   bookingId: string,
-  amount?: number
+  amount?: number,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   await ensureTenantContextFromRequest();
   const t = await getTranslations("admin.serverActions");
@@ -83,10 +80,7 @@ export async function issueBookingProformaAction(
   await requireLocationAdmin();
 
   const { issueBookingProforma } = await import("@/services/booking-proforma");
-  const result = await issueBookingProforma(
-    bookingId,
-    amount != null ? { amount } : undefined
-  );
+  const result = await issueBookingProforma(bookingId, amount != null ? { amount } : undefined);
   if (!result.ok) {
     const key = result.error;
     const mapped =
@@ -94,13 +88,13 @@ export async function issueBookingProformaAction(
         ? t("invoiceSellerDetailsMissing")
         : key === "invoice.booking_not_confirmed"
           ? t("invoiceBookingNotConfirmed")
-            : key === "proforma.fully_invoiced"
-              ? t("proformaFullyInvoiced")
-              : key === "proforma.amount_exceeds_remaining"
-                ? t("proformaAmountExceedsRemaining")
-                : key === "proforma.invalid_amount"
-                  ? t("proformaInvalidAmount")
-                  : key;
+          : key === "proforma.fully_invoiced"
+            ? t("proformaFullyInvoiced")
+            : key === "proforma.amount_exceeds_remaining"
+              ? t("proformaAmountExceedsRemaining")
+              : key === "proforma.invalid_amount"
+                ? t("proformaInvalidAmount")
+                : key;
     return { ok: false, error: mapped };
   }
 
@@ -123,7 +117,7 @@ export async function issueBookingProformaAction(
 
 export async function convertProformaToInvoiceAction(
   proformaId: string,
-  bookingId: string
+  bookingId: string,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   await ensureTenantContextFromRequest();
   const t = await getTranslations("admin.serverActions");
@@ -144,7 +138,7 @@ export async function convertProformaToInvoiceAction(
             ? t("proformaPaymentInsufficient")
             : key === "proforma.exceeds_remaining"
               ? t("proformaExceedsRemaining")
-                : key;
+              : key;
     return { ok: false, error: mapped };
   }
 

@@ -24,9 +24,7 @@ export async function sendTenantEmail(
 
   if (blocked) {
     if (process.env.NODE_ENV === "development") {
-      console.log(
-        `[EMAIL-SKIP] tenant=${tenantSlug} reason=${resolution.skipReason ?? "unknown"}`,
-      );
+      console.log(`[EMAIL-SKIP] tenant=${tenantSlug} reason=${resolution.skipReason ?? "unknown"}`);
     }
     return {
       success: true,

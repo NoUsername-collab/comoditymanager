@@ -7,7 +7,7 @@ const FOCUSABLE =
 
 function getFocusableElements(root: HTMLElement): HTMLElement[] {
   return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-    (el) => !el.hasAttribute("hidden") && el.tabIndex !== -1
+    (el) => !el.hasAttribute("hidden") && el.tabIndex !== -1,
   );
 }
 

@@ -10,7 +10,10 @@ import {
   buildPublicSiteStudioDraft,
   mergeStudioToInput,
 } from "@/features/public-site/editor/model/studio-draft";
-import { fillStudioLocaleFrom, studioLocaleProgress } from "@/features/public-site/editor/model/editor-model";
+import {
+  fillStudioLocaleFrom,
+  studioLocaleProgress,
+} from "@/features/public-site/editor/model/editor-model";
 
 const config: PublicSiteConfig = {
   id: "ps-1",
@@ -21,7 +24,11 @@ const config: PublicSiteConfig = {
   bookingEnabled: true,
   bookingNavPosition: "nav",
   usePrimaryContact: true,
-  hero: { title: { ro: "Casa Ana", en: "Casa Ana" }, subtitle: { ro: "Liniște la munte" }, imageUrl: null },
+  hero: {
+    title: { ro: "Casa Ana", en: "Casa Ana" },
+    subtitle: { ro: "Liniște la munte" },
+    imageUrl: null,
+  },
   contact: { email: null, phone: null },
   seo: {},
   bookingNotice: { enabled: false, title: {}, items: [], footer: {} },
@@ -83,20 +90,28 @@ describe("translating side by side", () => {
     expect(rowMissing(subtitle)).toBe(true);
 
     const translated = setTranslation(pasted, "en", subtitle.path, "Quiet in the mountains");
-    const after = translationGroups(translated, "ro", "en")[0]!.rows.find((row) => row.field === "heroSubtitle")!;
+    const after = translationGroups(translated, "ro", "en")[0]!.rows.find(
+      (row) => row.field === "heroSubtitle",
+    )!;
     expect(after).toMatchObject({ target: "Quiet in the mountains", copied: false });
     expect(rowMissing(after)).toBe(false);
   });
 
   it("writes a translation where its own screen would, and the save keeps both languages", () => {
     let draft = buildPublicSiteStudioDraft(config, "ro");
-    const faq = translationGroups(draft, "ro", "en").find((group) => group.section?.type === "faq")!;
+    const faq = translationGroups(draft, "ro", "en").find(
+      (group) => group.section?.type === "faq",
+    )!;
     const before = missingCount([faq]);
     for (const row of faq.rows) draft = setTranslation(draft, "en", row.path, `EN ${row.source}`);
-    expect(missingCount(translationGroups(draft, "ro", "en").filter((g) => g.id === faq.id))).toBe(0);
+    expect(missingCount(translationGroups(draft, "ro", "en").filter((g) => g.id === faq.id))).toBe(
+      0,
+    );
     expect(before).toBe(3);
 
-    const saved = mergeStudioToInput({ config, draft }).sections.find((s) => s.sectionType === "faq")!;
+    const saved = mergeStudioToInput({ config, draft }).sections.find(
+      (s) => s.sectionType === "faq",
+    )!;
     expect(saved.payload.title).toEqual({ ro: "Întrebări", en: "EN Întrebări" });
     expect((saved.payload.items as { answer: Record<string, string> }[])[0]?.answer).toEqual({
       ro: "Da, mici.",
@@ -108,11 +123,16 @@ describe("translating side by side", () => {
 
   it("counts a default text left in place as untranslated when the source is the operator's own", () => {
     const draft = buildPublicSiteStudioDraft(
-      { ...config, hero: { ...config.hero, subtitle: { ro: "Liniște la munte", en: "A warm welcome" } } },
+      {
+        ...config,
+        hero: { ...config.hero, subtitle: { ro: "Liniște la munte", en: "A warm welcome" } },
+      },
       "en",
     );
     const stock = { ro: ["Bun venit"], en: ["A warm welcome"], bg: [] };
-    const subtitle = translationGroups(draft, "ro", "en", stock)[0]!.rows.find((row) => row.field === "heroSubtitle")!;
+    const subtitle = translationGroups(draft, "ro", "en", stock)[0]!.rows.find(
+      (row) => row.field === "heroSubtitle",
+    )!;
     expect(subtitle).toMatchObject({ stock: true, copied: false });
     expect(rowMissing(subtitle)).toBe(true);
   });
@@ -128,7 +148,9 @@ describe("translating the menu", () => {
           id: "discover",
           kind: "group",
           label: { ro: "Descoperă" },
-          children: [{ id: "out", kind: "url", ref: "https://example.com", label: { ro: "Trasee" } }],
+          children: [
+            { id: "out", kind: "url", ref: "https://example.com", label: { ro: "Trasee" } },
+          ],
         },
       ],
     },
@@ -148,7 +170,12 @@ describe("translating the menu", () => {
   it("counts a menu name missing in a language against that language", () => {
     const draft = buildPublicSiteStudioDraft(withMenu, "ro");
     const before = studioLocaleProgress(draft).en;
-    const translated = setTranslation(setTranslation(draft, "en", "menu.discover", "Discover"), "en", "menu.out", "Trails");
+    const translated = setTranslation(
+      setTranslation(draft, "en", "menu.discover", "Discover"),
+      "en",
+      "menu.out",
+      "Trails",
+    );
     expect(studioLocaleProgress(translated).en).toBeGreaterThan(before);
   });
 });

@@ -24,32 +24,28 @@ describe("isBookingConfirmable", () => {
 
 describe("assertBookingRoomAssignable", () => {
   it("throws when missing", () => {
-    expect(() => assertBookingRoomAssignable(null)).toThrow(
-      "booking.request_not_found",
-    );
+    expect(() => assertBookingRoomAssignable(null)).toThrow("booking.request_not_found");
   });
 
   it("throws when cancelled or confirmed", () => {
-    expect(() =>
-      assertBookingRoomAssignable({ status: "anulata" }),
-    ).toThrow("booking.request_cancelled");
-    expect(() =>
-      assertBookingRoomAssignable({ status: "confirmata" }),
-    ).toThrow("booking.already_confirmed");
+    expect(() => assertBookingRoomAssignable({ status: "anulata" })).toThrow(
+      "booking.request_cancelled",
+    );
+    expect(() => assertBookingRoomAssignable({ status: "confirmata" })).toThrow(
+      "booking.already_confirmed",
+    );
   });
 });
 
 describe("assertBookingConfirmable", () => {
   it("throws when already confirmed", () => {
-    expect(() =>
-      assertBookingConfirmable({ status: "confirmata" }),
-    ).toThrow("booking.already_confirmed");
+    expect(() => assertBookingConfirmable({ status: "confirmata" })).toThrow(
+      "booking.already_confirmed",
+    );
   });
 
   it("passes for cerere and re-accept anulata", () => {
-    expect(() =>
-      assertBookingConfirmable({ status: "cerere_noua" }),
-    ).not.toThrow();
+    expect(() => assertBookingConfirmable({ status: "cerere_noua" })).not.toThrow();
     expect(() => assertBookingConfirmable({ status: "anulata" })).not.toThrow();
   });
 });

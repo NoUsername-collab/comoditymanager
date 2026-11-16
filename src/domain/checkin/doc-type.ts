@@ -11,9 +11,7 @@ const UI_DOC_TYPES: readonly CheckinUiDocType[] = [
   "other",
 ] as const;
 
-function isCheckinUiDocType(
-  value: string | null | undefined,
-): value is CheckinUiDocType {
+function isCheckinUiDocType(value: string | null | undefined): value is CheckinUiDocType {
   return UI_DOC_TYPES.includes(value as CheckinUiDocType);
 }
 

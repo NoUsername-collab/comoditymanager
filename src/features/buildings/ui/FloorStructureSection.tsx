@@ -1,10 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import {
-  AdminTextActionButton,
-  AdminTextActionLink,
-} from "@/components/admin/ui/AdminTextAction";
+import { AdminTextActionButton, AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { useTranslations } from "next-intl";
 import {
   floorLevelFromStructure,
@@ -12,10 +9,7 @@ import {
   joinRoomPrefix,
 } from "@/domain/room/bulk-names";
 import type { StructureFloor } from "@/services/location-structure";
-import {
-  updateFloorFormAction,
-  type FloorFormState,
-} from "@/features/buildings/actions";
+import { updateFloorFormAction, type FloorFormState } from "@/features/buildings/actions";
 import { deleteFloorAction } from "@/features/buildings/actions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
@@ -78,9 +72,7 @@ export function FloorStructureSection({
             </p>
           ) : null}
           {floor.duplicateName && (
-            <p className="mt-0.5 text-xs font-medium text-amber-900">
-              {t("duplicateFloorHint")}
-            </p>
+            <p className="mt-0.5 text-xs font-medium text-amber-900">{t("duplicateFloorHint")}</p>
           )}
         </div>
         <div className="floor-structure-section__actions flex flex-wrap items-center gap-2">
@@ -161,9 +153,7 @@ export function FloorStructureSection({
                 className="mt-1 w-16"
               />
             </label>
-            <AdminSubmitButton size="sm">
-              {t("saveFloor")}
-            </AdminSubmitButton>
+            <AdminSubmitButton size="sm">{t("saveFloor")}</AdminSubmitButton>
           </form>
           <div className="mt-3 border-t border-zinc-100 pt-2">
             <DeleteConfirmButton

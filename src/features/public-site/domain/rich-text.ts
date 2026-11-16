@@ -12,8 +12,7 @@ export type RichInline =
   | { kind: "break" };
 
 export type RichBlock =
-  | { kind: "paragraph"; content: RichInline[] }
-  | { kind: "list"; items: RichInline[][] };
+  { kind: "paragraph"; content: RichInline[] } | { kind: "list"; items: RichInline[][] };
 
 const LIST_ITEM = /^\s*[-•*]\s+/;
 const INLINE = /\*\*([^*]+)\*\*|\[([^\]]+)\]\(([^)\s]+)\)/g;
@@ -38,7 +37,9 @@ function parseLine(line: string): RichInline[] {
     } else {
       const safe = safeRichHref(match[3] ?? "");
       // An unsafe address stays as plain words: the operator sees it did not link.
-      out.push(safe ? { kind: "link", text: match[2] ?? "", ...safe } : { kind: "text", text: match[0] });
+      out.push(
+        safe ? { kind: "link", text: match[2] ?? "", ...safe } : { kind: "text", text: match[0] },
+      );
     }
     last = index + match[0].length;
   }
@@ -63,7 +64,10 @@ export function parseRichText(source: string): RichBlock[] {
     };
     const flushList = () => {
       if (list.length === 0) return;
-      blocks.push({ kind: "list", items: list.map((line) => parseLine(line.replace(LIST_ITEM, ""))) });
+      blocks.push({
+        kind: "list",
+        items: list.map((line) => parseLine(line.replace(LIST_ITEM, ""))),
+      });
       list = [];
     };
     for (const line of lines) {

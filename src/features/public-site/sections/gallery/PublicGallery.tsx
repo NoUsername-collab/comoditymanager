@@ -52,7 +52,10 @@ export function PublicGallery({
         <div className="pub-gal__filter" role="tablist" aria-label={t("filter")}>
           {[
             { id: null as string | null, label: t("all") },
-            ...categories.map((album) => ({ id: album as string | null, label: t(`albums.${album}`) })),
+            ...categories.map((album) => ({
+              id: album as string | null,
+              label: t(`albums.${album}`),
+            })),
           ].map((c) => (
             <button
               key={c.id ?? "all"}
@@ -72,8 +75,17 @@ export function PublicGallery({
 
       {layout === "feature" && capped.length > 0 ? (
         <div className="pub-gal__feature">
-          <button type="button" className="pub-gal__big" onClick={() => setOpen(featured)} aria-label={t("enlarge")}>
-            <Photo photo={capped[Math.min(featured, capped.length - 1)]!} sizes="(max-width: 900px) 100vw, 70vw" eager />
+          <button
+            type="button"
+            className="pub-gal__big"
+            onClick={() => setOpen(featured)}
+            aria-label={t("enlarge")}
+          >
+            <Photo
+              photo={capped[Math.min(featured, capped.length - 1)]!}
+              sizes="(max-width: 900px) 100vw, 70vw"
+              eager
+            />
           </button>
           <ul className="pub-gal__thumbs">
             {capped.map((photo, index) => (
@@ -94,8 +106,19 @@ export function PublicGallery({
         <ul className="pub-gal__list">
           {capped.map((photo, index) => (
             <li key={photo.id} className="pub-gal__item">
-              <button type="button" onClick={() => setOpen(index)} aria-label={photo.alt || t("photo", { index: index + 1 })}>
-                <Photo photo={photo} sizes={layout === "carousel" ? "(max-width: 700px) 85vw, 40vw" : "(max-width: 768px) 50vw, 33vw"} />
+              <button
+                type="button"
+                onClick={() => setOpen(index)}
+                aria-label={photo.alt || t("photo", { index: index + 1 })}
+              >
+                <Photo
+                  photo={photo}
+                  sizes={
+                    layout === "carousel"
+                      ? "(max-width: 700px) 85vw, 40vw"
+                      : "(max-width: 768px) 50vw, 33vw"
+                  }
+                />
               </button>
             </li>
           ))}
@@ -115,7 +138,15 @@ export function PublicGallery({
   );
 }
 
-function Photo({ photo, sizes, eager = false }: { photo: GalleryPhoto; sizes: string; eager?: boolean }) {
+function Photo({
+  photo,
+  sizes,
+  eager = false,
+}: {
+  photo: GalleryPhoto;
+  sizes: string;
+  eager?: boolean;
+}) {
   return (
     <Image
       src={photo.url}
@@ -130,7 +161,15 @@ function Photo({ photo, sizes, eager = false }: { photo: GalleryPhoto; sizes: st
 }
 
 /** The photos full screen: arrows and swipe to move, Escape or the cross to close. */
-function Lightbox({ photos, start, onClose }: { photos: GalleryPhoto[]; start: number; onClose: () => void }) {
+function Lightbox({
+  photos,
+  start,
+  onClose,
+}: {
+  photos: GalleryPhoto[];
+  start: number;
+  onClose: () => void;
+}) {
   const t = useTranslations("public.gallery");
   const [index, setIndex] = useState(start);
   const dialog = useRef<HTMLDivElement>(null);
@@ -191,20 +230,37 @@ function Lightbox({ photos, start, onClose }: { photos: GalleryPhoto[]; start: n
         </div>
         <figcaption>
           {photo.alt ? <span>{photo.alt}</span> : null}
-          <span className="pub-lightbox__count">{t("count", { index: index + 1, total: photos.length })}</span>
+          <span className="pub-lightbox__count">
+            {t("count", { index: index + 1, total: photos.length })}
+          </span>
         </figcaption>
       </figure>
       {photos.length > 1 ? (
         <>
-          <button type="button" className="pub-lightbox__nav pub-lightbox__nav--prev" onClick={() => go(-1)} aria-label={t("previous")}>
+          <button
+            type="button"
+            className="pub-lightbox__nav pub-lightbox__nav--prev"
+            onClick={() => go(-1)}
+            aria-label={t("previous")}
+          >
             ‹
           </button>
-          <button type="button" className="pub-lightbox__nav pub-lightbox__nav--next" onClick={() => go(1)} aria-label={t("next")}>
+          <button
+            type="button"
+            className="pub-lightbox__nav pub-lightbox__nav--next"
+            onClick={() => go(1)}
+            aria-label={t("next")}
+          >
             ›
           </button>
         </>
       ) : null}
-      <button type="button" className="pub-lightbox__close" onClick={onClose} aria-label={t("close")}>
+      <button
+        type="button"
+        className="pub-lightbox__close"
+        onClick={onClose}
+        aria-label={t("close")}
+      >
         ×
       </button>
     </div>

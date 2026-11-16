@@ -30,7 +30,9 @@ function site(published: boolean) {
 
 describe("public site robots", () => {
   it("keeps an unpublished site out of search", () => {
-    expect(publicSiteRobots(site(false), BASE)).toEqual({ rules: { userAgent: "*", disallow: "/" } });
+    expect(publicSiteRobots(site(false), BASE)).toEqual({
+      rules: { userAgent: "*", disallow: "/" },
+    });
     expect(publicSiteSitemap(site(false), BASE)).toEqual([]);
   });
 
@@ -61,7 +63,9 @@ describe("public site sitemap", () => {
   });
 
   it("leaves out the booking page when booking is off", () => {
-    const urls = publicSiteSitemap({ ...site(true), bookingEnabled: false }, BASE).map((e) => e.url);
+    const urls = publicSiteSitemap({ ...site(true), bookingEnabled: false }, BASE).map(
+      (e) => e.url,
+    );
     expect(urls.some((url) => url.includes("/calendar"))).toBe(false);
   });
 });

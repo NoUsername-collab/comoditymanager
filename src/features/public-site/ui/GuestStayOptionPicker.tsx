@@ -3,10 +3,7 @@
 import Image from "next/image";
 import { isOptimizablePublicImageUrl } from "@/domain/public-site/media";
 import { useLocale, useTranslations } from "next-intl";
-import type {
-  GuestStayOption,
-  GuestStayPreview,
-} from "@/domain/availability/guest-stay-options";
+import type { GuestStayOption, GuestStayPreview } from "@/domain/availability/guest-stay-options";
 import { minorCount } from "@/domain/availability/party";
 import type { RoomPlacement } from "@/domain/availability/stay-capacity";
 import { formatStayPeriod } from "@/lib/ro-calendar";
@@ -72,7 +69,9 @@ export function GuestStayOptionPicker({
       ) : (
         <>
           {wantedRoom &&
-          !preview.options.some((option) => option.rooms.some((room) => room.room_type_id === wantedRoom.id)) ? (
+          !preview.options.some((option) =>
+            option.rooms.some((room) => room.room_type_id === wantedRoom.id),
+          ) ? (
             <p className="public-notice p-3 text-sm" role="status">
               {t("wantedRoomTaken", { room: wantedRoom.name })}
             </p>
@@ -86,7 +85,8 @@ export function GuestStayOptionPicker({
             {preview.options.map((option) => {
               const selected = option.option_id === selectedOptionId;
               const wanted =
-                wantedRoom != null && option.rooms.some((room) => room.room_type_id === wantedRoom.id);
+                wantedRoom != null &&
+                option.rooms.some((room) => room.room_type_id === wantedRoom.id);
               const together = option.rooms.length === 1 && preview.party.childAges.length > 0;
               return (
                 <li key={option.option_id}>
@@ -108,13 +108,18 @@ export function GuestStayOptionPicker({
                           alt=""
                           fill
                           sizes="(max-width: 640px) 100vw, 320px"
-                          style={{ objectFit: "cover", objectPosition: option.rooms[0].photo.focus }}
+                          style={{
+                            objectFit: "cover",
+                            objectPosition: option.rooms[0].photo.focus,
+                          }}
                           unoptimized={!isOptimizablePublicImageUrl(option.rooms[0].photo.url)}
                         />
                       </span>
                     ) : null}
                     {wanted ? (
-                      <span className="guest-option__wanted">{t("wantedRoomMatch", { room: wantedRoom!.name })}</span>
+                      <span className="guest-option__wanted">
+                        {t("wantedRoomMatch", { room: wantedRoom!.name })}
+                      </span>
                     ) : null}
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">

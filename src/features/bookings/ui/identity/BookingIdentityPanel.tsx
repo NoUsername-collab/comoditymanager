@@ -65,11 +65,7 @@ function IdentityInput({
   return <input className={className} {...props} />;
 }
 
-export function BookingIdentityPanel({
-  identity,
-  appearance,
-  className,
-}: Props) {
+export function BookingIdentityPanel({ identity, appearance, className }: Props) {
   const t = useTranslations("bookingIdentity");
   const skin = APPEARANCE[appearance];
   const showStatus = !identity.identityChecksReady || Boolean(identity.identityHint);
@@ -146,9 +142,7 @@ export function BookingIdentityPanel({
       </div>
       {showStatus ? (
         <p className={[skin.status, statusClass].join(" ")} aria-live="polite">
-          {!identity.identityChecksReady
-            ? identity.checkingLabel
-            : identity.identityHint}
+          {!identity.identityChecksReady ? identity.checkingLabel : identity.identityHint}
         </p>
       ) : null}
     </section>

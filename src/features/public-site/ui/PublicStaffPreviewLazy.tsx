@@ -18,7 +18,7 @@ const PublicStaffPreviewDynamic = dynamic(
         aria-busy="true"
       />
     ),
-  }
+  },
 );
 
 /**

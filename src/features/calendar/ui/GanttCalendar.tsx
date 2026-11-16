@@ -28,20 +28,11 @@ import type { OccupancySegment } from "@/domain/occupancy/types";
 import type { GanttFilter } from "@/domain/gantt/filters";
 import type { GanttRoom } from "@/domain/gantt/types";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
-import {
-  DEFAULT_CHECK_IN_TIME,
-  DEFAULT_CHECK_OUT_TIME,
-} from "@/lib/constants";
+import { DEFAULT_CHECK_IN_TIME, DEFAULT_CHECK_OUT_TIME } from "@/lib/constants";
 import { todayIso } from "@/lib/stay-dates";
 import { GanttPinnedCreateChip } from "@/features/calendar/ui/GanttPinnedSelectionChip";
-import {
-  pinnedSelectionFromRange,
-  type PinnedSelection,
-} from "@/domain/gantt/pinned-selection";
-import {
-  setGanttRoomPinnedSpan,
-  clearGanttRoomPinnedSpan,
-} from "@/domain/gantt/room-at-point";
+import { pinnedSelectionFromRange, type PinnedSelection } from "@/domain/gantt/pinned-selection";
+import { setGanttRoomPinnedSpan, clearGanttRoomPinnedSpan } from "@/domain/gantt/room-at-point";
 import { ghostBarPosition } from "@/domain/gantt/drag-create";
 import type { GanttOccDetail } from "@/features/calendar/ui/GanttOccupancyDetailPanel";
 import type { MoveRoomDraft } from "@/features/calendar/ui/MoveRoomDialog";
@@ -50,9 +41,7 @@ import { GanttContextMenuProvider } from "@/features/calendar/ui/GanttContextMen
 import { GanttStayTapPopoverProvider } from "@/features/calendar/ui/GanttStayTapPopoverContext";
 import { GanttContextMenuBridge } from "@/features/calendar/ui/GanttContextMenuBridge";
 import { GanttOperativeCheckProvider } from "@/features/calendar/ui/GanttOperativeCheckProvider";
-import {
-  type GanttOpsPickerMode,
-} from "@/features/calendar/ui/GanttOpsPickerPanel";
+import { type GanttOpsPickerMode } from "@/features/calendar/ui/GanttOpsPickerPanel";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { useGanttCalendarNavigation } from "@/hooks/useGanttCalendarNavigation";
@@ -67,35 +56,35 @@ const GanttCreateDialog = dynamic(
     import("@/features/calendar/ui/GanttCreateDialog").then((m) => ({
       default: m.GanttCreateDialog,
     })),
-  { ssr: false }
+  { ssr: false },
 );
 const MoveRoomDialog = dynamic(
   () =>
     import("@/features/calendar/ui/MoveRoomDialog").then((m) => ({
       default: m.MoveRoomDialog,
     })),
-  { ssr: false }
+  { ssr: false },
 );
 const GanttOccupancyDetailPanelLazy = dynamic(
   () =>
     import("@/features/calendar/ui/GanttOccupancyDetailPanel").then((m) => ({
       default: m.GanttOccupancyDetailPanel,
     })),
-  { ssr: false }
+  { ssr: false },
 );
 const GanttToolbarOccForm = dynamic(
   () =>
     import("@/features/calendar/ui/GanttToolbarOccForm").then((m) => ({
       default: m.GanttToolbarOccForm,
     })),
-  { ssr: false }
+  { ssr: false },
 );
 const GanttStickyViewportHeader = dynamic(
   () =>
     import("@/features/calendar/ui/GanttStickyViewportHeader").then((m) => ({
       default: m.GanttStickyViewportHeader,
     })),
-  { ssr: false }
+  { ssr: false },
 );
 
 import {
@@ -168,9 +157,7 @@ export function GanttCalendar({
   const buildingFallbackLabel = tCommon("building");
   const locale = useLocale();
   const touch = useIsTouchDevice();
-  const scrollDragTitle = touch
-    ? tCommon("scrollDragTouch")
-    : tCommon("scrollDrag");
+  const scrollDragTitle = touch ? tCommon("scrollDragTouch") : tCommon("scrollDrag");
   const { compactChrome, orientation, isPortrait } = useCompactLayoutHints();
   const { coverage, setCoverage } = useGanttCoverage();
   const compact = coverage === 30;
@@ -181,9 +168,9 @@ export function GanttCalendar({
     () =>
       resolveGanttColumnMetrics(
         compactChrome,
-        orientation === "landscape" ? "landscape" : "portrait"
+        orientation === "landscape" ? "landscape" : "portrait",
       ),
-    [compactChrome, orientation]
+    [compactChrome, orientation],
   );
   const dayGridOptions = useMemo(
     () =>
@@ -191,13 +178,13 @@ export function GanttCalendar({
         compactChrome,
         isPortrait,
         columnMetrics.dayMin,
-        viewRange.days.length
+        viewRange.days.length,
       ),
-    [compactChrome, isPortrait, columnMetrics.dayMin, viewRange.days.length]
+    [compactChrome, isPortrait, columnMetrics.dayMin, viewRange.days.length],
   );
   const tableLayout = useMemo(
     () => resolveGanttTableLayout(viewRange.days.length, columnMetrics),
-    [viewRange.days.length, columnMetrics]
+    [viewRange.days.length, columnMetrics],
   );
   const dayIsos = useMemo(() => viewRange.days.map((d) => d.iso), [viewRange.days]);
 
@@ -245,7 +232,7 @@ export function GanttCalendar({
       viewRange.rangeStart,
       viewRange.rangeEnd,
       viewRange.columnGranularity,
-    ]
+    ],
   );
 
   const todayIndex = viewRange.days.findIndex((d) => d.isToday);
@@ -256,9 +243,7 @@ export function GanttCalendar({
   const shellRef = useRef<HTMLDivElement>(null);
   const theadRef = useRef<HTMLTableSectionElement>(null);
   const bodyHeight = useGanttBodyHeight(theadRef);
-  const [collapsedBuildings, setCollapsedBuildings] = useState<Set<string>>(
-    () => new Set()
-  );
+  const [collapsedBuildings, setCollapsedBuildings] = useState<Set<string>>(() => new Set());
   const rowMetrics = useMemo(() => {
     const reserved = groupByBuilding
       ? buildingHeadersInFirstRooms(
@@ -270,19 +255,8 @@ export function GanttCalendar({
           coverage,
         ) * GANTT_BUILDING_HEADER_H
       : 0;
-    return resolveGanttRowMetrics(
-      coverage,
-      compactChrome ? null : bodyHeight,
-      reserved,
-    );
-  }, [
-    coverage,
-    compactChrome,
-    bodyHeight,
-    groupByBuilding,
-    buildingGroups,
-    collapsedBuildings,
-  ]);
+    return resolveGanttRowMetrics(coverage, compactChrome ? null : bodyHeight, reserved);
+  }, [coverage, compactChrome, bodyHeight, groupByBuilding, buildingGroups, collapsedBuildings]);
   const ganttRowHeight = rowMetrics.rowH;
   const scrolledPeriodRef = useRef<string | null>(null);
   const suppressHeaderClickUntilRef = useRef(0);
@@ -309,13 +283,9 @@ export function GanttCalendar({
     "hold" | "block" | "request" | "direct" | "move" | null
   >(null);
   const [moveRoomDraft, setMoveRoomDraft] = useState<MoveRoomDraft | null>(null);
-  const [createDraft, setCreateDraft] = useState<GanttCreateDraftRequest | null>(
-    null
-  );
+  const [createDraft, setCreateDraft] = useState<GanttCreateDraftRequest | null>(null);
   const [pinnedSelection, setPinnedSelection] = useState<PinnedSelection | null>(null);
-  const [opsPickerMode, setOpsPickerMode] = useState<GanttOpsPickerMode | null>(
-    null
-  );
+  const [opsPickerMode, setOpsPickerMode] = useState<GanttOpsPickerMode | null>(null);
 
   const handleToggleFocusBuilding = useCallback((buildingId: string) => {
     setFocusBuildingId((prev) => (prev === buildingId ? null : buildingId));
@@ -452,7 +422,7 @@ export function GanttCalendar({
       window.addEventListener("pointerup", end);
       window.addEventListener("pointercancel", end);
     },
-    [endHeaderPan]
+    [endHeaderPan],
   );
 
   // ─── Effects ───────────────────────────────────────────────────────
@@ -489,42 +459,30 @@ export function GanttCalendar({
     return () => window.removeEventListener("keydown", onKey);
   }, [scrollToTodayColumn]);
 
-  const bookingById = useMemo(
-    () => new Map(bookings.map((b) => [b.id, b])),
-    [bookings]
-  );
+  const bookingById = useMemo(() => new Map(bookings.map((b) => [b.id, b])), [bookings]);
 
   // ─── Event handlers ────────────────────────────────────────────────
-  const handleOccOpen = useCallback(
-    (seg: OccupancySegment, roomName: string) => {
-      setOccDetail({ segment: seg, roomName });
-    },
-    []
-  );
+  const handleOccOpen = useCallback((seg: OccupancySegment, roomName: string) => {
+    setOccDetail({ segment: seg, roomName });
+  }, []);
 
-  const handleCtrlDragEnd = useCallback(
-    (roomIds: string[], checkIn: string, checkOut: string) => {
-      setPinnedSelection((prev) => {
-        const dates = prev ?? { checkIn, checkOut };
-        const existingSet = new Set(prev?.roomIds ?? []);
-        for (const id of roomIds) {
-          if (existingSet.has(id)) existingSet.delete(id);
-          else existingSet.add(id);
-        }
-        const nextRoomIds = [...existingSet];
-        if (nextRoomIds.length === 0) return null;
-        return { roomIds: nextRoomIds, checkIn: dates.checkIn, checkOut: dates.checkOut };
-      });
-    },
-    []
-  );
+  const handleCtrlDragEnd = useCallback((roomIds: string[], checkIn: string, checkOut: string) => {
+    setPinnedSelection((prev) => {
+      const dates = prev ?? { checkIn, checkOut };
+      const existingSet = new Set(prev?.roomIds ?? []);
+      for (const id of roomIds) {
+        if (existingSet.has(id)) existingSet.delete(id);
+        else existingSet.add(id);
+      }
+      const nextRoomIds = [...existingSet];
+      if (nextRoomIds.length === 0) return null;
+      return { roomIds: nextRoomIds, checkIn: dates.checkIn, checkOut: dates.checkOut };
+    });
+  }, []);
 
-  const handleRangePin = useCallback(
-    (roomIds: string[], checkIn: string, checkOut: string) => {
-      setPinnedSelection(pinnedSelectionFromRange(roomIds, checkIn, checkOut));
-    },
-    []
-  );
+  const handleRangePin = useCallback((roomIds: string[], checkIn: string, checkOut: string) => {
+    setPinnedSelection(pinnedSelectionFromRange(roomIds, checkIn, checkOut));
+  }, []);
 
   const cancelPinnedSelection = useCallback(() => {
     setPinnedSelection(null);
@@ -554,7 +512,14 @@ export function GanttCalendar({
       widthPct: ghost.widthPct,
       hasConflict: false,
     });
-  }, [pinnedSelection, dayIsos, viewRange.rangeStart, viewRange.rangeEnd, checkInTime, checkOutTime]);
+  }, [
+    pinnedSelection,
+    dayIsos,
+    viewRange.rangeStart,
+    viewRange.rangeEnd,
+    checkInTime,
+    checkOutTime,
+  ]);
 
   const {
     handleSummaryDayClick,
@@ -597,291 +562,273 @@ export function GanttCalendar({
 
   // ─── Render ────────────────────────────────────────────────────────
   return (
-    <GanttOperativeCheckProvider
-      today={effectiveToday}
-      canEditAfterCheckout={canEditAfterCheckout}
-    >
-    <GanttStayTapPopoverProvider>
-    <GanttContextMenuProvider
-      onRequestCreate={(draft) => {
-        cancelPinnedSelection();
-        setCreateDraft(draft);
-      }}
-      onDismissCreate={cancelPinnedSelection}
-      onOpenMoveRoom={setMoveRoomDraft}
-      onOpenOccDetail={setOccDetail}
-    >
-      <GanttContextMenuBridge
-        shellRef={shellRef}
-        viewRange={viewRange}
-        occupancy={occupancy}
-      />
-      <GanttStickyViewportHeader
-        scrollRef={scrollRef}
-        shellRef={shellRef}
-        theadRef={theadRef}
-        viewRange={viewRange}
-        compact={compact}
-        onPanPointerDown={handleHeaderPanPointerDown}
-        panActive={isHeaderPanActive}
-        scrollTitle={scrollDragTitle}
-        dayGridOptions={dayGridOptions}
-        dailyFreeCounts={dailyFreeCounts}
-        activeFocusIso={summaryFilterActive ? focusIso : null}
-        filterActive={summaryFilterActive}
-        onSummaryDayClick={handleSummaryDayClick}
-        onDayDrillDown={handleHeaderDayDrillDown}
-        checkInTime={checkInTime}
-        checkOutTime={checkOutTime}
-        shellZoom={shellZoom}
-      />
-    <div
-      key={viewRange.periodKey}
-      ref={scrollRef}
-      className="gantt-period-enter gantt-scroll w-full overflow-x-auto overflow-y-visible"
-    >
-      <div
-        ref={shellRef}
-        className="gantt-shell gantt-shell--premium relative min-w-full overflow-visible"
-        data-gantt-zoom={shellZoom}
-        data-gantt-coverage={coverage}
-        style={{
-          ...(ganttRowMetricsStyle(rowMetrics) as CSSProperties),
-          ...ganttDayTimeStyle(checkInTime, checkOutTime),
-        }}
-      >
-        <GanttCompactToolbar
-          onOpenRequest={() => setOccFormMode("request")}
-          onOpenHold={() => setOccFormMode("hold")}
-          onOpenMove={() => setOccFormMode("move")}
-          onOpenBlock={() => setOccFormMode("block")}
-          onOpenReception={() => setOccFormMode("direct")}
-          onOpenCheckIn={
-            operativeCheckInEligible.length > 0
-              ? () => setOpsPickerMode("checkin")
-              : undefined
-          }
-          onOpenCheckOut={() => setOpsPickerMode("checkout")}
-          requestCount={requestCount}
-          arrivalsCount={arrivalsCount}
-          departuresCount={departuresCount}
-          cleanCount={cleanCount}
-          zoomChoice={zoomChoice}
-          onZoomChange={handleInlineZoomChange}
-          periodTitle={viewRange.title}
-          firstIso={firstIso}
-          onPrevPeriod={() => navigatePeriod(-1)}
-          onNextPeriod={() => navigatePeriod(1)}
-          onJumpToDate={jumpToDate}
-          prevPeriodAria={tCommon("goBackBy", { period: activePeriodStep.aria })}
-          nextPeriodAria={tCommon("goForwardBy", { period: activePeriodStep.aria })}
-          jumpAria={tCommon("jumpToDate")}
-          isOnToday={isOnToday}
-          onJumpToToday={jumpToToday}
-          layerFilter={layerFilter}
-          onCalendarPatch={pushCalendarPatch}
-          isAvailabilityPanelOpen={isAvailabilityPanelOpen}
-          onToggleAvailabilityPanel={toggleAvailabilityPanel}
-          showHeatmap={showHeatmap}
-          isFiltersOpen={isFiltersOpen}
-          hasActiveFilters={hasActiveFilters}
-          onToggleFilters={handleToggleFilters}
-          coverage={coverage}
-          onCoverageChange={setCoverage}
-          showCoverage={!compactChrome}
-        />
-
-        {showZoneRibbon && (
-          <GanttZoneRibbon
-            checkInTime={checkInTime}
-            checkOutTime={checkOutTime}
-          />
-        )}
-
-        <GanttFiltersPanel
-          open={isFiltersOpen}
-          onClose={handleCloseFiltersPanel}
-          anchorRect={filtersAnchorRect}
-          filter={filter}
-          selectedFeature={selectedFeature}
-          focusDay={focusDay}
-          onCalendarPatch={pushCalendarPatch}
-        />
-
-        {filter === "free" && focusDay && (
-          <div className="gantt-summary-filter-banner mx-3 mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs">
-            <span>
-              {tCommon("showingRooms")} <strong>{tCommon("free").toLowerCase()}</strong> {tCommon("onDay")}{" "}
-              <strong>{formatDateWithDay(focusDay, locale, true)}</strong>
-            </span>
-            <button
-              type="button"
-              className="gantt-summary-filter-banner__btn"
-              onClick={() => handleSummaryDayClick(focusDay)}
-            >
-              {tCommon("resetFilter")}
-            </button>
-          </div>
-        )}
-
-        {/* ── Table ──────────────────────────────────────────────── */}
-        <table
-          className="w-full min-w-full table-fixed border-separate border-spacing-0 text-xs"
-          style={{
-            width: tableLayout.tableWidth,
-            minWidth: tableLayout.tableMinWidth,
+    <GanttOperativeCheckProvider today={effectiveToday} canEditAfterCheckout={canEditAfterCheckout}>
+      <GanttStayTapPopoverProvider>
+        <GanttContextMenuProvider
+          onRequestCreate={(draft) => {
+            cancelPinnedSelection();
+            setCreateDraft(draft);
           }}
+          onDismissCreate={cancelPinnedSelection}
+          onOpenMoveRoom={setMoveRoomDraft}
+          onOpenOccDetail={setOccDetail}
         >
-          <colgroup>
-            <col style={{ width: tableLayout.roomCol }} />
-            <col />
-          </colgroup>
-          <thead ref={theadRef} className="gantt-thead-sticky">
-            <tr className="gantt-head-main-row">
-              <th className="gantt-head-main-row__room gantt-room-column-header sticky left-0 z-30 text-left text-xs font-semibold tracking-wide">
-                {tCommon("room")}
-              </th>
-              <th className="gantt-head-main-row__days p-0">
-                <GanttDayHeader
-                  columns={viewRange.days}
-                  compact={compact}
-                  onPanPointerDown={handleHeaderPanPointerDown}
-                  panActive={isHeaderPanActive}
-                  scrollTitle={scrollDragTitle}
-                  todayLabel={tCommon("todayPanel")}
-                  locale={locale}
-                  dayGridOptions={dayGridOptions}
-                  columnGranularity={viewRange.columnGranularity}
-                  onDayDrillDown={handleHeaderDayDrillDown}
-                  checkInTime={checkInTime}
-                  checkOutTime={checkOutTime}
-                  shellZoom={shellZoom}
-                />
-              </th>
-            </tr>
-            <GanttDailySummaryRow
-              counts={dailyFreeCounts}
-              viewRange={viewRange}
-              compact={compact}
-              activeFocusIso={summaryFilterActive ? focusIso : null}
-              filterActive={summaryFilterActive}
-              onDayClick={handleSummaryDayClick}
-              onPanPointerDown={handleHeaderPanPointerDown}
-              panActive={isHeaderPanActive}
-              scrollTitle={scrollDragTitle}
-              dayGridOptions={dayGridOptions}
-            />
-          </thead>
-          <GanttVirtualizedBody
+          <GanttContextMenuBridge shellRef={shellRef} viewRange={viewRange} occupancy={occupancy} />
+          <GanttStickyViewportHeader
+            scrollRef={scrollRef}
             shellRef={shellRef}
             theadRef={theadRef}
-            groupByBuilding={groupByBuilding}
-            buildingGroups={buildingGroups}
-            filteredRooms={filteredRooms}
-            collapsedBuildings={collapsedBuildings}
-            focusBuildingId={focusBuildingId}
-            onToggleFocusBuilding={handleToggleFocusBuilding}
-            onToggleCollapsedBuilding={handleToggleCollapsedBuilding}
             viewRange={viewRange}
-            occupancyByRoom={occupancyByRoom}
-            displaySegmentsByRoom={displaySegmentsByRoom}
+            compact={compact}
+            onPanPointerDown={handleHeaderPanPointerDown}
+            panActive={isHeaderPanActive}
+            scrollTitle={scrollDragTitle}
+            dayGridOptions={dayGridOptions}
+            dailyFreeCounts={dailyFreeCounts}
+            activeFocusIso={summaryFilterActive ? focusIso : null}
+            filterActive={summaryFilterActive}
+            onSummaryDayClick={handleSummaryDayClick}
+            onDayDrillDown={handleHeaderDayDrillDown}
             checkInTime={checkInTime}
             checkOutTime={checkOutTime}
-            compact={compact}
-            rowHeight={ganttRowHeight}
-            touch={touch}
-            todayFlagsByRoom={todayFlagsByRoom}
-            onOccOpen={handleOccOpen}
-            bookingById={bookingById}
-            onMoveRoom={setMoveRoomDraft}
-            pinnedSelection={pinnedSelection}
-            onCtrlDragEnd={handleCtrlDragEnd}
-            onRangePin={handleRangePin}
-            today={effectiveToday}
-            dayGridOptions={dayGridOptions}
             shellZoom={shellZoom}
-            departurePolicy={departurePolicy}
-            disableVirtualization={compactChrome}
-            emptyMessage={
-              filter !== "all"
-                ? tCommon("noRoomForFilterTryAll")
-                : tCommon("noRoomForFilter")
-            }
           />
-        </table>
+          <div
+            key={viewRange.periodKey}
+            ref={scrollRef}
+            className="gantt-period-enter gantt-scroll w-full overflow-x-auto overflow-y-visible"
+          >
+            <div
+              ref={shellRef}
+              className="gantt-shell gantt-shell--premium relative min-w-full overflow-visible"
+              data-gantt-zoom={shellZoom}
+              data-gantt-coverage={coverage}
+              style={{
+                ...(ganttRowMetricsStyle(rowMetrics) as CSSProperties),
+                ...ganttDayTimeStyle(checkInTime, checkOutTime),
+              }}
+            >
+              <GanttCompactToolbar
+                onOpenRequest={() => setOccFormMode("request")}
+                onOpenHold={() => setOccFormMode("hold")}
+                onOpenMove={() => setOccFormMode("move")}
+                onOpenBlock={() => setOccFormMode("block")}
+                onOpenReception={() => setOccFormMode("direct")}
+                onOpenCheckIn={
+                  operativeCheckInEligible.length > 0
+                    ? () => setOpsPickerMode("checkin")
+                    : undefined
+                }
+                onOpenCheckOut={() => setOpsPickerMode("checkout")}
+                requestCount={requestCount}
+                arrivalsCount={arrivalsCount}
+                departuresCount={departuresCount}
+                cleanCount={cleanCount}
+                zoomChoice={zoomChoice}
+                onZoomChange={handleInlineZoomChange}
+                periodTitle={viewRange.title}
+                firstIso={firstIso}
+                onPrevPeriod={() => navigatePeriod(-1)}
+                onNextPeriod={() => navigatePeriod(1)}
+                onJumpToDate={jumpToDate}
+                prevPeriodAria={tCommon("goBackBy", { period: activePeriodStep.aria })}
+                nextPeriodAria={tCommon("goForwardBy", { period: activePeriodStep.aria })}
+                jumpAria={tCommon("jumpToDate")}
+                isOnToday={isOnToday}
+                onJumpToToday={jumpToToday}
+                layerFilter={layerFilter}
+                onCalendarPatch={pushCalendarPatch}
+                isAvailabilityPanelOpen={isAvailabilityPanelOpen}
+                onToggleAvailabilityPanel={toggleAvailabilityPanel}
+                showHeatmap={showHeatmap}
+                isFiltersOpen={isFiltersOpen}
+                hasActiveFilters={hasActiveFilters}
+                onToggleFilters={handleToggleFilters}
+                coverage={coverage}
+                onCoverageChange={setCoverage}
+                showCoverage={!compactChrome}
+              />
 
-        {pinnedSelection && (
-          <GanttPinnedCreateChip
-            selection={pinnedSelection}
-            roomName={
-              pinnedSelection.roomIds.length > 1
-                ? `${pinnedSelection.roomIds.length} ${tCommon("rooms")}`
-                : rooms.find((room) => room.id === pinnedSelection.roomIds[0])
-                    ?.name ?? tCommon("room")
-            }
-            onCancel={cancelPinnedSelection}
+              {showZoneRibbon && (
+                <GanttZoneRibbon checkInTime={checkInTime} checkOutTime={checkOutTime} />
+              )}
+
+              <GanttFiltersPanel
+                open={isFiltersOpen}
+                onClose={handleCloseFiltersPanel}
+                anchorRect={filtersAnchorRect}
+                filter={filter}
+                selectedFeature={selectedFeature}
+                focusDay={focusDay}
+                onCalendarPatch={pushCalendarPatch}
+              />
+
+              {filter === "free" && focusDay && (
+                <div className="gantt-summary-filter-banner mx-3 mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs">
+                  <span>
+                    {tCommon("showingRooms")} <strong>{tCommon("free").toLowerCase()}</strong>{" "}
+                    {tCommon("onDay")} <strong>{formatDateWithDay(focusDay, locale, true)}</strong>
+                  </span>
+                  <button
+                    type="button"
+                    className="gantt-summary-filter-banner__btn"
+                    onClick={() => handleSummaryDayClick(focusDay)}
+                  >
+                    {tCommon("resetFilter")}
+                  </button>
+                </div>
+              )}
+
+              {/* ── Table ──────────────────────────────────────────────── */}
+              <table
+                className="w-full min-w-full table-fixed border-separate border-spacing-0 text-xs"
+                style={{
+                  width: tableLayout.tableWidth,
+                  minWidth: tableLayout.tableMinWidth,
+                }}
+              >
+                <colgroup>
+                  <col style={{ width: tableLayout.roomCol }} />
+                  <col />
+                </colgroup>
+                <thead ref={theadRef} className="gantt-thead-sticky">
+                  <tr className="gantt-head-main-row">
+                    <th className="gantt-head-main-row__room gantt-room-column-header sticky left-0 z-30 text-left text-xs font-semibold tracking-wide">
+                      {tCommon("room")}
+                    </th>
+                    <th className="gantt-head-main-row__days p-0">
+                      <GanttDayHeader
+                        columns={viewRange.days}
+                        compact={compact}
+                        onPanPointerDown={handleHeaderPanPointerDown}
+                        panActive={isHeaderPanActive}
+                        scrollTitle={scrollDragTitle}
+                        todayLabel={tCommon("todayPanel")}
+                        locale={locale}
+                        dayGridOptions={dayGridOptions}
+                        columnGranularity={viewRange.columnGranularity}
+                        onDayDrillDown={handleHeaderDayDrillDown}
+                        checkInTime={checkInTime}
+                        checkOutTime={checkOutTime}
+                        shellZoom={shellZoom}
+                      />
+                    </th>
+                  </tr>
+                  <GanttDailySummaryRow
+                    counts={dailyFreeCounts}
+                    viewRange={viewRange}
+                    compact={compact}
+                    activeFocusIso={summaryFilterActive ? focusIso : null}
+                    filterActive={summaryFilterActive}
+                    onDayClick={handleSummaryDayClick}
+                    onPanPointerDown={handleHeaderPanPointerDown}
+                    panActive={isHeaderPanActive}
+                    scrollTitle={scrollDragTitle}
+                    dayGridOptions={dayGridOptions}
+                  />
+                </thead>
+                <GanttVirtualizedBody
+                  shellRef={shellRef}
+                  theadRef={theadRef}
+                  groupByBuilding={groupByBuilding}
+                  buildingGroups={buildingGroups}
+                  filteredRooms={filteredRooms}
+                  collapsedBuildings={collapsedBuildings}
+                  focusBuildingId={focusBuildingId}
+                  onToggleFocusBuilding={handleToggleFocusBuilding}
+                  onToggleCollapsedBuilding={handleToggleCollapsedBuilding}
+                  viewRange={viewRange}
+                  occupancyByRoom={occupancyByRoom}
+                  displaySegmentsByRoom={displaySegmentsByRoom}
+                  checkInTime={checkInTime}
+                  checkOutTime={checkOutTime}
+                  compact={compact}
+                  rowHeight={ganttRowHeight}
+                  touch={touch}
+                  todayFlagsByRoom={todayFlagsByRoom}
+                  onOccOpen={handleOccOpen}
+                  bookingById={bookingById}
+                  onMoveRoom={setMoveRoomDraft}
+                  pinnedSelection={pinnedSelection}
+                  onCtrlDragEnd={handleCtrlDragEnd}
+                  onRangePin={handleRangePin}
+                  today={effectiveToday}
+                  dayGridOptions={dayGridOptions}
+                  shellZoom={shellZoom}
+                  departurePolicy={departurePolicy}
+                  disableVirtualization={compactChrome}
+                  emptyMessage={
+                    filter !== "all" ? tCommon("noRoomForFilterTryAll") : tCommon("noRoomForFilter")
+                  }
+                />
+              </table>
+
+              {pinnedSelection && (
+                <GanttPinnedCreateChip
+                  selection={pinnedSelection}
+                  roomName={
+                    pinnedSelection.roomIds.length > 1
+                      ? `${pinnedSelection.roomIds.length} ${tCommon("rooms")}`
+                      : (rooms.find((room) => room.id === pinnedSelection.roomIds[0])?.name ??
+                        tCommon("room"))
+                  }
+                  onCancel={cancelPinnedSelection}
+                />
+              )}
+
+              <GanttFooterLegend checkInTime={checkInTime} checkOutTime={checkOutTime} />
+            </div>
+          </div>
+          <GanttOperativeSurfaces
+            opsPickerMode={opsPickerMode}
+            setOpsPickerMode={setOpsPickerMode}
+            activeBookings={activeBookings}
+            today={effectiveToday}
           />
-        )}
-
-        <GanttFooterLegend
-          checkInTime={checkInTime}
-          checkOutTime={checkOutTime}
-        />
-      </div>
-    </div>
-      <GanttOperativeSurfaces
-        opsPickerMode={opsPickerMode}
-        setOpsPickerMode={setOpsPickerMode}
-        activeBookings={activeBookings}
-        today={effectiveToday}
-      />
-      <GanttCreateDialog
-        draft={createDraft}
-        rooms={rooms.map((r) => ({
-          id: r.id,
-          name: r.name,
-          building_name: r.building_name,
-        }))}
-        bookings={bookings}
-        onClose={() => setCreateDraft(null)}
-      />
-      <GanttOccupancyDetailPanelLazy
-        detail={occDetail}
-        onClose={() => setOccDetail(null)}
-      />
-      <MoveRoomDialog
-        key={
-          moveRoomDraft
-            ? `${moveRoomDraft.bookingId}:${moveRoomDraft.sourceRoomId}`
-            : "move-room-closed"
-        }
-        draft={moveRoomDraft}
-        booking={
-          moveRoomDraft
-            ? bookings.find((row) => row.id === moveRoomDraft.bookingId) ?? null
-            : null
-        }
-        rooms={rooms.map((r) => ({
-          id: r.id,
-          name: r.name,
-          building_name: r.building_name,
-        }))}
-        onClose={() => setMoveRoomDraft(null)}
-      />
-      <GanttToolbarOccForm
-        key={occFormMode ?? "closed"}
-        mode={occFormMode}
-        rooms={rooms.map((r) => ({
-          id: r.id,
-          name: r.name,
-          building_name: r.building_name,
-        }))}
-        bookings={bookings}
-        onClose={() => setOccFormMode(null)}
-        today={effectiveToday}
-      />
-    </GanttContextMenuProvider>
-    </GanttStayTapPopoverProvider>
+          <GanttCreateDialog
+            draft={createDraft}
+            rooms={rooms.map((r) => ({
+              id: r.id,
+              name: r.name,
+              building_name: r.building_name,
+            }))}
+            bookings={bookings}
+            onClose={() => setCreateDraft(null)}
+          />
+          <GanttOccupancyDetailPanelLazy detail={occDetail} onClose={() => setOccDetail(null)} />
+          <MoveRoomDialog
+            key={
+              moveRoomDraft
+                ? `${moveRoomDraft.bookingId}:${moveRoomDraft.sourceRoomId}`
+                : "move-room-closed"
+            }
+            draft={moveRoomDraft}
+            booking={
+              moveRoomDraft
+                ? (bookings.find((row) => row.id === moveRoomDraft.bookingId) ?? null)
+                : null
+            }
+            rooms={rooms.map((r) => ({
+              id: r.id,
+              name: r.name,
+              building_name: r.building_name,
+            }))}
+            onClose={() => setMoveRoomDraft(null)}
+          />
+          <GanttToolbarOccForm
+            key={occFormMode ?? "closed"}
+            mode={occFormMode}
+            rooms={rooms.map((r) => ({
+              id: r.id,
+              name: r.name,
+              building_name: r.building_name,
+            }))}
+            bookings={bookings}
+            onClose={() => setOccFormMode(null)}
+            today={effectiveToday}
+          />
+        </GanttContextMenuProvider>
+      </GanttStayTapPopoverProvider>
     </GanttOperativeCheckProvider>
   );
 }

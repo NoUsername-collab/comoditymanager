@@ -19,11 +19,8 @@ type StayFilteredLists = {
 };
 
 export function filterStayListsByQuery(
-  data: Pick<
-    StayPageLists,
-    "stays" | "history" | "confirmedRecentHistory" | "cancelledHistory"
-  >,
-  query: string
+  data: Pick<StayPageLists, "stays" | "history" | "confirmedRecentHistory" | "cancelledHistory">,
+  query: string,
 ): StayFilteredLists {
   const q = query.trim();
   if (!q) {
@@ -35,9 +32,8 @@ export function filterStayListsByQuery(
     };
   }
 
-  const match = <T extends Parameters<typeof matchesStaySearchQuery>[0]>(
-    items: T[]
-  ) => items.filter((stay) => matchesStaySearchQuery(stay, q));
+  const match = <T extends Parameters<typeof matchesStaySearchQuery>[0]>(items: T[]) =>
+    items.filter((stay) => matchesStaySearchQuery(stay, q));
 
   return {
     filteredStays: match(data.stays),
@@ -48,9 +44,7 @@ export function filterStayListsByQuery(
 }
 
 /** Unassigned requests first, then by arrival date. */
-export function sortRequestsByPriority<T extends OperationalStaySlice>(
-  requests: T[]
-): T[] {
+export function sortRequestsByPriority<T extends OperationalStaySlice>(requests: T[]): T[] {
   return [...requests].sort((a, b) => {
     const aUnassigned = a.room_names.length === 0 ? 0 : 1;
     const bUnassigned = b.room_names.length === 0 ? 0 : 1;
@@ -59,36 +53,27 @@ export function sortRequestsByPriority<T extends OperationalStaySlice>(
   });
 }
 
-export function shouldPinRequestsAboveConfirmed(
-  view: StayListView,
-  requestCount: number
-): boolean {
+export function shouldPinRequestsAboveConfirmed(view: StayListView, requestCount: number): boolean {
   return view === "confirmed" && requestCount > 0;
 }
 
 export function splitOperationalStays<T extends OperationalStaySlice>(
   filteredStays: T[],
   effectiveToday: string,
-  horizonEnd: string
+  horizonEnd: string,
 ): {
   requests: T[];
   confirmed: T[];
   confirmedVisible: T[];
   hiddenConfirmedCount: number;
 } {
-  const requests = sortRequestsByPriority(
-    filteredStays.filter((s) => s.status === "cerere_noua")
-  );
+  const requests = sortRequestsByPriority(filteredStays.filter((s) => s.status === "cerere_noua"));
   const confirmed = filteredStays.filter((s) => s.status === "confirmata");
   const confirmedVisible = confirmed.filter(
     (s) =>
-      s.check_in <= horizonEnd ||
-      (s.check_in <= effectiveToday && s.check_out > effectiveToday)
+      s.check_in <= horizonEnd || (s.check_in <= effectiveToday && s.check_out > effectiveToday),
   );
-  const hiddenConfirmedCount = Math.max(
-    0,
-    confirmed.length - confirmedVisible.length
-  );
+  const hiddenConfirmedCount = Math.max(0, confirmed.length - confirmedVisible.length);
 
   return { requests, confirmed, confirmedVisible, hiddenConfirmedCount };
 }

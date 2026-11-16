@@ -1,19 +1,9 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type RefObject,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 
 /** Document Y where the virtualized tbody list starts (below thead). */
-function readGanttScrollMargin(
-  shell: HTMLElement | null,
-  thead: HTMLElement | null
-): number {
+function readGanttScrollMargin(shell: HTMLElement | null, thead: HTMLElement | null): number {
   if (!shell || typeof window === "undefined") return 0;
   const shellTop = shell.getBoundingClientRect().top + window.scrollY;
   const theadHeight = thead?.getBoundingClientRect().height ?? 0;
@@ -59,19 +49,14 @@ export function useWindowVirtualRange({
     if (measuringRef.current) return;
     measuringRef.current = true;
 
-    const scrollMargin = readGanttScrollMargin(
-      shellRef.current,
-      theadRef.current
-    );
+    const scrollMargin = readGanttScrollMargin(shellRef.current, theadRef.current);
     const viewTop = window.scrollY;
     const viewBottom = viewTop + window.innerHeight;
     const listTop = scrollMargin;
     const listBottom = listTop + totalSize;
 
     const applyRange = (start: number, end: number) => {
-      setRange((prev) =>
-        prev.start === start && prev.end === end ? prev : { start, end }
-      );
+      setRange((prev) => (prev.start === start && prev.end === end ? prev : { start, end }));
     };
 
     if (viewBottom < listTop) {
@@ -106,10 +91,7 @@ export function useWindowVirtualRange({
     }
     const end = lo;
 
-    applyRange(
-      Math.max(0, start - overscan),
-      Math.min(count, end + overscan)
-    );
+    applyRange(Math.max(0, start - overscan), Math.min(count, end + overscan));
 
     measuringRef.current = false;
   }, [count, enabled, offsets, overscan, shellRef, theadRef, totalSize]);
@@ -117,7 +99,7 @@ export function useWindowVirtualRange({
   useEffect(() => {
     if (!enabled) {
       setRange((prev) =>
-        prev.start === 0 && prev.end === count ? prev : { start: 0, end: count }
+        prev.start === 0 && prev.end === count ? prev : { start: 0, end: count },
       );
       return;
     }
@@ -141,9 +123,7 @@ export function useWindowVirtualRange({
   }, [enabled, count, measure]);
 
   const paddingTop = enabled ? (offsets[range.start] ?? 0) : 0;
-  const paddingBottom = enabled
-    ? totalSize - (offsets[range.end] ?? totalSize)
-    : 0;
+  const paddingBottom = enabled ? totalSize - (offsets[range.end] ?? totalSize) : 0;
 
   return { range, paddingTop, paddingBottom, remeasure: measure };
 }

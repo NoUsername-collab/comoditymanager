@@ -50,9 +50,7 @@ export async function TenantPlanIncludesPanel({
     <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5 space-y-3">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h2 className="text-sm font-semibold uppercase text-neutral-500">
-            {t("title")}
-          </h2>
+          <h2 className="text-sm font-semibold uppercase text-neutral-500">{t("title")}</h2>
           <p className="mt-1 text-xs text-neutral-400">
             {t("subtitle", { plan: plan.label, price: plan.priceEur })}
           </p>
@@ -62,21 +60,11 @@ export async function TenantPlanIncludesPanel({
 
       <div className="grid gap-2 text-xs sm:grid-cols-2">
         <LimitRow label={t("maxRooms")} value={formatLimit(limits.maxRooms, unlimited)} />
-        <LimitRow
-          label={t("maxTeam")}
-          value={formatLimit(limits.maxTeamMembers, unlimited)}
-        />
-        <LimitRow
-          label={t("maxProperties")}
-          value={formatLimit(limits.maxProperties, unlimited)}
-        />
+        <LimitRow label={t("maxTeam")} value={formatLimit(limits.maxTeamMembers, unlimited)} />
+        <LimitRow label={t("maxProperties")} value={formatLimit(limits.maxProperties, unlimited)} />
         <LimitRow
           label={t("emailCap")}
-          value={
-            limits.emailMonthlyCap == null
-              ? unlimited
-              : String(limits.emailMonthlyCap)
-          }
+          value={limits.emailMonthlyCap == null ? unlimited : String(limits.emailMonthlyCap)}
         />
         <LimitRow
           label={t("branding")}

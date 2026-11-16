@@ -3,11 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { HEALTH_ICON } from "@/lib/platform-admin/log-styles";
 import type { TenantHealthCheck } from "@/services/platform-debug";
 
-export async function TenantHealthBadge({
-  health,
-}: {
-  health: TenantHealthCheck;
-}) {
+export async function TenantHealthBadge({ health }: { health: TenantHealthCheck }) {
   const t = await getTranslations("platformAdmin.tenantDetail.health");
 
   return (

@@ -11,12 +11,9 @@ export default async function GuestLoyaltyIndexPage() {
   ]);
   const pensionName = pensionSettings?.display_name ?? t("fallbackName");
   const publicThemeId = publicConfig?.themeId ?? "noir";
-  const appearance =
-    guestSettings?.appearance ?? DEFAULT_GUEST_APP_SETTINGS.appearance;
+  const appearance = guestSettings?.appearance ?? DEFAULT_GUEST_APP_SETTINGS.appearance;
   const receptionPhone =
-    guestSettings?.content.hotel?.phone?.trim() ||
-    publicConfig?.contact.phone?.trim() ||
-    null;
+    guestSettings?.content.hotel?.phone?.trim() || publicConfig?.contact.phone?.trim() || null;
 
   return (
     <GuestAppShell

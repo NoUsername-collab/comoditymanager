@@ -167,7 +167,8 @@ export const PAGE_MODEL_NAMES: Record<PageModelId, Record<PublicLocale, string>>
 
 function withStyle(section: SectionDraft, entry: TemplateSection): SectionDraft {
   const settings = { ...section.settings, ...(entry.settings ?? {}) };
-  for (const key of SECTION_STYLE_KEYS) settings[styleSettingKey(key)] = entry.style?.[key] ?? "auto";
+  for (const key of SECTION_STYLE_KEYS)
+    settings[styleSettingKey(key)] = entry.style?.[key] ?? "auto";
   return { ...section, visible: true, settings };
 }
 
@@ -183,7 +184,9 @@ export function applySiteTemplate(
   const used = new Set<string>();
   const ordered: SectionDraft[] = [];
   for (const entry of template.home) {
-    const existing = draft.sections.find((section) => section.type === entry.type && !used.has(section.key));
+    const existing = draft.sections.find(
+      (section) => section.type === entry.type && !used.has(section.key),
+    );
     if (existing) {
       used.add(existing.key);
       ordered.push(withStyle(existing, entry));
@@ -191,7 +194,10 @@ export function applySiteTemplate(
       ordered.push(withStyle(newSectionDraft(entry.type, newKey()), entry));
     }
   }
-  const sections = keepPinnedLast([...ordered, ...draft.sections.filter((section) => !used.has(section.key))]);
+  const sections = keepPinnedLast([
+    ...ordered,
+    ...draft.sections.filter((section) => !used.has(section.key)),
+  ]);
 
   // Own pages the site does not have yet, named in every language and linked from the menu.
   let pages = draft.pages;
@@ -207,7 +213,8 @@ export function applySiteTemplate(
       takenSlugs: pages.map((row) => row.slug),
       newKey,
     });
-    for (const locale of PUBLIC_LOCALES) page.copy[locale] = { ...page.copy[locale], title: names[locale] };
+    for (const locale of PUBLIC_LOCALES)
+      page.copy[locale] = { ...page.copy[locale], title: names[locale] };
     page.slug = slug;
     pages = [...pages, page];
     menu = addMenuItem(menu, { id: newKey(), kind: "page", ref: page.key, label: {} });
@@ -228,11 +235,16 @@ export function applySiteTemplate(
  * How many sections of the first page have a look of the operator's own
  * (layout, background, width, heading) that applying the template replaces.
  */
-export function templateReplacedStyles(draft: Pick<PublicSiteStudioDraft, "sections">, template: SiteTemplate): number {
+export function templateReplacedStyles(
+  draft: Pick<PublicSiteStudioDraft, "sections">,
+  template: SiteTemplate,
+): number {
   const used = new Set<string>();
   let replaced = 0;
   for (const entry of template.home) {
-    const existing = draft.sections.find((section) => section.type === entry.type && !used.has(section.key));
+    const existing = draft.sections.find(
+      (section) => section.type === entry.type && !used.has(section.key),
+    );
     if (!existing) continue;
     used.add(existing.key);
     const changes = SECTION_STYLE_KEYS.some((key) => {

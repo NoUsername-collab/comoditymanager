@@ -2,7 +2,7 @@
 export function assertRowTenant<T extends { tenant_id: string }>(
   row: T | null | undefined,
   tenantId: string,
-  label: string
+  label: string,
 ): T {
   if (!row) {
     throw new Error(`${label}.not_found`);

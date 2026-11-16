@@ -17,7 +17,10 @@ import {
   type SectionDraft,
   type SectionItemDraft,
 } from "@/features/public-site/editor/model/section-draft";
-import { patchStudioSection, removeStudioSection } from "@/features/public-site/editor/model/studio-draft";
+import {
+  patchStudioSection,
+  removeStudioSection,
+} from "@/features/public-site/editor/model/studio-draft";
 import type { ItemStructure } from "@/features/public-site/sections/kind";
 import { sectionKind } from "@/features/public-site/sections/kinds";
 import { useOutlineDrag } from "@/features/public-site/editor/ui/PublicSiteOutline";
@@ -40,7 +43,9 @@ export function useSectionEditing(section: SectionDraft) {
     field: (name: string) => sectionField(section, locale, name),
     setField: (name: string) => (value: string) =>
       setDraft((d) =>
-        patchStudioSection(d, section.key, (current) => setSectionField(current, d.editLocale, name, value)),
+        patchStudioSection(d, section.key, (current) =>
+          setSectionField(current, d.editLocale, name, value),
+        ),
       ),
     itemField: (itemId: string, name: string) => itemField(section, locale, itemId, name),
     setItemField: (itemId: string, name: string) => (value: string) =>

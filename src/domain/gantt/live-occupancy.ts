@@ -28,8 +28,7 @@ export function occupancySegmentsFromBooking(
   booking: BookingRow,
   today: string,
 ): OccupancySegment[] {
-  const kind: OccupancyKind =
-    booking.status === "confirmata" ? "stay" : "request";
+  const kind: OccupancyKind = booking.status === "confirmata" ? "stay" : "request";
   return booking.room_ids.filter(Boolean).map((roomId) => ({
     id: `live:${booking.id}:${roomId}`,
     kind,
@@ -50,9 +49,7 @@ export function remapBookingRoom(
   targetRoomId: string,
   targetRoomName: string,
 ): BookingRow {
-  const room_ids = booking.room_ids.map((id) =>
-    id === sourceRoomId ? targetRoomId : id,
-  );
+  const room_ids = booking.room_ids.map((id) => (id === sourceRoomId ? targetRoomId : id));
   const room_names = booking.room_ids.map((id, index) =>
     id === sourceRoomId ? targetRoomName : (booking.room_names[index] ?? ""),
   );
@@ -84,9 +81,7 @@ export function mergeGanttLiveOccupancy(input: {
   removedSegmentIds: Set<string>;
   today: string;
 }): OccupancySegment[] {
-  const serverById = new Map(
-    input.serverBookings.map((booking) => [booking.id, booking]),
-  );
+  const serverById = new Map(input.serverBookings.map((booking) => [booking.id, booking]));
   const replaceBookingIds = new Set<string>();
   for (const [id, overlay] of input.overlays) {
     if (overlayChangesOccupancy(overlay, serverById.get(id))) {

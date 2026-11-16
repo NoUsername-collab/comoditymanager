@@ -64,8 +64,7 @@ export function resolveGanttRowMetrics(
     availableHeightPx != null && availableHeightPx > 0
       ? Math.max(0, availableHeightPx - reservedHeightPx)
       : null;
-  const raw =
-    roomBand != null ? Math.floor(roomBand / coverage) : fallback;
+  const raw = roomBand != null ? Math.floor(roomBand / coverage) : fallback;
   const rowH = Math.max(GANTT_ROW_H_MIN, raw);
   const stayH = Math.max(16, Math.round(rowH * 0.68));
   const occH = Math.max(14, Math.round(rowH * 0.54));

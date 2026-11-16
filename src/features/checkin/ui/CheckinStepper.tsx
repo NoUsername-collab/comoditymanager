@@ -2,20 +2,11 @@
 
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import {
-  buildTouristSheetData,
-  type TouristSheetData,
-} from "@/domain/checkin/tourist-sheet";
-import {
-  guestFullName,
-  isRomanianNationality,
-} from "@/domain/checkin/identity-rules";
+import { buildTouristSheetData, type TouristSheetData } from "@/domain/checkin/tourist-sheet";
+import { guestFullName, isRomanianNationality } from "@/domain/checkin/identity-rules";
 import { validateCheckin } from "@/domain/checkin/validate";
 import { checkinUiDocTypeValue } from "@/domain/checkin/doc-type";
-import {
-  extractIdentityFromNationalId,
-  type NationalIdType,
-} from "@/domain/guest/national-id";
+import { extractIdentityFromNationalId, type NationalIdType } from "@/domain/guest/national-id";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { publishGanttLiveBooking } from "@/lib/gantt/live-bookings";
 import { publishStayPatch } from "@/lib/stays/live-stays";
@@ -53,9 +44,7 @@ import type {
   PaymentStatus,
   ValidationResult,
 } from "@/domain/checkin/types";
-import {
-  paymentAmountForStatus,
-} from "@/domain/checkin/types";
+import { paymentAmountForStatus } from "@/domain/checkin/types";
 import { isCheckinPaymentSettled } from "@/domain/checkin/payment-panel";
 
 type Props = {
@@ -99,23 +88,14 @@ export function CheckinStepper({
   const [pending, startTransition] = useTransition();
 
   const roomProgress = useMemo(
-    () =>
-      computeRoomCheckinProgress(
-        booking.room_names,
-        booking.checked_in_rooms,
-      ),
+    () => computeRoomCheckinProgress(booking.room_names, booking.checked_in_rooms),
     [booking.room_names, booking.checked_in_rooms],
   );
   const isEditMode = mode === "edit" && !!checkinId;
   const isContinuation = roomProgress.checked > 0 && !isEditMode;
-  const paymentSettled = isCheckinPaymentSettled(
-    initialPaymentStatus,
-    booking.total_price,
-  );
-  const needsRoomPicker =
-    roomProgress.isMultiRoom && roomProgress.pendingRooms.length > 0;
-  const needsRoomPickerStep =
-    needsRoomPicker && roomProgress.pendingRooms.length > 1;
+  const paymentSettled = isCheckinPaymentSettled(initialPaymentStatus, booking.total_price);
+  const needsRoomPicker = roomProgress.isMultiRoom && roomProgress.pendingRooms.length > 0;
+  const needsRoomPickerStep = needsRoomPicker && roomProgress.pendingRooms.length > 1;
   const steps = useMemo((): StepKey[] => {
     if (isEditMode) return [...FULL_CORE];
     const core = isContinuation
@@ -138,18 +118,11 @@ export function CheckinStepper({
   // Step state
   const [currentStep, setCurrentStep] = useState(0);
 
-  const [operatorScope, setOperatorScope] = useState<CheckinIdentityScope | null>(
-    null,
-  );
-  const identityScope = effectiveIdentityScope(
-    settings.group_checkin_mode,
-    operatorScope,
-  );
+  const [operatorScope, setOperatorScope] = useState<CheckinIdentityScope | null>(null);
+  const identityScope = effectiveIdentityScope(settings.group_checkin_mode, operatorScope);
 
   const [selectedRooms, setSelectedRooms] = useState<string[]>(() =>
-    needsRoomPicker && roomProgress.pendingRooms.length === 1
-      ? roomProgress.pendingRooms
-      : [],
+    needsRoomPicker && roomProgress.pendingRooms.length === 1 ? roomProgress.pendingRooms : [],
   );
   const [roomPickerDone, setRoomPickerDone] = useState(
     !needsRoomPicker || roomProgress.pendingRooms.length === 1,
@@ -235,14 +208,11 @@ export function CheckinStepper({
     return booking.total_price;
   });
   const [depositAmount, setDepositAmount] = useState(
-    initialDepositAmount ??
-      (settings.checkin_deposit ? settings.checkin_deposit_amount : 0),
+    initialDepositAmount ?? (settings.checkin_deposit ? settings.checkin_deposit_amount : 0),
   );
 
   // Finalize data
-  const [keysHandedRooms, setKeysHandedRooms] = useState<string[]>(
-    initialKeysHandedRooms ?? [],
-  );
+  const [keysHandedRooms, setKeysHandedRooms] = useState<string[]>(initialKeysHandedRooms ?? []);
   const [notes, setNotes] = useState(initialNotes ?? "");
 
   // Validation result (computed before validate step)
@@ -253,17 +223,14 @@ export function CheckinStepper({
       resolveReceptionRoomLabels(
         booking,
         guests,
-        needsRoomPicker && roomPickerDone && selectedRooms.length > 0
-          ? selectedRooms
-          : undefined,
+        needsRoomPicker && roomPickerDone && selectedRooms.length > 0 ? selectedRooms : undefined,
       ),
     [booking, guests, needsRoomPicker, roomPickerDone, selectedRooms],
   );
 
   // Error / transfer offer
   const [error, setError] = useState<string | null>(null);
-  const [transferOffer, setTransferOffer] =
-    useState<CheckinTransferOffer | null>(null);
+  const [transferOffer, setTransferOffer] = useState<CheckinTransferOffer | null>(null);
 
   const buildFormData = useCallback((): CheckinFormData => {
     return {
@@ -274,7 +241,7 @@ export function CheckinStepper({
       payment_amount_paid: paymentAmountForStatus(
         paymentStatus,
         booking.total_price,
-        paymentAmount
+        paymentAmount,
       ),
       deposit_amount: settings.checkin_deposit ? depositAmount : 0,
       key_handed: keysHandedRooms.length > 0,
@@ -282,9 +249,7 @@ export function CheckinStepper({
       notes: notes || undefined,
       identity_scope: identityScope,
       reception_rooms:
-        needsRoomPicker && roomPickerDone && selectedRooms.length > 0
-          ? selectedRooms
-          : undefined,
+        needsRoomPicker && roomPickerDone && selectedRooms.length > 0 ? selectedRooms : undefined,
     };
   }, [
     booking,
@@ -388,10 +353,7 @@ export function CheckinStepper({
       fd.set("notes", data.notes ?? "");
       fd.set("guests", JSON.stringify(data.guests));
       fd.set("identity_scope", data.identity_scope ?? "");
-      fd.set(
-        "reception_rooms",
-        JSON.stringify(data.reception_rooms ?? []),
-      );
+      fd.set("reception_rooms", JSON.stringify(data.reception_rooms ?? []));
       if (transferToGuestId) {
         fd.set("transfer_booking_to_guest_id", transferToGuestId);
       }
@@ -421,10 +383,9 @@ export function CheckinStepper({
         }
         if (field === "national_id" || field === "national_id_type") {
           const idType = (
-            field === "national_id_type" ? value : next.national_id_type ?? "cnp"
+            field === "national_id_type" ? value : (next.national_id_type ?? "cnp")
           ) as NationalIdType;
-          const idRaw =
-            field === "national_id" ? String(value ?? "") : next.national_id ?? "";
+          const idRaw = field === "national_id" ? String(value ?? "") : (next.national_id ?? "");
           const extracted = extractIdentityFromNationalId(idType, idRaw);
           if (extracted?.birthDate) {
             next.birth_date = extracted.birthDate;
@@ -434,9 +395,7 @@ export function CheckinStepper({
         }
         if (field === "document_type") {
           const uiType = checkinUiDocTypeValue(
-            value == null
-              ? null
-              : (String(value) as CheckinGuestInput["document_type"]),
+            value == null ? null : (String(value) as CheckinGuestInput["document_type"]),
           );
           if (uiType === "ci" && isRomanianNationality(next.nationality)) {
             next.national_id_type = "cnp";
@@ -482,10 +441,7 @@ export function CheckinStepper({
 
   return (
     <div className="checkin-stepper">
-      <nav
-        className="checkin-stepper__indicators"
-        aria-label={t("stepProgressAria")}
-      >
+      <nav className="checkin-stepper__indicators" aria-label={t("stepProgressAria")}>
         {steps.map((s, i) => (
           <div
             key={s}
@@ -501,9 +457,7 @@ export function CheckinStepper({
             <span className="checkin-stepper__indicator-num" aria-hidden>
               {i + 1}
             </span>
-            <span className="checkin-stepper__indicator-label">
-              {t(`step.${s}`)}
-            </span>
+            <span className="checkin-stepper__indicator-label">{t(`step.${s}`)}</span>
           </div>
         ))}
       </nav>
@@ -552,26 +506,19 @@ export function CheckinStepper({
             identityScope={identityScope}
             operatorCanChoose={
               (allowsOperatorScopeChoice(settings.group_checkin_mode) ||
-                (needsRoomPicker &&
-                  roomPickerDone &&
-                  selectedRooms.length > 0)) &&
-              (!registeredOnly ||
-                (booking.registered_guests?.length ?? 0) <= 1)
+                (needsRoomPicker && roomPickerDone && selectedRooms.length > 0)) &&
+              (!registeredOnly || (booking.registered_guests?.length ?? 0) <= 1)
             }
             onScopeChange={applyIdentityScope}
             onRemoveGuest={
-              !registeredOnly && identityScope === "individual"
-                ? removeGuestSlot
-                : undefined
+              !registeredOnly && identityScope === "individual" ? removeGuestSlot : undefined
             }
             updateGuest={updateGuest}
             onApplyMrz={applyGuestMrzScan}
             registeredOnly={registeredOnly}
             emptyRegistered={registeredOnly && guests.length === 0}
             t={t}
-            continuationHint={
-              isContinuation ? t("roomPicker.continuationHint") : undefined
-            }
+            continuationHint={isContinuation ? t("roomPicker.continuationHint") : undefined}
             repAllRoomsHint={
               identityScope === "rep" && receivingRoomLabels.length > 1
                 ? t("identityScope.repAllRoomsHint", {
@@ -598,9 +545,7 @@ export function CheckinStepper({
           />
         )}
 
-        {stepKey === "validate" && (
-          <StepValidation validation={validation} t={t} />
-        )}
+        {stepKey === "validate" && <StepValidation validation={validation} t={t} />}
 
         {stepKey === "finish" && (
           <StepFinish
@@ -608,7 +553,11 @@ export function CheckinStepper({
             guests={guests}
             settings={settings}
             paymentStatus={paymentStatus}
-            paymentAmountPaid={paymentAmountForStatus(paymentStatus, booking.total_price, paymentAmount)}
+            paymentAmountPaid={paymentAmountForStatus(
+              paymentStatus,
+              booking.total_price,
+              paymentAmount,
+            )}
             validation={validation}
             receivingRooms={receivingRoomLabels}
             keysHandedRooms={keysHandedRooms}
@@ -640,9 +589,7 @@ export function CheckinStepper({
               type="button"
               className="checkin-stepper__btn checkin-stepper__btn--primary"
               disabled={pending}
-              onClick={() =>
-                handleSubmit(transferOffer.existingGuestId)
-              }
+              onClick={() => handleSubmit(transferOffer.existingGuestId)}
             >
               {t("transfer.confirm", {
                 name: transferOffer.existingGuestName,

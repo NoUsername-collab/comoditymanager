@@ -2,22 +2,19 @@
 
 import { useTranslations } from "next-intl";
 import { SettingRow } from "@/components/admin/settings/SettingRow";
-import {
-  MAX_MINOR_AGE,
-  type ChildPolicy,
-  type Party,
-} from "@/domain/availability/party";
-import {
-  canRoomsHostParty,
-  type RoomCapacity,
-} from "@/domain/availability/stay-capacity";
+import { MAX_MINOR_AGE, type ChildPolicy, type Party } from "@/domain/availability/party";
+import { canRoomsHostParty, type RoomCapacity } from "@/domain/availability/stay-capacity";
 
 const DOUBLE: RoomCapacity = {
   capacity_base: 2,
   allows_extra_beds: false,
   max_extra_beds_per_room: 0,
 };
-const DOUBLE_EXTRA_BED: RoomCapacity = { ...DOUBLE, allows_extra_beds: true, max_extra_beds_per_room: 1 };
+const DOUBLE_EXTRA_BED: RoomCapacity = {
+  ...DOUBLE,
+  allows_extra_beds: true,
+  max_extra_beds_per_room: 1,
+};
 
 /** Families the owner can check the rules against, room by room. */
 const EXAMPLES: { key: string; party: Party; room: RoomCapacity }[] = [

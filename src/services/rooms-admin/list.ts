@@ -25,7 +25,7 @@ async function listAllRoomsUncached(tenantId: string): Promise<RoomWithJoins[]> 
       buildings ( name ),
       floors ( name ),
       room_type_definitions ( name )
-    `
+    `,
     )
     .eq("tenant_id", tenantId)
     .order("sort_order", { ascending: true });
@@ -36,14 +36,10 @@ async function listAllRoomsUncached(tenantId: string): Promise<RoomWithJoins[]> 
 }
 
 const getCachedRooms = (tenantId: string) =>
-  unstable_cache(
-    () => listAllRoomsUncached(tenantId),
-    tenantCacheKey(tenantId, CACHE_TAGS.rooms),
-    {
-      tags: [CACHE_TAGS.rooms, tenantCacheTag(tenantId, "rooms")],
-      revalidate: 300,
-    }
-  );
+  unstable_cache(() => listAllRoomsUncached(tenantId), tenantCacheKey(tenantId, CACHE_TAGS.rooms), {
+    tags: [CACHE_TAGS.rooms, tenantCacheTag(tenantId, "rooms")],
+    revalidate: 300,
+  });
 
 const loadAllRoomsCached = cache((tenantId: string) => getCachedRooms(tenantId)());
 
@@ -72,7 +68,7 @@ const loadRoomsByIds = cache(async (idsKey: string): Promise<RoomWithJoins[]> =>
       buildings ( name ),
       floors ( name ),
       room_type_definitions ( name )
-    `
+    `,
     )
     .eq("tenant_id", tenantId)
     .in("id", unique);
@@ -87,9 +83,7 @@ export async function getRoomsByIds(ids: string[]): Promise<RoomWithJoins[]> {
   return loadRoomsByIds(key);
 }
 
-const loadAllRoomsForPublic = cache((tenantId: string) =>
-  getCachedRooms(tenantId)()
-);
+const loadAllRoomsForPublic = cache((tenantId: string) => getCachedRooms(tenantId)());
 
 /** Public calendar preview — tenant from host only. */
 export async function listAllRoomsForPublic(): Promise<RoomWithJoins[]> {
@@ -97,30 +91,29 @@ export async function listAllRoomsForPublic(): Promise<RoomWithJoins[]> {
   return loadAllRoomsForPublic(tenantId);
 }
 
-const loadRoomNamesInScope = cache(async (
-  buildingId: string,
-  floorId: string | null
-): Promise<string[]> => {
-  const { tenantId, supabase } = await getTenantScope();
-  let query = supabase
-    .from("rooms")
-    .select("name")
-    .eq("tenant_id", tenantId)
-    .eq("building_id", buildingId);
-  if (floorId) {
-    query = query.eq("floor_id", floorId);
-  } else {
-    query = query.is("floor_id", null);
-  }
-  const { data, error } = await query;
-  if (error) throw new Error(error.message);
-  return (data ?? []).map((row) => String(row.name));
-});
+const loadRoomNamesInScope = cache(
+  async (buildingId: string, floorId: string | null): Promise<string[]> => {
+    const { tenantId, supabase } = await getTenantScope();
+    let query = supabase
+      .from("rooms")
+      .select("name")
+      .eq("tenant_id", tenantId)
+      .eq("building_id", buildingId);
+    if (floorId) {
+      query = query.eq("floor_id", floorId);
+    } else {
+      query = query.is("floor_id", null);
+    }
+    const { data, error } = await query;
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((row) => String(row.name));
+  },
+);
 
 /** Nume camere în același scope: clădire + etaj (null = fără etaj). */
 export async function listRoomNamesInScope(
   buildingId: string,
-  floorId: string | null
+  floorId: string | null,
 ): Promise<string[]> {
   return loadRoomNamesInScope(buildingId, floorId);
 }
@@ -132,11 +125,11 @@ const loadRoomById = cache(async (id: string) => {
       supabase
         .from("rooms")
         .select(
-          "id, building_id, floor_id, name, room_type, room_type_definition_id, capacity_base, allows_extra_beds, max_extra_beds_per_room, max_cots, max_occupancy, has_ac, price_per_night, is_active, sort_order, buildings ( ac_mode )"
+          "id, building_id, floor_id, name, room_type, room_type_definition_id, capacity_base, allows_extra_beds, max_extra_beds_per_room, max_cots, max_occupancy, has_ac, price_per_night, is_active, sort_order, buildings ( ac_mode )",
         )
         .eq("tenant_id", tenantId)
         .eq("id", id)
-        .single()
+        .single(),
     ),
     getRoomEnabledOptionIds(id),
   ]);

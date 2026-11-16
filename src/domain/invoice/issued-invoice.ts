@@ -6,10 +6,7 @@ import {
   type FiscalCurrency,
   type TenantCountry,
 } from "@/domain/fiscal/country-fiscal-profile";
-import {
-  computeRoomStayPricing,
-  type RoomStayPricingLine,
-} from "@/domain/pricing/nightly-rates";
+import { computeRoomStayPricing, type RoomStayPricingLine } from "@/domain/pricing/nightly-rates";
 import { stayNightCount } from "@/lib/stay-dates";
 import type { InvoiceKind } from "./invoice-allocation";
 
@@ -81,12 +78,11 @@ function buildLineFromRoomPricing(
     room_name: string;
     building_name: string;
   },
-  pricing: RoomStayPricingLine
+  pricing: RoomStayPricingLine,
 ): IssuedInvoiceLine {
   const description = `${room.room_name} (${room.building_name}) — cazare`;
   const nights = pricing.nights.length;
-  const unit =
-    nights > 0 ? Math.round((pricing.line_total / nights) * 100) / 100 : 0;
+  const unit = nights > 0 ? Math.round((pricing.line_total / nights) * 100) / 100 : 0;
 
   return {
     description,
@@ -116,7 +112,7 @@ function buildExtraLines(
   usage: { extraBeds: number; cots: number } | undefined,
   nights: number,
   rules: StayPricingRules | null | undefined,
-  locale: "ro" | "en" | "bg"
+  locale: "ro" | "en" | "bg",
 ): IssuedInvoiceLine[] {
   if (!usage || nights <= 0) return [];
   const labels = EXTRA_LINE_LABELS[locale];
@@ -152,10 +148,7 @@ const INVOICE_KIND_LINE_EN: Record<InvoiceKind, string> = {
   credit_note: "Accommodation — credit note",
 };
 
-function invoiceKindLineDescription(
-  kind: InvoiceKind,
-  locale: "ro" | "en" | "bg"
-): string {
+function invoiceKindLineDescription(kind: InvoiceKind, locale: "ro" | "en" | "bg"): string {
   if (locale === "en" || locale === "bg") {
     return INVOICE_KIND_LINE_EN[kind];
   }
@@ -355,13 +348,8 @@ export function buildIssuedInvoiceDocument(input: {
   const roomLines = input.rooms.map((room) =>
     buildLineFromRoomPricing(
       room,
-      computeRoomStayPricing(
-        room,
-        input.check_in,
-        input.check_out,
-        input.pricing_rules
-      )
-    )
+      computeRoomStayPricing(room, input.check_in, input.check_out, input.pricing_rules),
+    ),
   );
   const lines = [
     ...roomLines,
@@ -369,14 +357,11 @@ export function buildIssuedInvoiceDocument(input: {
       input.usage,
       stayNightCount(input.check_in, input.check_out),
       input.pricing_rules,
-      input.locale ?? "ro"
+      input.locale ?? "ro",
     ),
   ];
-  const linesTotal =
-    Math.round(lines.reduce((sum, line) => sum + line.line_total, 0) * 100) /
-    100;
-  const uses_recorded_total =
-    input.total_price != null && input.total_price > 0;
+  const linesTotal = Math.round(lines.reduce((sum, line) => sum + line.line_total, 0) * 100) / 100;
+  const uses_recorded_total = input.total_price != null && input.total_price > 0;
   const grossBase = uses_recorded_total ? input.total_price! : linesTotal;
   const locale = input.locale ?? "ro";
   const country = input.country ?? "RO";
@@ -420,7 +405,7 @@ export function buildIssuedInvoiceDocument(input: {
 export function formatInvoiceMoney(
   amount: number,
   currency: FiscalCurrency,
-  locale = "ro-RO"
+  locale = "ro-RO",
 ): string {
   const tag =
     currency === "BGN"

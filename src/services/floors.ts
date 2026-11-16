@@ -1,14 +1,11 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
-import {
-  getTenantScope,
-  withTenantId,
-} from "@/lib/tenant/scope";
+import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import type { Floor } from "@/types/database";
 
 async function requireBuildingInTenant(
-  buildingId: string
+  buildingId: string,
 ): Promise<{ tenantId: string; supabase: Awaited<ReturnType<typeof getTenantScope>>["supabase"] }> {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
@@ -36,14 +33,10 @@ async function listAllFloorsImpl(tenantId: string): Promise<Floor[]> {
 }
 
 const getCachedAllFloors = (tenantId: string) =>
-  unstable_cache(
-    () => listAllFloorsImpl(tenantId),
-    ["all-floors", tenantId],
-    {
-      tags: [CACHE_TAGS.buildings, tenantTag(tenantId, CACHE_TAGS.buildings)],
-      revalidate: 60,
-    }
-  );
+  unstable_cache(() => listAllFloorsImpl(tenantId), ["all-floors", tenantId], {
+    tags: [CACHE_TAGS.buildings, tenantTag(tenantId, CACHE_TAGS.buildings)],
+    revalidate: 60,
+  });
 
 const loadAllFloors = cache((tenantId: string) => getCachedAllFloors(tenantId)());
 
@@ -55,7 +48,7 @@ export async function listAllFloors(): Promise<Floor[]> {
 async function findFloorByNameInBuilding(
   buildingId: string,
   name: string,
-  excludeFloorId?: string
+  excludeFloorId?: string,
 ): Promise<{ id: string } | null> {
   const { tenantId, supabase } = await requireBuildingInTenant(buildingId);
   const normalized = name.trim();
@@ -102,11 +95,7 @@ export async function updateFloor(input: {
   if (loadErr) throw new Error(loadErr.message);
   if (!row) throw new Error("floors.not_found");
 
-  const duplicate = await findFloorByNameInBuilding(
-    row.building_id,
-    input.name,
-    input.floor_id
-  );
+  const duplicate = await findFloorByNameInBuilding(row.building_id, input.name, input.floor_id);
   if (duplicate) throw new Error("floors.duplicate_name");
 
   const { error } = await supabase
@@ -157,7 +146,7 @@ export async function createFloor(input: {
         level_number: input.level_number,
         sort_order: input.sort_order,
         is_active: true,
-      })
+      }),
     )
     .select("id")
     .single();

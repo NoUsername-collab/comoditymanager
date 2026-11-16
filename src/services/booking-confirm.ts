@@ -1,8 +1,5 @@
 import { cache } from "react";
-import {
-  DEFAULT_CHECK_IN_TIME,
-  DEFAULT_CHECK_OUT_TIME,
-} from "@/lib/constants";
+import { DEFAULT_CHECK_IN_TIME, DEFAULT_CHECK_OUT_TIME } from "@/lib/constants";
 import { isRoomFreeForStay } from "@/domain/availability/rooms-free";
 import {
   minRoomsToHostParty,
@@ -15,17 +12,10 @@ import {
   type ChildPolicy,
   type Party,
 } from "@/domain/availability/party";
-import {
-  getBookingById,
-  getBookingStayParams,
-  listOccupiedRoomRanges,
-} from "@/services/bookings";
+import { getBookingById, getBookingStayParams, listOccupiedRoomRanges } from "@/services/bookings";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getBookingRulesSettings } from "@/services/booking-rules-settings";
-import {
-  toStayPricingRules,
-  type StayPricingRules,
-} from "@/domain/settings/booking-rules";
+import { toStayPricingRules, type StayPricingRules } from "@/domain/settings/booking-rules";
 import { getFreeStockForStay } from "@/services/stay-inventory";
 import { quoteStayForRooms } from "@/services/stay-quote";
 import { listAllRooms } from "@/services/rooms-admin";
@@ -76,7 +66,7 @@ export async function resolveAssignedStayTotal(booking: {
 export async function resolveTotalPriceForConfirm(
   bookingId: string,
   roomIds: string[],
-  formData: FormData
+  formData: FormData,
 ): Promise<number> {
   if (roomIds.length === 0) {
     throw new Error("booking.select_at_least_one_room");
@@ -138,91 +128,82 @@ export type StayRoomsAvailability = {
   canFulfill: boolean;
 };
 
-const loadAvailableRoomsForStayCached = cache(async (
-  checkIn: string,
-  checkOut: string,
-  partyKey: string,
-  excludeBookingId: string | undefined
-): Promise<StayRoomsAvailability> => {
-  const party = JSON.parse(partyKey) as Party;
-  const roomsPromise = listAllRooms();
-  const [settings, rules, occupied, allRooms, optionSlugsByRoom] = await Promise.all([
-    getPensionSettings().catch(() => null),
-    getBookingRulesSettings(),
-    listOccupiedRoomRanges(excludeBookingId, {
-      rangeStart: checkIn,
-      rangeEnd: checkOut,
-    }),
-    roomsPromise,
-    roomsPromise
-      .then((rooms) =>
-        getRoomOptionSlugsByRoomIds(
-          rooms.filter((r) => r.is_active).map((r) => r.id)
+const loadAvailableRoomsForStayCached = cache(
+  async (
+    checkIn: string,
+    checkOut: string,
+    partyKey: string,
+    excludeBookingId: string | undefined,
+  ): Promise<StayRoomsAvailability> => {
+    const party = JSON.parse(partyKey) as Party;
+    const roomsPromise = listAllRooms();
+    const [settings, rules, occupied, allRooms, optionSlugsByRoom] = await Promise.all([
+      getPensionSettings().catch(() => null),
+      getBookingRulesSettings(),
+      listOccupiedRoomRanges(excludeBookingId, {
+        rangeStart: checkIn,
+        rangeEnd: checkOut,
+      }),
+      roomsPromise,
+      roomsPromise
+        .then((rooms) =>
+          getRoomOptionSlugsByRoomIds(rooms.filter((r) => r.is_active).map((r) => r.id)),
         )
+        .catch(() => ({}) as Record<string, string[]>),
+    ]);
+    const childPolicy = rules.childPolicy;
+    const inventory = await getFreeStockForStay({
+      checkIn,
+      checkOut,
+      policy: childPolicy,
+      excludeBookingId,
+    });
+    const checkInTime = settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
+    const checkOutTime = settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
+
+    const activeRooms = allRooms.filter((r) => r.is_active);
+
+    const availableRooms: ConfirmRoomOption[] = activeRooms
+      .filter((r) =>
+        isRoomFreeForStay(r.id, checkIn, checkOut, occupied, checkInTime, checkOutTime),
       )
-      .catch(() => ({} as Record<string, string[]>)),
-  ]);
-  const childPolicy = rules.childPolicy;
-  const inventory = await getFreeStockForStay({
-    checkIn,
-    checkOut,
-    policy: childPolicy,
-    excludeBookingId,
-  });
-  const checkInTime =
-    settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
-  const checkOutTime =
-    settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
+      .map((r) => ({
+        id: r.id,
+        name: r.name,
+        building_name: r.building_name,
+        has_ac: r.has_ac,
+        room_type_name: r.room_type_name,
+        option_slugs: optionSlugsByRoom[r.id] ?? [],
+        capacity_base: r.capacity_base,
+        allows_extra_beds: r.allows_extra_beds,
+        max_extra_beds_per_room: r.max_extra_beds_per_room,
+        max_cots: r.max_cots,
+        max_occupancy: r.max_occupancy,
+        max_capacity: roomMaxCapacity(r),
+        price_per_night: r.price_per_night,
+      }));
 
-  const activeRooms = allRooms.filter((r) => r.is_active);
+    const { possible, minRooms } = minRoomsToHostParty(
+      party,
+      availableRooms,
+      childPolicy,
+      inventory,
+    );
 
-  const availableRooms: ConfirmRoomOption[] = activeRooms
-    .filter((r) =>
-      isRoomFreeForStay(
-        r.id,
-        checkIn,
-        checkOut,
-        occupied,
-        checkInTime,
-        checkOutTime
-      )
-    )
-    .map((r) => ({
-      id: r.id,
-      name: r.name,
-      building_name: r.building_name,
-      has_ac: r.has_ac,
-      room_type_name: r.room_type_name,
-      option_slugs: optionSlugsByRoom[r.id] ?? [],
-      capacity_base: r.capacity_base,
-      allows_extra_beds: r.allows_extra_beds,
-      max_extra_beds_per_room: r.max_extra_beds_per_room,
-      max_cots: r.max_cots,
-      max_occupancy: r.max_occupancy,
-      max_capacity: roomMaxCapacity(r),
-      price_per_night: r.price_per_night,
-    }));
-
-  const { possible, minRooms } = minRoomsToHostParty(
-    party,
-    availableRooms,
-    childPolicy,
-    inventory
-  );
-
-  return {
-    checkInTime,
-    checkOutTime,
-    guestCount: partyHeadcount(party),
-    party,
-    childPolicy,
-    inventory,
-    pricingRules: toStayPricingRules(rules),
-    availableRooms,
-    minRoomsNeeded: minRooms,
-    canFulfill: possible,
-  };
-});
+    return {
+      checkInTime,
+      checkOutTime,
+      guestCount: partyHeadcount(party),
+      party,
+      childPolicy,
+      inventory,
+      pricingRules: toStayPricingRules(rules),
+      availableRooms,
+      minRoomsNeeded: minRooms,
+      canFulfill: possible,
+    };
+  },
+);
 
 /** Camere libere pentru un interval (fără rezervare existentă). */
 export async function loadAvailableRoomsForStay(input: {
@@ -235,46 +216,43 @@ export async function loadAvailableRoomsForStay(input: {
     input.checkIn,
     input.checkOut,
     JSON.stringify(input.party),
-    input.excludeBookingId
+    input.excludeBookingId,
   );
 }
 
-const loadBookingConfirmContextCached = cache(async (
-  bookingId: string
-): Promise<BookingConfirmContext | null> => {
-  const paramsPromise = getBookingStayParams(bookingId);
-  const roomsPromise = paramsPromise.then((params) =>
-    params
-      ? loadAvailableRoomsForStayCached(
-          params.check_in,
-          params.check_out,
-          JSON.stringify(partyFromBooking(params)),
-          bookingId
-        )
-      : null
-  );
-  const [booking, rooms] = await Promise.all([
-    getBookingById(bookingId),
-    roomsPromise,
-  ]);
-  if (!booking || !rooms) return null;
+const loadBookingConfirmContextCached = cache(
+  async (bookingId: string): Promise<BookingConfirmContext | null> => {
+    const paramsPromise = getBookingStayParams(bookingId);
+    const roomsPromise = paramsPromise.then((params) =>
+      params
+        ? loadAvailableRoomsForStayCached(
+            params.check_in,
+            params.check_out,
+            JSON.stringify(partyFromBooking(params)),
+            bookingId,
+          )
+        : null,
+    );
+    const [booking, rooms] = await Promise.all([getBookingById(bookingId), roomsPromise]);
+    if (!booking || !rooms) return null;
 
-  return {
-    booking,
-    checkInTime: rooms.checkInTime,
-    checkOutTime: rooms.checkOutTime,
-    guestCount: rooms.guestCount,
-    party: rooms.party,
-    childPolicy: rooms.childPolicy,
-    inventory: rooms.inventory,
-    availableRooms: rooms.availableRooms,
-    minRoomsNeeded: rooms.minRoomsNeeded,
-    canFulfill: rooms.canFulfill,
-  };
-});
+    return {
+      booking,
+      checkInTime: rooms.checkInTime,
+      checkOutTime: rooms.checkOutTime,
+      guestCount: rooms.guestCount,
+      party: rooms.party,
+      childPolicy: rooms.childPolicy,
+      inventory: rooms.inventory,
+      availableRooms: rooms.availableRooms,
+      minRoomsNeeded: rooms.minRoomsNeeded,
+      canFulfill: rooms.canFulfill,
+    };
+  },
+);
 
 export async function loadBookingConfirmContext(
-  bookingId: string
+  bookingId: string,
 ): Promise<BookingConfirmContext | null> {
   return loadBookingConfirmContextCached(bookingId);
 }

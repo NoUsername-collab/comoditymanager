@@ -14,13 +14,12 @@ export function roomNightStatus(
   isActive: boolean,
   roomId: string,
   date: string,
-  stays: NightStay[]
+  stays: NightStay[],
 ): { status: RoomNightStatus; guest: string | null } {
   if (!isActive) return { status: "inactive", guest: null };
 
   const onNight = stays.filter(
-    (s) =>
-      s.room_id === roomId && nightOccupied(date, s.check_in, s.check_out)
+    (s) => s.room_id === roomId && nightOccupied(date, s.check_in, s.check_out),
   );
   if (onNight.length === 0) return { status: "free", guest: null };
 

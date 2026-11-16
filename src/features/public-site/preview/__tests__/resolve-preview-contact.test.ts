@@ -12,13 +12,7 @@ describe("resolvePreviewContact", () => {
   };
 
   it("merges primary contact when usePrimaryContact is true", () => {
-    expect(
-      resolvePreviewContact(
-        primary,
-        { email: null, phone: null },
-        true,
-      ),
-    ).toEqual({
+    expect(resolvePreviewContact(primary, { email: null, phone: null }, true)).toEqual({
       email: "primary@hotel.ro",
       phone: "+40 700 000 000",
       whatsapp: null,
@@ -30,11 +24,7 @@ describe("resolvePreviewContact", () => {
 
   it("prefers override fields when usePrimaryContact is true", () => {
     expect(
-      resolvePreviewContact(
-        primary,
-        { email: "public@hotel.ro", phone: null },
-        true,
-      ),
+      resolvePreviewContact(primary, { email: "public@hotel.ro", phone: null }, true),
     ).toMatchObject({
       email: "public@hotel.ro",
       phone: "+40 700 000 000",
@@ -43,11 +33,7 @@ describe("resolvePreviewContact", () => {
 
   it("uses only override when usePrimaryContact is false", () => {
     expect(
-      resolvePreviewContact(
-        primary,
-        { email: "public@hotel.ro", phone: "+40 711" },
-        false,
-      ),
+      resolvePreviewContact(primary, { email: "public@hotel.ro", phone: "+40 711" }, false),
     ).toEqual({
       email: "public@hotel.ro",
       phone: "+40 711",

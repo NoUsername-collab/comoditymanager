@@ -19,7 +19,10 @@ export type IcalSyncPlan = {
 export function importedBlockReason(feedName: string, summary: string): string {
   const name = feedName.trim();
   const text = summary.trim();
-  return (text && text.toLowerCase() !== name.toLowerCase() ? `${name} · ${text}` : name).slice(0, 120);
+  return (text && text.toLowerCase() !== name.toLowerCase() ? `${name} · ${text}` : name).slice(
+    0,
+    120,
+  );
 }
 
 /**
@@ -50,7 +53,11 @@ export function planIcalSync(args: {
     }
     seen.add(block.uid);
     const reason = importedBlockReason(args.feedName, event.summary);
-    if (block.checkIn !== event.checkIn || block.checkOut !== event.checkOut || block.reason !== reason) {
+    if (
+      block.checkIn !== event.checkIn ||
+      block.checkOut !== event.checkOut ||
+      block.reason !== reason
+    ) {
       plan.update.push({ id: block.id, checkIn: event.checkIn, checkOut: event.checkOut, reason });
     }
   }

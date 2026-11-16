@@ -101,10 +101,7 @@ describe("addDays", () => {
 // ---------------------------------------------------------------------------
 describe("stayNightDates", () => {
   it("returns nights between checkIn (inclusive) and checkOut (exclusive)", () => {
-    expect(stayNightDates("2025-06-10", "2025-06-12")).toEqual([
-      "2025-06-10",
-      "2025-06-11",
-    ]);
+    expect(stayNightDates("2025-06-10", "2025-06-12")).toEqual(["2025-06-10", "2025-06-11"]);
   });
 
   it("returns single night for adjacent days", () => {

@@ -27,7 +27,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ok: true, timestamp: new Date().toISOString(), guests });
   } catch (error) {
     return NextResponse.json(
-      { error: "Guest retention failed", details: error instanceof Error ? error.message : "Unknown error" },
+      {
+        error: "Guest retention failed",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

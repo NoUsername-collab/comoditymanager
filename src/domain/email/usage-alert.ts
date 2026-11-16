@@ -2,10 +2,7 @@ export type EmailUsageAlertLevel = "ok" | "warning" | "exceeded" | "unlimited";
 
 const WARNING_RATIO = 0.9;
 
-export function emailUsageAlertLevel(
-  sentCount: number,
-  cap: number | null,
-): EmailUsageAlertLevel {
+export function emailUsageAlertLevel(sentCount: number, cap: number | null): EmailUsageAlertLevel {
   if (cap == null) return "unlimited";
   if (sentCount >= cap) return "exceeded";
   if (sentCount >= Math.ceil(cap * WARNING_RATIO)) return "warning";

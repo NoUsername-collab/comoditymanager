@@ -1,8 +1,5 @@
 import { normalizeBookingNotice } from "@/features/public-site/domain/booking-notice";
-import {
-  normalizePublicChrome,
-  normalizePublicPages,
-} from "@/features/public-site/domain/chrome";
+import { normalizePublicChrome, normalizePublicPages } from "@/features/public-site/domain/chrome";
 import type {
   PublicBookingNoticeConfig,
   PublicBookingNavPosition,
@@ -28,8 +25,14 @@ function parseTemplateId(raw: unknown): PublicTemplateId {
 }
 
 function parseThemeId(raw: unknown): PublicThemeId {
-  if (raw === "alpine" || raw === "mediterranean" || raw === "noir" ||
-      raw === "pearl" || raw === "slate" || raw === "forest") {
+  if (
+    raw === "alpine" ||
+    raw === "mediterranean" ||
+    raw === "noir" ||
+    raw === "pearl" ||
+    raw === "slate" ||
+    raw === "forest"
+  ) {
     return raw;
   }
   return "noir";
@@ -88,7 +91,7 @@ export function mapPublicSiteSettingsRow(row: {
     contact: (row.contact ?? {}) as PublicContactConfig,
     seo: (row.seo ?? {}) as PublicSeoConfig,
     bookingNotice: normalizeBookingNotice(
-      row.booking_notice as PublicBookingNoticeConfig | null | undefined
+      row.booking_notice as PublicBookingNoticeConfig | null | undefined,
     ),
     chrome: normalizePublicChrome(row.chrome),
     pages: normalizePublicPages(row.pages),
@@ -113,7 +116,6 @@ export function mapPublicSiteSectionRow(row: {
     payload: row.payload ?? {},
   } as PublicSiteSection;
 }
-
 
 export function mapPublicSitePageRow(
   row: {

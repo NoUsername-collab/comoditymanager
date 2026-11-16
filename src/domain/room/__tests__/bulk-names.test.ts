@@ -132,24 +132,16 @@ describe("findDuplicateRoomNames", () => {
 describe("suggestNextBulkStartNumber", () => {
   it("continues after prefixed bulk names", () => {
     expect(
-      suggestNextBulkStartNumber(
-        ["Camera1", "Camera2", "Camera10"],
-        "prefix",
-        "Camera "
-      )
+      suggestNextBulkStartNumber(["Camera1", "Camera2", "Camera10"], "prefix", "Camera "),
     ).toBe(11);
   });
 
   it("continues after number-only names", () => {
-    expect(suggestNextBulkStartNumber(["1", "2", "5"], "number_only", "")).toBe(
-      6
-    );
+    expect(suggestNextBulkStartNumber(["1", "2", "5"], "number_only", "")).toBe(6);
   });
 
   it("continues a floor stem after 110", () => {
-    expect(suggestNextBulkStartNumber(["101", "102", "110"], "prefix", "10")).toBe(
-      11
-    );
+    expect(suggestNextBulkStartNumber(["101", "102", "110"], "prefix", "10")).toBe(11);
   });
 
   it("ignores a concatenated 1010 when suggesting the next room", () => {
@@ -157,8 +149,6 @@ describe("suggestNextBulkStartNumber", () => {
   });
 
   it("returns 1 when building has no matching names", () => {
-    expect(
-      suggestNextBulkStartNumber(["Suite A"], "prefix", "Camera ")
-    ).toBe(1);
+    expect(suggestNextBulkStartNumber(["Suite A"], "prefix", "Camera ")).toBe(1);
   });
 });

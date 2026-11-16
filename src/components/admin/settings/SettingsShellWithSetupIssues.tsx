@@ -11,23 +11,13 @@ type Props = Omit<ShellProps, "setupIssues"> & {
   memberRole?: TenantMemberRole | null;
 };
 
-async function SettingsShellResolved({
-  staffEmail,
-  memberRole,
-  ...rest
-}: Props) {
+async function SettingsShellResolved({ staffEmail, memberRole, ...rest }: Props) {
   const setupIssues = await resolveSetupIssues({
     email: staffEmail,
     memberRole: memberRole ?? null,
   });
   const resolvedRole = memberRole ?? "operator";
-  return (
-    <SettingsShell
-      {...rest}
-      memberRole={resolvedRole}
-      setupIssues={setupIssues}
-    />
-  );
+  return <SettingsShell {...rest} memberRole={resolvedRole} setupIssues={setupIssues} />;
 }
 
 /** Streams setup-issue badges without blocking settings shell paint. */
@@ -36,13 +26,7 @@ export function SettingsShellWithSetupIssues(props: Props) {
   const resolvedMemberRole = memberRole ?? "operator";
   return (
     <Suspense
-      fallback={
-        <SettingsShell
-          {...shellProps}
-          memberRole={resolvedMemberRole}
-          setupIssues={[]}
-        />
-      }
+      fallback={<SettingsShell {...shellProps} memberRole={resolvedMemberRole} setupIssues={[]} />}
     >
       <SettingsShellResolved
         staffEmail={staffEmail}

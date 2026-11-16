@@ -1,6 +1,9 @@
 "use client";
 
-import { groupConfirmedStays, isConfirmedBucketExpandedByDefault } from "@/domain/stays/confirmed-buckets";
+import {
+  groupConfirmedStays,
+  isConfirmedBucketExpandedByDefault,
+} from "@/domain/stays/confirmed-buckets";
 import { todayIso } from "@/lib/stay-dates";
 import { formatStayLabel } from "@/lib/stay-label-format";
 import { StayList } from "@/features/stays/ui/StayList";
@@ -15,10 +18,7 @@ const BUCKET_META: Record<
     >;
     subtitleKey: keyof Pick<
       StayListLabels,
-      | "groupedTodayHint"
-      | "groupedThisWeekHint"
-      | "groupedThisMonthHint"
-      | "groupedUpcomingHint"
+      "groupedTodayHint" | "groupedThisWeekHint" | "groupedThisMonthHint" | "groupedUpcomingHint"
     >;
   }
 > = {
@@ -74,10 +74,7 @@ export function ConfirmedBuckets({
             labels={labels}
             operativeToday={today}
             collapsible
-            defaultExpanded={isConfirmedBucketExpandedByDefault(
-              bucket.key,
-              hasQuery
-            )}
+            defaultExpanded={isConfirmedBucketExpandedByDefault(bucket.key, hasQuery)}
           />
         );
       })}

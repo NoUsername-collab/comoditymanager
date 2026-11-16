@@ -74,7 +74,8 @@ export function PublicHeroBlock({
   const secondaryHref = safeNavHref(hero.ctaSecondaryHref, PUBLIC_STEPS_HREF);
   const secondaryTarget = anchoredSectionType(secondaryHref);
   const secondaryLands =
-    !secondaryTarget || Boolean(findSection(config.sections, secondaryTarget, { visibleOnly: true }));
+    !secondaryTarget ||
+    Boolean(findSection(config.sections, secondaryTarget, { visibleOnly: true }));
   const showMeta = Boolean(checkTimesLabel) && hero.showCheckTimes !== false;
 
   const primaryBtn =
@@ -88,17 +89,16 @@ export function PublicHeroBlock({
       </PreviewOrLink>
     ) : null;
 
-  const secondaryBtn = ctaSecondary && secondaryLands ? (
-    <PreviewOrLink
-      preview={preview}
-      href={secondaryHref}
-      className={
-        variant === "immersive" ? "pub-hero__text-link" : "pub-btn pub-btn--ghost"
-      }
-    >
-      {ctaSecondary}
-    </PreviewOrLink>
-  ) : null;
+  const secondaryBtn =
+    ctaSecondary && secondaryLands ? (
+      <PreviewOrLink
+        preview={preview}
+        href={secondaryHref}
+        className={variant === "immersive" ? "pub-hero__text-link" : "pub-btn pub-btn--ghost"}
+      >
+        {ctaSecondary}
+      </PreviewOrLink>
+    ) : null;
 
   if (variant === "editorial") {
     return (
@@ -136,11 +136,7 @@ export function PublicHeroBlock({
   if (variant === "immersive") {
     return (
       <section
-        className={[
-          "pub-hero",
-          "pub-hero--immersive",
-          hero.imageUrl ? "pub-hero--has-media" : "",
-        ]
+        className={["pub-hero", "pub-hero--immersive", hero.imageUrl ? "pub-hero--has-media" : ""]
           .filter(Boolean)
           .join(" ")}
       >
@@ -169,11 +165,7 @@ export function PublicHeroBlock({
 
   return (
     <section
-      className={[
-        "pub-hero",
-        "pub-hero--classic",
-        hero.imageUrl ? "pub-hero--has-photo" : "",
-      ]
+      className={["pub-hero", "pub-hero--classic", hero.imageUrl ? "pub-hero--has-photo" : ""]
         .filter(Boolean)
         .join(" ")}
     >

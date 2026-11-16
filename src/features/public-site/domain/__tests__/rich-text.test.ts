@@ -42,7 +42,10 @@ describe("rich text", () => {
     expect(safeRichHref("//evil.example")).toBeNull();
     expect(parseRichText("[click](javascript:alert(1))")[0]).toEqual({
       kind: "paragraph",
-      content: [{ kind: "text", text: "[click](javascript:alert(1)" }, { kind: "text", text: ")" }],
+      content: [
+        { kind: "text", text: "[click](javascript:alert(1)" },
+        { kind: "text", text: ")" },
+      ],
     });
     expect(safeRichHref("https://maps.google.com")).toEqual({
       href: "https://maps.google.com",
@@ -61,7 +64,9 @@ describe("video addresses", () => {
   });
 
   it("embeds Vimeo and refuses anything else", () => {
-    expect(videoEmbedUrl("https://vimeo.com/76979871")).toBe("https://player.vimeo.com/video/76979871");
+    expect(videoEmbedUrl("https://vimeo.com/76979871")).toBe(
+      "https://player.vimeo.com/video/76979871",
+    );
     expect(videoEmbedUrl("https://example.com/film.mp4")).toBeNull();
     expect(videoEmbedUrl("not a url")).toBeNull();
     expect(videoEmbedUrl("")).toBeNull();

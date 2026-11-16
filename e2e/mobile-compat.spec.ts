@@ -12,9 +12,7 @@ test.describe("Mobile UX smoke (390×844 compact)", () => {
   test.describe("public routes", () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
-    test("calendar: compact layout, form visible, header CTA hidden", async ({
-      page,
-    }) => {
+    test("calendar: compact layout, form visible, header CTA hidden", async ({ page }) => {
       await page.goto("/calendar");
       await expect(page).toHaveURL(/\/calendar/);
       await expectCompactPhoneLayout(page);
@@ -95,9 +93,7 @@ test.describe("Mobile UX smoke (390×844 compact)", () => {
       const scroll = page.locator(".gantt-scroll").first();
       await expect(scroll).toBeVisible({ timeout: 15_000 });
 
-      const maxHeight = await scroll.evaluate((el) =>
-        parseFloat(getComputedStyle(el).maxHeight)
-      );
+      const maxHeight = await scroll.evaluate((el) => parseFloat(getComputedStyle(el).maxHeight));
       expect(maxHeight).toBeGreaterThan(0);
       expect(maxHeight).toBeLessThan(844);
     });

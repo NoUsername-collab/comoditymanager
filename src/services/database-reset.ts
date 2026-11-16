@@ -8,9 +8,7 @@ export function isFactoryResetEnabled(): boolean {
 
 function assertFactoryResetAllowed(): void {
   if (!isFactoryResetEnabled()) {
-    throw new Error(
-      "factory_reset.disabled_set_admin_factory_reset_enabled_true"
-    );
+    throw new Error("factory_reset.disabled_set_admin_factory_reset_enabled_true");
   }
 }
 
@@ -29,9 +27,7 @@ export async function runFactoryReset(): Promise<void> {
       error.message.includes("admin_factory_reset_for_tenant") &&
       error.message.includes("does not exist")
     ) {
-      throw new Error(
-        "factory_reset.rpc_admin_factory_reset_for_tenant_missing_run_migration_042"
-      );
+      throw new Error("factory_reset.rpc_admin_factory_reset_for_tenant_missing_run_migration_042");
     }
     throw new Error(error.message);
   }

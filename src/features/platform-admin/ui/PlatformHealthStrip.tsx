@@ -1,16 +1,11 @@
 import { getTranslations } from "next-intl/server";
 import type { PlatformInfraHealth } from "@/lib/platform-admin/platform-health";
 
-export async function PlatformHealthStrip({
-  health,
-}: {
-  health: PlatformInfraHealth;
-}) {
+export async function PlatformHealthStrip({ health }: { health: PlatformInfraHealth }) {
   const t = await getTranslations("platformAdmin.health");
 
   const emailOk = health.email.configured;
-  const domainIssues =
-    health.domains.unverified + health.domains.sslPending;
+  const domainIssues = health.domains.unverified + health.domains.sslPending;
 
   return (
     <div className="grid gap-3 sm:grid-cols-2">
@@ -21,9 +16,7 @@ export async function PlatformHealthStrip({
             : "border-amber-900/50 bg-amber-950/20"
         }`}
       >
-        <h2 className="text-sm font-semibold text-neutral-200">
-          {t("emailTitle")}
-        </h2>
+        <h2 className="text-sm font-semibold text-neutral-200">{t("emailTitle")}</h2>
         <p className="mt-1 text-xs text-neutral-400">
           {emailOk
             ? t("emailConfigured", {
@@ -41,9 +34,7 @@ export async function PlatformHealthStrip({
             : "border-amber-900/50 bg-amber-950/20"
         }`}
       >
-        <h2 className="text-sm font-semibold text-neutral-200">
-          {t("domainsTitle")}
-        </h2>
+        <h2 className="text-sm font-semibold text-neutral-200">{t("domainsTitle")}</h2>
         <p className="mt-1 text-xs text-neutral-400">
           {t("domainsSummary", {
             custom: health.domains.customDomains,

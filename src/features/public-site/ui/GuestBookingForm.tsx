@@ -8,32 +8,14 @@ import {
   previewGuestStayAction,
   submitGuestRequestAction,
 } from "@/features/public-site/calendar-actions";
-import {
-  BookingIdentityPanel,
-  useBookingIdentity,
-} from "@/features/bookings/ui/identity";
+import { BookingIdentityPanel, useBookingIdentity } from "@/features/bookings/ui/identity";
 import { GuestStayOptionPicker } from "@/features/public-site/ui/GuestStayOptionPicker";
-import {
-  PartyFields,
-  PartyHiddenInputs,
-} from "@/features/bookings/ui/party/PartyFields";
-import {
-  buildParty,
-  partyAgesComplete,
-  type Party,
-} from "@/domain/availability/party";
+import { PartyFields, PartyHiddenInputs } from "@/features/bookings/ui/party/PartyFields";
+import { buildParty, partyAgesComplete, type Party } from "@/domain/availability/party";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
 import { DEFAULT_PARTY_ADULTS } from "@/lib/constants";
-import type {
-  GuestStayOption,
-  GuestStayPreview,
-} from "@/domain/availability/guest-stay-options";
-import {
-  addDays,
-  clampCheckInDate,
-  defaultNewStayDates,
-  todayIso,
-} from "@/lib/stay-dates";
+import type { GuestStayOption, GuestStayPreview } from "@/domain/availability/guest-stay-options";
+import { addDays, clampCheckInDate, defaultNewStayDates, todayIso } from "@/lib/stay-dates";
 
 type Props = {
   checkInTime: string;
@@ -140,7 +122,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime, preferredRoom = nu
         };
       }
     },
-    null
+    null,
   );
 
   const linkTags = {
@@ -153,11 +135,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime, preferredRoom = nu
 
   const gdprLinkTags = {
     link: (chunks: React.ReactNode) => (
-      <Link
-        href="/confidentialitate"
-        target="_blank"
-        className="font-medium underline"
-      >
+      <Link href="/confidentialitate" target="_blank" className="font-medium underline">
         {chunks}
       </Link>
     ),
@@ -181,11 +159,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime, preferredRoom = nu
   const stepIndex = stepOrder.indexOf(step);
 
   const canSubmitContact =
-    acceptTerms &&
-    acceptGdpr &&
-    selectedOption != null &&
-    step === "contact" &&
-    identity.canSubmit;
+    acceptTerms && acceptGdpr && selectedOption != null && step === "contact" && identity.canSubmit;
 
   const steps: { key: Step; label: string }[] = [
     { key: "dates", label: t("stepDates") },
@@ -196,9 +170,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime, preferredRoom = nu
   return (
     <div className="guest-booking-form site-card space-y-4 p-4 shadow-sm">
       <div>
-        <h2 className="text-lg font-semibold text-[var(--site-fg)]">
-          {t("title")}
-        </h2>
+        <h2 className="text-lg font-semibold text-[var(--site-fg)]">{t("title")}</h2>
         <p className="mt-1 text-sm text-[var(--site-muted)]">
           {t("checkTimes", { checkIn: checkInTime, checkOut: checkOutTime })}
         </p>
@@ -270,9 +242,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime, preferredRoom = nu
 
           <PartyFields value={party} onChange={onPartyChange} appearance="public" />
 
-          {previewError && (
-            <p className="text-sm text-red-600">{previewError}</p>
-          )}
+          {previewError && <p className="text-sm text-red-600">{previewError}</p>}
 
           <button
             type="button"
@@ -309,11 +279,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime, preferredRoom = nu
           <input type="hidden" name="check_in" value={checkIn} />
           <input type="hidden" name="check_out" value={checkOut} />
           <PartyHiddenInputs party={party} />
-          <input
-            type="hidden"
-            name="selected_option_id"
-            value={selectedOption.option_id}
-          />
+          <input type="hidden" name="selected_option_id" value={selectedOption.option_id} />
 
           <div className="public-summary-box">
             <p className="public-summary-box__title">{t("summaryTitle")}</p>
@@ -338,11 +304,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime, preferredRoom = nu
           <BookingIdentityPanel identity={identity} appearance="public" />
           <label className="site-field">
             {t("messageOptional")}
-            <textarea
-              name="notes"
-              rows={2}
-              className="mt-1 w-full"
-            />
+            <textarea name="notes" rows={2} className="mt-1 w-full" />
           </label>
 
           <div className="space-y-2 rounded-lg border border-[var(--site-border)] bg-[var(--site-bg)]/50 p-3 text-sm">
@@ -375,11 +337,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime, preferredRoom = nu
           {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
 
           <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setStep("rooms")}
-              className="site-btn-secondary"
-            >
+            <button type="button" onClick={() => setStep("rooms")} className="site-btn-secondary">
               {t("back")}
             </button>
             <button

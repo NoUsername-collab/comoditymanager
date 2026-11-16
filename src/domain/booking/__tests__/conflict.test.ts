@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  isAtLeastOneNight,
-  rangesOverlap,
-  toDateTime,
-} from "@/domain/booking/conflict";
+import { isAtLeastOneNight, rangesOverlap, toDateTime } from "@/domain/booking/conflict";
 
 describe("isAtLeastOneNight", () => {
   it("returns true when checkOut is after checkIn", () => {

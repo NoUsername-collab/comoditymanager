@@ -5,10 +5,7 @@ import {
   normalizePhone,
   assertValidGuestPhone,
 } from "@/domain/guest/normalize";
-import type {
-  GuestContactMatchInput,
-  GuestContactMatchResult,
-} from "@/domain/guest/match-guest";
+import type { GuestContactMatchInput, GuestContactMatchResult } from "@/domain/guest/match-guest";
 import { pickGuestContactMatch } from "@/domain/guest/match-guest";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { ensureGuestProfiles } from "@/services/guest-profiles";
@@ -58,17 +55,13 @@ async function loadContactCandidates(args: {
 
   if (args.phoneNormalized) {
     queries.push(
-      fetchContactCandidates(
-        guestSelect().eq("phone_normalized", args.phoneNormalized).limit(5),
-      ),
+      fetchContactCandidates(guestSelect().eq("phone_normalized", args.phoneNormalized).limit(5)),
     );
   }
 
   if (args.emailNormalized) {
     queries.push(
-      fetchContactCandidates(
-        guestSelect().eq("email_normalized", args.emailNormalized).limit(5),
-      ),
+      fetchContactCandidates(guestSelect().eq("email_normalized", args.emailNormalized).limit(5)),
     );
   }
 
@@ -89,16 +82,14 @@ async function loadContactCandidates(args: {
 }
 
 export async function matchGuestByContact(
-  input: GuestContactMatchInput
+  input: GuestContactMatchInput,
 ): Promise<GuestContactMatchResult> {
   const lastName = input.lastName.trim();
   const firstName = input.firstName.trim();
   const phoneNormalized = normalizePhone(input.phone ?? "");
   const emailNormalized = normalizeEmail(input.email ?? "");
   const usableEmail =
-    emailNormalized && !isPlaceholderEmail(emailNormalized)
-      ? emailNormalized
-      : null;
+    emailNormalized && !isPlaceholderEmail(emailNormalized) ? emailNormalized : null;
 
   if (!phoneNormalized && !usableEmail && (lastName.length < 2 || firstName.length < 2)) {
     return { status: "none" };
@@ -200,8 +191,7 @@ export async function createGuestFromContact(input: {
 
   const emailNorm = normalizeEmail(input.email ?? "");
   const phoneNorm = normalizePhone(input.phone ?? "");
-  const email =
-    emailNorm && !isPlaceholderEmail(emailNorm) ? input.email!.trim() : null;
+  const email = emailNorm && !isPlaceholderEmail(emailNorm) ? input.email!.trim() : null;
   let phone: string | null = null;
   if (phoneNorm) {
     assertValidGuestPhone(input.phone ?? "");
@@ -217,11 +207,10 @@ export async function createGuestFromContact(input: {
         first_name: firstName,
         display_name: formatGuestFullName(lastName, firstName),
         email,
-        email_normalized:
-          emailNorm && !isPlaceholderEmail(emailNorm) ? emailNorm : null,
+        email_normalized: emailNorm && !isPlaceholderEmail(emailNorm) ? emailNorm : null,
         phone,
         phone_normalized: phoneNorm || null,
-      })
+      }),
     )
     .select("id")
     .single();
@@ -238,7 +227,7 @@ export async function touchGuestContactFields(
     firstName?: string | null;
     phone?: string | null;
     email?: string | null;
-  }
+  },
 ): Promise<void> {
   const current = await getGuestBaseById(guestId);
   if (!current) return;

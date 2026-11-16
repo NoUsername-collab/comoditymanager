@@ -133,17 +133,21 @@ function auditFile(file: string, messages: Record<string, unknown>): MissingKey[
 
   const visit = (node: ts.Node) => {
     const opensScope =
-      ts.isBlock(node) || ts.isSourceFile(node) || ts.isFunctionLike(node) || ts.isModuleBlock(node);
+      ts.isBlock(node) ||
+      ts.isSourceFile(node) ||
+      ts.isFunctionLike(node) ||
+      ts.isModuleBlock(node);
     if (opensScope && !ts.isSourceFile(node)) scopes.push(new Map());
 
     if (ts.isVariableDeclaration(node)) bind(node);
 
-    if (ts.isCallExpression(node) && node.arguments[0] && ts.isStringLiteralLike(node.arguments[0])) {
+    if (
+      ts.isCallExpression(node) &&
+      node.arguments[0] &&
+      ts.isStringLiteralLike(node.arguments[0])
+    ) {
       let callee: ts.Expression = node.expression;
-      if (
-        ts.isPropertyAccessExpression(callee) &&
-        TRANSLATOR_METHODS.has(callee.name.text)
-      ) {
+      if (ts.isPropertyAccessExpression(callee) && TRANSLATOR_METHODS.has(callee.name.text)) {
         callee = callee.expression;
       }
       if (ts.isIdentifier(callee)) {

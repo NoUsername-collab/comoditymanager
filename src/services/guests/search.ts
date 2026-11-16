@@ -1,16 +1,9 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { formatGuestFullName } from "@/domain/guest-name";
-import {
-  shiftStayDatesByYears,
-  shiftStayToNextFutureYear,
-} from "@/domain/guest/rebook-dates";
+import { shiftStayDatesByYears, shiftStayToNextFutureYear } from "@/domain/guest/rebook-dates";
 import { isReturningGuest } from "@/domain/guest/reputation";
-import {
-  assertValidGuestPhone,
-  normalizeEmail,
-  normalizePhone,
-} from "@/domain/guest/normalize";
+import { assertValidGuestPhone, normalizeEmail, normalizePhone } from "@/domain/guest/normalize";
 import { parseGuestTags } from "@/domain/guest/tags";
 import type {
   GuestDocType,
@@ -91,10 +84,7 @@ function returningGuestProfileFilter(): string {
   return `completed_stays.gte.3,total_nights.gte.10,and(completed_stays.gte.2,last_stay_check_out.gte.${recentCutoff})`;
 }
 
-function matchesGuestFilter(
-  guest: GuestListItem,
-  filter: GuestSearchFilter
-): boolean {
+function matchesGuestFilter(guest: GuestListItem, filter: GuestSearchFilter): boolean {
   const profile = guest.profile;
   if (filter === "all") return true;
   if (filter === "flagged") return !!profile && profile.flag_level !== "normal";
@@ -112,8 +102,7 @@ function matchesGuestFilter(
   }
   if (filter === "recent") {
     return (
-      (profile?.last_stay_check_out != null &&
-        profile.last_stay_check_out >= isoDaysAgo(365)) ||
+      (profile?.last_stay_check_out != null && profile.last_stay_check_out >= isoDaysAgo(365)) ||
       guest.updated_at >= new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
     );
   }
@@ -126,9 +115,7 @@ function guestFlagRank(level: string | null | undefined): number {
   return 0;
 }
 
-async function fetchGuestListItemsByIds(
-  guestIds: string[]
-): Promise<GuestListItem[]> {
+async function fetchGuestListItemsByIds(guestIds: string[]): Promise<GuestListItem[]> {
   const ids = [...new Set(guestIds.filter(Boolean))];
   if (ids.length === 0) return [];
 
@@ -141,9 +128,7 @@ async function fetchGuestListItemsByIds(
 
   if (error) throw new Error(error.message);
 
-  const rows = new Map(
-    ((data ?? []) as GuestListSelectRow[]).map((row) => [row.id, row])
-  );
+  const rows = new Map(((data ?? []) as GuestListSelectRow[]).map((row) => [row.id, row]));
   const profiles = await listGuestProfileSummaries(ids);
 
   return ids
@@ -170,7 +155,7 @@ async function fetchGuestListItemsByIds(
 
 async function listGuestIdsForHighlightsUncached(
   tenantId: string,
-  limit = 8
+  limit = 8,
 ): Promise<{
   blacklist: string[];
   returning: string[];
@@ -217,16 +202,10 @@ async function listGuestIdsForHighlightsUncached(
   if (ratedRes.error) throw new Error(ratedRes.error.message);
 
   return {
-    blacklist: ((blacklistRes.data ?? []) as { guest_id: string }[]).map(
-      (row) => row.guest_id
-    ),
-    returning: ((returningRes.data ?? []) as { guest_id: string }[]).map(
-      (row) => row.guest_id
-    ),
+    blacklist: ((blacklistRes.data ?? []) as { guest_id: string }[]).map((row) => row.guest_id),
+    returning: ((returningRes.data ?? []) as { guest_id: string }[]).map((row) => row.guest_id),
     recent: ((recentRes.data ?? []) as { id: string }[]).map((row) => row.id),
-    rated: ((ratedRes.data ?? []) as { guest_id: string }[]).map(
-      (row) => row.guest_id
-    ),
+    rated: ((ratedRes.data ?? []) as { guest_id: string }[]).map((row) => row.guest_id),
   };
 }
 
@@ -288,8 +267,9 @@ async function searchGuestIdsByQueryWindow(input: {
     };
   }
 
-  const buildIdList = (rows: { id: string }[] | null | undefined) =>
-    [...new Set((rows ?? []).map((row) => String(row.id)))];
+  const buildIdList = (rows: { id: string }[] | null | undefined) => [
+    ...new Set((rows ?? []).map((row) => String(row.id))),
+  ];
 
   if (!normalizedPhone && !normalizedEmail && term.length < 2) {
     return { ids: [], exhausted: true };
@@ -332,7 +312,7 @@ async function searchGuestIdsByQueryWindow(input: {
         `display_name.ilike.${namePattern}`,
         `email.ilike.${namePattern}`,
         `phone.ilike.${namePattern}`,
-      ].join(",")
+      ].join(","),
     )
     .order("display_name", { ascending: true })
     .range(input.offset, windowEnd);
@@ -345,7 +325,7 @@ async function searchGuestIdsByQueryWindow(input: {
 async function listGuestIdsByFilter(
   filter: GuestSearchFilter,
   page: number,
-  pageSize: number
+  pageSize: number,
 ): Promise<{ ids: string[]; hasMore: boolean }> {
   const { tenantId, supabase } = await getTenantScope();
   const offset = (page - 1) * pageSize;
@@ -363,10 +343,7 @@ async function listGuestIdsByFilter(
     return { ids: ids.slice(0, pageSize), hasMore: ids.length > pageSize };
   }
 
-  let query = supabase
-    .from("guest_profiles")
-    .select("guest_id")
-    .eq("tenant_id", tenantId);
+  let query = supabase.from("guest_profiles").select("guest_id").eq("tenant_id", tenantId);
   if (filter === "flagged") {
     query = query.in("flag_level", ["watchlist", "blacklist"]).order("updated_at", {
       ascending: false,
@@ -401,8 +378,10 @@ async function listGuestIdsByFilter(
 }
 
 async function loadGuestHighlightsForTenant(tenantId: string): Promise<GuestHighlights> {
-  const { blacklist, returning, recent, rated } =
-    await listGuestIdsForHighlightsUncached(tenantId, 10);
+  const { blacklist, returning, recent, rated } = await listGuestIdsForHighlightsUncached(
+    tenantId,
+    10,
+  );
   const allIds = [...new Set([...blacklist, ...returning, ...recent, ...rated])];
   const guestsById = new Map(
     (await fetchGuestListItemsByIds(allIds)).map((guest) => [guest.id, guest] as const),
@@ -419,14 +398,10 @@ async function loadGuestHighlightsForTenant(tenantId: string): Promise<GuestHigh
 }
 
 const getCachedGuestHighlights = (tenantId: string) =>
-  unstable_cache(
-    () => loadGuestHighlightsForTenant(tenantId),
-    ["guest-highlights", tenantId],
-    {
-      tags: [`tenant-${tenantId}-guest-highlights`],
-      revalidate: 60,
-    }
-  );
+  unstable_cache(() => loadGuestHighlightsForTenant(tenantId), ["guest-highlights", tenantId], {
+    tags: [`tenant-${tenantId}-guest-highlights`],
+    revalidate: 60,
+  });
 
 const loadGuestHighlights = cache(async (): Promise<GuestHighlights> => {
   const { tenantId } = await getTenantScope();
@@ -437,92 +412,93 @@ export async function listGuestHighlights(): Promise<GuestHighlights> {
   return loadGuestHighlights();
 }
 
-const loadSearchGuests = cache(async (
-  query: string,
-  filter: GuestSearchFilter,
-  page: number,
-  pageSize: number
-): Promise<GuestSearchResult> => {
-  const hasSearchCriteria = query.length > 0 || filter !== "all";
+const loadSearchGuests = cache(
+  async (
+    query: string,
+    filter: GuestSearchFilter,
+    page: number,
+    pageSize: number,
+  ): Promise<GuestSearchResult> => {
+    const hasSearchCriteria = query.length > 0 || filter !== "all";
 
-  if (!hasSearchCriteria) {
+    if (!hasSearchCriteria) {
+      return {
+        items: [],
+        query,
+        filter,
+        page,
+        pageSize,
+        hasMore: false,
+        hasPrevious: false,
+        mode: "highlights",
+      };
+    }
+
+    if (!query) {
+      const { ids, hasMore } = await listGuestIdsByFilter(filter, page, pageSize);
+      const items = await fetchGuestListItemsByIds(ids);
+      return {
+        items,
+        query,
+        filter,
+        page,
+        pageSize,
+        hasMore,
+        hasPrevious: page > 1,
+        mode: "results",
+      };
+    }
+
+    const offset = (page - 1) * pageSize;
+    const targetCount = offset + pageSize + 1;
+    const batchSize = Math.min(100, Math.max(30, pageSize * 3));
+    const filteredItems: GuestListItem[] = [];
+    const seenIds = new Set<string>();
+    let queryOffset = 0;
+    let exhausted = false;
+
+    while (!exhausted && filteredItems.length < targetCount) {
+      const { ids, exhausted: batchExhausted } = await searchGuestIdsByQueryWindow({
+        query,
+        offset: queryOffset,
+        limit: batchSize,
+      });
+      exhausted = batchExhausted;
+      if (ids.length === 0) break;
+      queryOffset += ids.length;
+
+      const candidateItems = await fetchGuestListItemsByIds(ids);
+      // When multiple similar profiles exist, keep riskier profiles first
+      // so blacklist/watchlist guests are not hidden behind duplicates.
+      candidateItems.sort((a, b) => {
+        const byFlag = guestFlagRank(b.profile?.flag_level) - guestFlagRank(a.profile?.flag_level);
+        if (byFlag !== 0) return byFlag;
+        return b.updated_at.localeCompare(a.updated_at);
+      });
+      for (const guest of candidateItems) {
+        if (seenIds.has(guest.id)) continue;
+        seenIds.add(guest.id);
+        if (matchesGuestFilter(guest, filter)) {
+          filteredItems.push(guest);
+          if (filteredItems.length >= targetCount) break;
+        }
+      }
+    }
+
+    const pagedItems = filteredItems.slice(offset, offset + pageSize);
+
     return {
-      items: [],
+      items: pagedItems,
       query,
       filter,
       page,
       pageSize,
-      hasMore: false,
-      hasPrevious: false,
-      mode: "highlights",
-    };
-  }
-
-  if (!query) {
-    const { ids, hasMore } = await listGuestIdsByFilter(filter, page, pageSize);
-    const items = await fetchGuestListItemsByIds(ids);
-    return {
-      items,
-      query,
-      filter,
-      page,
-      pageSize,
-      hasMore,
+      hasMore: filteredItems.length > offset + pageSize,
       hasPrevious: page > 1,
       mode: "results",
     };
-  }
-
-  const offset = (page - 1) * pageSize;
-  const targetCount = offset + pageSize + 1;
-  const batchSize = Math.min(100, Math.max(30, pageSize * 3));
-  const filteredItems: GuestListItem[] = [];
-  const seenIds = new Set<string>();
-  let queryOffset = 0;
-  let exhausted = false;
-
-  while (!exhausted && filteredItems.length < targetCount) {
-    const { ids, exhausted: batchExhausted } = await searchGuestIdsByQueryWindow({
-      query,
-      offset: queryOffset,
-      limit: batchSize,
-    });
-    exhausted = batchExhausted;
-    if (ids.length === 0) break;
-    queryOffset += ids.length;
-
-    const candidateItems = await fetchGuestListItemsByIds(ids);
-    // When multiple similar profiles exist, keep riskier profiles first
-    // so blacklist/watchlist guests are not hidden behind duplicates.
-    candidateItems.sort((a, b) => {
-      const byFlag =
-        guestFlagRank(b.profile?.flag_level) - guestFlagRank(a.profile?.flag_level);
-      if (byFlag !== 0) return byFlag;
-      return b.updated_at.localeCompare(a.updated_at);
-    });
-    for (const guest of candidateItems) {
-      if (seenIds.has(guest.id)) continue;
-      seenIds.add(guest.id);
-      if (matchesGuestFilter(guest, filter)) {
-        filteredItems.push(guest);
-        if (filteredItems.length >= targetCount) break;
-      }
-    }
-  }
-
-  const pagedItems = filteredItems.slice(offset, offset + pageSize);
-
-  return {
-    items: pagedItems,
-    query,
-    filter,
-    page,
-    pageSize,
-    hasMore: filteredItems.length > offset + pageSize,
-    hasPrevious: page > 1,
-    mode: "results",
-  };
-});
+  },
+);
 
 export async function searchGuests(input: {
   query?: string;
@@ -536,4 +512,3 @@ export async function searchGuests(input: {
   const pageSize = Math.min(Math.max(input.pageSize ?? 20, 1), 50);
   return loadSearchGuests(query, filter, page, pageSize);
 }
-

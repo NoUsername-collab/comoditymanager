@@ -12,8 +12,8 @@ describe("occupantCheckinSlots", () => {
         [
           { id: "r1", name: "101" },
           { id: "r2", name: "102" },
-        ]
-      )
+        ],
+      ),
     ).toEqual([
       { guestId: "g1", roomLabel: "101", isRepresentative: true },
       { guestId: "g2", roomLabel: "102", isRepresentative: false },

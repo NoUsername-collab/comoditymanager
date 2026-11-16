@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { cancelBookingOperativeAction } from "@/features/bookings/actions";
-import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
+import {
+  useAdminPending,
+  useRunAdminAction,
+} from "@/components/admin/feedback/AdminPendingProvider";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
 import { publishStayCancelled } from "@/lib/stays/live-stays";
@@ -35,8 +38,7 @@ export function BookingCancelButton({
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
 
-  const triggerClass =
-    variant === "compact" ? "stay-card__cancel-trigger" : undefined;
+  const triggerClass = variant === "compact" ? "stay-card__cancel-trigger" : undefined;
 
   const panelClass =
     variant === "compact"

@@ -24,16 +24,12 @@ describe("readLocalStorageFirst", () => {
     const storage = mockStorage();
     storage.setItem("zalmox-theme-id", "alpine");
     storage.setItem("casaemil-theme-id", "noir");
-    expect(readLocalStorageFirst(["zalmox-theme-id", "casaemil-theme-id"])).toBe(
-      "alpine",
-    );
+    expect(readLocalStorageFirst(["zalmox-theme-id", "casaemil-theme-id"])).toBe("alpine");
   });
 
   it("falls back to a legacy key when the new key is missing", () => {
     const storage = mockStorage();
     storage.setItem("casaemil-theme-id", "pearl");
-    expect(readLocalStorageFirst(["zalmox-theme-id", "casaemil-theme-id"])).toBe(
-      "pearl",
-    );
+    expect(readLocalStorageFirst(["zalmox-theme-id", "casaemil-theme-id"])).toBe("pearl");
   });
 });

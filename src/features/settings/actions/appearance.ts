@@ -2,16 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import {
-  requireStaff,
-  requireStaffPermission,
-} from "@/lib/auth/require-staff";
+import { requireStaff, requireStaffPermission } from "@/lib/auth/require-staff";
 import { bustPensionSettingsCache } from "@/lib/cache/revalidate-settings";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
-import {
-  updatePensionSettings,
-  updateStatisticsVisibility,
-} from "@/services/pension-settings";
+import { updatePensionSettings, updateStatisticsVisibility } from "@/services/pension-settings";
 import { parseStatisticsVisibility } from "@/domain/settings/statistics-visibility";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { migrateLegacyPaletteKey } from "@/lib/themes";
@@ -21,11 +15,9 @@ import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 export async function updateAppearanceSettingsAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const admin_palette_key = migrateLegacyPaletteKey(
-    String(formData.get("admin_palette_key") ?? "noir")
+    String(formData.get("admin_palette_key") ?? "noir"),
   );
-  const admin_day_night = String(formData.get("admin_day_night") ?? "night") as
-    | "day"
-    | "night";
+  const admin_day_night = String(formData.get("admin_day_night") ?? "night") as "day" | "night";
 
   const [t, settings, pension] = await Promise.all([
     getTranslations("admin.serverActions"),
@@ -61,7 +53,7 @@ export async function updateAppearanceSettingsAction(formData: FormData) {
 }
 
 export async function updateStatisticsVisibilityAction(
-  formData: FormData
+  formData: FormData,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const t = await getTranslations("admin.serverActions");
   const { memberRole } = await requireStaff();
@@ -70,7 +62,7 @@ export async function updateStatisticsVisibilityAction(
   }
 
   const visibility = parseStatisticsVisibility(
-    String(formData.get("statistics_visibility") ?? "owner")
+    String(formData.get("statistics_visibility") ?? "owner"),
   );
 
   try {

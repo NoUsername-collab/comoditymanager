@@ -9,7 +9,7 @@ import { getTranslations } from "next-intl/server";
 import { settingsActionErrorMessage } from "@/lib/settings/action-error";
 
 export async function updateEmailSettingsAction(
-  formData: FormData
+  formData: FormData,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const t = await getTranslations("admin.serverActions");
   try {
@@ -87,9 +87,7 @@ export async function sendTestEmailAction(): Promise<
   }
   const { sendTenantEmail } = await import("@/services/email-send");
   const { getTenantById } = await import("@/services/tenants");
-  const { resolveTransactionalEmailIdentity } = await import(
-    "@/services/email-identity"
-  );
+  const { resolveTransactionalEmailIdentity } = await import("@/services/email-identity");
   const { testEmailTemplate } = await import("@/lib/email/templates");
   const { getEmailSettings } = await import("@/services/email-settings");
 

@@ -9,10 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type {
-  GanttContextMenuTarget,
-  GanttCreateDraftRequest,
-} from "@/domain/gantt/context-menu";
+import type { GanttContextMenuTarget, GanttCreateDraftRequest } from "@/domain/gantt/context-menu";
 import { dismissClearsPinnedSelection } from "@/domain/gantt/pinned-selection";
 import type { GanttOccDetail } from "@/features/calendar/ui/GanttOccupancyDetailPanel";
 import type { MoveRoomDraft } from "@/features/calendar/ui/MoveRoomDialog";
@@ -64,7 +61,7 @@ export function GanttContextMenuProvider({
       closeMenu();
       onRequestCreate(draft);
     },
-    [closeMenu, onRequestCreate]
+    [closeMenu, onRequestCreate],
   );
 
   const openMoveRoom = useCallback(
@@ -72,7 +69,7 @@ export function GanttContextMenuProvider({
       closeMenu();
       onOpenMoveRoom(draft);
     },
-    [closeMenu, onOpenMoveRoom]
+    [closeMenu, onOpenMoveRoom],
   );
 
   const openOccDetail = useCallback(
@@ -80,7 +77,7 @@ export function GanttContextMenuProvider({
       closeMenu();
       onOpenOccDetail(detail);
     },
-    [closeMenu, onOpenOccDetail]
+    [closeMenu, onOpenOccDetail],
   );
 
   const value = useMemo(
@@ -93,15 +90,7 @@ export function GanttContextMenuProvider({
       openMoveRoom,
       openOccDetail,
     }),
-    [
-      menu,
-      openMenu,
-      closeMenu,
-      dismissMenu,
-      requestCreate,
-      openMoveRoom,
-      openOccDetail,
-    ]
+    [menu, openMenu, closeMenu, dismissMenu, requestCreate, openMoveRoom, openOccDetail],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

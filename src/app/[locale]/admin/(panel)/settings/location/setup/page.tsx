@@ -27,8 +27,12 @@ export default async function LocationSetupPage() {
     <SettingsPageLayout title={tPage("setup.title")} description={tPage("setup.description")}>
       <div className="settings-overview__grid mb-4">
         <Link href="/admin/settings/location/structure" className="settings-overview-card">
-          <span className="settings-overview-card__title">{tPage("structure.cardStructureTitle")}</span>
-          <span className="settings-overview-card__desc">{tPage("structure.cardStructureBody")}</span>
+          <span className="settings-overview-card__title">
+            {tPage("structure.cardStructureTitle")}
+          </span>
+          <span className="settings-overview-card__desc">
+            {tPage("structure.cardStructureBody")}
+          </span>
         </Link>
         <Link href="/admin/rooms/new?return_to=structure" className="settings-overview-card">
           <span className="settings-overview-card__title">{tPage("setup.addRoomsTitle")}</span>

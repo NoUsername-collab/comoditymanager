@@ -15,9 +15,7 @@ describe("buildGuestAppStayUrl", () => {
   });
 
   it("preserves access code casing from caller", () => {
-    expect(buildGuestAppStayUrl("https://host", "AbC12")).toBe(
-      "https://host/stay/AbC12",
-    );
+    expect(buildGuestAppStayUrl("https://host", "AbC12")).toBe("https://host/stay/AbC12");
   });
 });
 

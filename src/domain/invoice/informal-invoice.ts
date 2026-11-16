@@ -48,12 +48,7 @@ export function buildInformalInvoice(input: {
 }): InformalInvoice {
   const nights = stayNightCount(input.check_in, input.check_out);
   const lines: InvoiceLine[] = input.rooms.map((r) => {
-    const pricing = computeRoomStayPricing(
-      r,
-      input.check_in,
-      input.check_out,
-      input.pricing_rules
-    );
+    const pricing = computeRoomStayPricing(r, input.check_in, input.check_out, input.pricing_rules);
     return {
       room_id: r.room_id,
       room_name: r.room_name,
@@ -65,8 +60,7 @@ export function buildInformalInvoice(input: {
   });
 
   const subtotal = Math.round(lines.reduce((s, l) => s + l.line_total, 0) * 100) / 100;
-  const uses_recorded_total =
-    input.total_price != null && input.total_price > 0;
+  const uses_recorded_total = input.total_price != null && input.total_price > 0;
 
   return {
     booking_id: input.booking_id,

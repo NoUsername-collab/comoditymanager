@@ -27,7 +27,7 @@ export function sumIssuedInvoiceTotals(
     status: string;
     invoice_kind?: string;
     document?: { total: number };
-  }>
+  }>,
 ): number {
   const total = invoices
     .filter((inv) => inv.status === "issued")
@@ -38,10 +38,7 @@ export function sumIssuedInvoiceTotals(
       return true;
     })
     .reduce((sum, inv) => {
-      const amount =
-        inv.total != null
-          ? inv.total
-          : inv.document?.total ?? 0;
+      const amount = inv.total != null ? inv.total : (inv.document?.total ?? 0);
       return sum + roundMoney(Number(amount) || 0);
     }, 0);
   return roundMoney(total);
@@ -50,7 +47,7 @@ export function sumIssuedInvoiceTotals(
 export function computeInvoiceFinancials(
   totalDue: number,
   totalPaid: number,
-  totalInvoiced: number
+  totalInvoiced: number,
 ): InvoiceFinancials {
   const due = roundMoney(Math.max(0, totalDue));
   const paid = roundMoney(Math.max(0, totalPaid));
@@ -83,19 +80,17 @@ export function resolveNextInvoiceKind(input: {
 }
 
 export function resolveDefaultInvoiceAmount(
-  financials: Pick<InvoiceFinancials, "remainingToInvoice" | "uninvoicedPaid">
+  financials: Pick<InvoiceFinancials, "remainingToInvoice" | "uninvoicedPaid">,
 ): number {
   if (financials.uninvoicedPaid > MONEY_EPS) {
-    return roundMoney(
-      Math.min(financials.uninvoicedPaid, financials.remainingToInvoice)
-    );
+    return roundMoney(Math.min(financials.uninvoicedPaid, financials.remainingToInvoice));
   }
   return financials.remainingToInvoice;
 }
 
 export function validateInvoiceAmount(
   amount: number,
-  remainingToInvoice: number
+  remainingToInvoice: number,
 ): { ok: true; amount: number } | { ok: false; error: string } {
   const normalized = roundMoney(amount);
   if (!Number.isFinite(normalized) || normalized <= MONEY_EPS) {
@@ -108,7 +103,7 @@ export function validateInvoiceAmount(
 }
 
 export function nextInvoiceSequence(
-  invoices: Pick<IssuedInvoiceSummary, "invoice_sequence">[]
+  invoices: Pick<IssuedInvoiceSummary, "invoice_sequence">[],
 ): number {
   if (invoices.length === 0) return 1;
   return Math.max(...invoices.map((inv) => inv.invoice_sequence)) + 1;
@@ -117,7 +112,7 @@ export function nextInvoiceSequence(
 /** Aloca plati nefacturate (FIFO) pana la suma facturii. */
 export function paymentsToLinkForInvoice(
   payments: PaymentEntry[],
-  invoiceAmount: number
+  invoiceAmount: number,
 ): string[] {
   let remaining = roundMoney(invoiceAmount);
   const ids: string[] = [];
@@ -137,9 +132,7 @@ export function paymentsToLinkForInvoice(
   return ids;
 }
 
-export function invoiceKindLabelKey(
-  kind: InvoiceKind | "proforma"
-): string {
+export function invoiceKindLabelKey(kind: InvoiceKind | "proforma"): string {
   switch (kind) {
     case "advance":
       return "kindAdvance";

@@ -3,11 +3,7 @@ import { HEALTH_ICON } from "@/lib/platform-admin/log-styles";
 import { Link } from "@/i18n/navigation";
 import type { TenantHealthCheck } from "@/services/platform-debug";
 
-export async function TenantHealthPanel({
-  healthChecks,
-}: {
-  healthChecks: TenantHealthCheck[];
-}) {
+export async function TenantHealthPanel({ healthChecks }: { healthChecks: TenantHealthCheck[] }) {
   const t = await getTranslations("platformAdmin.logsPage.health");
   const unhealthy = healthChecks.filter((check) => !check.healthy);
 
@@ -32,9 +28,7 @@ export async function TenantHealthPanel({
           <div
             key={check.tenantId}
             className={`platform-health-row flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
-              check.healthy
-                ? "bg-neutral-800/50"
-                : "border border-red-900/50 bg-red-950/20"
+              check.healthy ? "bg-neutral-800/50" : "border border-red-900/50 bg-red-950/20"
             }`}
           >
             <span className="platform-health-row__icon shrink-0">

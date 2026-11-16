@@ -54,7 +54,11 @@ export default async function SettingsBillingPage({
           cardAvailable={isCardPaymentAvailable()}
           hasCustomer={Boolean(billing.stripeCustomerId)}
           offers={offers}
-          checkout={params.checkout === "success" || params.checkout === "cancelled" ? params.checkout : null}
+          checkout={
+            params.checkout === "success" || params.checkout === "cancelled"
+              ? params.checkout
+              : null
+          }
         />
       </SettingsSection>
     </SettingsPageLayout>

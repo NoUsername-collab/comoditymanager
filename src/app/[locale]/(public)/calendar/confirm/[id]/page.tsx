@@ -8,11 +8,7 @@ import { loadPublicConfirmPage } from "@/features/public-site/loaders";
 import { quickConfirmAction } from "./actions";
 import { getTranslations } from "next-intl/server";
 
-export default async function QuickConfirmPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function QuickConfirmPage({ params }: { params: Promise<{ id: string }> }) {
   const [t, admin, { id }, { ctx, pricingRules }] = await Promise.all([
     getTranslations("public.confirm"),
     getStaffUser(),
@@ -40,7 +36,10 @@ export default async function QuickConfirmPage({
 
   return (
     <main className="public-confirm-page ml-content mx-auto max-w-lg flex-1 px-4 py-6">
-      <Link href="/receptie" className="public-confirm-page__back text-sm text-zinc-500 hover:text-zinc-800">
+      <Link
+        href="/receptie"
+        className="public-confirm-page__back text-sm text-zinc-500 hover:text-zinc-800"
+      >
         ← {t("backReception")}
       </Link>
 

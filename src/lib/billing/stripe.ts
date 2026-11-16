@@ -24,7 +24,8 @@ export function getStripeConfig(): StripeConfig | null {
   return { secretKey, webhookSecret, prices: { essential, professional } };
 }
 
-type FormValue = string | number | boolean | null | undefined | FormValue[] | { [key: string]: FormValue };
+type FormValue =
+  string | number | boolean | null | undefined | FormValue[] | { [key: string]: FormValue };
 
 /** Stripe's form encoding of nested parameters. */
 export function encodeStripeForm(params: Record<string, FormValue>): string {
@@ -76,9 +77,15 @@ export async function stripeRequest<T>(
     cache: "no-store",
     signal: AbortSignal.timeout(20_000),
   });
-  const json = (await response.json().catch(() => ({}))) as { error?: { message?: string; code?: string } } & T;
+  const json = (await response.json().catch(() => ({}))) as {
+    error?: { message?: string; code?: string };
+  } & T;
   if (!response.ok) {
-    throw new StripeApiError(json.error?.message ?? `Stripe ${response.status}`, response.status, json.error?.code ?? null);
+    throw new StripeApiError(
+      json.error?.message ?? `Stripe ${response.status}`,
+      response.status,
+      json.error?.code ?? null,
+    );
   }
   return json;
 }

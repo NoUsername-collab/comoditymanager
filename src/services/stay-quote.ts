@@ -19,10 +19,7 @@ export async function quoteStayForRooms(input: {
   excludeBookingId?: string;
 }): Promise<StayQuote> {
   const roomIds = [...new Set(input.roomIds.filter(Boolean))];
-  const [rooms, rules] = await Promise.all([
-    getRoomsByIds(roomIds),
-    getBookingRulesSettings(),
-  ]);
+  const [rooms, rules] = await Promise.all([getRoomsByIds(roomIds), getBookingRulesSettings()]);
   if (roomIds.length === 0 || rooms.length !== roomIds.length) {
     throw new Error("booking.one_or_more_rooms_unavailable_reload");
   }

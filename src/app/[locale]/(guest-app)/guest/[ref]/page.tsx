@@ -11,9 +11,6 @@ export default async function GuestLoyaltyRefPage({
   if (!loaded.loyalty.ok) return null;
 
   return (
-    <GuestLoyaltyHomeScreen
-      snapshot={loaded.loyalty.snapshot}
-      pensionName={loaded.pensionName}
-    />
+    <GuestLoyaltyHomeScreen snapshot={loaded.loyalty.snapshot} pensionName={loaded.pensionName} />
   );
 }

@@ -37,7 +37,9 @@ function booking(partial: Partial<BookingRow> & Pick<BookingRow, "id">): Booking
   };
 }
 
-function staySeg(partial: Partial<OccupancySegment> & Pick<OccupancySegment, "id">): OccupancySegment {
+function staySeg(
+  partial: Partial<OccupancySegment> & Pick<OccupancySegment, "id">,
+): OccupancySegment {
   return {
     kind: "request",
     roomId: "room-a",
@@ -102,9 +104,7 @@ describe("gantt live occupancy", () => {
     expect(overlayChangesOccupancy(overlay, server)).toBe(false);
     expect(bookingOccupancyKey(overlay)).toBe(bookingOccupancyKey(server));
     const occupancy = mergeGanttLiveOccupancy({
-      serverOccupancy: [
-        staySeg({ id: "seg-1", bookingId: "b1", kind: "stay", roomId: "room-a" }),
-      ],
+      serverOccupancy: [staySeg({ id: "seg-1", bookingId: "b1", kind: "stay", roomId: "room-a" })],
       serverBookings: [server],
       overlays: new Map([["b1", overlay]]),
       removedBookingIds: new Set(),
@@ -127,9 +127,7 @@ describe("gantt live occupancy", () => {
       today: "2026-09-01",
     });
     expect(occupancyFromIds(occupancy)).toEqual(["live:new-1:room-a"]);
-    expect(occupancySegmentsFromBooking(overlay, "2026-09-01")[0]?.kind).toBe(
-      "request",
-    );
+    expect(occupancySegmentsFromBooking(overlay, "2026-09-01")[0]?.kind).toBe("request");
   });
 
   it("keeps a hold overlay when the server refresh has not caught up", () => {

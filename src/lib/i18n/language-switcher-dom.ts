@@ -6,7 +6,6 @@ export function isLanguageSwitcherEventTarget(target: unknown): boolean {
   if (!target || typeof (target as Element).closest !== "function") return false;
   const el = target as Element;
   return Boolean(
-    el.closest(LANGUAGE_SWITCHER_MENU_SELECTOR) ||
-      el.closest(LANGUAGE_SWITCHER_ROOT_SELECTOR)
+    el.closest(LANGUAGE_SWITCHER_MENU_SELECTOR) || el.closest(LANGUAGE_SWITCHER_ROOT_SELECTOR),
   );
 }

@@ -34,7 +34,11 @@ import {
   withSections,
 } from "@/features/public-site/editor/model/studio-draft";
 import { MenuEditor } from "@/features/public-site/editor/ui/MenuEditor";
-import { NewPageForm, PageSettingsEditor, PageSwitcher } from "@/features/public-site/editor/ui/SitePageEditors";
+import {
+  NewPageForm,
+  PageSettingsEditor,
+  PageSwitcher,
+} from "@/features/public-site/editor/ui/SitePageEditors";
 import { SECTION_KINDS, sectionKind } from "@/features/public-site/sections/kinds";
 import { sectionEditor } from "@/features/public-site/sections/editor-registry";
 import { SectionStyleEditor } from "@/features/public-site/editor/ui/SectionStyleEditor";
@@ -77,7 +81,8 @@ export function PublicSiteContentPanel({
 }) {
   const te = useTranslations("admin.pages.publicSite.editor");
   const tp = useTranslations("admin.pages.publicSite.editor.sitePages");
-  const { draft, copy, setDraft, patchDraft, library, activePage, setActivePage } = usePublicSiteEditor();
+  const { draft, copy, setDraft, patchDraft, library, activePage, setActivePage } =
+    usePublicSiteEditor();
   const [adding, setAdding] = useState(false);
   const [newPage, setNewPage] = useState(false);
   // The page being edited: the first page (null) or an own page.
@@ -86,9 +91,13 @@ export function PublicSiteContentPanel({
   const sections = sectionsOf(draft, activePage);
   const drag = useOutlineDrag(
     (key, targetKey) =>
-      setDraft((d) => withSections(d, activePage, moveSectionDraftTo(sectionsOf(d, activePage), key, targetKey))),
+      setDraft((d) =>
+        withSections(d, activePage, moveSectionDraftTo(sectionsOf(d, activePage), key, targetKey)),
+      ),
     (key, direction) =>
-      setDraft((d) => withSections(d, activePage, moveSectionDraft(sectionsOf(d, activePage), key, direction))),
+      setDraft((d) =>
+        withSections(d, activePage, moveSectionDraft(sectionsOf(d, activePage), key, direction)),
+      ),
   );
 
   // An opened part starts at its top, whether opened here or from the preview.
@@ -102,7 +111,9 @@ export function PublicSiteContentPanel({
     const kind = sectionKind(section.type);
     if (section.type === "gallery") {
       const albums = readGalleryAlbums((section.settings.albums ?? "").split(",").filter(Boolean));
-      const count = library.filter((photo) => albums.length === 0 || albums.includes(photo.album)).length;
+      const count = library.filter(
+        (photo) => albums.length === 0 || albums.includes(photo.album),
+      ).length;
       return count > 0 ? te("photoCount", { count }) : te("noPhotos");
     }
     if (!kind.summaryField) return te(`cards.${section.type}.desc`);
@@ -114,7 +125,9 @@ export function PublicSiteContentPanel({
     const kind = sectionKind(section.type);
     const Editor = sectionEditor(section.type);
     // Kinds that sit side by side are told apart by their own title.
-    const ownName = kind.namedByTitle ? sectionField(section, draft.editLocale, "title").trim() : "";
+    const ownName = kind.namedByTitle
+      ? sectionField(section, draft.editLocale, "title").trim()
+      : "";
     return {
       key: section.key,
       name: ownName || te(`cards.${section.type}.name`),
@@ -178,7 +191,8 @@ export function PublicSiteContentPanel({
         description: tp("settingsDesc"),
         summary: `/${page.slug}`,
         visible: page.visible,
-        onToggleVisible: (visible) => setDraft((d) => patchStudioPage(d, page.key, (row) => ({ ...row, visible }))),
+        onToggleVisible: (visible) =>
+          setDraft((d) => patchStudioPage(d, page.key, (row) => ({ ...row, visible }))),
         editor: <PageSettingsEditor page={page} />,
         onRemove: () => {
           setDraft((d) => removeStudioPage(d, page.key));
@@ -186,7 +200,10 @@ export function PublicSiteContentPanel({
         },
         removeLabel: tp("remove"),
         removeConfirm: tp("removeConfirm", { name: pageName }),
-        eyeLabels: { show: tp("showAria", { name: pageName }), hide: tp("hideAria", { name: pageName }) },
+        eyeLabels: {
+          show: tp("showAria", { name: pageName }),
+          hide: tp("hideAria", { name: pageName }),
+        },
       }
     : null;
 
@@ -232,7 +249,8 @@ export function PublicSiteContentPanel({
   // Kinds still to add, below their limit on this page (an own page takes any kind).
   const addable = Object.values(SECTION_KINDS).filter(
     (kind) =>
-      sections.filter((section) => section.type === kind.type).length < sectionKindLimit(kind.type, ownPage),
+      sections.filter((section) => section.type === kind.type).length <
+      sectionKindLimit(kind.type, ownPage),
   );
   function addSection(type: SectionDraft["type"]) {
     const key = crypto.randomUUID();
@@ -277,12 +295,21 @@ export function PublicSiteContentPanel({
                     <span>{te(`cards.${kind.type}.desc`)}</span>
                   </button>
                 ))}
-                <button type="button" className="pub-add-section__cancel" onClick={() => setAdding(false)}>
+                <button
+                  type="button"
+                  className="pub-add-section__cancel"
+                  onClick={() => setAdding(false)}
+                >
                   {te("cancel")}
                 </button>
               </div>
             ) : (
-              <AdminButton type="button" variant="secondary" size="sm" onClick={() => setAdding(true)}>
+              <AdminButton
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => setAdding(true)}
+              >
                 + {te("addSection")}
               </AdminButton>
             )}

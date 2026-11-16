@@ -5,9 +5,7 @@ import { subscribeLayoutViewportChanges } from "@/layout/mobile/resize-sync";
 
 function isCompactChromeBootstrapped(): boolean {
   if (typeof document === "undefined") return false;
-  return (
-    document.documentElement.getAttribute("data-layout-chrome") === "compact"
-  );
+  return document.documentElement.getAttribute("data-layout-chrome") === "compact";
 }
 
 /**

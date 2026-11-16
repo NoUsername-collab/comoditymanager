@@ -8,9 +8,7 @@ export function isLayoutMode(value: string | null | undefined): value is LayoutM
   return LAYOUT_MODES.includes(value as LayoutMode);
 }
 
-export function isLayoutOrientation(
-  value: string | null | undefined
-): value is LayoutOrientation {
+export function isLayoutOrientation(value: string | null | undefined): value is LayoutOrientation {
   return LAYOUT_ORIENTATIONS.includes(value as LayoutOrientation);
 }
 

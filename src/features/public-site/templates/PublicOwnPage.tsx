@@ -3,7 +3,11 @@ import { isOptimizablePublicImageUrl } from "@/domain/public-site/media";
 import { pickOwnLocalized } from "@/features/public-site/domain/localized";
 import { orderPublicSections } from "@/features/public-site/domain/order-sections";
 import { effectivePublicTemplate } from "@/features/public-site/domain/template";
-import type { PublicSiteConfig, PublicSitePage, PublicSiteSection } from "@/features/public-site/domain/types";
+import type {
+  PublicSiteConfig,
+  PublicSitePage,
+  PublicSiteSection,
+} from "@/features/public-site/domain/types";
 import { sectionKind } from "@/features/public-site/sections/kinds";
 import { TemplateSections } from "@/features/public-site/templates/PublicSiteTemplates";
 
@@ -26,10 +30,14 @@ export function PublicOwnPageBody({
   const title = pickOwnLocalized(page.title, locale);
   const lead = pickOwnLocalized(page.lead, locale);
   const ordered = orderPublicSections(page.sections);
-  const pinnedLast = (section: PublicSiteSection) => Boolean(sectionKind(section.sectionType).pinnedLast);
+  const pinnedLast = (section: PublicSiteSection) =>
+    Boolean(sectionKind(section.sectionType).pinnedLast);
   const body = (
     <TemplateSections
-      sections={[...ordered.filter((section) => !pinnedLast(section)), ...ordered.filter(pinnedLast)]}
+      sections={[
+        ...ordered.filter((section) => !pinnedLast(section)),
+        ...ordered.filter(pinnedLast),
+      ]}
       config={config}
       locale={locale}
       template={template}
@@ -40,7 +48,9 @@ export function PublicOwnPageBody({
   return (
     <main className={`pub-home pub-home--${template} pub-own-page`}>
       <header
-        className={["pub-page-head", page.imageUrl ? "pub-page-head--photo" : ""].filter(Boolean).join(" ")}
+        className={["pub-page-head", page.imageUrl ? "pub-page-head--photo" : ""]
+          .filter(Boolean)
+          .join(" ")}
         data-pub-page-head={preview ? "1" : undefined}
       >
         {page.imageUrl ? (

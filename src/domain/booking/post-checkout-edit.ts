@@ -13,7 +13,7 @@ export function isBookingEditableAfterCheckout(
   input: {
     memberRole: TenantMemberRole | null;
     allowPostCheckoutEdits: boolean;
-  }
+  },
 ): boolean {
   if (!booking.actual_check_out_at) return true;
   return canEditAfterCheckout(input);
@@ -24,7 +24,7 @@ export function assertBookingEditableAfterCheckout(
   input: {
     memberRole: TenantMemberRole | null;
     allowPostCheckoutEdits: boolean;
-  }
+  },
 ): void {
   if (!isBookingEditableAfterCheckout(booking, input)) {
     throw new Error("booking.checkout_locked");

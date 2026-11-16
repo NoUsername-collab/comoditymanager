@@ -9,17 +9,9 @@ import {
 } from "@/domain/checkin/guest-layout";
 import { GuestIdentityCard } from "@/features/checkin/ui/GuestIdentityCard";
 import type { MrzMappedIdentity } from "@/domain/guest/mrz";
-import type {
-  BookingForCheckin,
-  CheckinGuestInput,
-  CheckinSettings,
-} from "@/domain/checkin/types";
+import type { BookingForCheckin, CheckinGuestInput, CheckinSettings } from "@/domain/checkin/types";
 
-const IDENTITY_SCOPES: CheckinIdentityScope[] = [
-  "rep",
-  "individual",
-  "per_room",
-];
+const IDENTITY_SCOPES: CheckinIdentityScope[] = ["rep", "individual", "per_room"];
 
 export function StepIdentity({
   guests,
@@ -81,17 +73,17 @@ export function StepIdentity({
       {registeredOnly ? (
         <p className="checkin-registered-only-hint">{t("registeredGuests.onlyHint")}</p>
       ) : null}
-      {continuationHint ? (
-        <p className="checkin-continuation-hint">{continuationHint}</p>
-      ) : null}
-      {repAllRoomsHint ? (
-        <p className="checkin-rep-all-rooms-hint">{repAllRoomsHint}</p>
-      ) : null}
+      {continuationHint ? <p className="checkin-continuation-hint">{continuationHint}</p> : null}
+      {repAllRoomsHint ? <p className="checkin-rep-all-rooms-hint">{repAllRoomsHint}</p> : null}
       <p className="checkin-legal-hint">{t("touristSheet.legalHint")}</p>
       <p className="checkin-party-hint">{partyHint}</p>
 
       {operatorCanChoose && (
-        <div className="checkin-identity-scope" role="radiogroup" aria-label={t("identityScope.title")}>
+        <div
+          className="checkin-identity-scope"
+          role="radiogroup"
+          aria-label={t("identityScope.title")}
+        >
           <p className="checkin-identity-scope__title">{t("identityScope.title")}</p>
           <div className="checkin-identity-scope__options">
             {IDENTITY_SCOPES.map((scope) => (
@@ -111,7 +103,9 @@ export function StepIdentity({
                   onChange={() => onScopeChange(scope)}
                 />
                 <span className="checkin-identity-scope__label">{t(`identityScope.${scope}`)}</span>
-                <span className="checkin-identity-scope__desc">{t(`identityScope.${scope}Desc`)}</span>
+                <span className="checkin-identity-scope__desc">
+                  {t(`identityScope.${scope}Desc`)}
+                </span>
               </label>
             ))}
           </div>
@@ -145,11 +139,7 @@ export function StepIdentity({
               idx={idx}
               identityScope={identityScope}
               rooms={rooms}
-              canRemove={
-                !registeredOnly &&
-                identityScope === "individual" &&
-                guests.length > 1
-              }
+              canRemove={!registeredOnly && identityScope === "individual" && guests.length > 1}
               onRemove={onRemoveGuest}
               updateGuest={updateGuest}
               onApplyMrz={(data) => onApplyMrz(idx, data)}

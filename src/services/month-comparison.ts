@@ -5,25 +5,16 @@ import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { loadStatisticsBaseDataForTenant } from "@/services/statistics";
 
-async function loadMonthComparisonForTenant(
-  tenantId: string
-): Promise<MonthComparison> {
+async function loadMonthComparisonForTenant(tenantId: string): Promise<MonthComparison> {
   const { bookings, snapshot } = await loadStatisticsBaseDataForTenant(tenantId);
   return buildMonthComparison(bookings, snapshot);
 }
 
 const getCachedMonthComparison = (tenantId: string) =>
-  unstable_cache(
-    () => loadMonthComparisonForTenant(tenantId),
-    ["month-comparison", tenantId],
-    {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-      ],
-      revalidate: 120,
-    }
-  );
+  unstable_cache(() => loadMonthComparisonForTenant(tenantId), ["month-comparison", tenantId], {
+    tags: [CACHE_TAGS.bookingCounts, tenantTag(tenantId, CACHE_TAGS.bookingCounts)],
+    revalidate: 120,
+  });
 
 const loadMonthComparisonCached = cache(async (): Promise<MonthComparison> => {
   const { tenantId } = await getTenantScope();

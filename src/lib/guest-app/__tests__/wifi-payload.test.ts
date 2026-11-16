@@ -9,9 +9,7 @@ describe("buildWifiQrPayload", () => {
   });
 
   it("escapes special characters", () => {
-    expect(buildWifiQrPayload('Cafe;Bar', 'p:a"ss')).toBe(
-      'WIFI:T:WPA;S:Cafe\\;Bar;P:p\\:a\\"ss;;',
-    );
+    expect(buildWifiQrPayload("Cafe;Bar", 'p:a"ss')).toBe('WIFI:T:WPA;S:Cafe\\;Bar;P:p\\:a\\"ss;;');
   });
 
   it("builds open network payload without password", () => {

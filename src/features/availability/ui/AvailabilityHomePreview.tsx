@@ -22,8 +22,7 @@ export async function AvailabilityHomePreview({
   const today = todayIso();
   const refDate = new Date(today + "T00:00:00");
   const year = Number(searchParams.y) || refDate.getFullYear();
-  const month =
-    searchParams.m !== undefined ? Number(searchParams.m) : refDate.getMonth();
+  const month = searchParams.m !== undefined ? Number(searchParams.m) : refDate.getMonth();
 
   const [tCommon, dashboardResult] = await Promise.all([
     getTranslations("admin.common"),
@@ -56,11 +55,7 @@ export async function AvailabilityHomePreview({
 
   const weekendSlots = dashboard.weekend_picks.slice(0, 4);
   const weekends =
-    weekendSlots.length > 0
-      ? weekendSlots
-      : dashboard.next_weekend
-        ? [dashboard.next_weekend]
-        : [];
+    weekendSlots.length > 0 ? weekendSlots : dashboard.next_weekend ? [dashboard.next_weekend] : [];
 
   return (
     <div className="availability-home-preview">
@@ -82,9 +77,7 @@ export async function AvailabilityHomePreview({
               ›
             </Link>
           </div>
-          <span className="availability-home-preview__month capitalize">
-            {dashboard.title}
-          </span>
+          <span className="availability-home-preview__month capitalize">{dashboard.title}</span>
         </div>
         <span className="availability-home-preview__rooms-pill">
           <strong>{dashboard.total_rooms}</strong> {tCommon("rooms")}

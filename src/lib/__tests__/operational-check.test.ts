@@ -31,7 +31,7 @@ describe("parseOperationalTimestamp", () => {
 
   it("throws on invalid date input", () => {
     expect(() => parseOperationalTimestamp("not-a-date")).toThrow(
-      "operational.invalid_date_or_time"
+      "operational.invalid_date_or_time",
     );
   });
 });
@@ -56,15 +56,15 @@ describe("isoToDatetimeLocal", () => {
 // formatOperationalTimestamp
 // ---------------------------------------------------------------------------
 describe("formatOperationalTimestamp", () => {
-  it('returns dash for null input', () => {
+  it("returns dash for null input", () => {
     expect(formatOperationalTimestamp(null)).toBe("—");
   });
 
-  it('returns dash for undefined input', () => {
+  it("returns dash for undefined input", () => {
     expect(formatOperationalTimestamp(undefined)).toBe("—");
   });
 
-  it('returns dash for invalid ISO string', () => {
+  it("returns dash for invalid ISO string", () => {
     expect(formatOperationalTimestamp("not-valid")).toBe("—");
   });
 

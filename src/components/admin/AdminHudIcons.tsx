@@ -160,13 +160,7 @@ const MAP = {
   phone: HudIconPhone,
 } as const;
 
-export function AdminHudIcon({
-  name,
-  className,
-}: {
-  name: HudIconName;
-  className?: string;
-}) {
+export function AdminHudIcon({ name, className }: { name: HudIconName; className?: string }) {
   const Icon = MAP[name];
   return <Icon className={className} />;
 }

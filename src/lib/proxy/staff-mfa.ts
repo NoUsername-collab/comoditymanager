@@ -9,17 +9,13 @@ export async function resolveEffectiveStaffRole(
   _email: string | undefined,
   slug: string | undefined,
   customDomain: string | undefined,
-  sessionClient?: SupabaseClient
+  sessionClient?: SupabaseClient,
 ): Promise<"admin" | "operator" | null> {
   if (slug) {
     return resolveStaffRoleOnTenantHost(userId, { slug }, sessionClient);
   }
   if (customDomain) {
-    return resolveStaffRoleOnTenantHost(
-      userId,
-      { customDomain },
-      sessionClient
-    );
+    return resolveStaffRoleOnTenantHost(userId, { customDomain }, sessionClient);
   }
   return null;
 }
@@ -29,7 +25,7 @@ export async function mfaRedirectIfNeeded(
   supabase: SupabaseClient,
   user: { id: string; email?: string | null },
   path: string,
-  memberRole: "owner" | "admin" | "operator" | null
+  memberRole: "owner" | "admin" | "operator" | null,
 ): Promise<NextResponse | null> {
   if (isMfaExemptAdminPath(path)) return null;
 

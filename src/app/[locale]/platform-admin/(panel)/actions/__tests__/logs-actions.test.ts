@@ -1,11 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { getPlatformAdminWithMfaOrNull, capturePlatformAdminError } = vi.hoisted(
-  () => ({
-    getPlatformAdminWithMfaOrNull: vi.fn(),
-    capturePlatformAdminError: vi.fn(),
-  })
-);
+const { getPlatformAdminWithMfaOrNull, capturePlatformAdminError } = vi.hoisted(() => ({
+  getPlatformAdminWithMfaOrNull: vi.fn(),
+  capturePlatformAdminError: vi.fn(),
+}));
 
 vi.mock("@/lib/auth/require-platform-admin", () => ({
   getPlatformAdminWithMfaOrNull,
@@ -28,13 +26,9 @@ describe("platform logs probe actions", () => {
       email: "admin@zalmox.app",
     });
 
-    const { probePlatformLogsErrorAction } = await import(
-      "@/features/platform-admin/logs-actions"
-    );
+    const { probePlatformLogsErrorAction } = await import("@/features/platform-admin/logs-actions");
 
-    await expect(probePlatformLogsErrorAction()).rejects.toThrow(
-      /\[platform-admin\/logs:probe\]/
-    );
+    await expect(probePlatformLogsErrorAction()).rejects.toThrow(/\[platform-admin\/logs:probe\]/);
 
     expect(capturePlatformAdminError).toHaveBeenCalledOnce();
     const [probeError, extra] = capturePlatformAdminError.mock.calls[0];
@@ -53,12 +47,10 @@ describe("platform logs probe actions", () => {
       email: "ops@zalmox.app",
     });
 
-    const { probePlatformLogsPageThrow } = await import(
-      "@/features/platform-admin/logs-actions"
-    );
+    const { probePlatformLogsPageThrow } = await import("@/features/platform-admin/logs-actions");
 
     await expect(probePlatformLogsPageThrow()).rejects.toThrow(
-      /\[platform-admin\/logs:probe-ssr\]/
+      /\[platform-admin\/logs:probe-ssr\]/,
     );
 
     expect(capturePlatformAdminError).toHaveBeenCalledWith(
@@ -66,16 +58,14 @@ describe("platform logs probe actions", () => {
       expect.objectContaining({
         source: "platform-logs-probe-ssr",
         context: { probe: true, mode: "ssr" },
-      })
+      }),
     );
   });
 
   it("rejects when platform admin session is missing", async () => {
     getPlatformAdminWithMfaOrNull.mockResolvedValue(null);
 
-    const { probePlatformLogsErrorAction } = await import(
-      "@/features/platform-admin/logs-actions"
-    );
+    const { probePlatformLogsErrorAction } = await import("@/features/platform-admin/logs-actions");
 
     await expect(probePlatformLogsErrorAction()).rejects.toThrow(/Neautorizat/);
     expect(capturePlatformAdminError).not.toHaveBeenCalled();

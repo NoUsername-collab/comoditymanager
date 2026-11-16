@@ -37,10 +37,7 @@ export const DEFAULT_TEAM_PERMISSIONS: TeamPermissions = {
   },
 };
 
-function parseRolePermissionMap(
-  raw: unknown,
-  role: keyof TeamPermissions,
-): RolePermissionMap {
+function parseRolePermissionMap(raw: unknown, role: keyof TeamPermissions): RolePermissionMap {
   const defaults = DEFAULT_TEAM_PERMISSIONS[role];
   if (!raw || typeof raw !== "object") return { ...defaults };
 

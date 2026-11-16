@@ -6,10 +6,7 @@ import { AdminActivityHistoryPanel } from "@/features/activity/ui/AdminActivityH
 export const dynamic = "force-dynamic";
 
 export default async function AdminHistoryPage() {
-  const [t] = await Promise.all([
-    getTranslations("admin.pages.settings"),
-    requireStaff(),
-  ]);
+  const [t] = await Promise.all([getTranslations("admin.pages.settings"), requireStaff()]);
 
   return (
     <AdminPageFrame

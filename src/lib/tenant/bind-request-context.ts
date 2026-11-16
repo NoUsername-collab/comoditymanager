@@ -18,9 +18,7 @@ import { tenantRowToRecord } from "@/lib/tenant/record";
 import { lookupTenantBySlugAnyStatus } from "@/services/tenants";
 import { headers } from "next/headers";
 
-async function redirectIfTenantBlocked(
-  row: { status: string } | null
-): Promise<void> {
+async function redirectIfTenantBlocked(row: { status: string } | null): Promise<void> {
   if (!row || isTenantOperational(row.status)) return;
   await redirect(`/tenant-suspended?status=${encodeURIComponent(row.status)}`);
 }
@@ -95,10 +93,7 @@ export async function tryBindTenantContextFromRequest(): Promise<TenantContext |
     if (error instanceof TenantNotFoundError) {
       return null;
     }
-    if (
-      error instanceof Error &&
-      error.message.includes("auth.tenant_host_required")
-    ) {
+    if (error instanceof Error && error.message.includes("auth.tenant_host_required")) {
       return null;
     }
     throw error;

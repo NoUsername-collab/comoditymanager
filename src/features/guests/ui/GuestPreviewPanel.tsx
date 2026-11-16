@@ -95,7 +95,8 @@ export function GuestPreviewPanel({
             ) : null}
             {guest.profile?.manual_note ? (
               <p className={guest.profile?.blacklist_reason ? "mt-2" : ""}>
-                <span className="font-bold">{tGuests("internalNote")}:</span> {guest.profile.manual_note}
+                <span className="font-bold">{tGuests("internalNote")}:</span>{" "}
+                {guest.profile.manual_note}
               </p>
             ) : null}
           </section>

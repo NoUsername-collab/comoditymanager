@@ -6,7 +6,12 @@ import type { BookingSource } from "@/domain/booking/source";
  */
 
 export type VisitDay = { day: string; visits: number; visitors: number };
-export type BookingSourceDay = { day: string; source: BookingSource; requests: number; confirmed: number };
+export type BookingSourceDay = {
+  day: string;
+  source: BookingSource;
+  requests: number;
+  confirmed: number;
+};
 
 export type SiteMonth = {
   /** "YYYY-MM" */

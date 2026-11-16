@@ -22,18 +22,12 @@ export async function PricingGrid({
 
   return (
     <div className="lp">
-      <div
-        className={`lp-pricing-grid${compact ? " lp-pricing-grid--compact" : ""}`}
-      >
+      <div className={`lp-pricing-grid${compact ? " lp-pricing-grid--compact" : ""}`}>
         {plans.map((plan) => {
           const id = plan.id as CloudPlan;
           const featured = id === featuredPlan;
-          const priceLabel =
-            plan.priceEur === 0 ? t("priceFree") : t("billedMonthly");
-          const roomsLabel = formatPlanRoomLimit(
-            plan.maxRooms,
-            t("roomsUnlimited")
-          );
+          const priceLabel = plan.priceEur === 0 ? t("priceFree") : t("billedMonthly");
+          const roomsLabel = formatPlanRoomLimit(plan.maxRooms, t("roomsUnlimited"));
           const roomLine = t(`plans.${id}.roomLine`, { count: roomsLabel });
           const featureKeys = ["f1", "f2", "f3", "f4", "f5", "f6"] as const;
           const features = featureKeys
@@ -45,23 +39,15 @@ export async function PricingGrid({
               key={id}
               className={`lp-price-card${featured ? " lp-price-card--featured" : ""}`}
             >
-              {featured && (
-                <span className="lp-price-card__badge">
-                  {t("recommended")}
-                </span>
-              )}
+              {featured && <span className="lp-price-card__badge">{t("recommended")}</span>}
               <p className="lp-price-card__tier">{t(`plans.${id}.name`)}</p>
-              <h3 className="lp-price-card__name">
-                {t(`plans.${id}.tagline`)}
-              </h3>
+              <h3 className="lp-price-card__name">{t(`plans.${id}.tagline`)}</h3>
               <div className="lp-price-card__price">
                 <span className="lp-price-card__amount">
                   {plan.priceEur === 0 ? "0" : String(plan.priceEur)}
                 </span>
                 <span className="lp-price-card__currency">EUR</span>
-                {plan.priceEur > 0 && (
-                  <span className="lp-price-card__per">{t("perMonth")}</span>
-                )}
+                {plan.priceEur > 0 && <span className="lp-price-card__per">{t("perMonth")}</span>}
               </div>
               <p className="lp-price-card__period">{priceLabel}</p>
               <p className="lp-price-card__rooms">{roomLine}</p>
@@ -72,9 +58,7 @@ export async function PricingGrid({
               </ul>
               <Link
                 href="/signup"
-                className={`lp-btn ${
-                  featured ? "lp-btn--primary" : "lp-btn--ghost"
-                }`}
+                className={`lp-btn ${featured ? "lp-btn--primary" : "lp-btn--ghost"}`}
               >
                 {t(`plans.${id}.cta`)}
               </Link>
@@ -86,13 +70,7 @@ export async function PricingGrid({
   );
 }
 
-const COMPARISON_FEATURES = [
-  "rooms",
-  "team",
-  "gantt",
-  "branding",
-  "modules",
-] as const;
+const COMPARISON_FEATURES = ["rooms", "team", "gantt", "branding", "modules"] as const;
 
 export async function PricingComparisonTable() {
   const t = await getTranslations("pricing.comparison");
@@ -138,48 +116,48 @@ export async function PricingComparisonTable() {
 
       <div className="pricing-table-wrap pricing-table-desktop">
         <table className="pricing-table">
-        <thead>
-          <tr>
-            <th scope="col">{t("featureCol")}</th>
-            {rows.map((row) => (
-              <th key={row.id} scope="col">
-                {row.name}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">{t("rows.rooms")}</th>
-            {rows.map((row) => (
-              <td key={row.id}>{row.rooms}</td>
-            ))}
-          </tr>
-          <tr>
-            <th scope="row">{t("rows.team")}</th>
-            {rows.map((row) => (
-              <td key={row.id}>{row.team}</td>
-            ))}
-          </tr>
-          <tr>
-            <th scope="row">{t("rows.gantt")}</th>
-            {rows.map((row) => (
-              <td key={row.id}>{row.gantt}</td>
-            ))}
-          </tr>
-          <tr>
-            <th scope="row">{t("rows.branding")}</th>
-            {rows.map((row) => (
-              <td key={row.id}>{row.branding}</td>
-            ))}
-          </tr>
-          <tr>
-            <th scope="row">{t("rows.modules")}</th>
-            {rows.map((row) => (
-              <td key={row.id}>{row.modules}</td>
-            ))}
-          </tr>
-        </tbody>
+          <thead>
+            <tr>
+              <th scope="col">{t("featureCol")}</th>
+              {rows.map((row) => (
+                <th key={row.id} scope="col">
+                  {row.name}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">{t("rows.rooms")}</th>
+              {rows.map((row) => (
+                <td key={row.id}>{row.rooms}</td>
+              ))}
+            </tr>
+            <tr>
+              <th scope="row">{t("rows.team")}</th>
+              {rows.map((row) => (
+                <td key={row.id}>{row.team}</td>
+              ))}
+            </tr>
+            <tr>
+              <th scope="row">{t("rows.gantt")}</th>
+              {rows.map((row) => (
+                <td key={row.id}>{row.gantt}</td>
+              ))}
+            </tr>
+            <tr>
+              <th scope="row">{t("rows.branding")}</th>
+              {rows.map((row) => (
+                <td key={row.id}>{row.branding}</td>
+              ))}
+            </tr>
+            <tr>
+              <th scope="row">{t("rows.modules")}</th>
+              {rows.map((row) => (
+                <td key={row.id}>{row.modules}</td>
+              ))}
+            </tr>
+          </tbody>
         </table>
       </div>
     </>

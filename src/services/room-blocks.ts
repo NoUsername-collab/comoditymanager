@@ -1,8 +1,5 @@
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
-import {
-  getTenantScope,
-  withTenantId,
-} from "@/lib/tenant/scope";
+import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { addDays } from "@/lib/stay-dates";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 
@@ -32,11 +29,7 @@ export async function createRoomBlock(input: {
     throw new Error("room_blocks.invalid_interval_min_one_night");
   }
 
-  await assertRoomsAvailableForOccupancy(
-    input.checkIn,
-    input.checkOut,
-    [input.roomId]
-  );
+  await assertRoomsAvailableForOccupancy(input.checkIn, input.checkOut, [input.roomId]);
 
   const { tenantId, supabase } = await requireRoomInTenant(input.roomId);
   const { data, error } = await supabase
@@ -48,7 +41,7 @@ export async function createRoomBlock(input: {
         check_out: input.checkOut,
         reason,
         created_by: input.createdBy ?? null,
-      })
+      }),
     )
     .select("id")
     .single();
@@ -100,11 +93,9 @@ export async function extendRoomBlockOneNight(blockId: string): Promise<string> 
   if (block.ical_feed_id) throw new Error("room_blocks.imported");
 
   const newCheckOut = addDays(block.check_out as string, 1);
-  await assertRoomsAvailableForOccupancy(
-    block.check_out as string,
-    newCheckOut,
-    [block.room_id as string]
-  );
+  await assertRoomsAvailableForOccupancy(block.check_out as string, newCheckOut, [
+    block.room_id as string,
+  ]);
 
   const { error } = await supabase
     .from("room_blocks")

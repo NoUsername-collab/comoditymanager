@@ -2,10 +2,7 @@ import { getDesignTheme } from "@/design/themes/catalog";
 import type { AdminPaletteDefinition, AdminPaletteTokens } from "./types";
 import type { ThemeId } from "@/lib/themes";
 
-function fromAdminPrimitives(
-  themeId: ThemeId,
-  mode: "day" | "night"
-): AdminPaletteTokens {
+function fromAdminPrimitives(themeId: ThemeId, mode: "day" | "night"): AdminPaletteTokens {
   const p = getDesignTheme(themeId).admin[mode];
   return {
     pageBg: p.bg,

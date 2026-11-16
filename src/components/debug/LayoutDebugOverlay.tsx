@@ -75,20 +75,18 @@ export function LayoutDebugOverlay() {
       <pre className="layout-debug-overlay__body">{formatLayoutMetrics(metrics)}</pre>
       {metrics.displayLayoutMode === "manual" && (
         <p className="layout-debug-overlay__hint-block">
-          Layout manual: <strong>{metrics.displayLayoutPreference}</strong> (Setări →
-          Visuals).
+          Layout manual: <strong>{metrics.displayLayoutPreference}</strong> (Setări → Visuals).
         </p>
       )}
       {metrics.displayProfile === "compact-laptop" && (
         <p className="layout-debug-overlay__hint-block">
-          Profil activ <strong>compact-laptop</strong> — toolbar Gantt pe rânduri, HUD
-          reflow.
+          Profil activ <strong>compact-laptop</strong> — toolbar Gantt pe rânduri, HUD reflow.
         </p>
       )}
       {metrics.hasHorizontalOverflow && (
         <p className="layout-debug-overlay__warn">
-          Conținut mai lat decât ecranul — pe unele laptopuri apar scroll orizontal sau
-          elemente tăiate.
+          Conținut mai lat decât ecranul — pe unele laptopuri apar scroll orizontal sau elemente
+          tăiate.
         </p>
       )}
       <div className="layout-debug-overlay__actions">

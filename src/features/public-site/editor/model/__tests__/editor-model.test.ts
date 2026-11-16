@@ -148,8 +148,12 @@ describe("public site editor model", () => {
   it("forgets a copied text once it is translated", () => {
     let draft = fillStudioLocaleFrom(buildPublicSiteStudioDraft(config, "en"), "ro", "en");
     const intro = findSectionDraft(draft.sections, "intro")!.key;
-    draft = patchStudioSection(draft, intro, (section) => setSectionField(section, "en", "lead", "Text EN"));
-    expect(mergeStudioToInput({ config, draft }).untranslatedCopy.en ?? []).not.toContain("Text RO");
+    draft = patchStudioSection(draft, intro, (section) =>
+      setSectionField(section, "en", "lead", "Text EN"),
+    );
+    expect(mergeStudioToInput({ config, draft }).untranslatedCopy.en ?? []).not.toContain(
+      "Text RO",
+    );
   });
 
   it("copies homepage text only, never legal pages or SEO", () => {
@@ -163,7 +167,11 @@ describe("public site editor model", () => {
 
   it("lists what is missing before publishing", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
-    const items = publicSiteReadiness(draft, { contact: { email: null, phone: null }, stayOffers: [], media: [] });
+    const items = publicSiteReadiness(draft, {
+      contact: { email: null, phone: null },
+      stayOffers: [],
+      media: [],
+    });
     const byId = Object.fromEntries(items.map((item) => [item.id, item]));
     expect(byId.heroImage).toMatchObject({ done: false, tab: "content" });
     expect(byId.heroTitle?.done).toBe(true);
@@ -171,7 +179,8 @@ describe("public site editor model", () => {
 
     const ready = publicSiteReadiness(patchStudioCopy({ ...draft, heroImageUrl: "x.jpg" }, {}), {
       contact: { email: "a@b.ro", phone: null },
-      stayOffers: [], media: [],
+      stayOffers: [],
+      media: [],
     });
     expect(ready.find((item) => item.id === "heroImage")?.done).toBe(true);
     expect(ready.find((item) => item.id === "contact")?.done).toBe(true);
@@ -184,10 +193,11 @@ describe("public site editor model", () => {
       heroCtaSecondaryHref: "#public-intro",
     };
     const hiddenIntro = showSection(draft, "intro", false);
-    const items = publicSiteReadiness(
-      patchStudioCopy(hiddenIntro, { heroCtaPrimary: "Rezervă" }),
-      { contact: { email: "a@b.ro", phone: null }, stayOffers: [], media: [] },
-    );
+    const items = publicSiteReadiness(patchStudioCopy(hiddenIntro, { heroCtaPrimary: "Rezervă" }), {
+      contact: { email: "a@b.ro", phone: null },
+      stayOffers: [],
+      media: [],
+    });
     const byId = Object.fromEntries(items.map((item) => [item.id, item.done]));
     expect(byId.heroButton).toBe(false);
     expect(byId.heroLinks).toBe(false);
@@ -207,7 +217,10 @@ describe("public site editor model", () => {
     const stock = { ro: ["Liniște"], en: ["Quiet"], bg: ["Тишина"] };
     let draft = buildPublicSiteStudioDraft(config, "ro");
     for (const [locale, text] of Object.entries(stock)) {
-      draft = patchStudioCopy({ ...draft, editLocale: locale as "ro" | "en" | "bg" }, { heroSubtitle: text[0] });
+      draft = patchStudioCopy(
+        { ...draft, editLocale: locale as "ro" | "en" | "bg" },
+        { heroSubtitle: text[0] },
+      );
     }
     const before = studioLocaleProgress(draft, stock).en;
     draft = patchStudioCopy({ ...draft, editLocale: "ro" }, { heroSubtitle: "Cabană lângă lac" });
@@ -226,11 +239,14 @@ describe("public site editor model", () => {
   it("checks the gallery only when it is shown", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
     const contact = { contact: { email: "a@b.ro", phone: null }, stayOffers: [], media: [] };
-    const ids = (d: PublicSiteStudioDraft) => publicSiteReadiness(d, contact).map((item) => item.id);
+    const ids = (d: PublicSiteStudioDraft) =>
+      publicSiteReadiness(d, contact).map((item) => item.id);
     expect(ids(draft)).not.toContain("gallery");
     const gallery = findSectionDraft(draft.sections, "gallery")!.key;
     const shown = patchStudioSection(draft, gallery, (section) => ({ ...section, visible: true }));
-    expect(publicSiteReadiness(shown, contact).find((item) => item.id === "gallery")?.done).toBe(false);
+    expect(publicSiteReadiness(shown, contact).find((item) => item.id === "gallery")?.done).toBe(
+      false,
+    );
   });
 
   it("points the preview at the opened part, and marks a hidden one", () => {
@@ -247,7 +263,11 @@ describe("public site editor model", () => {
 
   it("sends each unfinished check to the part that fixes it", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
-    const items = publicSiteReadiness(draft, { contact: { email: null, phone: null }, stayOffers: [], media: [] });
+    const items = publicSiteReadiness(draft, {
+      contact: { email: null, phone: null },
+      stayOffers: [],
+      media: [],
+    });
     const part = (id: string) => items.find((item) => item.id === id)?.part;
     expect(part("heroImage")).toBe("hero");
     expect(part("contact")).toBe("contact");
@@ -257,8 +277,11 @@ describe("public site editor model", () => {
   it("maps a rendered section back to its editor card", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
     const rendered = (type: string, nth: number) => {
-      const element = { closest: (selector: string) =>
-        selector === "[data-pub-section]" ? { dataset: { pubSection: type, pubNth: String(nth) } } : null,
+      const element = {
+        closest: (selector: string) =>
+          selector === "[data-pub-section]"
+            ? { dataset: { pubSection: type, pubNth: String(nth) } }
+            : null,
       } as unknown as Element;
       return editKeyFromPreviewTarget(element, draft);
     };
@@ -292,12 +315,17 @@ describe("public site editor model", () => {
 
   it("calls the gallery ready once its albums hold a photo", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
-    const shown = { ...draft, sections: draft.sections.map((s) => (s.type === "gallery" ? { ...s, visible: true } : s)) };
+    const shown = {
+      ...draft,
+      sections: draft.sections.map((s) => (s.type === "gallery" ? { ...s, visible: true } : s)),
+    };
     const photo = { id: "p", url: "u", album: "food", alt: {}, focus: "50% 50%" };
     const check = (media: (typeof photo)[]) =>
-      publicSiteReadiness(shown, { contact: { email: "a@b.ro", phone: null }, stayOffers: [], media }).find(
-        (item) => item.id === "gallery",
-      )?.done;
+      publicSiteReadiness(shown, {
+        contact: { email: "a@b.ro", phone: null },
+        stayOffers: [],
+        media,
+      }).find((item) => item.id === "gallery")?.done;
     expect(check([])).toBe(false);
     expect(check([photo])).toBe(true);
   });
@@ -306,10 +334,14 @@ describe("public site editor model", () => {
 describe("search text and the main photo's description", () => {
   it("asks for a full sentence under the title in search results", () => {
     const draft = buildPublicSiteStudioDraft(config, "ro");
-    const short = publicSiteReadiness(patchStudioCopy(draft, { seoDescription: "", heroSubtitle: "Ahaha" }), {
-      contact: { email: null, phone: null },
-      stayOffers: [], media: [],
-    });
+    const short = publicSiteReadiness(
+      patchStudioCopy(draft, { seoDescription: "", heroSubtitle: "Ahaha" }),
+      {
+        contact: { email: null, phone: null },
+        stayOffers: [],
+        media: [],
+      },
+    );
     expect(short.find((item) => item.id === "searchText")).toMatchObject({
       done: false,
       optional: true,
@@ -317,7 +349,9 @@ describe("search text and the main photo's description", () => {
       part: "google",
     });
     const full = publicSiteReadiness(
-      patchStudioCopy(draft, { seoDescription: "Pensiune liniștită la munte, cu mic dejun și vedere spre pădure." }),
+      patchStudioCopy(draft, {
+        seoDescription: "Pensiune liniștită la munte, cu mic dejun și vedere spre pădure.",
+      }),
       { contact: { email: null, phone: null }, stayOffers: [], media: [] },
     );
     expect(full.find((item) => item.id === "searchText")?.done).toBe(true);

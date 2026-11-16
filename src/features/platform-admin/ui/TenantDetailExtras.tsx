@@ -13,9 +13,7 @@ export async function TenantActivityPanel({
 
   return (
     <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5 space-y-2">
-      <h2 className="text-sm font-semibold uppercase text-neutral-500">
-        {t("title")}
-      </h2>
+      <h2 className="text-sm font-semibold uppercase text-neutral-500">{t("title")}</h2>
       {!activity.lastActivityAt ? (
         <p className="text-xs text-neutral-500">{t("empty")}</p>
       ) : (
@@ -25,10 +23,7 @@ export async function TenantActivityPanel({
             value={new Date(activity.lastActivityAt).toLocaleString(locale)}
           />
           <InfoRow label={t("lastAction")} value={activity.lastAction ?? "—"} />
-          <InfoRow
-            label={t("lastActor")}
-            value={activity.lastActorEmail ?? "—"}
-          />
+          <InfoRow label={t("lastActor")} value={activity.lastActorEmail ?? "—"} />
         </>
       )}
     </div>
@@ -46,9 +41,7 @@ export async function TenantSiteLinksPanel({ slug }: { slug: string }) {
 
   return (
     <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5 space-y-2">
-      <h2 className="text-sm font-semibold uppercase text-neutral-500">
-        {t("title")}
-      </h2>
+      <h2 className="text-sm font-semibold uppercase text-neutral-500">{t("title")}</h2>
       <ul className="space-y-2">
         {links.map((link) => (
           <li key={link.href}>

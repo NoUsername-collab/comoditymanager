@@ -26,7 +26,11 @@ function sectionTitle(section: PublicSiteSection, locale: string): string {
 }
 
 /** Where an item goes and the name it takes without its own label; null when its target is gone or hidden. */
-function resolveTarget(item: PublicMenuItem, config: PublicSiteConfig, locale: string): Target | null {
+function resolveTarget(
+  item: PublicMenuItem,
+  config: PublicSiteConfig,
+  locale: string,
+): Target | null {
   const chrome = config.chrome;
   switch (item.kind) {
     case "home":
@@ -36,7 +40,9 @@ function resolveTarget(item: PublicMenuItem, config: PublicSiteConfig, locale: s
     case "terms":
       return { href: "/termeni", name: pickOwnLocalized(chrome.navTerms, locale) };
     case "calendar":
-      return config.bookingEnabled ? { href: "/calendar", name: pickOwnLocalized(chrome.navBook, locale) } : null;
+      return config.bookingEnabled
+        ? { href: "/calendar", name: pickOwnLocalized(chrome.navBook, locale) }
+        : null;
     case "page": {
       const page = config.sitePages.find((row) => row.id === item.ref);
       if (!page?.visible) return null;
@@ -44,23 +50,35 @@ function resolveTarget(item: PublicMenuItem, config: PublicSiteConfig, locale: s
     }
     case "section": {
       const home = config.sections.find((row) => row.id === item.ref);
-      if (home) return home.visible ? { href: `/#${sectionAnchor(home.id)}`, name: sectionTitle(home, locale) } : null;
+      if (home)
+        return home.visible
+          ? { href: `/#${sectionAnchor(home.id)}`, name: sectionTitle(home, locale) }
+          : null;
       for (const page of config.sitePages) {
         const section = page.sections.find((row) => row.id === item.ref);
         if (!section) continue;
         if (!page.visible || !section.visible) return null;
-        return { href: `/${page.slug}#${sectionAnchor(section.id)}`, name: sectionTitle(section, locale) };
+        return {
+          href: `/${page.slug}#${sectionAnchor(section.id)}`,
+          name: sectionTitle(section, locale),
+        };
       }
       return null;
     }
     case "url":
-      return item.ref ? { href: item.ref, name: item.ref, external: /^https?:\/\//i.test(item.ref) } : null;
+      return item.ref
+        ? { href: item.ref, name: item.ref, external: /^https?:\/\//i.test(item.ref) }
+        : null;
     case "group":
       return { name: "" };
   }
 }
 
-function resolveItem(item: PublicMenuItem, config: PublicSiteConfig, locale: string): PublicNavItem | null {
+function resolveItem(
+  item: PublicMenuItem,
+  config: PublicSiteConfig,
+  locale: string,
+): PublicNavItem | null {
   const target = resolveTarget(item, config, locale);
   if (!target) return null;
   const label = (pickOwnLocalized(item.label, locale) || target.name).trim();

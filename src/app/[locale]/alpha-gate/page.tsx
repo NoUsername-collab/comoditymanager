@@ -26,10 +26,7 @@ export default async function AlphaGatePage({
     redirect("/");
   }
 
-  const [t, params] = await Promise.all([
-    getTranslations("alphaGate"),
-    searchParams,
-  ]);
+  const [t, params] = await Promise.all([getTranslations("alphaGate"), searchParams]);
   const nextPath = sanitizeAlphaGateReturnPath(params.next ?? "/");
 
   return (

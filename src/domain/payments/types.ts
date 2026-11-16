@@ -2,12 +2,7 @@
 
 export type PaymentLedgerKind = "payment" | "refund";
 
-export type PaymentMethod =
-  | "cash"
-  | "card"
-  | "transfer"
-  | "online"
-  | "other";
+export type PaymentMethod = "cash" | "card" | "transfer" | "online" | "other";
 
 export type DerivedPaymentStatus = "unpaid" | "partial" | "paid";
 

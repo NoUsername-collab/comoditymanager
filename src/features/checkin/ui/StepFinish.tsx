@@ -91,9 +91,7 @@ export function StepFinish({
         {validation && validation.flags.length > 0 && (
           <div className="checkin-summary__row checkin-summary__row--flags">
             <span className="checkin-summary__label">{t("flags")}</span>
-            <span>
-              {validation.flags.map((f) => t(`flag.${f}`)).join(", ")}
-            </span>
+            <span>{validation.flags.map((f) => t(`flag.${f}`)).join(", ")}</span>
           </div>
         )}
       </div>

@@ -4,11 +4,7 @@ import {
   type ChildPolicy,
 } from "@/domain/availability/party";
 
-export type CancellationPolicyType =
-  | "flexible"
-  | "moderate"
-  | "strict"
-  | "custom";
+export type CancellationPolicyType = "flexible" | "moderate" | "strict" | "custom";
 
 export type WeekendPricingMode = "fri_sat" | "sat_only";
 
@@ -77,12 +73,7 @@ export const DEFAULT_BOOKING_RULES: BookingRulesSettings = {
 };
 
 function parsePolicyType(raw: unknown): CancellationPolicyType {
-  if (
-    raw === "flexible" ||
-    raw === "moderate" ||
-    raw === "strict" ||
-    raw === "custom"
-  ) {
+  if (raw === "flexible" || raw === "moderate" || raw === "strict" || raw === "custom") {
     return raw;
   }
   return DEFAULT_BOOKING_RULES.cancellationPolicyType;
@@ -135,9 +126,7 @@ function parseSeasonEntry(raw: unknown, index: number): PricingSeason | null {
     return null;
   }
   const id =
-    typeof row.id === "string" && row.id.trim().length > 0
-      ? row.id.trim()
-      : `season-${index + 1}`;
+    typeof row.id === "string" && row.id.trim().length > 0 ? row.id.trim() : `season-${index + 1}`;
   return {
     id,
     name,
@@ -158,15 +147,12 @@ export function parsePricingSeasons(raw: unknown): PricingSeason[] {
 }
 
 export function parseBookingRulesRow(
-  row: Record<string, unknown> | null | undefined
+  row: Record<string, unknown> | null | undefined,
 ): BookingRulesSettings {
   if (!row) return DEFAULT_BOOKING_RULES;
   return {
     cancellationPolicyType: parsePolicyType(row.cancellation_policy_type),
-    cancellationPolicyDays: Math.min(
-      90,
-      Math.max(0, Number(row.cancellation_policy_days) || 0)
-    ),
+    cancellationPolicyDays: Math.min(90, Math.max(0, Number(row.cancellation_policy_days) || 0)),
     cancellationPolicyCustomText:
       row.cancellation_policy_custom_text != null
         ? String(row.cancellation_policy_custom_text).trim() || null
@@ -174,8 +160,7 @@ export function parseBookingRulesRow(
     pricingWeekendEnabled: Boolean(row.pricing_weekend_enabled),
     pricingWeekendMode: parseWeekendMode(row.pricing_weekend_mode),
     pricingWeekendMultiplier: clampMultiplier(
-      Number(row.pricing_weekend_multiplier) ||
-        DEFAULT_BOOKING_RULES.pricingWeekendMultiplier
+      Number(row.pricing_weekend_multiplier) || DEFAULT_BOOKING_RULES.pricingWeekendMultiplier,
     ),
     pricingSeasons: parsePricingSeasons(row.pricing_seasons),
     extraBedFeePerNight: parseFee(row.extra_bed_fee),
@@ -186,7 +171,7 @@ export function parseBookingRulesRow(
         .slice(0, 12) || DEFAULT_BOOKING_RULES.invoiceSeries,
     invoiceNextNumber: Math.max(
       1,
-      Number(row.invoice_next_number) || DEFAULT_BOOKING_RULES.invoiceNextNumber
+      Number(row.invoice_next_number) || DEFAULT_BOOKING_RULES.invoiceNextNumber,
     ),
     proformaSeries:
       String(row.proforma_series ?? DEFAULT_BOOKING_RULES.proformaSeries)
@@ -194,13 +179,10 @@ export function parseBookingRulesRow(
         .slice(0, 12) || DEFAULT_BOOKING_RULES.proformaSeries,
     proformaNextNumber: Math.max(
       1,
-      Number(row.proforma_next_number) ||
-        DEFAULT_BOOKING_RULES.proformaNextNumber
+      Number(row.proforma_next_number) || DEFAULT_BOOKING_RULES.proformaNextNumber,
     ),
     invoiceSellerRegCom:
-      row.invoice_seller_reg_com != null
-        ? String(row.invoice_seller_reg_com).trim() || null
-        : null,
+      row.invoice_seller_reg_com != null ? String(row.invoice_seller_reg_com).trim() || null : null,
     invoiceVatEnabled:
       row.invoice_vat_enabled != null
         ? Boolean(row.invoice_vat_enabled)
@@ -217,9 +199,7 @@ export function parseBookingRulesRow(
   };
 }
 
-export function toStayPricingRules(
-  settings: BookingRulesSettings
-): StayPricingRules {
+export function toStayPricingRules(settings: BookingRulesSettings): StayPricingRules {
   return {
     weekendEnabled: settings.pricingWeekendEnabled,
     weekendMode: settings.pricingWeekendMode,
@@ -233,16 +213,11 @@ export function toStayPricingRules(
 export function buildCancellationPolicyText(
   settings: Pick<
     BookingRulesSettings,
-    | "cancellationPolicyType"
-    | "cancellationPolicyDays"
-    | "cancellationPolicyCustomText"
+    "cancellationPolicyType" | "cancellationPolicyDays" | "cancellationPolicyCustomText"
   >,
-  locale: "ro" | "en" | "bg" = "ro"
+  locale: "ro" | "en" | "bg" = "ro",
 ): string {
-  if (
-    settings.cancellationPolicyType === "custom" &&
-    settings.cancellationPolicyCustomText
-  ) {
+  if (settings.cancellationPolicyType === "custom" && settings.cancellationPolicyCustomText) {
     return settings.cancellationPolicyCustomText;
   }
 

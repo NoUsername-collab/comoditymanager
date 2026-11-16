@@ -28,8 +28,16 @@ export async function loadSiteStatistics(today: string): Promise<SiteStatisticsP
   const [visits, bookings, pages, referrers] = await Promise.all([
     supabase.rpc("public_site_visit_days", { p_tenant_id: tenantId, p_since: since }),
     supabase.rpc("booking_source_days", { p_tenant_id: tenantId, p_since: since }),
-    supabase.rpc("public_site_visit_top", { p_tenant_id: tenantId, p_since: since30, p_kind: "path" }),
-    supabase.rpc("public_site_visit_top", { p_tenant_id: tenantId, p_since: since30, p_kind: "referrer" }),
+    supabase.rpc("public_site_visit_top", {
+      p_tenant_id: tenantId,
+      p_since: since30,
+      p_kind: "path",
+    }),
+    supabase.rpc("public_site_visit_top", {
+      p_tenant_id: tenantId,
+      p_since: since30,
+      p_kind: "referrer",
+    }),
   ]);
   for (const result of [visits, bookings, pages, referrers]) {
     if (result.error) throw new Error(result.error.message);
@@ -37,19 +45,26 @@ export async function loadSiteStatistics(today: string): Promise<SiteStatisticsP
 
   const stats = buildSiteStatistics({
     today,
-    visitDays: ((visits.data ?? []) as { day: string; visits: number; visitors: number }[]).map((r) => ({
-      day: r.day,
-      visits: Number(r.visits),
-      visitors: Number(r.visitors),
-    })),
-    bookingDays: ((bookings.data ?? []) as { day: string; source: string; requests: number; confirmed: number }[]).map(
+    visitDays: ((visits.data ?? []) as { day: string; visits: number; visitors: number }[]).map(
       (r) => ({
         day: r.day,
-        source: asSource(r.source),
-        requests: Number(r.requests),
-        confirmed: Number(r.confirmed),
+        visits: Number(r.visits),
+        visitors: Number(r.visitors),
       }),
     ),
+    bookingDays: (
+      (bookings.data ?? []) as {
+        day: string;
+        source: string;
+        requests: number;
+        confirmed: number;
+      }[]
+    ).map((r) => ({
+      day: r.day,
+      source: asSource(r.source),
+      requests: Number(r.requests),
+      confirmed: Number(r.confirmed),
+    })),
   });
   const top = (rows: unknown) =>
     ((rows ?? []) as { label: string | null; visits: number }[]).map((r) => ({

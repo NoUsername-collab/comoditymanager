@@ -62,8 +62,7 @@ const LAYER_RULES: LayerRule[] = [
   },
 ];
 
-const IMPORT_RE =
-  /(?:import|export)\s+(?:type\s+)?(?:[\w*{}\s,]+\s+from\s+)?["'](@\/[^"']+)["']/g;
+const IMPORT_RE = /(?:import|export)\s+(?:type\s+)?(?:[\w*{}\s,]+\s+from\s+)?["'](@\/[^"']+)["']/g;
 
 function listSourceFiles(dir: string): string[] {
   const out: string[] = [];
@@ -135,8 +134,7 @@ type DualModuleViolation = {
   rule: "services-no-dual-module";
 };
 
-const IMPLEMENTATION_EXPORT =
-  /\bexport\s+(?:async\s+)?(?:function|class|const)\b/;
+const IMPLEMENTATION_EXPORT = /\bexport\s+(?:async\s+)?(?:function|class|const)\b/;
 
 function isImplementationModule(content: string): boolean {
   return IMPLEMENTATION_EXPORT.test(content);

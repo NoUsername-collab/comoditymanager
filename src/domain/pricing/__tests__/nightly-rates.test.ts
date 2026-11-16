@@ -50,15 +50,15 @@ describe("computeStandardStayTotal", () => {
       [{ price_per_night: 100 }],
       "2025-06-05",
       "2025-06-08",
-      rules
+      rules,
     );
     expect(total).toBe(340);
   });
 
   it("falls back to flat pricing without rules", () => {
-    expect(
-      computeStandardStayTotal([{ price_per_night: 100 }], "2025-06-05", "2025-06-08")
-    ).toBe(300);
+    expect(computeStandardStayTotal([{ price_per_night: 100 }], "2025-06-05", "2025-06-08")).toBe(
+      300,
+    );
   });
 });
 

@@ -10,10 +10,7 @@ export function occupantRoomOptionLabel(args: {
 }): string {
   const parts = [args.roomName.trim()].filter(Boolean);
   if (args.isTitular) parts.push(args.titularLabel);
-  const guestName = formatGuestFullName(
-    args.lastName ?? "",
-    args.firstName ?? "",
-  );
+  const guestName = formatGuestFullName(args.lastName ?? "", args.firstName ?? "");
   parts.push(guestName || args.incompleteLabel);
   return parts.join(" · ");
 }

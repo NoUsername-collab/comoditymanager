@@ -37,7 +37,9 @@ const cachedForTenant = (tenantId: string) =>
 export const listMediaForTenant = cache((tenantId: string) => cachedForTenant(tenantId)());
 
 /** The photos of each room type, for the site, the booking form and the guest app. */
-export async function roomTypePhotosForTenant(tenantId: string): Promise<Map<string, MediaAsset[]>> {
+export async function roomTypePhotosForTenant(
+  tenantId: string,
+): Promise<Map<string, MediaAsset[]>> {
   return photosByRoomType(await listMediaForTenant(tenantId));
 }
 
@@ -115,7 +117,11 @@ export async function updateMediaAsset(
   if (patch.alt) row.alt = patch.alt;
   if (patch.focalX !== undefined) row.focal_x = patch.focalX;
   if (patch.focalY !== undefined) row.focal_y = patch.focalY;
-  const { error } = await supabase.from("media_assets").update(row).eq("tenant_id", tenantId).eq("id", id);
+  const { error } = await supabase
+    .from("media_assets")
+    .update(row)
+    .eq("tenant_id", tenantId)
+    .eq("id", id);
   if (error) throw new Error(error.message);
 }
 
@@ -124,7 +130,11 @@ export async function reorderMediaAssets(ids: string[]): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   const results = await Promise.all(
     ids.map((id, index) =>
-      supabase.from("media_assets").update({ sort_order: index }).eq("tenant_id", tenantId).eq("id", id),
+      supabase
+        .from("media_assets")
+        .update({ sort_order: index })
+        .eq("tenant_id", tenantId)
+        .eq("id", id),
     ),
   );
   const failed = results.find((result) => result.error);

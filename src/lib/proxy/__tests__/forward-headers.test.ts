@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { NextResponse } from "next/server";
-import {
-  requestHeaderOverrides,
-  withRequestHeaderOverrides,
-} from "@/lib/proxy/forward-headers";
+import { requestHeaderOverrides, withRequestHeaderOverrides } from "@/lib/proxy/forward-headers";
 
 describe("forwarding a middleware's request headers", () => {
   it("reads the headers a response passes on to the page", () => {

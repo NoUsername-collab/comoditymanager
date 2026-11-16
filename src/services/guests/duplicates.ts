@@ -4,9 +4,7 @@ import type { GuestListItem } from "@/domain/guest/types";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { getGuestBaseById } from "./lookup";
 
-const loadDuplicateGuestsForGuest = cache(async (
-  guestId: string
-): Promise<GuestListItem[]> => {
+const loadDuplicateGuestsForGuest = cache(async (guestId: string): Promise<GuestListItem[]> => {
   const guest = await getGuestBaseById(guestId);
   if (!guest) return [];
 
@@ -43,8 +41,6 @@ const loadDuplicateGuestsForGuest = cache(async (
   }));
 });
 
-export async function findDuplicateGuestsForGuest(
-  guestId: string
-): Promise<GuestListItem[]> {
+export async function findDuplicateGuestsForGuest(guestId: string): Promise<GuestListItem[]> {
   return loadDuplicateGuestsForGuest(guestId);
 }

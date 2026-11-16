@@ -4,11 +4,7 @@ import { useMemo } from "react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useAdminRoutePrefetch } from "@/hooks/useAdminRoutePrefetch";
 import { AdminHudIcon } from "@/components/admin/AdminHudIcons";
-import {
-  ADMIN_PRIMARY_TABS,
-  filterAdminTabs,
-  isAdminTabActive,
-} from "@/layout/mobile";
+import { ADMIN_PRIMARY_TABS, filterAdminTabs, isAdminTabActive } from "@/layout/mobile";
 import { useTranslations } from "next-intl";
 
 export function AdminNav({
@@ -23,10 +19,7 @@ export function AdminNav({
   const t = useTranslations("admin.nav");
 
   const visibleTabs = filterAdminTabs(ADMIN_PRIMARY_TABS, locationUnlocked);
-  const prefetchHrefs = useMemo(
-    () => visibleTabs.map((tab) => tab.href),
-    [visibleTabs]
-  );
+  const prefetchHrefs = useMemo(() => visibleTabs.map((tab) => tab.href), [visibleTabs]);
   useAdminRoutePrefetch(prefetchHrefs);
 
   return (
@@ -36,10 +29,7 @@ export function AdminNav({
         const isStaysTab = tab.href === "/admin/cazari";
         const badge = isStaysTab && requestCount > 0 ? requestCount : null;
         const quest = badge != null && !active;
-        const ariaLabel =
-          badge != null
-            ? t("staysPendingAria", { count: badge })
-            : undefined;
+        const ariaLabel = badge != null ? t("staysPendingAria", { count: badge }) : undefined;
 
         return (
           <Link
@@ -72,10 +62,7 @@ export function AdminNav({
             <span className="admin-nav-tab__label">{t(tab.labelKey)}</span>
             {badge != null && badge > 0 && (
               <span
-                className={[
-                  "admin-nav-tab__badge",
-                  quest && "admin-nav-tab__badge--quest",
-                ]
+                className={["admin-nav-tab__badge", quest && "admin-nav-tab__badge--quest"]
                   .filter(Boolean)
                   .join(" ")}
                 aria-hidden

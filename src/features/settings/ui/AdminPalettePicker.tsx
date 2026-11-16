@@ -14,15 +14,24 @@ function ZoneStrip({ themeId }: { themeId: ThemeId }) {
   const tokens = tokensFor(palette, mode);
 
   return (
-    <div className="admin-palette-zones" title={mode === "day" ? tPalette("day") : tPalette("night")}>
-      <span className="admin-palette-zones__checkout h-full" style={{ background: tokens.ganttZoneCheckout }} />
+    <div
+      className="admin-palette-zones"
+      title={mode === "day" ? tPalette("day") : tPalette("night")}
+    >
+      <span
+        className="admin-palette-zones__checkout h-full"
+        style={{ background: tokens.ganttZoneCheckout }}
+      />
       <span
         className="admin-palette-zones__clean h-full"
         style={{
           background: `repeating-linear-gradient(-45deg, ${tokens.ganttZoneClean}, ${tokens.ganttZoneClean} 4px, rgba(0,0,0,0.07) 4px, rgba(0,0,0,0.07) 6px)`,
         }}
       />
-      <span className="admin-palette-zones__checkin h-full" style={{ background: tokens.ganttZoneCheckin }} />
+      <span
+        className="admin-palette-zones__checkin h-full"
+        style={{ background: tokens.ganttZoneCheckin }}
+      />
     </div>
   );
 }

@@ -18,11 +18,9 @@ const GuestBookingFormDynamic = dynamic(
         aria-label="Loading booking form"
       />
     ),
-  }
+  },
 );
 
-export function GuestBookingFormLazy(
-  props: ComponentProps<typeof GuestBookingForm>
-) {
+export function GuestBookingFormLazy(props: ComponentProps<typeof GuestBookingForm>) {
   return <GuestBookingFormDynamic {...props} />;
 }

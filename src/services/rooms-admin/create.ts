@@ -15,11 +15,7 @@ import {
 import { legacyRoomTypeFromCatalogSlug } from "@/domain/room/legacy-room-type";
 import { withTenantId } from "@/lib/tenant/scope";
 
-import {
-  assertFloorInBuilding,
-  requireBuildingInTenant,
-  type CreateRoomInput,
-} from "./shared";
+import { assertFloorInBuilding, requireBuildingInTenant, type CreateRoomInput } from "./shared";
 import { listRoomNamesInScope } from "./list";
 
 async function resolveRoomInsertFields(input: CreateRoomInput) {
@@ -29,7 +25,7 @@ async function resolveRoomInsertFields(input: CreateRoomInput) {
     getBuildingOptionPolicies(input.building_id),
   ]);
   const type = input.room_type_definition_id
-    ? types.find((t) => t.id === input.room_type_definition_id) ?? null
+    ? (types.find((t) => t.id === input.room_type_definition_id) ?? null)
     : null;
 
   const price =
@@ -57,7 +53,7 @@ async function insertRoomRow(
   tenantId: string,
   supabase: Awaited<ReturnType<typeof requireBuildingInTenant>>["supabase"],
   input: CreateRoomInput,
-  fields: ResolvedRoomInsertFields
+  fields: ResolvedRoomInsertFields,
 ): Promise<{ id: string }> {
   const { type, price, capacity, room_type, has_ac } = fields;
   const { data, error } = await supabase
@@ -71,16 +67,14 @@ async function insertRoomRow(
         room_type_definition_id: type?.id ?? null,
         capacity_base: capacity,
         allows_extra_beds: input.allows_extra_beds,
-        max_extra_beds_per_room: input.allows_extra_beds
-          ? input.max_extra_beds_per_room
-          : 0,
+        max_extra_beds_per_room: input.allows_extra_beds ? input.max_extra_beds_per_room : 0,
         max_cots: input.max_cots,
         max_occupancy: input.max_occupancy,
         has_ac,
         price_per_night: price,
         sort_order: input.sort_order,
         is_active: true,
-      })
+      }),
     )
     .select("id")
     .single();
@@ -93,7 +87,7 @@ async function insertRoomRow(
 async function assertRoomNameAvailable(
   buildingId: string,
   floorId: string | null,
-  name: string
+  name: string,
 ): Promise<void> {
   const trimmed = name.trim();
   if (!trimmed) throw new Error("rooms.name_required");
@@ -142,7 +136,7 @@ export async function createRoomsBulk(input: {
     input.naming_mode,
     input.name_prefix,
     input.start_number,
-    input.count
+    input.count,
   );
   if (proposedNames.length !== input.count) {
     throw new Error("rooms.bulk_invalid_names");
@@ -154,9 +148,7 @@ export async function createRoomsBulk(input: {
   ]);
   const conflicts = findDuplicateRoomNames(existing, proposedNames);
   if (conflicts.length > 0) {
-    throw new Error(
-      `rooms.bulk_duplicate_names:${conflicts.slice(0, 12).join("|")}`
-    );
+    throw new Error(`rooms.bulk_duplicate_names:${conflicts.slice(0, 12).join("|")}`);
   }
 
   const templateInput: CreateRoomInput = {
@@ -191,7 +183,7 @@ export async function createRoomsBulk(input: {
         name,
         sort_order: input.sort_order_start + i,
       },
-      fields
+      fields,
     );
     ids.push(room.id);
   }

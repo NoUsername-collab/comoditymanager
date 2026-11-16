@@ -15,7 +15,7 @@ export function publicColorScheme(bg: string): "light" | "dark" {
 }
 
 export function resolvePublicThemeStyle(
-  themeId: DesignThemeId | string
+  themeId: DesignThemeId | string,
 ): CSSProperties & Record<string, string> {
   const id = migrateDesignThemeId(themeId);
   const t = getDesignTheme(id).public;

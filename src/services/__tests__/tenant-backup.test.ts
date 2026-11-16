@@ -5,7 +5,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
  * 1,000-row cap, and each property's backup time is recorded.
  */
 
-const BOOKINGS = Array.from({ length: 2345 }, (_, i) => ({ id: String(i).padStart(5, "0"), tenant_id: "t1" }));
+const BOOKINGS = Array.from({ length: 2345 }, (_, i) => ({
+  id: String(i).padStart(5, "0"),
+  tenant_id: "t1",
+}));
 const uploads: { path: string; body: string }[] = [];
 const marked: Record<string, unknown>[] = [];
 let tenantsDue = [{ id: "t1", slug: "casa" }];

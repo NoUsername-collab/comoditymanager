@@ -18,7 +18,12 @@ type PlatformEmailInfra = {
 
 export type TenantEmailSendResolution = {
   canSend: boolean;
-  skipReason?: "disabled" | "platform_unconfigured" | "byok_missing" | "tenant_email_disabled" | "monthly_cap_exceeded";
+  skipReason?:
+    | "disabled"
+    | "platform_unconfigured"
+    | "byok_missing"
+    | "tenant_email_disabled"
+    | "monthly_cap_exceeded";
   effectiveMode: TenantEmailDeliveryMode | "noop";
   provider: "resend" | "noop";
   apiKeySource: "platform_env" | "tenant_env" | "tenant_vault" | "none";
@@ -113,7 +118,10 @@ export function resolveTenantEmailSend(
 }
 
 export function tenantResendEnvKey(slug: string): string {
-  const normalized = slug.trim().toUpperCase().replace(/[^A-Z0-9]/g, "_");
+  const normalized = slug
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "_");
   return `RESEND_API_KEY_TENANT__${normalized}`;
 }
 

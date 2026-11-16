@@ -46,10 +46,14 @@ export default async function TermsPage() {
     >
       {customBody || cancellationText ? (
         <div className="public-prose">
-          {customBody ? <PublicLegalCopy
+          {customBody ? (
+            <PublicLegalCopy
               text={customBody}
               values={{ name: config.displayName, email: config.contact.email }}
-            /> : <p>{cancellationText}</p>}
+            />
+          ) : (
+            <p>{cancellationText}</p>
+          )}
         </div>
       ) : null}
     </PublicPageShell>

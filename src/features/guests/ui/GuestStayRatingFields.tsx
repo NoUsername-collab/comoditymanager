@@ -32,9 +32,7 @@ type ControlledProps = BaseProps & {
   textareaClassName?: string;
 };
 
-function initialFromReview(
-  review: GuestStayReviewRow | null | undefined
-): GuestStayRatingValue {
+function initialFromReview(review: GuestStayReviewRow | null | undefined): GuestStayRatingValue {
   if (!review?.note?.trim()) {
     return { polarity: null, intensity: 3, note: "" };
   }
@@ -50,15 +48,12 @@ export function readGuestStayRatingFromForm(form: HTMLFormElement): {
   note: string;
 } {
   const polarityRaw = String(
-    (form.elements.namedItem("review_polarity") as HTMLInputElement | null)
-      ?.value ?? ""
+    (form.elements.namedItem("review_polarity") as HTMLInputElement | null)?.value ?? "",
   ).trim();
   const note = String(
-    (form.elements.namedItem("review_note") as HTMLTextAreaElement | null)
-      ?.value ?? ""
+    (form.elements.namedItem("review_note") as HTMLTextAreaElement | null)?.value ?? "",
   ).trim();
-  const polarity =
-    polarityRaw === "positive" || polarityRaw === "negative" ? polarityRaw : null;
+  const polarity = polarityRaw === "positive" || polarityRaw === "negative" ? polarityRaw : null;
   return { polarity, note };
 }
 
@@ -67,7 +62,7 @@ export function GuestStayRatingFields(props: FormProps | ControlledProps) {
   const isControlled = props.mode === "controlled";
 
   const [internal, setInternal] = useState<GuestStayRatingValue>(() =>
-    initialFromReview(props.initialReview)
+    initialFromReview(props.initialReview),
   );
 
   const state = isControlled ? props.value : internal;
@@ -105,18 +100,11 @@ export function GuestStayRatingFields(props: FormProps | ControlledProps) {
       {!isControlled && state.polarity ? (
         <>
           <input type="hidden" name="review_polarity" value={state.polarity} />
-          <input
-            type="hidden"
-            name="review_intensity"
-            value={state.intensity}
-            readOnly
-          />
+          <input type="hidden" name="review_intensity" value={state.intensity} readOnly />
         </>
       ) : null}
 
-      <p className="guest-stay-rating__intro text-xs text-zinc-500">
-        {tGuests("intro")}
-      </p>
+      <p className="guest-stay-rating__intro text-xs text-zinc-500">{tGuests("intro")}</p>
 
       <div className="guest-stay-rating__polarity" role="group" aria-label={tGuests("chooseTone")}>
         <button
@@ -207,11 +195,7 @@ export function GuestStayRatingFields(props: FormProps | ControlledProps) {
                   ? tGuests("positiveNotePlaceholder")
                   : tGuests("negativeNotePlaceholder")
               }
-              className={[
-                "guest-stay-rating__textarea",
-                props.textareaClassName,
-                textareaTone,
-              ]
+              className={["guest-stay-rating__textarea", props.textareaClassName, textareaTone]
                 .filter(Boolean)
                 .join(" ")}
             />
@@ -221,19 +205,16 @@ export function GuestStayRatingFields(props: FormProps | ControlledProps) {
               name="review_note"
               rows={3}
               disabled={props.disabled}
-              defaultValue={state.polarity === props.initialReview?.polarity ? props.initialReview.note : ""}
+              defaultValue={
+                state.polarity === props.initialReview?.polarity ? props.initialReview.note : ""
+              }
               required
               placeholder={
                 state.polarity === "positive"
                   ? tGuests("positiveNotePlaceholder")
                   : tGuests("negativeNotePlaceholder")
               }
-              className={[
-                props.textareaClassName,
-                textareaTone,
-              ]
-                .filter(Boolean)
-                .join(" ")}
+              className={[props.textareaClassName, textareaTone].filter(Boolean).join(" ")}
             />
           )}
         </div>

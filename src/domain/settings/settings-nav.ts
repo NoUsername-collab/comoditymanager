@@ -238,13 +238,7 @@ export function filterSettingsNav(
         if (item.roles && !item.roles.includes(ctx.role)) return false;
         if (item.requiresTeam && ctx.hasTeam === false) return false;
         if (item.permissionGroup) {
-          if (
-            !canStaffPermission(
-              ctx.memberRole,
-              item.permissionGroup,
-              ctx.teamPermissions,
-            )
-          ) {
+          if (!canStaffPermission(ctx.memberRole, item.permissionGroup, ctx.teamPermissions)) {
             return false;
           }
         }

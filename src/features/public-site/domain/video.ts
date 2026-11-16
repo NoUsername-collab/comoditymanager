@@ -25,7 +25,9 @@ export function videoEmbedUrl(raw: string | null | undefined): string | null {
     return null;
   })();
   if (youtubeId !== null) {
-    return /^[\w-]{6,20}$/.test(youtubeId) ? `https://www.youtube-nocookie.com/embed/${youtubeId}` : null;
+    return /^[\w-]{6,20}$/.test(youtubeId)
+      ? `https://www.youtube-nocookie.com/embed/${youtubeId}`
+      : null;
   }
 
   if (host === "vimeo.com" || host === "player.vimeo.com") {

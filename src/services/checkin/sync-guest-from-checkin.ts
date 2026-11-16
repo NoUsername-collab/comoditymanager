@@ -20,20 +20,14 @@ import {
   type GuestIdentityInput,
 } from "@/services/guests/profile";
 
-function mapCheckinGuestToIdentityPatch(
-  guest: CheckinGuestInput,
-): GuestIdentityInput {
+function mapCheckinGuestToIdentityPatch(guest: CheckinGuestInput): GuestIdentityInput {
   const docType = checkinUiDocTypeValue(guest.document_type) as GuestDocType | "";
   const nationalIdType = (guest.national_id_type ?? "cnp") as NationalIdType;
-  const nationalId = guest.national_id?.trim()
-    ? cleanNationalId(guest.national_id)
-    : null;
+  const nationalId = guest.national_id?.trim() ? cleanNationalId(guest.national_id) : null;
 
   let birthDate = guest.birth_date ?? null;
   let sex: GuestSex | null = null;
-  const extracted = nationalId
-    ? extractIdentityFromNationalId(nationalIdType, nationalId)
-    : null;
+  const extracted = nationalId ? extractIdentityFromNationalId(nationalIdType, nationalId) : null;
   if (extracted?.birthDate) birthDate = extracted.birthDate;
   if (extracted?.sex) sex = extracted.sex;
 
@@ -58,10 +52,7 @@ function mapCheckinGuestToIdentityPatch(
   };
 }
 
-function contactEmailForGuest(
-  guest: CheckinGuestInput,
-  booking: BookingForCheckin,
-): string | null {
+function contactEmailForGuest(guest: CheckinGuestInput, booking: BookingForCheckin): string | null {
   if (guest.is_representative) return booking.guest_email;
   return null;
 }
@@ -161,9 +152,7 @@ export async function enrichCheckinGuestProfiles(
   guests: CheckinGuestInput[],
   booking: BookingForCheckin,
 ): Promise<void> {
-  await Promise.all(
-    guests.map((guest) => enrichOneCheckinGuestProfile(guest, booking)),
-  );
+  await Promise.all(guests.map((guest) => enrichOneCheckinGuestProfile(guest, booking)));
 }
 
 async function syncOneCheckinGuest(

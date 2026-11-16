@@ -1,9 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { daysUntilDate } from "@/lib/guest-app/stay-dates";
-import {
-  resolveGuestPhaseHintKey,
-  resolveGuestStayPhase,
-} from "@/domain/guest-app/stay-milestone";
+import { resolveGuestPhaseHintKey, resolveGuestStayPhase } from "@/domain/guest-app/stay-milestone";
 
 type Props = {
   today: string;
@@ -12,12 +9,7 @@ type Props = {
   checkedInAt: string | null;
 };
 
-export async function GuestStayPhaseBanner({
-  today,
-  checkIn,
-  checkOut,
-  checkedInAt,
-}: Props) {
+export async function GuestStayPhaseBanner({ today, checkIn, checkOut, checkedInAt }: Props) {
   const t = await getTranslations("guestApp");
   const hintKey = resolveGuestPhaseHintKey({ today, checkIn, checkOut, checkedInAt });
   const phase = resolveGuestStayPhase({ today, checkIn, checkOut, checkedInAt });
@@ -35,10 +27,7 @@ export async function GuestStayPhaseBanner({
 
   return (
     <section
-      className={[
-        "guest-app__phase-banner",
-        `guest-app__phase-banner--${phase}`,
-      ].join(" ")}
+      className={["guest-app__phase-banner", `guest-app__phase-banner--${phase}`].join(" ")}
       aria-live="polite"
     >
       <p className="guest-app__phase-banner__text">{t(hintKey)}</p>

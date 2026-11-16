@@ -27,9 +27,7 @@ async function decodeToken(token: string): Promise<number | null> {
   return until;
 }
 
-async function isAdminLocationUnlockTokenValid(
-  token: string | undefined | null
-): Promise<boolean> {
+async function isAdminLocationUnlockTokenValid(token: string | undefined | null): Promise<boolean> {
   if (!isAdminLocationUnlockCookieFresh(token)) return false;
   if (!token) return false;
   const until = await decodeToken(token);

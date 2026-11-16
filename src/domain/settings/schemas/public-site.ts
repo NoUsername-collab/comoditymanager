@@ -79,7 +79,10 @@ const menuItemShape = {
   label: localizedTextSchema.default({}),
 };
 
-function checkMenuRef(item: { kind: (typeof PUBLIC_MENU_KINDS)[number]; ref?: string }, ctx: z.RefinementCtx) {
+function checkMenuRef(
+  item: { kind: (typeof PUBLIC_MENU_KINDS)[number]; ref?: string },
+  ctx: z.RefinementCtx,
+) {
   if (menuKindNeedsRef(item.kind) && !item.ref?.trim()) {
     ctx.addIssue({ code: "custom", path: ["ref"], message: "required" });
   }
@@ -97,7 +100,10 @@ const menuChildSchema = z
   });
 
 const menuItemSchema = z
-  .object({ ...menuItemShape, children: z.array(menuChildSchema).max(MAX_MENU_CHILDREN).optional() })
+  .object({
+    ...menuItemShape,
+    children: z.array(menuChildSchema).max(MAX_MENU_CHILDREN).optional(),
+  })
   .strip()
   .superRefine(checkMenuRef);
 
@@ -205,7 +211,6 @@ const publicBenefitItemSchema = z
   })
   .strict();
 
-
 const publicStepItemSchema = z
   .object({
     title: localizedTextSchema,
@@ -232,7 +237,10 @@ const sectionStyleSchema = z
   .strip();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function sectionInputSchema<T extends string, P extends z.ZodObject<any>>(sectionType: T, payload: P) {
+function sectionInputSchema<T extends string, P extends z.ZodObject<any>>(
+  sectionType: T,
+  payload: P,
+) {
   return z
     .object({
       id: z.string().uuid().optional(),
@@ -361,7 +369,9 @@ const publicSiteSectionInputSchema = z.discriminatedUnion("sectionType", [
       .object({
         ...sectionCopyShape,
         items: z
-          .array(z.object({ icon: z.string().max(32).optional(), label: localizedTextSchema }).strip())
+          .array(
+            z.object({ icon: z.string().max(32).optional(), label: localizedTextSchema }).strip(),
+          )
           .max(MAX_SECTION_ITEMS)
           .optional(),
       })
@@ -446,13 +456,16 @@ const publicSiteSettingsInputSchema = z
     input.sitePages.forEach((page, index) => {
       const others = input.sitePages.filter((_, other) => other !== index).map((row) => row.slug);
       const problem = pageSlugProblem(page.slug, others);
-      if (problem) ctx.addIssue({ code: "custom", path: ["sitePages", index, "slug"], message: `slug_${problem}` });
+      if (problem)
+        ctx.addIssue({
+          code: "custom",
+          path: ["sitePages", index, "slug"],
+          message: `slug_${problem}`,
+        });
     });
   });
 
-export type PublicSiteSettingsInputParsed = z.infer<
-  typeof publicSiteSettingsInputSchema
->;
+export type PublicSiteSettingsInputParsed = z.infer<typeof publicSiteSettingsInputSchema>;
 
 export function parsePublicSiteSettingsInput(
   input: unknown,

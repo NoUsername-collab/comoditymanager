@@ -28,11 +28,7 @@ describe("parseMrzLinesBestEffort", () => {
   it("accepts only checksum-valid parses", () => {
     expect(isMrzParseChecksumValid(parseMrzLinesBestEffort(RO_CI_TD1)!.parsed)).toBe(true);
     expect(
-      parseMrzLinesBestEffort([
-        RO_CI_TD1[0]!,
-        "9001017M2501017ROU<<<<<<<<<<<0",
-        RO_CI_TD1[2]!,
-      ]),
+      parseMrzLinesBestEffort([RO_CI_TD1[0]!, "9001017M2501017ROU<<<<<<<<<<<0", RO_CI_TD1[2]!]),
     ).toBeNull();
   });
 });
@@ -119,11 +115,7 @@ describe("extractMrzLinesFromOcrText", () => {
 
   it("refines OCR typo block when checksum validates after correction", async () => {
     const noisy = refineTd1Candidates([
-      [
-        RO_CI_TD1[0]!,
-        "9OO1011M25O1O17ROU<<<<<<<<<<<8",
-        RO_CI_TD1[2]!,
-      ],
+      [RO_CI_TD1[0]!, "9OO1011M25O1O17ROU<<<<<<<<<<<8", RO_CI_TD1[2]!],
     ]);
     expect(noisy).not.toBeNull();
     const parsed = await parseMrzIdentity(noisy!);

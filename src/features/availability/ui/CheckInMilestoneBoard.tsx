@@ -48,13 +48,7 @@ function toBookingForCheckin(item: CheckInQuestItem): BookingForCheckin {
 }
 
 function matchesQuestSearch(item: CheckInQuestItem, query: string): boolean {
-  const haystack = [
-    item.guestLabel,
-    item.guestName,
-    ...item.roomNames,
-  ]
-    .join(" ")
-    .toLowerCase();
+  const haystack = [item.guestLabel, item.guestName, ...item.roomNames].join(" ").toLowerCase();
   return haystack.includes(query);
 }
 
@@ -77,9 +71,7 @@ function QuestReadinessIssues({
   if (readiness.status === "ok") {
     return (
       <div className="checkin-quest__issues">
-        <span className="checkin-quest__issue checkin-quest__issue--ok">
-          {t("readyLabel")}
-        </span>
+        <span className="checkin-quest__issue checkin-quest__issue--ok">{t("readyLabel")}</span>
       </div>
     );
   }
@@ -129,7 +121,7 @@ export function CheckInMilestoneBoard({
 
   const visible = useMemo(
     () => pending.filter((item) => !dismissed.has(item.bookingId)),
-    [pending, dismissed]
+    [pending, dismissed],
   );
 
   const normalizedQuery = query.trim().toLowerCase();
@@ -145,14 +137,11 @@ export function CheckInMilestoneBoard({
   }, [filtered, normalizedQuery]);
 
   const hiddenCount =
-    normalizedQuery.length === 0
-      ? Math.max(0, visible.length - QUEST_PREVIEW_LIMIT)
-      : 0;
+    normalizedQuery.length === 0 ? Math.max(0, visible.length - QUEST_PREVIEW_LIMIT) : 0;
 
   const totalToday = completedCount + pending.length;
   const doneCount = completedCount + (pending.length - visible.length);
-  const progressPct =
-    totalToday > 0 ? Math.round((doneCount / totalToday) * 100) : 0;
+  const progressPct = totalToday > 0 ? Math.round((doneCount / totalToday) * 100) : 0;
   const allDone = totalToday > 0 && visible.length === 0;
   const noArrivalsToday = totalToday === 0;
   const remainingCount = visible.length;
@@ -197,9 +186,7 @@ export function CheckInMilestoneBoard({
           <h2 id="checkin-quest-title" className="checkin-quest__title">
             {t("title")}
           </h2>
-          <p className="checkin-quest__subtitle">
-            {t("subtitle", { time: checkInTime })}
-          </p>
+          <p className="checkin-quest__subtitle">{t("subtitle", { time: checkInTime })}</p>
         </div>
 
         {!noArrivalsToday && (
@@ -255,9 +242,7 @@ export function CheckInMilestoneBoard({
         </div>
       )}
 
-      {noArrivalsToday && (
-        <p className="checkin-quest__idle">{t("noArrivalsToday")}</p>
-      )}
+      {noArrivalsToday && <p className="checkin-quest__idle">{t("noArrivalsToday")}</p>}
 
       {!noArrivalsToday && !allDone && (
         <div className="checkin-quest__search-wrap">
@@ -304,10 +289,8 @@ export function CheckInMilestoneBoard({
               <article
                 className={[
                   "checkin-quest__card",
-                  item.readiness.status === "blocked" &&
-                    "checkin-quest__card--blocked",
-                  item.readiness.status === "warning" &&
-                    "checkin-quest__card--warning",
+                  item.readiness.status === "blocked" && "checkin-quest__card--blocked",
+                  item.readiness.status === "warning" && "checkin-quest__card--warning",
                 ]
                   .filter(Boolean)
                   .join(" ")}
@@ -318,9 +301,7 @@ export function CheckInMilestoneBoard({
                 <div className="checkin-quest__card-body">
                   <p className="checkin-quest__guest">{item.guestLabel}</p>
                   <p className="checkin-quest__meta">
-                    {item.roomNames.length > 0
-                      ? item.roomNames.join(", ")
-                      : t("noRoom")}
+                    {item.roomNames.length > 0 ? item.roomNames.join(", ") : t("noRoom")}
                     {" · "}
                     {formatGuestPartyDetail(item.numAdults, item.numChildren)}
                   </p>
@@ -340,10 +321,7 @@ export function CheckInMilestoneBoard({
                     </span>
                     {tCheckIn("startCheckin")}
                   </button>
-                  <Link
-                    href={`/admin/bookings/${item.bookingId}`}
-                    className="checkin-quest__link"
-                  >
+                  <Link href={`/admin/bookings/${item.bookingId}`} className="checkin-quest__link">
                     {t("openBooking")}
                   </Link>
                 </div>

@@ -3,13 +3,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 
-export type ResetPasswordResult =
-  | { ok: true }
-  | { ok: false; error: string; field?: string };
+export type ResetPasswordResult = { ok: true } | { ok: false; error: string; field?: string };
 
-export async function resetPasswordAction(
-  formData: FormData
-): Promise<ResetPasswordResult> {
+export async function resetPasswordAction(formData: FormData): Promise<ResetPasswordResult> {
   const t = await getTranslations("admin.resetPassword");
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");

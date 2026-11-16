@@ -11,9 +11,7 @@ const LEGACY_KEYS = ["zalmox-gantt-density", "casaemil-gantt-density"];
 
 function readStoredCoverage(): GanttCoverage {
   if (typeof window === "undefined") return 20;
-  return parseGanttCoverage(
-    readLocalStorageFirst([GANTT_COVERAGE_STORAGE_KEY, ...LEGACY_KEYS]),
-  );
+  return parseGanttCoverage(readLocalStorageFirst([GANTT_COVERAGE_STORAGE_KEY, ...LEGACY_KEYS]));
 }
 
 export function useGanttCoverage() {

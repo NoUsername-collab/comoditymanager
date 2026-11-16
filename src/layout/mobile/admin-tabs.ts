@@ -15,18 +15,12 @@ export const ADMIN_PRIMARY_TABS: AdminNavTab[] = [
   { href: "/admin/guests", labelKey: "clients", icon: "person" },
 ];
 
-export function filterAdminTabs(
-  tabs: AdminNavTab[],
-  locationUnlocked: boolean
-): AdminNavTab[] {
+export function filterAdminTabs(tabs: AdminNavTab[], locationUnlocked: boolean): AdminNavTab[] {
   return tabs.filter((tab) => !tab.locationConfig || locationUnlocked);
 }
 
 export function isAdminTabActive(pathname: string, href: string): boolean {
-  const path =
-    pathname.length > 1 && pathname.endsWith("/")
-      ? pathname.slice(0, -1)
-      : pathname;
+  const path = pathname.length > 1 && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
   if (href === "/admin") return path === "/admin";
   return path === href || path.startsWith(`${href}/`);
 }

@@ -7,9 +7,7 @@ import {
 
 describe("pinnedSelectionFromRange", () => {
   it("replaces rooms instead of toggling", () => {
-    expect(
-      pinnedSelectionFromRange(["r2", "r2", "r1"], "2026-09-10", "2026-09-12")
-    ).toEqual({
+    expect(pinnedSelectionFromRange(["r2", "r2", "r1"], "2026-09-10", "2026-09-12")).toEqual({
       roomIds: ["r2", "r1"],
       checkIn: "2026-09-10",
       checkOut: "2026-09-12",

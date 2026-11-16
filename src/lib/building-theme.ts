@@ -11,12 +11,8 @@ export type BuildingTheme = {
 };
 
 /** Clădire rece (albastru) = cu AC · caldă (portocaliu) = fără AC */
-export function getBuildingTheme(
-  acMode: AcMode,
-  buildingName: string
-): BuildingTheme {
-  const warm =
-    acMode === "none" || /fără|fara/i.test(buildingName);
+export function getBuildingTheme(acMode: AcMode, buildingName: string): BuildingTheme {
+  const warm = acMode === "none" || /fără|fara/i.test(buildingName);
 
   if (warm) {
     return {

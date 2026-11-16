@@ -49,11 +49,7 @@ export default async function SettingsFiscalPage({
   }
 
   return (
-    <SettingsPageLayout
-      alerts={alerts}
-      title={t("navFiscal")}
-      description={t("navFiscalDesc")}
-    >
+    <SettingsPageLayout alerts={alerts} title={t("navFiscal")} description={t("navFiscalDesc")}>
       <SettingsSection title={t("fiscal.pageTitle")} description={t("fiscal.pageDesc")}>
         <FiscalBillingSettingsPanel
           country={resolveTenantCountry(tenant?.country)}

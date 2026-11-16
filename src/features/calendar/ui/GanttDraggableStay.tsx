@@ -8,10 +8,7 @@ import { useAdminPending } from "@/components/admin/feedback/AdminPendingProvide
 import { useRouter } from "@/i18n/navigation";
 import { useGanttContextMenu } from "@/features/calendar/ui/GanttContextMenuContext";
 import { useGanttStayTapPopover } from "@/features/calendar/ui/GanttStayTapPopoverContext";
-import {
-  LONG_PRESS_MS,
-  LONG_PRESS_MOVE_PX,
-} from "@/domain/gantt/context-menu";
+import { LONG_PRESS_MS, LONG_PRESS_MOVE_PX } from "@/domain/gantt/context-menu";
 import type { MoveRoomDraft } from "@/features/calendar/ui/MoveRoomDialog";
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import type { StoredPaymentStatus } from "@/domain/checkin/types";
@@ -194,10 +191,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     });
 
   const keysProgress = useMemo(
-    () =>
-      roomNames.length > 1
-        ? computeRoomCheckinProgress(roomNames, keysHandedRooms)
-        : null,
+    () => (roomNames.length > 1 ? computeRoomCheckinProgress(roomNames, keysHandedRooms) : null),
     [roomNames, keysHandedRooms],
   );
   const showKeysMicro =
@@ -233,11 +227,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       return tGantt("stayCard.earlyDepartureRecorded");
     }
 
-    if (
-      todayHighlight === "departure" &&
-      !actualCheckOutAt &&
-      !isRequest
-    ) {
+    if (todayHighlight === "departure" && !actualCheckOutAt && !isRequest) {
       if (!policy.earlyCheckoutAllowed) {
         return tGantt("stayCard.earlyDeparturePolicyBlocked", {
           until: checkoutUntil,
@@ -354,7 +344,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       showUnpaid,
       showMissingIdentity,
       onMoveRoom,
-    ]
+    ],
   );
 
   const openStayMenu = useCallback(
@@ -397,7 +387,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       moveRoomDraft,
       onMoveRoom,
       closeTapPopover,
-    ]
+    ],
   );
 
   const clearLongPress = useCallback(() => {
@@ -449,18 +439,14 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
         el.setPointerCapture(e.pointerId);
       }
     },
-    [clearLongPress, openStayMenu, pending, releaseCapture, touch]
+    [clearLongPress, openStayMenu, pending, releaseCapture, touch],
   );
 
   useEffect(() => {
     if (!pressing) return;
 
     const finish = (e: PointerEvent) => {
-      if (
-        touch &&
-        !longPressOpened.current &&
-        e.pointerId === capturePointerId.current
-      ) {
+      if (touch && !longPressOpened.current && e.pointerId === capturePointerId.current) {
         const dx = e.clientX - startX.current;
         const dy = e.clientY - startY.current;
         if (Math.hypot(dx, dy) <= LONG_PRESS_MOVE_PX) {
@@ -484,10 +470,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     const onMove = (e: PointerEvent) => {
       const dx = e.clientX - startX.current;
       const dy = e.clientY - startY.current;
-      if (
-        Math.hypot(dx, dy) > LONG_PRESS_MOVE_PX &&
-        !longPressOpened.current
-      ) {
+      if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_PX && !longPressOpened.current) {
         finish(e);
       }
     };
@@ -500,18 +483,9 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       window.removeEventListener("pointerup", finish);
       window.removeEventListener("pointercancel", finish);
     };
-  }, [
-    pressing,
-    clearLongPress,
-    releaseCapture,
-    touch,
-    stayTapKey,
-    openTapPopover,
-    popoverData,
-  ]);
+  }, [pressing, clearLongPress, releaseCapture, touch, stayTapKey, openTapPopover, popoverData]);
 
-  const showPopover =
-    !pressing && !pending && !touch && (hover || popoverHover);
+  const showPopover = !pressing && !pending && !touch && (hover || popoverHover);
 
   const clearLeaveTimer = () => {
     if (leaveTimer.current) {
@@ -588,9 +562,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
           showUnpaid={showUnpaid}
           showMissingIdentity={showMissingIdentity}
           keysMicroLabel={
-            showKeysMicro && keysProgress
-              ? `${keysProgress.checked}/${keysProgress.total}`
-              : null
+            showKeysMicro && keysProgress ? `${keysProgress.checked}/${keysProgress.total}` : null
           }
           checkinReady={checkinReady}
           capHealth={capHealth}

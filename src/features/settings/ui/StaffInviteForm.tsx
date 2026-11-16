@@ -25,9 +25,7 @@ export function StaffInviteForm() {
             setError(result.error);
           } else {
             setSuccess(t("inviteSuccess"));
-            const form = document.querySelector<HTMLFormElement>(
-              ".admin-staff-invite",
-            );
+            const form = document.querySelector<HTMLFormElement>(".admin-staff-invite");
             form?.reset();
           }
         } finally {

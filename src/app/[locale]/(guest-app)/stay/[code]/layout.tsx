@@ -7,10 +7,7 @@ import { resolveGuestAppThemeStyle } from "@/features/guest-app/themes/loader";
 import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { guestLoyaltyHref } from "@/domain/guest-app/loyalty";
-import {
-  loadGuestStayLayout,
-  loadGuestStayMetadata,
-} from "@/features/guest-app/loaders";
+import { loadGuestStayLayout, loadGuestStayMetadata } from "@/features/guest-app/loaders";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [{ pensionSettings, guestSettings, publicConfig }, t] = await Promise.all([
@@ -21,8 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const appearance = guestSettings?.appearance ?? DEFAULT_GUEST_APP_SETTINGS.appearance;
   const publicThemeId = publicConfig?.themeId ?? "noir";
   const themeStyle = resolveGuestAppThemeStyle(appearance, publicThemeId);
-  const themeColor =
-    themeStyle["--guest-primary"] ?? themeStyle.backgroundColor ?? "#0f0e14";
+  const themeColor = themeStyle["--guest-primary"] ?? themeStyle.backgroundColor ?? "#0f0e14";
   const logoUrl = appearance.logoUrl?.trim();
 
   return {
@@ -81,14 +77,9 @@ export default async function GuestStayLayout({
     );
   }
 
-  const visibleFeatures = visibleGuestAppFeaturesForBooking(
-    session.settings,
-    session.booking,
-  );
+  const visibleFeatures = visibleGuestAppFeaturesForBooking(session.settings, session.booking);
   const sessionReceptionPhone =
-    session.settings.content.hotel?.phone?.trim() ||
-    publicConfig?.contact.phone?.trim() ||
-    null;
+    session.settings.content.hotel?.phone?.trim() || publicConfig?.contact.phone?.trim() || null;
 
   return (
     <GuestAppShell

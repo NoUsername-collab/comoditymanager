@@ -14,7 +14,7 @@ type ClientErrorPayload = {
  */
 export function reportTenantClientError(
   error: Error & { digest?: string },
-  boundary?: string
+  boundary?: string,
 ): void {
   const payload: ClientErrorPayload = {
     message: error.message || "Unknown client error",

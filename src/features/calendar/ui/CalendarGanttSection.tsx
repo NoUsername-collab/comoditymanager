@@ -13,14 +13,8 @@ import {
   mergeAvailabilityPanelSearch,
 } from "@/lib/availability-panel-query";
 import { resolveGanttRange } from "@/domain/gantt/view-range";
-import {
-  loadCalendarGanttPage,
-  type CalendarSearchParams,
-} from "@/features/calendar/loaders";
-import {
-  DEFAULT_CHECK_IN_TIME,
-  DEFAULT_CHECK_OUT_TIME,
-} from "@/lib/constants";
+import { loadCalendarGanttPage, type CalendarSearchParams } from "@/features/calendar/loaders";
+import { DEFAULT_CHECK_IN_TIME, DEFAULT_CHECK_OUT_TIME } from "@/lib/constants";
 import { parseGanttFilter, parseGanttFeatureFilter } from "@/lib/gantt-query";
 import { filterGanttRoomsByFeature } from "@/domain/gantt/filters";
 import { sortRoomsLikeLocationStructure } from "@/domain/room/display-order";
@@ -71,10 +65,8 @@ export async function CalendarGanttSection({
   const filter = parseGanttFilter(params.filter);
   const feat = parseGanttFeatureFilter(params.feat);
   const layer = parseGanttLayerFilter(params.layer);
-  const focusDay =
-    params.fd && /^\d{4}-\d{2}-\d{2}$/.test(params.fd) ? params.fd : null;
-  const quarter =
-    params.q !== undefined ? Number(params.q) : Math.floor(month / 3);
+  const focusDay = params.fd && /^\d{4}-\d{2}-\d{2}$/.test(params.fd) ? params.fd : null;
+  const quarter = params.q !== undefined ? Number(params.q) : Math.floor(month / 3);
 
   const viewRange = resolveGanttRange({
     y: year,
@@ -89,12 +81,7 @@ export async function CalendarGanttSection({
       days7: tCommon("sevenDays"),
       days15: tCommon("fifteenDays"),
       days30: tCommon("thirtyDays"),
-      quarters: [
-        tGanttRange("q1"),
-        tGanttRange("q2"),
-        tGanttRange("q3"),
-        tGanttRange("q4"),
-      ],
+      quarters: [tGanttRange("q1"), tGanttRange("q2"), tGanttRange("q3"), tGanttRange("q4")],
     },
   });
   const availabilityState = readAvailabilityPanelState(
@@ -103,10 +90,7 @@ export async function CalendarGanttSection({
   );
 
   if (!dataResult.ok) {
-    const msg =
-      dataResult.error instanceof Error
-        ? dataResult.error.message
-        : t("genericError");
+    const msg = dataResult.error instanceof Error ? dataResult.error.message : t("genericError");
     return (
       <AdminPageFrame title={t("title")}>
         <p className="text-red-600">{msg}</p>
@@ -129,10 +113,8 @@ export async function CalendarGanttSection({
   ] = data;
   const activeBuildings = buildingsRaw.filter((b) => b.is_active);
   const allRooms = allRoomsRaw.filter((r) => r.is_active);
-  const checkInTime =
-    settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
-  const checkOutTime =
-    settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
+  const checkInTime = settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
+  const checkOutTime = settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
 
   const departurePolicy = {
     earlyCheckoutAllowed: departurePolicyData.earlyCheckoutAllowed,
@@ -178,42 +160,27 @@ export async function CalendarGanttSection({
   }
 
   const unassignedRequests = allBookings.filter(
-    (booking) =>
-      booking.status === "cerere_noua" && booking.room_ids.length === 0,
+    (booking) => booking.status === "cerere_noua" && booking.room_ids.length === 0,
   );
 
-  const todayRequestCount = allBookings.filter(
-    (b) => b.status === "cerere_noua",
-  ).length;
+  const todayRequestCount = allBookings.filter((b) => b.status === "cerere_noua").length;
   const todayArrivalsCount = allBookings.filter(
-    (b) =>
-      b.check_in === effectiveToday &&
-      b.status === "confirmata" &&
-      !b.actual_check_in_at,
+    (b) => b.check_in === effectiveToday && b.status === "confirmata" && !b.actual_check_in_at,
   ).length;
   const todayDeparturesCount = allBookings.filter(
-    (b) =>
-      b.check_out === effectiveToday &&
-      b.status === "confirmata" &&
-      !b.actual_check_out_at,
+    (b) => b.check_out === effectiveToday && b.status === "confirmata" && !b.actual_check_out_at,
   ).length;
-  const todayCleanCount = allBookings.filter(
-    (b) => b.check_out === effectiveToday && !!b.actual_check_out_at,
-  ).reduce((sum, b) => sum + (b.room_ids?.length || 1), 0);
+  const todayCleanCount = allBookings
+    .filter((b) => b.check_out === effectiveToday && !!b.actual_check_out_at)
+    .reduce((sum, b) => sum + (b.room_ids?.length || 1), 0);
 
   const baseCalendarSearch = toUrlSearchParams(params);
-  const prevMonth =
-    availabilityState.month === 0 ? 11 : availabilityState.month - 1;
+  const prevMonth = availabilityState.month === 0 ? 11 : availabilityState.month - 1;
   const prevYear =
-    availabilityState.month === 0
-      ? availabilityState.year - 1
-      : availabilityState.year;
-  const nextMonth =
-    availabilityState.month === 11 ? 0 : availabilityState.month + 1;
+    availabilityState.month === 0 ? availabilityState.year - 1 : availabilityState.year;
+  const nextMonth = availabilityState.month === 11 ? 0 : availabilityState.month + 1;
   const nextYear =
-    availabilityState.month === 11
-      ? availabilityState.year + 1
-      : availabilityState.year;
+    availabilityState.month === 11 ? availabilityState.year + 1 : availabilityState.year;
   const closeAvailabilityHref = hrefForQuery(
     mergeAvailabilityPanelSearch(baseCalendarSearch, { open: false }),
   );
@@ -224,8 +191,7 @@ export async function CalendarGanttSection({
       month: prevMonth,
       buildingId: availabilityState.buildingId,
       view: availabilityState.view,
-      weekStart:
-        availabilityState.view === "week" ? availabilityState.weekStart : null,
+      weekStart: availabilityState.view === "week" ? availabilityState.weekStart : null,
       featureFilter: availabilityState.featureFilter,
       day: null,
     }),
@@ -237,8 +203,7 @@ export async function CalendarGanttSection({
       month: nextMonth,
       buildingId: availabilityState.buildingId,
       view: availabilityState.view,
-      weekStart:
-        availabilityState.view === "week" ? availabilityState.weekStart : null,
+      weekStart: availabilityState.view === "week" ? availabilityState.weekStart : null,
       featureFilter: availabilityState.featureFilter,
       day: null,
     }),
@@ -298,29 +263,29 @@ export async function CalendarGanttSection({
         />
       </AdminPanel>
       {showHeatmap ? (
-      <GanttAvailabilityHeatmapPanelLazy
-        open={availabilityState.open}
-        closeHref={closeAvailabilityHref}
-        title={t("windowGantt")}
-        prevHref={prevAvailabilityHref}
-        nextHref={nextAvailabilityHref}
-        roomCountLabel={t("windowGantt")}
-      >
-        {availabilityState.open ? (
-          <Suspense fallback={<AdminAvailabilitySkeleton />}>
-            <CalendarAvailabilityStream
-              year={availabilityState.year}
-              month={availabilityState.month}
-              buildingId={availabilityState.buildingId}
-              featureFilter={availabilityState.featureFilter}
-              view={availabilityState.view}
-              weekStart={availabilityState.weekStart}
-              initialDay={availabilityState.day ?? undefined}
-              today={effectiveToday}
-            />
-          </Suspense>
-        ) : null}
-      </GanttAvailabilityHeatmapPanelLazy>
+        <GanttAvailabilityHeatmapPanelLazy
+          open={availabilityState.open}
+          closeHref={closeAvailabilityHref}
+          title={t("windowGantt")}
+          prevHref={prevAvailabilityHref}
+          nextHref={nextAvailabilityHref}
+          roomCountLabel={t("windowGantt")}
+        >
+          {availabilityState.open ? (
+            <Suspense fallback={<AdminAvailabilitySkeleton />}>
+              <CalendarAvailabilityStream
+                year={availabilityState.year}
+                month={availabilityState.month}
+                buildingId={availabilityState.buildingId}
+                featureFilter={availabilityState.featureFilter}
+                view={availabilityState.view}
+                weekStart={availabilityState.weekStart}
+                initialDay={availabilityState.day ?? undefined}
+                today={effectiveToday}
+              />
+            </Suspense>
+          ) : null}
+        </GanttAvailabilityHeatmapPanelLazy>
       ) : null}
     </AdminPageFrame>
   );

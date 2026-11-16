@@ -26,7 +26,10 @@ const PUBLIC_FONT_STACK: Record<Exclude<PublicFontId, "theme">, string> = {
   nunito: `var(--font-pub-nunito), ${SANS}`,
 };
 
-export const PUBLIC_FONT_OPTIONS: PublicFontId[] = ["theme", ...(Object.keys(PUBLIC_FONT_STACK) as PublicFontId[])];
+export const PUBLIC_FONT_OPTIONS: PublicFontId[] = [
+  "theme",
+  ...(Object.keys(PUBLIC_FONT_STACK) as PublicFontId[]),
+];
 
 /**
  * The heading font each layout suggests, used while the operator keeps the
@@ -34,7 +37,10 @@ export const PUBLIC_FONT_OPTIONS: PublicFontId[] = ["theme", ...(Object.keys(PUB
  * photo carries a refined display serif, the brochure keeps the palette's own.
  * A font the operator picks always wins.
  */
-export const LAYOUT_SUGGESTED_FONT: Record<PublicTemplateId, Exclude<PublicFontId, "theme"> | null> = {
+export const LAYOUT_SUGGESTED_FONT: Record<
+  PublicTemplateId,
+  Exclude<PublicFontId, "theme"> | null
+> = {
   classic: null,
   editorial: "playfair",
   immersive: "cormorant",
@@ -105,11 +111,14 @@ export function normalizePublicPages(raw: unknown): PublicPagesConfig {
     calendarTitle: (row.calendarTitle ?? {}) as PublicPagesConfig["calendarTitle"],
     calendarLead: (row.calendarLead ?? {}) as PublicPagesConfig["calendarLead"],
     seoCalendarTitle: (row.seoCalendarTitle ?? {}) as PublicPagesConfig["seoCalendarTitle"],
-    seoCalendarDescription: (row.seoCalendarDescription ?? {}) as PublicPagesConfig["seoCalendarDescription"],
+    seoCalendarDescription: (row.seoCalendarDescription ??
+      {}) as PublicPagesConfig["seoCalendarDescription"],
     seoTermsTitle: (row.seoTermsTitle ?? {}) as PublicPagesConfig["seoTermsTitle"],
-    seoTermsDescription: (row.seoTermsDescription ?? {}) as PublicPagesConfig["seoTermsDescription"],
+    seoTermsDescription: (row.seoTermsDescription ??
+      {}) as PublicPagesConfig["seoTermsDescription"],
     seoPrivacyTitle: (row.seoPrivacyTitle ?? {}) as PublicPagesConfig["seoPrivacyTitle"],
-    seoPrivacyDescription: (row.seoPrivacyDescription ?? {}) as PublicPagesConfig["seoPrivacyDescription"],
+    seoPrivacyDescription: (row.seoPrivacyDescription ??
+      {}) as PublicPagesConfig["seoPrivacyDescription"],
     ogImageUrl: asUrl(row.ogImageUrl) ?? null,
   };
 }

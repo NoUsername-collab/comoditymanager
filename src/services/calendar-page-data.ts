@@ -25,11 +25,9 @@ export const loadCalendarCoreData = cache(
         }),
         roomsPromise
           .then((rooms) =>
-            getRoomOptionSlugsByRoomIds(
-              rooms.filter((r) => r.is_active).map((r) => r.id)
-            )
+            getRoomOptionSlugsByRoomIds(rooms.filter((r) => r.is_active).map((r) => r.id)),
           )
-          .catch(() => ({} as Record<string, string[]>)),
+          .catch(() => ({}) as Record<string, string[]>),
       ] as const);
     timer.finish({
       rangeStart,
@@ -47,5 +45,5 @@ export const loadCalendarCoreData = cache(
       occupancy,
       optionSlugsByRoom,
     ] as const;
-  }
+  },
 );

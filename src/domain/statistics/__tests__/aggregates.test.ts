@@ -86,7 +86,9 @@ describe("resolvedBookingRevenue", () => {
 // ---------------------------------------------------------------------------
 describe("countOccupiedRoomNights", () => {
   it("counts room-nights for a booking spanning 2 nights", () => {
-    const bookings = [makeBooking({ room_ids: ["r1"], check_in: "2025-06-10", check_out: "2025-06-12" })];
+    const bookings = [
+      makeBooking({ room_ids: ["r1"], check_in: "2025-06-10", check_out: "2025-06-12" }),
+    ];
     const nights = ["2025-06-10", "2025-06-11"];
     const count = countOccupiedRoomNights(["r1"], nights, bookings, true);
     expect(count).toBe(2);
@@ -110,7 +112,12 @@ describe("countOccupiedRoomNights", () => {
 
   it("filters non-confirmed bookings when onlyConfirmed is true", () => {
     const bookings = [
-      makeBooking({ status: "cerere_noua", room_ids: ["r1"], check_in: "2025-06-10", check_out: "2025-06-12" }),
+      makeBooking({
+        status: "cerere_noua",
+        room_ids: ["r1"],
+        check_in: "2025-06-10",
+        check_out: "2025-06-12",
+      }),
     ];
     const count = countOccupiedRoomNights(["r1"], ["2025-06-10", "2025-06-11"], bookings, true);
     expect(count).toBe(0);
@@ -118,7 +125,12 @@ describe("countOccupiedRoomNights", () => {
 
   it("includes non-confirmed bookings when onlyConfirmed is false", () => {
     const bookings = [
-      makeBooking({ status: "cerere_noua", room_ids: ["r1"], check_in: "2025-06-10", check_out: "2025-06-12" }),
+      makeBooking({
+        status: "cerere_noua",
+        room_ids: ["r1"],
+        check_in: "2025-06-10",
+        check_out: "2025-06-12",
+      }),
     ];
     const count = countOccupiedRoomNights(["r1"], ["2025-06-10", "2025-06-11"], bookings, false);
     expect(count).toBe(2);

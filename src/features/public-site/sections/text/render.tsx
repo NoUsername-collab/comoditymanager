@@ -12,7 +12,11 @@ export function renderText(section: PublicSiteSectionOf<"text">, locale: string)
   if (!title && !lead && !body) return null;
   return (
     <SectionShell className={withPhotoClass("pub-section--text", section.payload.imageUrl)}>
-      <WithSectionPhoto imageUrl={section.payload.imageUrl} imageAlt={section.payload.imageAlt} locale={locale}>
+      <WithSectionPhoto
+        imageUrl={section.payload.imageUrl}
+        imageAlt={section.payload.imageAlt}
+        locale={locale}
+      >
         <SectionHead title={title} lead={lead} />
         {body ? <RichText text={body} className="pub-section__body" /> : null}
       </WithSectionPhoto>

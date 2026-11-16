@@ -105,10 +105,7 @@ function extractBirthYear(birthDate: string | null): number | null {
  * Score a single candidate row against the input.
  * Returns null if no meaningful match.
  */
-export function scoreDedupCandidate(
-  input: DedupInput,
-  row: DedupGuestRow
-): DedupCandidate | null {
+export function scoreDedupCandidate(input: DedupInput, row: DedupGuestRow): DedupCandidate | null {
   if (input.excludeGuestId && row.id === input.excludeGuestId) return null;
 
   let score = 0;
@@ -248,7 +245,7 @@ export function scoreDedupCandidate(
 export function scoreDedupCandidates(
   input: DedupInput,
   rows: DedupGuestRow[],
-  minScore = 40
+  minScore = 40,
 ): DedupCandidate[] {
   const results: DedupCandidate[] = [];
 

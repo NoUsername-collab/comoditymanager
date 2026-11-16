@@ -11,14 +11,10 @@ const AppearanceSettingsAsideDynamic = dynamic(
     })),
   {
     ssr: false,
-    loading: () => (
-      <aside className="settings-aside settings-aside--loading" aria-busy="true" />
-    ),
+    loading: () => <aside className="settings-aside settings-aside--loading" aria-busy="true" />,
   },
 );
 
-export function AppearanceSettingsAsideLazy(
-  props: ComponentProps<typeof AppearanceSettingsAside>,
-) {
+export function AppearanceSettingsAsideLazy(props: ComponentProps<typeof AppearanceSettingsAside>) {
   return <AppearanceSettingsAsideDynamic {...props} />;
 }

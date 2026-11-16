@@ -14,7 +14,7 @@ function findVisibleRange(
   offsets: number[],
   scrollMargin: number,
   viewTop: number,
-  viewBottom: number
+  viewBottom: number,
 ) {
   const totalSize = offsets[offsets.length - 1] ?? 0;
   const relTop = Math.max(0, viewTop - scrollMargin);

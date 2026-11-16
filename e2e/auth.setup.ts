@@ -10,7 +10,7 @@ setup("authenticate as admin", async ({ page }) => {
   if (!email || !password) {
     throw new Error(
       "Missing E2E_ADMIN_EMAIL or E2E_ADMIN_PASSWORD env vars. " +
-        "Set them before running E2E tests."
+        "Set them before running E2E tests.",
     );
   }
 

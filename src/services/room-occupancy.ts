@@ -8,10 +8,7 @@ import type {
 import type { BookingStatus } from "@/domain/booking/types";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import { RECEPTION_OCCUPANCY_KINDS } from "@/domain/booking/reception-write";
-import {
-  DEFAULT_CHECK_IN_TIME,
-  DEFAULT_CHECK_OUT_TIME,
-} from "@/lib/constants";
+import { DEFAULT_CHECK_IN_TIME, DEFAULT_CHECK_OUT_TIME } from "@/lib/constants";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
@@ -32,7 +29,7 @@ function isHoldActive(
     released_at: string | null;
     expires_at: string | null;
   },
-  asOfIso: string
+  asOfIso: string,
 ): boolean {
   if (row.released_at) return false;
   if (!row.expires_at) return true;
@@ -41,12 +38,10 @@ function isHoldActive(
 }
 
 async function resolveOccupancyContext(
-  options: OccupancyQueryOptions
+  options: OccupancyQueryOptions,
 ): Promise<{ ref: string; tenantId: string }> {
   const [ref, scope] = await Promise.all([
-    options.referenceDate
-      ? Promise.resolve(options.referenceDate)
-      : todayIso(),
+    options.referenceDate ? Promise.resolve(options.referenceDate) : todayIso(),
     options.tenantId
       ? Promise.resolve({ tenantId: options.tenantId })
       : options.forPublicCalendar
@@ -59,7 +54,7 @@ async function resolveOccupancyContext(
 async function getRoomOccupancyImpl(
   rangeStart: string,
   rangeEnd: string,
-  options: OccupancyQueryOptions = {}
+  options: OccupancyQueryOptions = {},
 ): Promise<OccupancySegment[]> {
   const kinds = options.kinds ?? ALL_KINDS;
   const { ref, tenantId } = await resolveOccupancyContext(options);
@@ -76,7 +71,7 @@ async function getRoomOccupancyImpl(
         bookings!inner (
           id, status, guest_name, guest_email
         )
-      `
+      `,
       )
       .eq("tenant_id", tenantId)
       .lte("segment_start", rangeEnd)
@@ -142,9 +137,7 @@ async function getRoomOccupancyImpl(
 
     let holdQ = supabase
       .from("room_holds")
-      .select(
-        "id, room_id, check_in, check_out, reason, expires_at, released_at"
-      )
+      .select("id, room_id, check_in, check_out, reason, expires_at, released_at")
       .eq("tenant_id", tenantId)
       .lte("check_in", rangeEnd)
       .gte("check_out", rangeStart)
@@ -214,9 +207,7 @@ async function getRoomOccupancyImpl(
   const out = [...segmentRows, ...holdRows, ...blockRows];
 
   return out.sort((a, b) =>
-    a.checkIn === b.checkIn
-      ? a.roomId.localeCompare(b.roomId)
-      : a.checkIn.localeCompare(b.checkIn)
+    a.checkIn === b.checkIn ? a.roomId.localeCompare(b.roomId) : a.checkIn.localeCompare(b.checkIn),
   );
 }
 
@@ -225,7 +216,7 @@ function occupancyCacheKey(
   rangeStart: string,
   rangeEnd: string,
   options: OccupancyQueryOptions,
-  referenceDate: string
+  referenceDate: string,
 ): string[] {
   const kinds = (options.kinds ?? ALL_KINDS).slice().sort().join(",");
   const roomIds = [...new Set((options.roomIds ?? []).filter(Boolean))].sort().join(",");
@@ -247,7 +238,7 @@ const getCachedRoomOccupancy = (
   rangeStart: string,
   rangeEnd: string,
   options: OccupancyQueryOptions,
-  referenceDate: string
+  referenceDate: string,
 ) =>
   unstable_cache(
     () =>
@@ -258,19 +249,16 @@ const getCachedRoomOccupancy = (
       }),
     occupancyCacheKey(tenantId, rangeStart, rangeEnd, options, referenceDate),
     {
-      tags: [
-        CACHE_TAGS.bookingCounts,
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
-      ],
+      tags: [CACHE_TAGS.bookingCounts, tenantTag(tenantId, CACHE_TAGS.bookingCounts)],
       revalidate: 30,
-    }
+    },
   );
 
 const loadRoomOccupancy = cache(
   async (
     rangeStart: string,
     rangeEnd: string,
-    options: OccupancyQueryOptions = {}
+    options: OccupancyQueryOptions = {},
   ): Promise<OccupancySegment[]> => {
     const { ref, tenantId } = await resolveOccupancyContext(options);
 
@@ -282,14 +270,8 @@ const loadRoomOccupancy = cache(
       });
     }
 
-    return getCachedRoomOccupancy(
-      tenantId,
-      rangeStart,
-      rangeEnd,
-      options,
-      ref
-    )();
-  }
+    return getCachedRoomOccupancy(tenantId, rangeStart, rangeEnd, options, ref)();
+  },
 );
 
 /**
@@ -299,7 +281,7 @@ const loadRoomOccupancy = cache(
 export async function getRoomOccupancy(
   rangeStart: string,
   rangeEnd: string,
-  options: OccupancyQueryOptions = {}
+  options: OccupancyQueryOptions = {},
 ): Promise<OccupancySegment[]> {
   return loadRoomOccupancy(rangeStart, rangeEnd, options);
 }
@@ -310,25 +292,21 @@ async function listOccupancyForConflictCheck(
   options?: Pick<OccupancyQueryOptions, "forPublicCalendar" | "roomIds" | "kinds"> & {
     rangeStart?: string;
     rangeEnd?: string;
-  }
+  },
 ): Promise<OccupancySegment[]> {
-  return getRoomOccupancy(
-    options?.rangeStart ?? "1970-01-01",
-    options?.rangeEnd ?? "2099-12-31",
-    {
+  return getRoomOccupancy(options?.rangeStart ?? "1970-01-01", options?.rangeEnd ?? "2099-12-31", {
     excludeBookingId,
     roomIds: options?.roomIds,
     kinds: options?.kinds,
     forPublicCalendar: options?.forPublicCalendar,
-    }
-  );
+  });
 }
 
 export async function assertRoomsAvailableForOccupancy(
   checkIn: string,
   checkOut: string,
   roomIds: string[],
-  excludeBookingId?: string
+  excludeBookingId?: string,
 ): Promise<void> {
   if (!isAtLeastOneNight(checkIn, checkOut)) {
     throw new Error("occupancy.invalid_stay");
@@ -352,9 +330,16 @@ export async function assertRoomsAvailableForOccupancy(
     checkOut: settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME,
   };
   if (
-    hasOccupancyConflict(unique, checkIn, checkOut, segments, {
-      bookingId: excludeBookingId,
-    }, times)
+    hasOccupancyConflict(
+      unique,
+      checkIn,
+      checkOut,
+      segments,
+      {
+        bookingId: excludeBookingId,
+      },
+      times,
+    )
   ) {
     throw new Error("occupancy.one_or_more_rooms_unavailable_refresh_and_retry");
   }
@@ -366,12 +351,9 @@ export async function listOccupiedRoomRanges(
   options?: Pick<OccupancyQueryOptions, "forPublicCalendar" | "roomIds"> & {
     rangeStart?: string;
     rangeEnd?: string;
-  }
+  },
 ): Promise<{ room_id: string; check_in: string; check_out: string }[]> {
-  const segments = await listOccupancyForConflictCheck(
-    excludeBookingId,
-    options
-  );
+  const segments = await listOccupancyForConflictCheck(excludeBookingId, options);
   return segments.map((s) => ({
     room_id: s.roomId,
     check_in: s.checkIn,

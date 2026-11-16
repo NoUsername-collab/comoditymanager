@@ -17,7 +17,7 @@ describe("guestRequiresDocumentExpiry", () => {
       guestRequiresDocumentExpiry({
         ...baseGuest,
         document_type: "passport",
-      })
+      }),
     ).toBe(true);
   });
 
@@ -27,7 +27,7 @@ describe("guestRequiresDocumentExpiry", () => {
         ...baseGuest,
         national_id: "1850101410014",
         national_id_type: "cnp",
-      })
+      }),
     ).toBe(false);
   });
 
@@ -51,7 +51,7 @@ describe("guestRequiresDocumentExpiry", () => {
         ...baseGuest,
         document_type: "passport",
         present_at_checkin: false,
-      })
+      }),
     ).toBe(false);
   });
 });
@@ -62,7 +62,7 @@ describe("guestHasDocumentExpiry", () => {
       guestHasDocumentExpiry({
         ...baseGuest,
         doc_expiry_date: "2030-01-01",
-      })
+      }),
     ).toBe(true);
   });
 });

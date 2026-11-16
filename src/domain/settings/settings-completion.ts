@@ -1,8 +1,5 @@
 import type { PensionContact } from "@/domain/settings/pension-identity";
-import {
-  isEmailChannelConfigured,
-  isIdentityConfigured,
-} from "@/domain/setup-issues/progress";
+import { isEmailChannelConfigured, isIdentityConfigured } from "@/domain/setup-issues/progress";
 import type { SetupIssue } from "@/domain/setup-issues/types";
 import { SETUP_ISSUE_IDS } from "@/domain/setup-issues/types";
 
@@ -38,11 +35,7 @@ function hasSetupIssue(issues: SetupIssue[], id: string): boolean {
 }
 
 export function hasIdentityContact(contact: PensionContact): boolean {
-  return Boolean(
-    contact.email?.trim() ||
-      contact.phone?.trim() ||
-      contact.whatsapp?.trim(),
-  );
+  return Boolean(contact.email?.trim() || contact.phone?.trim() || contact.whatsapp?.trim());
 }
 
 export function computeSettingsCompletion(opts: {
@@ -134,8 +127,7 @@ export function computeSettingsCompletion(opts: {
 
   const completeCount = items.filter((item) => item.done).length;
   const totalCount = items.length;
-  const percent =
-    totalCount === 0 ? 100 : Math.round((completeCount / totalCount) * 100);
+  const percent = totalCount === 0 ? 100 : Math.round((completeCount / totalCount) * 100);
   const next = items.find((item) => !item.done) ?? null;
 
   return { percent, completeCount, totalCount, items, next, publicItems };

@@ -3,12 +3,7 @@ import { unstable_cache } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import {
-  getTenantScope,
-  tenantCacheKey,
-  tenantCacheTag,
-  withTenantId,
-} from "@/lib/tenant/scope";
+import { getTenantScope, tenantCacheKey, tenantCacheTag, withTenantId } from "@/lib/tenant/scope";
 import {
   acModeToPolicyMode,
   computeRoomPrice,
@@ -55,7 +50,7 @@ function mapOption(row: Record<string, unknown>): RoomOptionDefinition {
 async function requireBuildingInTenant(
   supabase: SupabaseClient,
   tenantId: string,
-  buildingId: string
+  buildingId: string,
 ): Promise<void> {
   const { data, error } = await supabase
     .from("buildings")
@@ -70,7 +65,7 @@ async function requireBuildingInTenant(
 async function requireRoomInTenant(
   supabase: SupabaseClient,
   tenantId: string,
-  roomId: string
+  roomId: string,
 ): Promise<void> {
   const { data, error } = await supabase
     .from("rooms")
@@ -85,7 +80,7 @@ async function requireRoomInTenant(
 async function requireRoomTypeInTenant(
   supabase: SupabaseClient,
   tenantId: string,
-  typeId: string
+  typeId: string,
 ): Promise<void> {
   const { data, error } = await supabase
     .from("room_type_definitions")
@@ -99,14 +94,12 @@ async function requireRoomTypeInTenant(
 
 async function listRoomTypesUncached(
   tenantId: string,
-  includeInactive = false
+  includeInactive = false,
 ): Promise<RoomTypeDefinition[]> {
   const supabase = createPublicAdminClient();
   let q = supabase
     .from("room_type_definitions")
-    .select(
-      "id, slug, name, capacity_base, base_price_per_night, sort_order, is_system, is_active"
-    )
+    .select("id, slug, name, capacity_base, base_price_per_night, sort_order, is_system, is_active")
     .eq("tenant_id", tenantId)
     .order("sort_order", { ascending: true });
   if (!includeInactive) q = q.eq("is_active", true);
@@ -131,9 +124,7 @@ async function listRoomTypesUncached(
     byType.set(tid, list);
   }
 
-  return rows.map((row) =>
-    mapType(row, byType.get(String(row.id)) ?? []),
-  );
+  return rows.map((row) => mapType(row, byType.get(String(row.id)) ?? []));
 }
 
 const getCachedRoomTypes = (tenantId: string, includeInactive: boolean) =>
@@ -143,11 +134,11 @@ const getCachedRoomTypes = (tenantId: string, includeInactive: boolean) =>
     {
       tags: [CACHE_TAGS.roomCatalog, tenantCacheTag(tenantId, "room-catalog")],
       revalidate: 300,
-    }
+    },
   );
 
 const loadRoomTypes = cache((tenantId: string, includeInactive: boolean) =>
-  getCachedRoomTypes(tenantId, includeInactive)()
+  getCachedRoomTypes(tenantId, includeInactive)(),
 );
 
 export async function listRoomTypes(includeInactive = false): Promise<RoomTypeDefinition[]> {
@@ -157,23 +148,19 @@ export async function listRoomTypes(includeInactive = false): Promise<RoomTypeDe
 
 async function listRoomOptionsUncached(
   tenantId: string,
-  includeInactive = false
+  includeInactive = false,
 ): Promise<RoomOptionDefinition[]> {
   const supabase = createPublicAdminClient();
   let q = supabase
     .from("room_option_definitions")
-    .select(
-      "id, slug, name, description, price_per_night_addon, sort_order, is_system, is_active"
-    )
+    .select("id, slug, name, description, price_per_night_addon, sort_order, is_system, is_active")
     .eq("tenant_id", tenantId)
     .order("sort_order", { ascending: true });
   if (!includeInactive) q = q.eq("is_active", true);
 
   const { data, error } = await q;
   if (error) throw new Error(error.message);
-  return (data ?? []).map((row) =>
-    mapOption(row as unknown as Record<string, unknown>),
-  );
+  return (data ?? []).map((row) => mapOption(row as unknown as Record<string, unknown>));
 }
 
 const getCachedRoomOptions = (tenantId: string, includeInactive: boolean) =>
@@ -183,11 +170,11 @@ const getCachedRoomOptions = (tenantId: string, includeInactive: boolean) =>
     {
       tags: [CACHE_TAGS.roomCatalog, tenantCacheTag(tenantId, "room-catalog")],
       revalidate: 300,
-    }
+    },
   );
 
 const loadRoomOptions = cache((tenantId: string, includeInactive: boolean) =>
-  getCachedRoomOptions(tenantId, includeInactive)()
+  getCachedRoomOptions(tenantId, includeInactive)(),
 );
 
 export async function listRoomOptions(includeInactive = false): Promise<RoomOptionDefinition[]> {
@@ -195,27 +182,27 @@ export async function listRoomOptions(includeInactive = false): Promise<RoomOpti
   return loadRoomOptions(tenantId, includeInactive);
 }
 
-const loadBuildingOptionPolicies = cache(async (
-  buildingId: string
-): Promise<BuildingOptionPolicy[]> => {
-  const { tenantId, supabase } = await getTenantScope();
-  await requireBuildingInTenant(supabase, tenantId, buildingId);
+const loadBuildingOptionPolicies = cache(
+  async (buildingId: string): Promise<BuildingOptionPolicy[]> => {
+    const { tenantId, supabase } = await getTenantScope();
+    await requireBuildingInTenant(supabase, tenantId, buildingId);
 
-  const { data, error } = await supabase
-    .from("building_option_policies")
-    .select("building_id, option_id, mode")
-    .eq("building_id", buildingId);
+    const { data, error } = await supabase
+      .from("building_option_policies")
+      .select("building_id, option_id, mode")
+      .eq("building_id", buildingId);
 
-  if (error) throw new Error(error.message);
-  return (data ?? []).map((row) => ({
-    building_id: String(row.building_id),
-    option_id: String(row.option_id),
-    mode: row.mode as OptionPolicyMode,
-  }));
-});
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((row) => ({
+      building_id: String(row.building_id),
+      option_id: String(row.option_id),
+      mode: row.mode as OptionPolicyMode,
+    }));
+  },
+);
 
 export async function getBuildingOptionPolicies(
-  buildingId: string
+  buildingId: string,
 ): Promise<BuildingOptionPolicy[]> {
   return loadBuildingOptionPolicies(buildingId);
 }
@@ -223,7 +210,7 @@ export async function getBuildingOptionPolicies(
 /** Sincronizează politica AC din ac_mode legacy dacă lipsește din catalog. */
 async function ensureBuildingPoliciesFromLegacyImpl(
   buildingId: string,
-  acMode: AcMode
+  acMode: AcMode,
 ): Promise<BuildingOptionPolicy[]> {
   const options = await listRoomOptions(true);
   const acOption = options.find((o) => o.slug === "ac");
@@ -250,21 +237,20 @@ async function ensureBuildingPoliciesFromLegacyImpl(
   return getBuildingOptionPolicies(buildingId);
 }
 
-const loadBuildingPoliciesFromLegacy = cache(
-  (buildingId: string, acMode: AcMode) =>
-    ensureBuildingPoliciesFromLegacyImpl(buildingId, acMode)
+const loadBuildingPoliciesFromLegacy = cache((buildingId: string, acMode: AcMode) =>
+  ensureBuildingPoliciesFromLegacyImpl(buildingId, acMode),
 );
 
 export async function ensureBuildingPoliciesFromLegacy(
   buildingId: string,
-  acMode: AcMode
+  acMode: AcMode,
 ): Promise<BuildingOptionPolicy[]> {
   return loadBuildingPoliciesFromLegacy(buildingId, acMode);
 }
 
 export async function setBuildingOptionPolicies(
   buildingId: string,
-  policies: { option_id: string; mode: OptionPolicyMode }[]
+  policies: { option_id: string; mode: OptionPolicyMode }[],
 ): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   await requireBuildingInTenant(supabase, tenantId, buildingId);
@@ -282,7 +268,7 @@ export async function setBuildingOptionPolicies(
       building_id: buildingId,
       option_id: p.option_id,
       mode: p.mode,
-    }))
+    })),
   );
   if (error) throw new Error(error.message);
 
@@ -312,10 +298,7 @@ export async function getRoomEnabledOptionIds(roomId: string): Promise<string[]>
   return (data ?? []).map((r) => String(r.option_id));
 }
 
-export async function setRoomEnabledOptions(
-  roomId: string,
-  optionIds: string[]
-): Promise<void> {
+export async function setRoomEnabledOptions(roomId: string, optionIds: string[]): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   await requireRoomInTenant(supabase, tenantId, roomId);
 
@@ -326,9 +309,9 @@ export async function setRoomEnabledOptions(
   if (delErr) throw new Error(delErr.message);
 
   if (optionIds.length === 0) return;
-  const { error } = await supabase.from("room_enabled_options").insert(
-    optionIds.map((option_id) => ({ room_id: roomId, option_id }))
-  );
+  const { error } = await supabase
+    .from("room_enabled_options")
+    .insert(optionIds.map((option_id) => ({ room_id: roomId, option_id })));
   if (error) throw new Error(error.message);
 }
 
@@ -346,7 +329,7 @@ export function calculatePriceFromCatalog(input: {
     const resolved = resolveOptionEnabled(
       mode,
       input.selectedOptionIds.includes(opt.id),
-      input.typeDefaultOptionIds.includes(opt.id)
+      input.typeDefaultOptionIds.includes(opt.id),
     );
     return resolved.enabled;
   });
@@ -381,7 +364,7 @@ export async function createRoomType(input: {
         sort_order: input.sort_order ?? 0,
         is_system: false,
         is_active: true,
-      })
+      }),
     )
     .select("id")
     .single();
@@ -392,7 +375,7 @@ export async function createRoomType(input: {
       input.default_option_ids.map((option_id) => ({
         room_type_id: data.id,
         option_id,
-      }))
+      })),
     );
   }
   return { id: data.id };
@@ -407,7 +390,7 @@ export async function updateRoomType(
     sort_order: number;
     is_active: boolean;
     default_option_ids: string[];
-  }
+  },
 ): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   await requireRoomTypeInTenant(supabase, tenantId, id);
@@ -428,9 +411,9 @@ export async function updateRoomType(
 
   await supabase.from("room_type_default_options").delete().eq("room_type_id", id);
   if (input.default_option_ids.length) {
-    const { error: insErr } = await supabase.from("room_type_default_options").insert(
-      input.default_option_ids.map((option_id) => ({ room_type_id: id, option_id }))
-    );
+    const { error: insErr } = await supabase
+      .from("room_type_default_options")
+      .insert(input.default_option_ids.map((option_id) => ({ room_type_id: id, option_id })));
     if (insErr) throw new Error(insErr.message);
   }
 }
@@ -456,7 +439,7 @@ export async function createRoomOption(input: {
         sort_order: input.sort_order ?? 0,
         is_system: false,
         is_active: true,
-      })
+      }),
     )
     .select("id")
     .single();
@@ -472,7 +455,7 @@ export async function updateRoomOption(
     price_per_night_addon: number;
     sort_order: number;
     is_active: boolean;
-  }
+  },
 ): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
@@ -493,7 +476,7 @@ export async function updateRoomOption(
 /** Map room_id → slug-uri opțiuni active (AC, frigider…). */
 async function getRoomOptionSlugsByRoomIdsUncached(
   tenantId: string,
-  roomIds: string[]
+  roomIds: string[],
 ): Promise<Record<string, string[]>> {
   if (roomIds.length === 0) return {};
   const supabase = createPublicAdminClient();
@@ -517,10 +500,7 @@ async function getRoomOptionSlugsByRoomIdsUncached(
   const out: Record<string, string[]> = {};
   for (const row of data ?? []) {
     const rid = String(row.room_id);
-    const def = row.room_option_definitions as
-      | { slug: string }
-      | { slug: string }[]
-      | null;
+    const def = row.room_option_definitions as { slug: string } | { slug: string }[] | null;
     const slug = Array.isArray(def) ? def[0]?.slug : def?.slug;
     if (!slug) continue;
     if (!out[rid]) out[rid] = [];
@@ -534,20 +514,22 @@ const getCachedRoomOptionSlugsByRoomIds = (tenantId: string, roomIds: string[]) 
     () => getRoomOptionSlugsByRoomIdsUncached(tenantId, roomIds),
     tenantCacheKey(tenantId, CACHE_TAGS.roomOptionsByRoom, ...roomIds.sort()),
     {
-      tags: [CACHE_TAGS.roomCatalog, CACHE_TAGS.roomOptionsByRoom, tenantCacheTag(tenantId, "room-options-by-room")],
+      tags: [
+        CACHE_TAGS.roomCatalog,
+        CACHE_TAGS.roomOptionsByRoom,
+        tenantCacheTag(tenantId, "room-options-by-room"),
+      ],
       revalidate: 300,
-    }
+    },
   );
 
-const loadRoomOptionSlugsByRoomIds = cache(
-  (tenantId: string, roomIdsKey: string) => {
-    const roomIds = roomIdsKey.length > 0 ? roomIdsKey.split(",") : [];
-    return getCachedRoomOptionSlugsByRoomIds(tenantId, roomIds)();
-  }
-);
+const loadRoomOptionSlugsByRoomIds = cache((tenantId: string, roomIdsKey: string) => {
+  const roomIds = roomIdsKey.length > 0 ? roomIdsKey.split(",") : [];
+  return getCachedRoomOptionSlugsByRoomIds(tenantId, roomIds)();
+});
 
 export async function getRoomOptionSlugsByRoomIds(
-  roomIds: string[]
+  roomIds: string[],
 ): Promise<Record<string, string[]>> {
   const { tenantId } = await getTenantScope();
   const roomIdsKey = [...roomIds].sort().join(",");
@@ -555,13 +537,13 @@ export async function getRoomOptionSlugsByRoomIds(
 }
 
 export function parseSelectedOptionIds(formData: FormData): string[] {
-  return formData.getAll("option_ids").map(String).filter((id) => id.length > 0);
+  return formData
+    .getAll("option_ids")
+    .map(String)
+    .filter((id) => id.length > 0);
 }
 
-export function hasAcFromOptions(
-  options: RoomOptionDefinition[],
-  enabledIds: string[]
-): boolean {
+export function hasAcFromOptions(options: RoomOptionDefinition[], enabledIds: string[]): boolean {
   const ac = options.find((o) => o.slug === "ac");
   return ac ? enabledIds.includes(ac.id) : false;
 }

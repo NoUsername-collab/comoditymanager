@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  breakdownTenantModules,
-  defaultModulesForPlan,
-} from "@/core/config/plan-catalog";
+import { breakdownTenantModules, defaultModulesForPlan } from "@/core/config/plan-catalog";
 
 describe("plan-catalog", () => {
   it("breaks down included vs addon modules", () => {

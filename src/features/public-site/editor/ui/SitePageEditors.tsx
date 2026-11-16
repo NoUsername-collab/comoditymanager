@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
-import { MAX_SITE_PAGES, pageSlugProblem, slugifyPageName } from "@/features/public-site/domain/site-pages";
+import {
+  MAX_SITE_PAGES,
+  pageSlugProblem,
+  slugifyPageName,
+} from "@/features/public-site/domain/site-pages";
 import { addMenuItem } from "@/features/public-site/editor/model/menu-draft";
 import {
   createSitePageDraft,
@@ -50,7 +54,12 @@ export function PageSwitcher({ onNewPage }: { onNewPage: () => void }) {
         </button>
       ))}
       {draft.pages.length < MAX_SITE_PAGES ? (
-        <button type="button" className="pub-page-switch__new" disabled={readOnly} onClick={onNewPage}>
+        <button
+          type="button"
+          className="pub-page-switch__new"
+          disabled={readOnly}
+          onClick={onNewPage}
+        >
           + {te("new")}
         </button>
       ) : null}
@@ -78,7 +87,12 @@ export function NewPageForm({ onDone }: { onDone: () => void }) {
     setDraft((d) => ({
       ...d,
       pages: [...d.pages, page],
-      menu: addMenuItem(d.menu, { id: crypto.randomUUID(), kind: "page", ref: page.key, label: {} }),
+      menu: addMenuItem(d.menu, {
+        id: crypto.randomUUID(),
+        kind: "page",
+        ref: page.key,
+        label: {},
+      }),
     }));
     setActivePage(page.key);
     onDone();
@@ -88,7 +102,12 @@ export function NewPageForm({ onDone }: { onDone: () => void }) {
     <div className="pub-new-page">
       <h3 className="pub-new-page__title">{te("newTitle")}</h3>
       <div className="admin-settings-fields">
-        <EditorField label={te("name")} value={name} onChange={setName} placeholder={te("namePlaceholder")} />
+        <EditorField
+          label={te("name")}
+          value={name}
+          onChange={setName}
+          placeholder={te("namePlaceholder")}
+        />
       </div>
       <fieldset className="pub-new-page__models">
         <legend>{te("model")}</legend>
@@ -142,8 +161,17 @@ export function PageSettingsEditor({ page }: { page: SitePageDraft }) {
 
   return (
     <div className="admin-settings-fields">
-      <EditorField label={te("title")} value={page.copy[locale].title} onChange={setText("title")} />
-      <EditorField label={te("lead")} rows={2} value={page.copy[locale].lead} onChange={setText("lead")} />
+      <EditorField
+        label={te("title")}
+        value={page.copy[locale].title}
+        onChange={setText("title")}
+      />
+      <EditorField
+        label={te("lead")}
+        rows={2}
+        value={page.copy[locale].lead}
+        onChange={setText("lead")}
+      />
       <label className="pub-page-slug">
         <span>{te("address")}</span>
         <span className="pub-page-slug__field">
@@ -153,8 +181,12 @@ export function PageSettingsEditor({ page }: { page: SitePageDraft }) {
             value={page.slug}
             disabled={readOnly}
             aria-invalid={problem ? true : undefined}
-            onChange={(event) => update((current) => ({ ...current, slug: event.target.value.toLowerCase() }))}
-            onBlur={() => update((current) => ({ ...current, slug: slugifyPageName(current.slug) }))}
+            onChange={(event) =>
+              update((current) => ({ ...current, slug: event.target.value.toLowerCase() }))
+            }
+            onBlur={() =>
+              update((current) => ({ ...current, slug: slugifyPageName(current.slug) }))
+            }
           />
         </span>
         {problem || serverError ? (

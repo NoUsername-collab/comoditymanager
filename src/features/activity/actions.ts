@@ -7,9 +7,7 @@ import { getTranslations } from "next-intl/server";
 
 export type UndoActivityResult = { ok: true } | { ok: false; error: string };
 
-export async function undoActivityLogAction(
-  logId: string
-): Promise<UndoActivityResult> {
+export async function undoActivityLogAction(logId: string): Promise<UndoActivityResult> {
   const t = await getTranslations("admin.activity");
   await requireStaffPermission("booking_management");
 
@@ -38,7 +36,7 @@ export async function undoActivityLogAction(
  * activity log entry for the given booking and reversing it.
  */
 export async function undoBookingCancellationAction(
-  bookingId: string
+  bookingId: string,
 ): Promise<UndoActivityResult> {
   const t = await getTranslations("admin.activity");
   await requireStaffPermission("booking_management");

@@ -12,43 +12,42 @@
 export type CloudPlan = "free" | "essential" | "professional" | "business";
 export type PlanId = CloudPlan;
 
-
 // ─── Add-on Modules ─────────────────────────────────────────────
 export type ModuleId =
-  | "ical_sync"        // iCal sync (Booking, Airbnb)
-  | "invoicing"        // PDF invoices
-  | "whatsapp"         // WhatsApp notifications
-  | "guest_app"        // Alfred-style guest web app per stay
-  | "public_page"      // Public booking page
+  | "ical_sync" // iCal sync (Booking, Airbnb)
+  | "invoicing" // PDF invoices
+  | "whatsapp" // WhatsApp notifications
+  | "guest_app" // Alfred-style guest web app per stay
+  | "public_page" // Public booking page
   | "advanced_reports" // Advanced statistics
-  | "multi_property"   // Multiple buildings/locations
-  | "white_label"      // Remove Zalmox branding
-  | "api_access";      // REST API
+  | "multi_property" // Multiple buildings/locations
+  | "white_label" // Remove Zalmox branding
+  | "api_access"; // REST API
 
 // ─── Core Features (gated by plan) ──────────────────────────────
 export type CoreFeature =
-  | "calendar"           // Basic calendar view
-  | "gantt"              // Full Gantt timeline
-  | "guest_files"        // Guest management
-  | "bookings"           // Booking management
-  | "rooms_unlimited"    // Unlimited rooms (Free = max 3)
-  | "email_notifications"// Auto email notifications
-  | "themes"             // Visual theme selection
-  | "heatmap"            // Availability heatmap
-  | "priority_support"   // Priority support channel
-  | "custom_domain"      // Custom domain
-  | "sla_guarantee"      // SLA 99.9%
-  | "dedicated_manager"  // Dedicated account manager
-  | "onboarding"         // Dedicated onboarding
-  | "automations";       // Advanced automations
+  | "calendar" // Basic calendar view
+  | "gantt" // Full Gantt timeline
+  | "guest_files" // Guest management
+  | "bookings" // Booking management
+  | "rooms_unlimited" // Unlimited rooms (Free = max 3)
+  | "email_notifications" // Auto email notifications
+  | "themes" // Visual theme selection
+  | "heatmap" // Availability heatmap
+  | "priority_support" // Priority support channel
+  | "custom_domain" // Custom domain
+  | "sla_guarantee" // SLA 99.9%
+  | "dedicated_manager" // Dedicated account manager
+  | "onboarding" // Dedicated onboarding
+  | "automations"; // Advanced automations
 
 // ─── Plan Feature Matrix ────────────────────────────────────────
 export interface PlanConfig {
   id: PlanId;
   label: string;
-  priceEur: number;          // Monthly price in EUR (0 = free)
-  maxRooms: number;          // Infinity for unlimited
-  maxTeamMembers: number;    // Including owner
+  priceEur: number; // Monthly price in EUR (0 = free)
+  maxRooms: number; // Infinity for unlimited
+  maxTeamMembers: number; // Including owner
   coreFeatures: CoreFeature[];
   includedModules: ModuleId[];
   showBranding: boolean;
@@ -72,16 +71,9 @@ const BASIC_FEATURES: CoreFeature[] = [
   "rooms_unlimited",
 ];
 
-const LIGHT_FEATURES: CoreFeature[] = [
-  ...BASIC_FEATURES,
-  "email_notifications",
-];
+const LIGHT_FEATURES: CoreFeature[] = [...BASIC_FEATURES, "email_notifications"];
 
-const PRO_FEATURES: CoreFeature[] = [
-  ...LIGHT_FEATURES,
-  "heatmap",
-  "custom_domain",
-];
+const PRO_FEATURES: CoreFeature[] = [...LIGHT_FEATURES, "heatmap", "custom_domain"];
 
 const BUSINESS_FEATURES: CoreFeature[] = [
   ...PRO_FEATURES,
@@ -129,13 +121,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     maxRooms: Infinity,
     maxTeamMembers: 8,
     coreFeatures: PRO_FEATURES,
-    includedModules: [
-      "public_page",
-      "guest_app",
-      "invoicing",
-      "ical_sync",
-      "advanced_reports",
-    ],
+    includedModules: ["public_page", "guest_app", "invoicing", "ical_sync", "advanced_reports"],
     showBranding: false,
     maxProperties: 3,
     emailMonthlyCap: 2_000,
@@ -164,7 +150,6 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     emailMonthlyCap: null,
     emailScope: "stay",
   },
-
 };
 
 // ─── Module Catalog ─────────────────────────────────────────────

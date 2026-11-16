@@ -44,12 +44,7 @@ export async function GuestAppHomeScreen({
   const t = await getTranslations("guestApp");
   const { booking, settings, locale, hotel, wifi } = ctx;
   const features = visibleGuestAppFeaturesForBooking(settings, booking);
-  const period = formatStayPeriod(
-    booking.checkIn,
-    booking.checkOut,
-    locale,
-    true,
-  );
+  const period = formatStayPeriod(booking.checkIn, booking.checkOut, locale, true);
   const milestones = buildGuestStayMilestones({
     today,
     checkIn: booking.checkIn,
@@ -70,7 +65,8 @@ export async function GuestAppHomeScreen({
     checkOut: booking.checkOut,
     checkedInAt: booking.checkedInAt,
   });
-  const leadWifi = !departure && phase === "checked_in" && Boolean(wifiFeature && hasWifiCredentials);
+  const leadWifi =
+    !departure && phase === "checked_in" && Boolean(wifiFeature && hasWifiCredentials);
   const showWifiCard =
     Boolean(wifiFeature && wifi && hasWifiCredentials) &&
     !departure &&
@@ -137,9 +133,7 @@ export async function GuestAppHomeScreen({
         />
       ) : null}
 
-      {showWifiCard && wifi ? (
-        <GuestWifiQuickCard accessCode={accessCode} wifi={wifi} />
-      ) : null}
+      {showWifiCard && wifi ? <GuestWifiQuickCard accessCode={accessCode} wifi={wifi} /> : null}
 
       {departure ? null : (
         <GuestTodayCards
@@ -182,11 +176,7 @@ export async function GuestAppHomeScreen({
       {loyalty ? (
         <>
           <GuestLoyaltyRemember reference={loyalty.reference} />
-          <GuestLoyaltyCard
-            snapshot={loyalty}
-            pensionName={pensionName}
-            showBookAgain={false}
-          />
+          <GuestLoyaltyCard snapshot={loyalty} pensionName={pensionName} showBookAgain={false} />
         </>
       ) : null}
 

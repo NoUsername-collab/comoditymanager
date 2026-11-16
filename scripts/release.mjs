@@ -20,7 +20,10 @@ const dryRun = args.includes("--dry-run");
 const bump = args.find((arg) => !arg.startsWith("--"));
 
 function git(...gitArgs) {
-  return execFileSync("git", gitArgs, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+  return execFileSync("git", gitArgs, {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  }).trim();
 }
 
 function fail(message) {
@@ -71,7 +74,15 @@ const subjects = git("log", range, "--no-merges", "--format=%s")
   .filter((subject) => !/^Release v\d/.test(subject));
 if (subjects.length === 0) fail(`no commits since ${previous}`);
 
-const migrations = git("diff", "--name-only", "--diff-filter=A", previous || "4b825dc642cb6eb9a060e54bf8d69288fbee4904", "HEAD", "--", "supabase/migrations")
+const migrations = git(
+  "diff",
+  "--name-only",
+  "--diff-filter=A",
+  previous || "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+  "HEAD",
+  "--",
+  "supabase/migrations",
+)
   .split("\n")
   .filter(Boolean)
   .map((file) => file.replace("supabase/migrations/", ""));
@@ -95,7 +106,8 @@ if (dryRun) {
 }
 
 // The new entry goes above the newest one, under the file's own heading.
-const header = "# Changelog\n\nEvery release of Zalmox, newest first. Created by `npm run release`.\n\n";
+const header =
+  "# Changelog\n\nEvery release of Zalmox, newest first. Created by `npm run release`.\n\n";
 const existing = existsSync("CHANGELOG.md") ? readFileSync("CHANGELOG.md", "utf8") : header;
 const firstEntry = existing.indexOf("\n## ");
 const changelog =

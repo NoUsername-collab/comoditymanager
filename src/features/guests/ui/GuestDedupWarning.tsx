@@ -57,9 +57,7 @@ export async function GuestDedupWarning({ candidates, currentGuestId }: Props) {
   return (
     <div className={`dedup-warning ${borderClass}`}>
       <div className="dedup-warning__header">
-        <span className="dedup-warning__icon">
-          {action === "auto_merge" ? "⚠️" : "🔍"}
-        </span>
+        <span className="dedup-warning__icon">{action === "auto_merge" ? "⚠️" : "🔍"}</span>
         <span className="dedup-warning__title">
           {action === "auto_merge"
             ? t("hardMatchTitle")
@@ -84,33 +82,18 @@ export async function GuestDedupWarning({ candidates, currentGuestId }: Props) {
         {candidates.slice(0, 5).map((c) => (
           <div key={c.guestId} className="dedup-match">
             <div className="dedup-match__header">
-              <span className="dedup-match__tier">
-                {tierIcon(c.tier)}
-              </span>
-              <Link
-                href={`/admin/guests/${c.guestId}`}
-                className="dedup-match__name"
-              >
+              <span className="dedup-match__tier">{tierIcon(c.tier)}</span>
+              <Link href={`/admin/guests/${c.guestId}`} className="dedup-match__name">
                 {c.displayName}
               </Link>
-              <span className="dedup-match__score">
-                {c.score}%
-              </span>
+              <span className="dedup-match__score">{c.score}%</span>
             </div>
 
             <div className="dedup-match__details">
-              {c.phone && (
-                <span className="dedup-match__field">📞 {c.phone}</span>
-              )}
-              {c.email && (
-                <span className="dedup-match__field">📧 {c.email}</span>
-              )}
-              {c.nationalId && (
-                <span className="dedup-match__field">🪪 {c.nationalId}</span>
-              )}
-              {c.birthDate && (
-                <span className="dedup-match__field">🎂 {c.birthDate}</span>
-              )}
+              {c.phone && <span className="dedup-match__field">📞 {c.phone}</span>}
+              {c.email && <span className="dedup-match__field">📧 {c.email}</span>}
+              {c.nationalId && <span className="dedup-match__field">🪪 {c.nationalId}</span>}
+              {c.birthDate && <span className="dedup-match__field">🎂 {c.birthDate}</span>}
             </div>
 
             <div className="dedup-match__reasons">
@@ -134,9 +117,7 @@ export async function GuestDedupWarning({ candidates, currentGuestId }: Props) {
       </div>
 
       {candidates.length > 5 && (
-        <p className="dedup-warning__more">
-          {t("moreMatches", { count: candidates.length - 5 })}
-        </p>
+        <p className="dedup-warning__more">{t("moreMatches", { count: candidates.length - 5 })}</p>
       )}
     </div>
   );

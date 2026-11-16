@@ -2,10 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import type { GuestAppFeatureDef } from "@/domain/guest-app/types";
 import { guestAppFeatureHref } from "@/domain/guest-app/routes";
-import {
-  isGuestDepartureDay,
-  resolveGuestStayPhase,
-} from "@/domain/guest-app/stay-milestone";
+import { isGuestDepartureDay, resolveGuestStayPhase } from "@/domain/guest-app/stay-milestone";
 
 type Props = {
   accessCode: string;
@@ -47,13 +44,8 @@ export async function GuestHomePrimaryCta({
 
   if (phase === "confirmed" && featureVisible(features, "online_checkin")) {
     href = guestAppFeatureHref(accessCode, "online_checkin");
-    label =
-      today === checkIn ? t("ctaCheckinToday") : t("ctaPrepareCheckin");
-  } else if (
-    hasWifiCredentials &&
-    featureVisible(features, "wifi") &&
-    phase !== "checked_out"
-  ) {
+    label = today === checkIn ? t("ctaCheckinToday") : t("ctaPrepareCheckin");
+  } else if (hasWifiCredentials && featureVisible(features, "wifi") && phase !== "checked_out") {
     href = guestAppFeatureHref(accessCode, "wifi");
     label = t("ctaConnectWifi");
   } else if (phase === "checked_in" && featureVisible(features, "travel_tips")) {

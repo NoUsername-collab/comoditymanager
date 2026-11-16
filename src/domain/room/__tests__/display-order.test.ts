@@ -43,7 +43,7 @@ describe("sortRoomsLikeLocationStructure", () => {
         },
       ],
       buildings,
-      floors
+      floors,
     );
 
     expect(rooms.map((room) => room.id)).toEqual(["r1", "r2", "r3", "r4"]);

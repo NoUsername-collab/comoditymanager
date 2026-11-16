@@ -1,7 +1,7 @@
 /** Debounce — trailing edge; latest args win. */
 export function debounce<T extends (...args: never[]) => void>(
   fn: T,
-  waitMs: number
+  waitMs: number,
 ): (...args: Parameters<T>) => void {
   let timer: ReturnType<typeof setTimeout> | undefined;
   return (...args: Parameters<T>) => {

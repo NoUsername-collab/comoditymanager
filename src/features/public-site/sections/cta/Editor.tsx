@@ -1,7 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { EditorField, EditorLinkPicker } from "@/features/public-site/editor/ui/PublicSiteEditorKit";
+import {
+  EditorField,
+  EditorLinkPicker,
+} from "@/features/public-site/editor/ui/PublicSiteEditorKit";
 import {
   useSectionEditing,
   type SectionEditorProps,
@@ -12,7 +15,12 @@ export function CtaEditor({ section }: SectionEditorProps) {
   const ed = useSectionEditing(section);
   return (
     <div className="admin-settings-fields admin-settings-fields--2col">
-      <EditorField full label={te("sectionTitle")} value={ed.field("title")} onChange={ed.setField("title")} />
+      <EditorField
+        full
+        label={te("sectionTitle")}
+        value={ed.field("title")}
+        onChange={ed.setField("title")}
+      />
       <EditorField
         full
         rows={2}
@@ -20,7 +28,11 @@ export function CtaEditor({ section }: SectionEditorProps) {
         value={ed.field("lead")}
         onChange={ed.setField("lead")}
       />
-      <EditorField label={te("buttonText")} value={ed.field("ctaLabel")} onChange={ed.setField("ctaLabel")} />
+      <EditorField
+        label={te("buttonText")}
+        value={ed.field("ctaLabel")}
+        onChange={ed.setField("ctaLabel")}
+      />
       <EditorLinkPicker
         label={te("buttonGoesTo")}
         value={ed.setting("ctaHref")}

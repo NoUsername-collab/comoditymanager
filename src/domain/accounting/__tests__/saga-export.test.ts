@@ -39,11 +39,9 @@ describe("escapeCsvField", () => {
 
 describe("accountingExportFilename", () => {
   it("includes slice in filename", () => {
-    expect(accountingExportFilename("saga", 2026, 3, "proforma")).toBe(
-      "saga-proforme-2026-03.csv"
-    );
+    expect(accountingExportFilename("saga", 2026, 3, "proforma")).toBe("saga-proforme-2026-03.csv");
     expect(accountingExportFilename("saga", 2026, undefined, "payments")).toBe(
-      "saga-plati-2026.csv"
+      "saga-plati-2026.csv",
     );
   });
 });
@@ -66,7 +64,7 @@ describe("buildAccountingCsv", () => {
   it("marks proforma rows as PF", () => {
     const csv = buildAccountingCsv(
       [{ ...sampleRow, source: "proforma", series: "PF", display_number: "PF-0001" }],
-      "saga"
+      "saga",
     );
     expect(csv).toContain("PF;");
     expect(csv).toContain("Proforma");
@@ -84,7 +82,7 @@ describe("buildAccountingCsv", () => {
           description: "Incasare (cash)",
         },
       ],
-      "saga"
+      "saga",
     );
     expect(csv).toContain("IP;");
     expect(csv).toContain("Incasare");

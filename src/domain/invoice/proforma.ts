@@ -2,10 +2,7 @@ import { roundMoney } from "@/domain/payments/ledger";
 
 const MONEY_EPS = 0.005;
 
-export function formatProformaDisplayNumber(
-  series: string,
-  number: number
-): string {
+export function formatProformaDisplayNumber(series: string, number: number): string {
   return `${series}-${String(number).padStart(4, "0")}`;
 }
 
@@ -40,16 +37,14 @@ export function resolveDefaultProformaAmount(input: {
   uninvoicedPaid: number;
 }): number {
   if (input.uninvoicedPaid > MONEY_EPS) {
-    return roundMoney(
-      Math.min(input.uninvoicedPaid, input.remainingToInvoice)
-    );
+    return roundMoney(Math.min(input.uninvoicedPaid, input.remainingToInvoice));
   }
   return input.remainingToInvoice;
 }
 
 export function validateProformaAmount(
   amount: number,
-  remainingToInvoice: number
+  remainingToInvoice: number,
 ): { ok: true; amount: number } | { ok: false; error: string } {
   const normalized = roundMoney(amount);
   if (!Number.isFinite(normalized) || normalized <= MONEY_EPS) {
@@ -61,9 +56,7 @@ export function validateProformaAmount(
   return { ok: true, amount: normalized };
 }
 
-export function nextProformaSequence(
-  proformas: Array<{ invoice_sequence: number }>
-): number {
+export function nextProformaSequence(proformas: Array<{ invoice_sequence: number }>): number {
   if (proformas.length === 0) return 1;
   return Math.max(...proformas.map((p) => p.invoice_sequence)) + 1;
 }

@@ -66,8 +66,7 @@ export function StayQuickOps({
   const tCommon = useTranslations("common");
   const tServer = useTranslations("admin.serverActions");
   const { showToast } = useAdminFx();
-  const { today, openCheckInWizard, openCheckOut, canEditAfterCheckout } =
-    useOperativeCheck();
+  const { today, openCheckInWizard, openCheckOut, canEditAfterCheckout } = useOperativeCheck();
   const [pending, startTransition] = useTransition();
   const [editCheckOutOpen, setEditCheckOutOpen] = useState(false);
   const isConfirmed = bookingStatus === "confirmata";
@@ -99,20 +98,16 @@ export function StayQuickOps({
       roomNames,
       checkedInRooms,
     }) && hasPhone;
-  const needsWizardForTouristSheet =
-    canWizardCheckIn && !!actualCheckInAt && !hasCheckinRecord;
+  const needsWizardForTouristSheet = canWizardCheckIn && !!actualCheckInAt && !hasCheckinRecord;
   const canNewCheckIn = canWizardCheckIn && !actualCheckInAt;
-  const canContinueRooms =
-    canWizardCheckIn && roomProgress.isPartial && roomProgress.remaining > 0;
+  const canContinueRooms = canWizardCheckIn && roomProgress.isPartial && roomProgress.remaining > 0;
   const canCheckOut =
     isConfirmed && !!actualCheckInAt && !actualCheckOutAt && roomProgress.isComplete;
   const canEditCheckInTime =
     isConfirmed && !!actualCheckInAt && hasCheckinRecord && roomProgress.isComplete;
   const postCheckoutLocked = !!actualCheckOutAt && !canEditAfterCheckout;
-  const canEditCheckInTimeEffective =
-    canEditCheckInTime && !postCheckoutLocked;
-  const canMove =
-    isConfirmed && (!actualCheckOutAt || canEditAfterCheckout);
+  const canEditCheckInTimeEffective = canEditCheckInTime && !postCheckoutLocked;
+  const canMove = isConfirmed && (!actualCheckOutAt || canEditAfterCheckout);
   const checkInEnabled =
     canNewCheckIn || canContinueRooms || needsWizardForTouristSheet || canEditCheckInTimeEffective;
 
@@ -140,11 +135,11 @@ export function StayQuickOps({
       ? checkoutLockedTitle
       : canEditCheckInTimeEffective
         ? ""
-      : !hasPhone
-        ? labels.phoneRequiredForCheckIn
-        : !isArrivalDay && !canContinueRooms
-          ? labels.checkInArrivalDayHint
-          : "";
+        : !hasPhone
+          ? labels.phoneRequiredForCheckIn
+          : !isArrivalDay && !canContinueRooms
+            ? labels.checkInArrivalDayHint
+            : "";
 
   const checkoutTitle = !isConfirmed
     ? labels.checkActionsOnlyConfirmed
@@ -152,13 +147,13 @@ export function StayQuickOps({
       ? checkoutLockedTitle
       : canEditCheckOutEffective
         ? ""
-      : actualCheckOutAt
-        ? labels.checkoutAlreadyDone
-        : !actualCheckInAt
-          ? labels.checkoutNeedsCheckin
-          : !roomProgress.isComplete
-            ? labels.checkInContinue
-            : "";
+        : actualCheckOutAt
+          ? labels.checkoutAlreadyDone
+          : !actualCheckInAt
+            ? labels.checkoutNeedsCheckin
+            : !roomProgress.isComplete
+              ? labels.checkInContinue
+              : "";
 
   function moveStay(dayDelta: number) {
     if (!canMove || pending) return;

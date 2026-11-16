@@ -69,9 +69,7 @@ export function PartyFields({
 
   function setChildCount(raw: string) {
     const n = Number(raw);
-    const count = Number.isFinite(n)
-      ? Math.min(MAX_PARTY_CHILDREN, Math.max(0, Math.floor(n)))
-      : 0;
+    const count = Number.isFinite(n) ? Math.min(MAX_PARTY_CHILDREN, Math.max(0, Math.floor(n))) : 0;
     const childAges = value.childAges.slice(0, count);
     while (childAges.length < count) childAges.push(null);
     onChange({
@@ -145,9 +143,7 @@ export function PartyFields({
             <input
               type="checkbox"
               checked={value.childrenSeparateRoom}
-              onChange={(e) =>
-                onChange({ ...value, childrenSeparateRoom: e.target.checked })
-              }
+              onChange={(e) => onChange({ ...value, childrenSeparateRoom: e.target.checked })}
               className="mt-0.5 rounded"
             />
             <span>

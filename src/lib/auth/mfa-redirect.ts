@@ -10,7 +10,7 @@ export async function resolveMfaRedirectPath(
     email?: string | null;
     memberRole?: TenantMemberRole | null;
     next?: string;
-  }
+  },
 ): Promise<string | null> {
   const mfaState = await getMfaAccessState(supabase, opts);
 

@@ -1,15 +1,10 @@
 "use client";
 
 import { useCallback, useRef } from "react";
-import {
-  LONG_PRESS_MS,
-  LONG_PRESS_MOVE_PX,
-} from "@/domain/gantt/context-menu";
+import { LONG_PRESS_MS, LONG_PRESS_MOVE_PX } from "@/domain/gantt/context-menu";
 
 /** Right-click + long-press (~400ms) = the same context menu. */
-export function useGanttMenuTrigger(
-  onOpen: (clientX: number, clientY: number) => void
-) {
+export function useGanttMenuTrigger(onOpen: (clientX: number, clientY: number) => void) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const originRef = useRef<{ x: number; y: number } | null>(null);
   const openedRef = useRef(false);
@@ -27,7 +22,7 @@ export function useGanttMenuTrigger(
       e.stopPropagation();
       onOpen(e.clientX, e.clientY);
     },
-    [onOpen]
+    [onOpen],
   );
 
   const onPointerDown = useCallback(
@@ -41,7 +36,7 @@ export function useGanttMenuTrigger(
         onOpen(e.clientX, e.clientY);
       }, LONG_PRESS_MS);
     },
-    [clearTimer, onOpen]
+    [clearTimer, onOpen],
   );
 
   const onPointerMove = useCallback(
@@ -54,7 +49,7 @@ export function useGanttMenuTrigger(
         clearTimer();
       }
     },
-    [clearTimer]
+    [clearTimer],
   );
 
   const onPointerUp = useCallback(() => {

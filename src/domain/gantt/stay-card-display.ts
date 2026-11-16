@@ -77,10 +77,7 @@ export function isGanttStayUnpaid(args: {
   }
   if (args.paymentStatus === "paid") return false;
 
-  return (
-    isOperativeCheckInDay(args.bookingCheckIn, args.today) &&
-    (args.totalPrice ?? 0) > 0
-  );
+  return isOperativeCheckInDay(args.bookingCheckIn, args.today) && (args.totalPrice ?? 0) > 0;
 }
 
 export function isGanttStayMissingIdentity(args: {
@@ -162,11 +159,7 @@ export function resolveGanttStayTimeline(args: {
 }): GanttStayTimeline | null {
   if (args.compact || args.isRequest || args.occupancyPhase === "past") return null;
 
-  const nightProgress = stayNightProgress(
-    args.segmentCheckIn,
-    args.segmentCheckOut,
-    args.today,
-  );
+  const nightProgress = stayNightProgress(args.segmentCheckIn, args.segmentCheckOut, args.today);
   if (!nightProgress || nightProgress.total <= 0) return null;
 
   const rooms = computeRoomCheckinProgress(args.roomNames, args.checkedInRooms);
@@ -214,8 +207,7 @@ export function resolveGanttStayTimeline(args: {
     return null;
   }
 
-  const checkinSegmentPct =
-    variant === "hybrid" ? checkinSegmentWidth(nightProgress.total) : 100;
+  const checkinSegmentPct = variant === "hybrid" ? checkinSegmentWidth(nightProgress.total) : 100;
   const nightsPct = nightProgress.pct;
 
   let overallFillPct: number;
@@ -247,19 +239,13 @@ export function resolveGanttStayTimeline(args: {
 
 export function shouldShowGanttPopoverRoomKeys(
   timeline: GanttStayTimeline,
-  hasRecordedCheckIn: boolean
+  hasRecordedCheckIn: boolean,
 ): boolean {
   if (timeline.roomsTotal <= 1) return false;
-  return (
-    hasRecordedCheckIn ||
-    timeline.checkinStarted ||
-    timeline.roomsChecked > 0
-  );
+  return hasRecordedCheckIn || timeline.checkinStarted || timeline.roomsChecked > 0;
 }
 
-export function shouldShowGanttPopoverNights(
-  timeline: GanttStayTimeline
-): boolean {
+export function shouldShowGanttPopoverNights(timeline: GanttStayTimeline): boolean {
   return timeline.nightsTotal > 1 && timeline.variant !== "checkin";
 }
 
@@ -301,10 +287,7 @@ export function resolveGanttStayCapHealth(args: {
     return "problem";
   }
 
-  const rooms = computeRoomCheckinProgress(
-    args.roomNames,
-    args.checkedInRooms,
-  );
+  const rooms = computeRoomCheckinProgress(args.roomNames, args.checkedInRooms);
   const onCheckInDay = isOperativeCheckInDay(args.bookingCheckIn, args.today);
   if ((onCheckInDay || rooms.checked > 0) && !rooms.isComplete) {
     return "problem";
@@ -315,13 +298,7 @@ export function resolveGanttStayCapHealth(args: {
 
 /** Glyphs on the stay chip. Dense coverage keeps a single highest-priority mark. */
 export type GanttStayDeskMark =
-  | "unpaid"
-  | "identity"
-  | "arrival"
-  | "early_out"
-  | "departure"
-  | "in_house"
-  | "party";
+  "unpaid" | "identity" | "arrival" | "early_out" | "departure" | "in_house" | "party";
 
 const DENSE_DESK_PRIORITY: GanttStayDeskMark[] = [
   "unpaid",
@@ -353,8 +330,7 @@ export function resolveGanttStayDeskMarks(args: {
     if (args.guestTotal > 1) available.push("party");
   }
 
-  const primary =
-    DENSE_DESK_PRIORITY.find((mark) => available.includes(mark)) ?? null;
+  const primary = DENSE_DESK_PRIORITY.find((mark) => available.includes(mark)) ?? null;
 
   return {
     primary,

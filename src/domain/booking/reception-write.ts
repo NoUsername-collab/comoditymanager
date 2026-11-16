@@ -10,9 +10,4 @@ import type { OccupancyKind } from "@/domain/occupancy/types";
  * After the response: guest profile match, alerts, activity log,
  * guest-app access, email, other admin page caches.
  */
-export const RECEPTION_OCCUPANCY_KINDS: OccupancyKind[] = [
-  "hold",
-  "request",
-  "stay",
-  "block",
-];
+export const RECEPTION_OCCUPANCY_KINDS: OccupancyKind[] = ["hold", "request", "stay", "block"];

@@ -10,10 +10,7 @@ export default async function GuestStayFeaturePage({
 }: {
   params: Promise<{ code: string; feature: string }>;
 }) {
-  const [{ code, feature: featureSlug }, locale] = await Promise.all([
-    params,
-    getLocale(),
-  ]);
+  const [{ code, feature: featureSlug }, locale] = await Promise.all([params, getLocale()]);
   const featureId = parseGuestAppFeatureSlug(featureSlug);
   if (!featureId) notFound();
 

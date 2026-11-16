@@ -13,7 +13,7 @@ import { platformHomeRedirect } from "@/lib/proxy/redirect";
 async function unknownDomainRedirect(
   request: NextRequest,
   domain: string,
-  path: string
+  path: string,
 ): Promise<NextResponse> {
   const blocked = await lookupTenantHostOnEdge({ customDomain: domain });
   if (blocked && !isTenantOperational(blocked.status)) {
@@ -28,7 +28,7 @@ async function unknownDomainRedirect(
 export async function customDomainProxy(
   request: NextRequest,
   domain: string,
-  path: string
+  path: string,
 ): Promise<NextResponse> {
   const resolved = await resolveDomainRoutingOnEdge(domain);
   if (!resolved) return unknownDomainRedirect(request, domain, path);

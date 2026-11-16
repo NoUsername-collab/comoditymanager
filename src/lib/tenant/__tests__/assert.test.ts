@@ -11,21 +11,17 @@ describe("assertRowTenant", () => {
   });
 
   it("throws 'label.not_found' when row is null", () => {
-    expect(() => assertRowTenant(null, tenantId, "booking")).toThrow(
-      "booking.not_found"
-    );
+    expect(() => assertRowTenant(null, tenantId, "booking")).toThrow("booking.not_found");
   });
 
   it("throws 'label.not_found' when row is undefined", () => {
-    expect(() => assertRowTenant(undefined, tenantId, "room")).toThrow(
-      "room.not_found"
-    );
+    expect(() => assertRowTenant(undefined, tenantId, "room")).toThrow("room.not_found");
   });
 
   it("throws 'tenant.forbidden_cross_tenant' when tenant_id differs", () => {
     const row = { tenant_id: "tenant-other", name: "Test" };
     expect(() => assertRowTenant(row, tenantId, "booking")).toThrow(
-      "tenant.forbidden_cross_tenant"
+      "tenant.forbidden_cross_tenant",
     );
   });
 

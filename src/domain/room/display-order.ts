@@ -17,10 +17,7 @@ type FloorDisplayOrderInput = {
   sort_order: number;
 };
 
-function compareBuildingOrder(
-  a: BuildingDisplayOrderInput,
-  b: BuildingDisplayOrderInput
-): number {
+function compareBuildingOrder(a: BuildingDisplayOrderInput, b: BuildingDisplayOrderInput): number {
   return a.sort_order - b.sort_order || a.id.localeCompare(b.id);
 }
 
@@ -28,12 +25,12 @@ function compareBuildingOrder(
 export function sortRoomsLikeLocationStructure<T extends RoomDisplayOrderInput>(
   rooms: T[],
   buildings: BuildingDisplayOrderInput[],
-  floors: FloorDisplayOrderInput[]
+  floors: FloorDisplayOrderInput[],
 ): T[] {
   const buildingRank = new Map(
     [...buildings]
       .sort(compareBuildingOrder)
-      .map((building, index) => [building.id, index] as const)
+      .map((building, index) => [building.id, index] as const),
   );
 
   const floorsByBuilding = new Map<string, FloorDisplayOrderInput[]>();

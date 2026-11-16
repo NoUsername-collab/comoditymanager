@@ -65,7 +65,10 @@ function mapFeed(row: FeedRow): RoomIcalFeed {
 }
 
 /** Whether a plan (plus modules switched on by hand) includes calendar sync. */
-export function tenantHasIcalSync(planId: string, activeModules: readonly string[] | null): boolean {
+export function tenantHasIcalSync(
+  planId: string,
+  activeModules: readonly string[] | null,
+): boolean {
   return (
     getPlanConfig(planId).includedModules.includes("ical_sync") ||
     (activeModules ?? []).includes("ical_sync")
@@ -100,7 +103,8 @@ export async function buildRoomIcalExport(token: string): Promise<{ ics: string 
     .maybeSingle();
   if (tenantError) throw new Error(tenantError.message);
   if (!tenant || tenant.status === "suspended" || tenant.status === "cancelled") return null;
-  if (!tenantHasIcalSync(tenant.plan_id as string, tenant.active_modules as string[] | null)) return null;
+  if (!tenantHasIcalSync(tenant.plan_id as string, tenant.active_modules as string[] | null))
+    return null;
 
   const today = todayIso();
   const from = addDays(today, -EXPORT_DAYS_BEHIND);
@@ -126,7 +130,11 @@ export async function buildRoomIcalExport(token: string): Promise<{ ics: string 
   if (blocksResult.error) throw new Error(blocksResult.error.message);
 
   const events: IcalExportEvent[] = [
-    ...segments.map((s) => ({ uid: `${s.kind}-${s.id}@zalmox`, checkIn: s.checkIn, checkOut: s.checkOut })),
+    ...segments.map((s) => ({
+      uid: `${s.kind}-${s.id}@zalmox`,
+      checkIn: s.checkIn,
+      checkOut: s.checkOut,
+    })),
     ...(blocksResult.data ?? []).map((b) => ({
       uid: `block-${b.id as string}@zalmox`,
       checkIn: b.check_in as string,
@@ -202,7 +210,8 @@ export async function listRoomIcalOverview(): Promise<RoomIcalOverview[]> {
   return rooms.map(({ sortOrder: _sortOrder, ...room }) => room);
 }
 
-export type AddFeedError = "invalid_url" | "not_https" | "private_host" | "duplicate" | "room_not_found" | "name_required";
+export type AddFeedError =
+  "invalid_url" | "not_https" | "private_host" | "duplicate" | "room_not_found" | "name_required";
 
 export async function addRoomIcalFeed(input: {
   roomId: string;
@@ -274,11 +283,16 @@ export type FeedSyncResult = {
 };
 
 /** The calendar's text, or a short reason it could not be read. */
-async function fetchFeedText(url: string): Promise<{ ok: true; text: string } | { ok: false; error: string }> {
+async function fetchFeedText(
+  url: string,
+): Promise<{ ok: true; text: string } | { ok: false; error: string }> {
   let response: Response;
   try {
     response = await fetch(url, {
-      headers: { Accept: "text/calendar, text/plain;q=0.9, */*;q=0.1", "User-Agent": "Zalmox-Calendar-Sync/1.0" },
+      headers: {
+        Accept: "text/calendar, text/plain;q=0.9, */*;q=0.1",
+        "User-Agent": "Zalmox-Calendar-Sync/1.0",
+      },
       redirect: "follow",
       cache: "no-store",
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
@@ -288,9 +302,12 @@ async function fetchFeedText(url: string): Promise<{ ok: true; text: string } | 
     return { ok: false, error: timedOut ? "ical.timeout" : "ical.unreachable" };
   }
   // A redirect may not lead into the server's own network either.
-  if (!normalizeIcalFeedUrl(response.url || url).ok) return { ok: false, error: "ical.unreachable" };
-  if (response.status === 404 || response.status === 410) return { ok: false, error: "ical.not_found" };
-  if (response.status === 401 || response.status === 403) return { ok: false, error: "ical.forbidden" };
+  if (!normalizeIcalFeedUrl(response.url || url).ok)
+    return { ok: false, error: "ical.unreachable" };
+  if (response.status === 404 || response.status === 410)
+    return { ok: false, error: "ical.not_found" };
+  if (response.status === 401 || response.status === 403)
+    return { ok: false, error: "ical.forbidden" };
   if (!response.ok) return { ok: false, error: "ical.http_error" };
 
   const declared = Number(response.headers.get("content-length") ?? 0);
@@ -435,7 +452,13 @@ export async function syncDueIcalFeeds(limit = 40): Promise<FeedSyncResult[]> {
       results.push(await syncFeed(supabase, row as unknown as FeedRow));
     } catch (e) {
       console.error("[ical-sync] feed failed", row.id, e);
-      results.push({ feedId: row.id as string, tenantId: row.tenant_id as string, ok: false, changed: false, error: "ical.internal" });
+      results.push({
+        feedId: row.id as string,
+        tenantId: row.tenant_id as string,
+        ok: false,
+        changed: false,
+        error: "ical.internal",
+      });
     }
   }
   return results;

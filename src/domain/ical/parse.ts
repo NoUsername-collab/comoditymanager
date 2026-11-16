@@ -15,7 +15,10 @@ export const ICAL_MAX_EVENTS = 2000;
 
 /** Lines continue on the next one when it starts with a space or a tab (RFC 5545 §3.1). */
 function unfold(text: string): string[] {
-  return text.replace(/\r\n|\r/g, "\n").replace(/\n[ \t]/g, "").split("\n");
+  return text
+    .replace(/\r\n|\r/g, "\n")
+    .replace(/\n[ \t]/g, "")
+    .split("\n");
 }
 
 function unescapeText(value: string): string {

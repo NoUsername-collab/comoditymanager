@@ -18,9 +18,7 @@ describe("escapeHtml", () => {
 
 describe("safeEmailHref", () => {
   it("allows https URLs", () => {
-    expect(safeEmailHref("https://example.com/path?q=1")).toBe(
-      "https://example.com/path?q=1",
-    );
+    expect(safeEmailHref("https://example.com/path?q=1")).toBe("https://example.com/path?q=1");
   });
 
   it("blocks javascript: URLs", () => {
@@ -59,8 +57,6 @@ describe("safeCssUrl", () => {
 
 describe("sanitizeEmailSubject", () => {
   it("strips CRLF injection characters", () => {
-    expect(sanitizeEmailSubject("Hello\r\nBcc: evil@x.com")).toBe(
-      "Hello Bcc: evil@x.com",
-    );
+    expect(sanitizeEmailSubject("Hello\r\nBcc: evil@x.com")).toBe("Hello Bcc: evil@x.com");
   });
 });

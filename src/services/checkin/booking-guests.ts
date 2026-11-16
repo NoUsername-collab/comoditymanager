@@ -8,9 +8,7 @@ import { getGuestBaseById } from "@/services/guests/lookup";
 import { occupantSlotsForCheckin } from "@/services/bookings/occupants";
 
 /** ID-uri client distincte deja legați de check-in-uri pe această rezervare. */
-async function getGuestIdsFromBookingCheckins(
-  bookingId: string,
-): Promise<string[]> {
+async function getGuestIdsFromBookingCheckins(bookingId: string): Promise<string[]> {
   const { tenantId, supabase } = await getTenantScope();
 
   const { data: checkins, error: checkinErr } = await supabase
@@ -58,7 +56,7 @@ export async function listRegisteredGuestsForCheckin(
   roomNames: string[] | undefined,
 ): Promise<CheckinGuestInput[]> {
   const occupantSlots = await occupantSlotsForCheckin(bookingId).catch(
-    () => [] as Awaited<ReturnType<typeof occupantSlotsForCheckin>>
+    () => [] as Awaited<ReturnType<typeof occupantSlotsForCheckin>>,
   );
 
   const ids = new Set<string>();
@@ -86,7 +84,7 @@ export async function listRegisteredGuestsForCheckin(
         mapGuestRowToCheckinInput(guest, {
           roomLabel: slot.roomLabel,
           isRepresentative: slot.isRepresentative,
-        })
+        }),
       );
     }
     for (const guest of guestRows) {
@@ -95,7 +93,7 @@ export async function listRegisteredGuestsForCheckin(
         mapGuestRowToCheckinInput(guest, {
           roomLabel: defaultRoom,
           isRepresentative: false,
-        })
+        }),
       );
     }
     return mapped;
@@ -104,9 +102,7 @@ export async function listRegisteredGuestsForCheckin(
   return guestRows.map((guest, index) =>
     mapGuestRowToCheckinInput(guest, {
       roomLabel: rooms[index % rooms.length] ?? defaultRoom,
-      isRepresentative: bookingGuestId
-        ? guest.id === bookingGuestId
-        : index === 0,
+      isRepresentative: bookingGuestId ? guest.id === bookingGuestId : index === 0,
     }),
   );
 }

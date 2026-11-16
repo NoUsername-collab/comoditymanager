@@ -33,7 +33,7 @@ export function assertFeature(feature: CoreFeature): void {
     throw new FeatureGateError(
       `Feature "${feature}" nu este disponibilă în planul ${ctx.plan.label}. Faceți upgrade pentru a accesa această funcționalitate.`,
       feature,
-      ctx.plan.id
+      ctx.plan.id,
     );
   }
 }
@@ -48,7 +48,7 @@ export function assertModule(module: ModuleId): void {
     throw new ModuleGateError(
       `Modulul "${module}" nu este activ. Activați-l din setările contului.`,
       module,
-      ctx.plan.id
+      ctx.plan.id,
     );
   }
 }
@@ -63,7 +63,7 @@ export function assertCanAddRoom(currentRoomCount: number): void {
       `Planul ${ctx.plan.label} permite maximum ${ctx.plan.maxRooms} camere. Faceți upgrade pentru mai multe.`,
       "rooms",
       ctx.plan.maxRooms,
-      currentRoomCount
+      currentRoomCount,
     );
   }
 }
@@ -78,7 +78,7 @@ export function assertCanAddProperty(currentPropertyCount: number): void {
       `Planul ${ctx.plan.label} permite maximum ${ctx.plan.maxProperties} proprietăți. Faceți upgrade.`,
       "properties",
       ctx.plan.maxProperties,
-      currentPropertyCount
+      currentPropertyCount,
     );
   }
 }
@@ -141,19 +141,39 @@ export function buildFeatureMap(ctx?: TenantContext): FeatureMap {
     maxProperties: c.plan.maxProperties,
     showBranding: c.showBranding,
     features: Object.fromEntries(
-      ([
-        "calendar", "gantt", "guest_files", "bookings",
-        "rooms_unlimited", "email_notifications", "themes",
-        "heatmap", "priority_support", "custom_domain",
-        "professional_email", "sla_guarantee", "dedicated_manager",
-        "onboarding", "automations",
-      ] as CoreFeature[]).map((f) => [f, c.hasFeature(f)])
+      (
+        [
+          "calendar",
+          "gantt",
+          "guest_files",
+          "bookings",
+          "rooms_unlimited",
+          "email_notifications",
+          "themes",
+          "heatmap",
+          "priority_support",
+          "custom_domain",
+          "professional_email",
+          "sla_guarantee",
+          "dedicated_manager",
+          "onboarding",
+          "automations",
+        ] as CoreFeature[]
+      ).map((f) => [f, c.hasFeature(f)]),
     ) as Record<CoreFeature, boolean>,
     modules: Object.fromEntries(
-      ([
-        "ical_sync", "invoicing", "whatsapp", "public_page",
-        "advanced_reports", "multi_property", "white_label", "api_access",
-      ] as ModuleId[]).map((m) => [m, c.hasModule(m)])
+      (
+        [
+          "ical_sync",
+          "invoicing",
+          "whatsapp",
+          "public_page",
+          "advanced_reports",
+          "multi_property",
+          "white_label",
+          "api_access",
+        ] as ModuleId[]
+      ).map((m) => [m, c.hasModule(m)]),
     ) as Record<ModuleId, boolean>,
   };
 }
@@ -175,7 +195,7 @@ export class FeatureGateError extends Error {
   constructor(
     message: string,
     public readonly feature: CoreFeature,
-    public readonly currentPlan: PlanId
+    public readonly currentPlan: PlanId,
   ) {
     super(message);
     this.name = "FeatureGateError";
@@ -187,7 +207,7 @@ export class ModuleGateError extends Error {
   constructor(
     message: string,
     public readonly module: ModuleId,
-    public readonly currentPlan: PlanId
+    public readonly currentPlan: PlanId,
   ) {
     super(message);
     this.name = "ModuleGateError";
@@ -200,7 +220,7 @@ export class LimitGateError extends Error {
     message: string,
     public readonly resource: string,
     public readonly limit: number,
-    public readonly current: number
+    public readonly current: number,
   ) {
     super(message);
     this.name = "LimitGateError";

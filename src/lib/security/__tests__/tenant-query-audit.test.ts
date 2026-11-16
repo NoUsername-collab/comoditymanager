@@ -13,13 +13,10 @@ describe("tenant query audit (services)", () => {
         .slice(0, 20)
         .map((v) => `  ${v.file}:${v.line} → .from("${v.table}")`)
         .join("\n");
-      const suffix =
-        violations.length > 20
-          ? `\n  … and ${violations.length - 20} more`
-          : "";
+      const suffix = violations.length > 20 ? `\n  … and ${violations.length - 20} more` : "";
       expect.fail(
         `Found ${violations.length} service query(ies) without a nearby tenant guard:\n${report}${suffix}\n` +
-          "Add .eq('tenant_id', …), withTenantId(), or allowlist in audit-tenant-queries.ts if intentional."
+          "Add .eq('tenant_id', …), withTenantId(), or allowlist in audit-tenant-queries.ts if intentional.",
       );
     }
 

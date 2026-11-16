@@ -30,11 +30,7 @@ export default async function SettingsCheckinPage({
   const settings = ctx.pensionResult.settings;
 
   return (
-    <SettingsPageLayout
-      alerts={alerts}
-      title={t("navCheckin")}
-      description={t("navCheckinDesc")}
-    >
+    <SettingsPageLayout alerts={alerts} title={t("navCheckin")} description={t("navCheckinDesc")}>
       {settings ? (
         <SettingsSection title={t("stayHours.title")}>
           <OperationalHoursForm settings={settings} />

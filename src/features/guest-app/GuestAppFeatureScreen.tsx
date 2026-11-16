@@ -31,12 +31,7 @@ function mapsUrl(address: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 }
 
-export async function GuestAppFeatureScreen({
-  featureId,
-  accessCode,
-  today,
-  ctx,
-}: Props) {
+export async function GuestAppFeatureScreen({ featureId, accessCode, today, ctx }: Props) {
   const t = await getTranslations("guestApp");
   const featureDef = ctx.settings.features.find((feature) => feature.id === featureId);
   const showMockBanner =
@@ -61,10 +56,7 @@ export async function GuestAppFeatureScreen({
                 {ctx.hotel.longDescription ?? ctx.hotel.shortDescription}
               </p>
             )}
-            <GuestStayHours
-              checkIn={ctx.stayHours?.checkIn}
-              checkOut={ctx.stayHours?.checkOut}
-            />
+            <GuestStayHours checkIn={ctx.stayHours?.checkIn} checkOut={ctx.stayHours?.checkOut} />
             <div className="guest-app__contact-grid">
               {ctx.hotel.phone ? (
                 <a href={`tel:${ctx.hotel.phone}`} className="guest-app__contact-card">
@@ -220,10 +212,7 @@ export async function GuestAppFeatureScreen({
 
       {featureId === "services" ? (
         <div className="space-y-4">
-          <GuestReceptionRequestForm
-            accessCode={accessCode}
-            requests={ctx.receptionRequests}
-          />
+          <GuestReceptionRequestForm accessCode={accessCode} requests={ctx.receptionRequests} />
           {ctx.services.length > 0 ? (
             <div className="space-y-3">
               <p className="guest-app__subtle text-sm">{t("feature.servicesNote")}</p>
@@ -242,11 +231,7 @@ export async function GuestAppFeatureScreen({
 
       {featureId === "online_payment" ? (
         ctx.booking.totalPrice != null && ctx.booking.totalPrice > 0 ? (
-          <GuestPaymentSummary
-            booking={ctx.booking}
-            locale={ctx.locale}
-            phone={receptionPhone}
-          />
+          <GuestPaymentSummary booking={ctx.booking} locale={ctx.locale} phone={receptionPhone} />
         ) : (
           <GuestAppEmptyState
             title={t("empty.payment.title")}

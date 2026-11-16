@@ -5,9 +5,7 @@ type TouristSheetAddressParts = {
 };
 
 /** Compose the ANAF tourist-sheet address from structured fields. */
-export function formatTouristSheetAddress(
-  parts: TouristSheetAddressParts
-): string | null {
+export function formatTouristSheetAddress(parts: TouristSheetAddressParts): string | null {
   const street = parts.street.trim();
   const locality = parts.locality.trim();
   const county = parts.county.trim();
@@ -21,13 +19,14 @@ export function formatTouristSheetAddress(
 }
 
 /** Best-effort split of legacy single-line addresses. */
-export function parseTouristSheetAddress(
-  raw: string | null | undefined
-): TouristSheetAddressParts {
+export function parseTouristSheetAddress(raw: string | null | undefined): TouristSheetAddressParts {
   const text = raw?.trim() ?? "";
   if (!text) return { street: "", locality: "", county: "" };
 
-  const parts = text.split(",").map((segment) => segment.trim()).filter(Boolean);
+  const parts = text
+    .split(",")
+    .map((segment) => segment.trim())
+    .filter(Boolean);
   if (parts.length <= 1) {
     return { street: parts[0] ?? text, locality: "", county: "" };
   }

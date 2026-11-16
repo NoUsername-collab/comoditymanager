@@ -44,7 +44,9 @@ export function PublicHeader({
         {preview ? (
           <div className="public-header__brand">{brand}</div>
         ) : (
-          <StaffLogoEntry className="public-header__brand group cursor-pointer">{brand}</StaffLogoEntry>
+          <StaffLogoEntry className="public-header__brand group cursor-pointer">
+            {brand}
+          </StaffLogoEntry>
         )}
         {preview ? (
           <div className="flex items-center gap-2 sm:gap-3" aria-hidden>
@@ -57,27 +59,28 @@ export function PublicHeader({
                 </span>
               </span>
             </div>
-          <nav className="public-header__nav">
-            {navItems.map((item) => (
-              <span
-                key={item.key}
-                className={[
-                  "public-header__link",
-                  item.cta && "public-header__cta site-cta",
-                  item.href === previewPath && "public-header__link--active",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-              >
-                {item.label}
-                {item.children?.length ? (
-                  <span className="public-header__caret" aria-hidden>
-                    {" "}▾
-                  </span>
-                ) : null}
-              </span>
-            ))}
-          </nav>
+            <nav className="public-header__nav">
+              {navItems.map((item) => (
+                <span
+                  key={item.key}
+                  className={[
+                    "public-header__link",
+                    item.cta && "public-header__cta site-cta",
+                    item.href === previewPath && "public-header__link--active",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  {item.label}
+                  {item.children?.length ? (
+                    <span className="public-header__caret" aria-hidden>
+                      {" "}
+                      ▾
+                    </span>
+                  ) : null}
+                </span>
+              ))}
+            </nav>
           </div>
         ) : (
           <div className="flex items-center gap-2 sm:gap-3">
@@ -85,7 +88,11 @@ export function PublicHeader({
             <PublicMobileMenu
               items={navItems}
               themeClassName={`site-themed ${publicThemeClassName(config.themeId)}`}
-              themeStyle={resolvePublicSiteStyle(config.themeId, config.chrome, effectivePublicTemplate(config))}
+              themeStyle={resolvePublicSiteStyle(
+                config.themeId,
+                config.chrome,
+                effectivePublicTemplate(config),
+              )}
             />
             <PublicNav items={navItems} />
             <HeaderLocaleSwitch slot="nav" />

@@ -6,7 +6,7 @@ import type { GanttStayTimeline as GanttStayTimelineModel } from "@/domain/gantt
 
 function timelineTitle(
   timeline: GanttStayTimelineModel,
-  tGantt: ReturnType<typeof useTranslations<"admin.gantt">>
+  tGantt: ReturnType<typeof useTranslations<"admin.gantt">>,
 ): string {
   if (timeline.variant === "hybrid") {
     if (!timeline.milestoneReached) {
@@ -74,9 +74,7 @@ export function GanttStayRoomsSlider({
 }) {
   const safeTotal = Math.max(total, 1);
   const pct = (Math.min(checked, safeTotal) / safeTotal) * 100;
-  return (
-    <SimpleStaySlider fillPct={pct} variant="rooms" className={className} />
-  );
+  return <SimpleStaySlider fillPct={pct} variant="rooms" className={className} />;
 }
 
 export function GanttStayNightsSlider({
@@ -90,9 +88,7 @@ export function GanttStayNightsSlider({
 }) {
   const safeTotal = Math.max(total, 1);
   const pct = (Math.min(current, safeTotal) / safeTotal) * 100;
-  return (
-    <SimpleStaySlider fillPct={pct} variant="nights" className={className} />
-  );
+  return <SimpleStaySlider fillPct={pct} variant="nights" className={className} />;
 }
 
 export function GanttStayTimeline({
@@ -103,8 +99,7 @@ export function GanttStayTimeline({
   className?: string;
 }) {
   const tGantt = useTranslations("admin.gantt");
-  const showCheckinKnobs =
-    timeline.variant === "hybrid" || timeline.variant === "checkin";
+  const showCheckinKnobs = timeline.variant === "hybrid" || timeline.variant === "checkin";
 
   return (
     <span
@@ -156,10 +151,7 @@ export function GanttStayTimeline({
               .filter(Boolean)
               .join(" ")}
             style={{
-              left:
-                timeline.variant === "hybrid"
-                  ? `${timeline.checkinSegmentPct}%`
-                  : "100%",
+              left: timeline.variant === "hybrid" ? `${timeline.checkinSegmentPct}%` : "100%",
             }}
             title={
               timeline.milestoneReached

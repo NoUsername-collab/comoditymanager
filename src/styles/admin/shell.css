@@ -273,7 +273,11 @@
 }
 
 .admin-hud__chip--logout:hover {
-  background: color-mix(in srgb, var(--admin-tint-danger-bg, #fef2f2) 82%, var(--admin-tint-danger-border, #fecaca));
+  background: color-mix(
+    in srgb,
+    var(--admin-tint-danger-bg, #fef2f2) 82%,
+    var(--admin-tint-danger-border, #fecaca)
+  );
   color: var(--admin-tint-danger-text, #991b1b);
   transform: translateY(-1px);
 }
@@ -302,7 +306,10 @@
   backdrop-filter: blur(10px);
   color: var(--dn-text, #e2e8f0);
   cursor: pointer;
-  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  transition:
+    background 0.15s,
+    transform 0.15s,
+    box-shadow 0.15s;
 }
 
 .admin-gear__trigger:hover {
@@ -559,7 +566,10 @@
 
 .admin-nav-tab:hover {
   color: var(--admin-hud-text, var(--admin-text, #18181b));
-  background: var(--admin-nav-tab-hover-bg, color-mix(in srgb, var(--admin-accent) 8%, var(--admin-surface-bg, #ffffff)));
+  background: var(
+    --admin-nav-tab-hover-bg,
+    color-mix(in srgb, var(--admin-accent) 8%, var(--admin-surface-bg, #ffffff))
+  );
   border-color: color-mix(in srgb, var(--admin-accent) 24%, var(--admin-chip-border, #e4e4e7));
   box-shadow: none;
   transform: translateY(-1px);
@@ -574,8 +584,12 @@
 
 .admin-nav-tab--active {
   color: var(--admin-nav-active-text, var(--admin-text, #18181b));
-  background: var(--admin-nav-active-bg, color-mix(in srgb, var(--admin-accent-muted) 35%, var(--admin-surface-bg, #ffffff)));
-  border: 1px solid color-mix(in srgb, var(--admin-accent) 35%, var(--admin-surface-border, #e4e4e7));
+  background: var(
+    --admin-nav-active-bg,
+    color-mix(in srgb, var(--admin-accent-muted) 35%, var(--admin-surface-bg, #ffffff))
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--admin-accent) 35%, var(--admin-surface-border, #e4e4e7));
   box-shadow: var(--admin-nav-active-shadow, none);
 }
 
@@ -784,17 +798,16 @@
 /* Hero dashboard Acasă */
 
 @media (prefers-reduced-motion: reduce) {
-
   .admin-nav-tab--quest,
-.admin-nav-tab--requests-light::before,
-.admin-hud-alert,
-.admin-requests-glow {
+  .admin-nav-tab--requests-light::before,
+  .admin-hud-alert,
+  .admin-requests-glow {
     animation: none;
   }
 
   .admin-nav-tab:hover,
-.admin-nav-tab--active,
-.admin-hud__chip--logout:hover {
+  .admin-nav-tab--active,
+  .admin-hud__chip--logout:hover {
     transform: none;
   }
 }

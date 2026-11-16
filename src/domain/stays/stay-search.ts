@@ -1,8 +1,6 @@
 import { formatBookingRef } from "@/lib/booking-admin-links";
 
-function normalizeStaySearchValue(
-  value: string | null | undefined
-): string {
+function normalizeStaySearchValue(value: string | null | undefined): string {
   return (value ?? "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -20,13 +18,8 @@ type StaySearchFields = {
   room_names: string[];
 };
 
-export function matchesStaySearchQuery(
-  stay: StaySearchFields,
-  rawQuery: string
-): boolean {
-  const tokens = normalizeStaySearchValue(rawQuery)
-    .split(/\s+/)
-    .filter(Boolean);
+export function matchesStaySearchQuery(stay: StaySearchFields, rawQuery: string): boolean {
+  const tokens = normalizeStaySearchValue(rawQuery).split(/\s+/).filter(Boolean);
   if (tokens.length === 0) return true;
 
   const haystack = normalizeStaySearchValue(
@@ -41,7 +34,7 @@ export function matchesStaySearchQuery(
       stay.id,
     ]
       .filter(Boolean)
-      .join(" ")
+      .join(" "),
   );
 
   return tokens.every((token) => haystack.includes(token));

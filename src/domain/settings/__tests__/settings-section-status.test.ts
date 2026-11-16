@@ -9,15 +9,15 @@ import type { SetupIssue } from "@/domain/setup-issues/types";
 import { IDENTITY_SETTINGS_PATH } from "@/domain/setup-issues/checks";
 
 const identityItem = SETTINGS_NAV_GROUPS.flatMap((g) => g.items).find(
-  (item) => item.id === "identity"
+  (item) => item.id === "identity",
 )!;
 
 const appearanceItem = SETTINGS_NAV_GROUPS.flatMap((g) => g.items).find(
-  (item) => item.id === "appearance"
+  (item) => item.id === "appearance",
 )!;
 
 const bookingItem = SETTINGS_NAV_GROUPS.flatMap((g) => g.items).find(
-  (item) => item.id === "booking"
+  (item) => item.id === "booking",
 )!;
 
 describe("settings-section-status", () => {
@@ -55,7 +55,7 @@ describe("settings-section-status", () => {
 
   it("counts completion across tracked nav items", () => {
     const trackedItems = SETTINGS_NAV_GROUPS.flatMap((g) => g.items).filter((item) =>
-      SETTINGS_COMPLETION_NAV_IDS.has(item.id)
+      SETTINGS_COMPLETION_NAV_IDS.has(item.id),
     );
 
     const summary = countCompletionStatuses(trackedItems, [

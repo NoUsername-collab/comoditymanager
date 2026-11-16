@@ -9,11 +9,7 @@
 
 import { platformPoweredByLabel } from "@/lib/platform/branding";
 import { DEFAULT_CHECK_OUT_TIME } from "@/lib/constants";
-import {
-  escapeHtml,
-  safeEmailHref,
-  sanitizeEmailSubject,
-} from "@/lib/security/html-escape";
+import { escapeHtml, safeEmailHref, sanitizeEmailSubject } from "@/lib/security/html-escape";
 
 interface EmailContent {
   subject: string;
@@ -94,14 +90,19 @@ export function newBookingRequestToOwner(data: {
   adminUrl: string;
 }): EmailContent {
   const roomList = data.rooms.join(", ");
-  const nights = Math.max(1, Math.round(
-    (new Date(data.checkOut).getTime() - new Date(data.checkIn).getTime()) / 86400000
-  ));
+  const nights = Math.max(
+    1,
+    Math.round((new Date(data.checkOut).getTime() - new Date(data.checkIn).getTime()) / 86400000),
+  );
   const guestName = escapeHtml(data.guestName);
 
   return {
-    subject: sanitizeEmailSubject(`Cerere nouă: ${data.guestName} · ${data.checkIn} → ${data.checkOut}`),
-    html: wrap(data.pensionName, `
+    subject: sanitizeEmailSubject(
+      `Cerere nouă: ${data.guestName} · ${data.checkIn} → ${data.checkOut}`,
+    ),
+    html: wrap(
+      data.pensionName,
+      `
       ${h2("Cerere nouă de rezervare")}
       ${p(`<strong>${guestName}</strong> a trimis o cerere de rezervare.`)}
       ${infoTable(`
@@ -119,7 +120,8 @@ export function newBookingRequestToOwner(data: {
           Deschide în admin
         </a>
       </div>
-    `),
+    `,
+    ),
     text: `Cerere nouă: ${data.guestName}\nCheck-in: ${data.checkIn}\nCheck-out: ${data.checkOut}\nAdulți: ${data.adults}, Copii: ${data.children}\nCamere: ${roomList}\n\nDeschide: ${data.adminUrl}`,
   };
 }
@@ -140,14 +142,17 @@ export function bookingConfirmedToGuest(data: {
   guestAppUrl?: string;
 }): EmailContent {
   const roomList = data.rooms.join(", ");
-  const nights = Math.max(1, Math.round(
-    (new Date(data.checkOut).getTime() - new Date(data.checkIn).getTime()) / 86400000
-  ));
+  const nights = Math.max(
+    1,
+    Math.round((new Date(data.checkOut).getTime() - new Date(data.checkIn).getTime()) / 86400000),
+  );
   const guestName = escapeHtml(data.guestName);
 
   return {
     subject: sanitizeEmailSubject(`Rezervare confirmată — ${data.pensionName} · ${data.checkIn}`),
-    html: wrap(data.pensionName, `
+    html: wrap(
+      data.pensionName,
+      `
       ${h2("Rezervare confirmată!")}
       ${p(`Bună, <strong>${guestName}</strong>! Rezervarea ta a fost confirmată.`)}
       ${infoTable(`
@@ -162,7 +167,8 @@ export function bookingConfirmedToGuest(data: {
       ${p("Te așteptăm cu drag!")}
       ${data.pensionPhone ? p(`Telefon: ${escapeHtml(data.pensionPhone)}`) : ""}
       ${data.pensionEmail ? p(`Email: ${escapeHtml(data.pensionEmail)}`) : ""}
-    `),
+    `,
+    ),
     text: `Rezervare confirmată — ${data.pensionName}\n\nBună, ${data.guestName}!\nCheck-in: ${data.checkIn} după ${data.checkInTime}\nCheck-out: ${data.checkOut} până la ${data.checkOutTime}\nCamere: ${roomList}\nTotal: ${data.totalPrice} ${data.currency}${data.guestAppUrl ? `\n\nAplicație oaspete: ${data.guestAppUrl}` : ""}\n\nTe așteptăm!`,
   };
 }
@@ -180,13 +186,16 @@ export function guestAppLinkToGuest(data: {
   const guestName = escapeHtml(data.guestName);
   return {
     subject: sanitizeEmailSubject(`Aplicația ta de oaspete — ${data.pensionName}`),
-    html: wrap(data.pensionName, `
+    html: wrap(
+      data.pensionName,
+      `
       ${h2("Aplicația pentru oaspeți")}
       ${p(`Bună, <strong>${guestName}</strong>! Iată linkul personal pentru șederea ta (${escapeHtml(data.checkIn)} → ${escapeHtml(data.checkOut)}).`)}
       ${data.checkInTime ? p(`Check-in de la ${data.checkInTime}, check-out până la ${data.checkOutTime ?? DEFAULT_CHECK_OUT_TIME}.`) : ""}
       ${ctaButton(data.guestAppUrl, "Deschide aplicația")}
       ${p("Linkul este valabil pe durata șederii. Nu îl distribui altor persoane.")}
-    `),
+    `,
+    ),
     text: `Aplicație oaspete — ${data.pensionName}\n\nBună, ${data.guestName}!\n${data.checkIn} → ${data.checkOut}\n\n${data.guestAppUrl}`,
   };
 }
@@ -202,12 +211,15 @@ export function bookingCancelledToGuest(data: {
   const guestName = escapeHtml(data.guestName);
   return {
     subject: sanitizeEmailSubject(`Rezervare anulată — ${data.pensionName} · ${data.checkIn}`),
-    html: wrap(data.pensionName, `
+    html: wrap(
+      data.pensionName,
+      `
       ${h2("Rezervare anulată")}
       ${p(`Bună, <strong>${guestName}</strong>. Rezervarea ta pentru ${escapeHtml(data.checkIn)} → ${escapeHtml(data.checkOut)} a fost anulată.`)}
       ${data.reason ? p(`Motiv: ${escapeHtml(data.reason)}`) : ""}
       ${p("Dacă ai întrebări, nu ezita să ne contactezi.")}
-    `),
+    `,
+    ),
     text: `Rezervare anulată — ${data.pensionName}\n\n${data.guestName}, rezervarea pentru ${data.checkIn} → ${data.checkOut} a fost anulată.${data.reason ? `\nMotiv: ${data.reason}` : ""}`,
   };
 }
@@ -219,11 +231,15 @@ export function testEmailTemplate(data: {
 }): EmailContent {
   return {
     subject: sanitizeEmailSubject(`Email test — ${data.pensionName}`),
-    html: wrap(data.pensionName, `
+    html: wrap(
+      data.pensionName,
+      `
       ${h2("Email configurat corect!")}
       ${p("Acest email confirma ca sistemul de notificari functioneaza. Emailurile vor fi trimise automat conform setarilor tale.")}
       ${p("Poti modifica setarile oricand din panoul de administrare.")}
-    `, data.customFooter),
+    `,
+      data.customFooter,
+    ),
     text: `Email test — ${data.pensionName}\n\nSistemul de notificari functioneaza corect.`,
   };
 }
@@ -237,16 +253,24 @@ export function dailySummaryToOwner(data: {
   pendingRequests: number;
   occupancyPercent: number;
 }): EmailContent {
-  const checkInRows = data.checkInsToday.map(
-    (c) => `<li style="margin:4px 0;font-size:13px;color:#3f3f46">${escapeHtml(c.guestName)} — ${escapeHtml(c.rooms.join(", "))}</li>`
-  ).join("");
-  const checkOutRows = data.checkOutsToday.map(
-    (c) => `<li style="margin:4px 0;font-size:13px;color:#3f3f46">${escapeHtml(c.guestName)} — ${escapeHtml(c.rooms.join(", "))}</li>`
-  ).join("");
+  const checkInRows = data.checkInsToday
+    .map(
+      (c) =>
+        `<li style="margin:4px 0;font-size:13px;color:#3f3f46">${escapeHtml(c.guestName)} — ${escapeHtml(c.rooms.join(", "))}</li>`,
+    )
+    .join("");
+  const checkOutRows = data.checkOutsToday
+    .map(
+      (c) =>
+        `<li style="margin:4px 0;font-size:13px;color:#3f3f46">${escapeHtml(c.guestName)} — ${escapeHtml(c.rooms.join(", "))}</li>`,
+    )
+    .join("");
 
   return {
     subject: sanitizeEmailSubject(`Rezumat ${data.date} — ${data.pensionName}`),
-    html: wrap(data.pensionName, `
+    html: wrap(
+      data.pensionName,
+      `
       ${h2(`Rezumat zilnic — ${data.date}`)}
       ${infoTable(`
         ${infoRow("Ocupare", `${data.occupancyPercent}%`)}
@@ -254,15 +278,24 @@ export function dailySummaryToOwner(data: {
         ${infoRow("Check-in-uri azi", String(data.checkInsToday.length))}
         ${infoRow("Check-out-uri azi", String(data.checkOutsToday.length))}
       `)}
-      ${data.checkInsToday.length > 0 ? `
+      ${
+        data.checkInsToday.length > 0
+          ? `
         <h3 style="margin:16px 0 8px;font-size:15px;color:#18181b">Sosiri</h3>
         <ul style="margin:0;padding-left:20px">${checkInRows}</ul>
-      ` : ""}
-      ${data.checkOutsToday.length > 0 ? `
+      `
+          : ""
+      }
+      ${
+        data.checkOutsToday.length > 0
+          ? `
         <h3 style="margin:16px 0 8px;font-size:15px;color:#18181b">Plecări</h3>
         <ul style="margin:0;padding-left:20px">${checkOutRows}</ul>
-      ` : ""}
-    `),
+      `
+          : ""
+      }
+    `,
+    ),
     text: `Rezumat ${data.date} — ${data.pensionName}\nOcupare: ${data.occupancyPercent}%\nCereri: ${data.pendingRequests}\nCheck-in: ${data.checkInsToday.length}\nCheck-out: ${data.checkOutsToday.length}`,
   };
 }

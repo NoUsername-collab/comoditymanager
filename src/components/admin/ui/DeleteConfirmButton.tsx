@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
+import {
+  useAdminPending,
+  useRunAdminAction,
+} from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 
-type AdminDeleteFormAction = (
-  formData: FormData
-) => Promise<{ error?: string } | void>;
+type AdminDeleteFormAction = (formData: FormData) => Promise<{ error?: string } | void>;
 
 export function DeleteConfirmButton({
   label,
@@ -68,7 +69,10 @@ export function DeleteConfirmButton({
       ))}
       <p className="text-red-900">{confirmMessage}</p>
       {error && (
-        <p className="mt-2 rounded-md border border-red-300 bg-white px-2 py-1.5 text-xs font-medium text-red-800" role="alert">
+        <p
+          className="mt-2 rounded-md border border-red-300 bg-white px-2 py-1.5 text-xs font-medium text-red-800"
+          role="alert"
+        >
           {error}
         </p>
       )}

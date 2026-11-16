@@ -3,10 +3,14 @@
  * Importat după admin-gantt-stay-island.css ca să bată --gs-bg / culoarea clădire.
  */
 
-html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--filled:not(.gantt-stay--request):not(.gantt-stay--phase-past),
 html[data-theme]
   .gantt-shell
-  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--request):not(.gantt-stay--phase-past) {
+  .gantt-stay-chrome.gantt-stay--filled:not(.gantt-stay--request):not(.gantt-stay--phase-past),
+html[data-theme]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--request):not(
+    .gantt-stay--phase-past
+  ) {
   background: var(--gantt-bar-fill-active) !important;
   background-image: none !important;
   border: 1.5px solid var(--booking-active-border) !important;
@@ -16,9 +20,7 @@ html[data-theme]
 
 html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--request,
 html[data-theme] .gantt-shell .gantt-requests-card.gantt-stay-chrome,
-html[data-theme]
-  .gantt-shell
-  .gantt-booking-card.gantt-booking-card--pending.gantt-stay--request {
+html[data-theme] .gantt-shell .gantt-booking-card.gantt-booking-card--pending.gantt-stay--request {
   background: var(--gantt-bar-fill-pending) !important;
   background-image: none !important;
   border: 1.5px solid var(--booking-pending-border) !important;
@@ -60,10 +62,7 @@ html[data-theme] .gantt-stay-chrome.gantt-stay--cap-ok .gantt-stay__end-tab--ok 
 }
 
 html[data-theme] .gantt-stay-chrome.gantt-stay--cap-ok .gantt-stay__end-tab-bulb {
-  filter:
-    drop-shadow(0 0 0.5px #052e16)
-    drop-shadow(0 0 2px #86efac)
-    drop-shadow(0 0 4px #4ade80) !important;
+  filter: drop-shadow(0 0 0.5px #052e16) drop-shadow(0 0 2px #86efac) drop-shadow(0 0 4px #4ade80) !important;
 }
 
 html[data-theme] .gantt-stay-chrome.gantt-stay--cap-problem .gantt-stay__end-tab--problem {
@@ -109,11 +108,15 @@ html[data-theme="default"] .gantt-shell .gantt-requests-card .gantt-requests-car
 
 html[data-theme="default"]
   .gantt-shell
-  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--request):not(.gantt-stay--phase-past)
+  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--request):not(
+    .gantt-stay--phase-past
+  )
   .gantt-stay__badge,
 html[data-theme="default"]
   .gantt-shell
-  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--request):not(.gantt-stay--phase-past)
+  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--request):not(
+    .gantt-stay--phase-past
+  )
   .gantt-stay__phase-badge {
   background: color-mix(in srgb, var(--booking-active-text) 18%, transparent) !important;
   color: var(--booking-active-text) !important;

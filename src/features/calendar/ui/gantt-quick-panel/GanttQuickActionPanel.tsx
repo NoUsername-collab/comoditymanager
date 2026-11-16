@@ -8,22 +8,12 @@ import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminSelect } from "@/components/admin/ui/AdminInput";
 import type { StaffStayIntent } from "@/features/bookings/staff-stay-actions";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import {
-  addDays,
-  clampCheckInDate,
-  todayIso,
-} from "@/lib/stay-dates";
+import { addDays, clampCheckInDate, todayIso } from "@/lib/stay-dates";
 import { BlockBody } from "./BlockBody";
 import { HoldBody } from "./HoldBody";
 import { MoveBody } from "./MoveBody";
 import { StayBody } from "./StayBody";
-import {
-  IntervalPlanner,
-  LIST_SEPARATOR,
-  StaySummary,
-  SummaryCard,
-  nightsBetween,
-} from "./shared";
+import { IntervalPlanner, LIST_SEPARATOR, StaySummary, SummaryCard, nightsBetween } from "./shared";
 import {
   GANTT_QUICK_LABEL_CLASS,
   type GanttQuickActionPanelProps,
@@ -47,13 +37,10 @@ export function GanttQuickActionPanel({
   const defaultRoomId = rooms[0]?.id ?? "";
   const [roomId, setRoomId] = useState(draft?.roomId ?? defaultRoomId);
   const [checkIn, setCheckIn] = useState(() =>
-    clampCheckInDate(draft?.checkIn ?? effectiveToday, effectiveToday)
+    clampCheckInDate(draft?.checkIn ?? effectiveToday, effectiveToday),
   );
   const [checkOut, setCheckOut] = useState(() => {
-    const nextCheckIn = clampCheckInDate(
-      draft?.checkIn ?? effectiveToday,
-      effectiveToday
-    );
+    const nextCheckIn = clampCheckInDate(draft?.checkIn ?? effectiveToday, effectiveToday);
     const nextCheckOut = draft?.checkOut ?? addDays(nextCheckIn, 1);
     return nextCheckOut <= nextCheckIn ? addDays(nextCheckIn, 1) : nextCheckOut;
   });
@@ -71,17 +58,14 @@ export function GanttQuickActionPanel({
   const activeCheckOut = checkOut;
   const activeRoom =
     rooms.find((room) => room.id === activeRoomId) ??
-    (draft
-      ? { id: draft.roomId, name: draft.roomName, building_name: "" }
-      : null);
+    (draft ? { id: draft.roomId, name: draft.roomName, building_name: "" } : null);
   const period =
     activeCheckIn && activeCheckOut && activeCheckIn < activeCheckOut
       ? formatStayPeriod(activeCheckIn, activeCheckOut, locale, true)
       : "";
   const multiRoomCount = draft?.roomIds?.length ?? 0;
   const hasMultiRoomDraft = multiRoomCount > 1;
-  const intervalInvalid =
-    !activeCheckIn || !activeCheckOut || activeCheckIn >= activeCheckOut;
+  const intervalInvalid = !activeCheckIn || !activeCheckOut || activeCheckIn >= activeCheckOut;
   const preferredRoomIds = useMemo(
     () =>
       draft?.roomIds && draft.roomIds.length > 0
@@ -91,11 +75,7 @@ export function GanttQuickActionPanel({
           : [],
     [draft],
   );
-  const activeRoomIds = draft?.roomIds?.length
-    ? draft.roomIds
-    : activeRoomId
-      ? [activeRoomId]
-      : [];
+  const activeRoomIds = draft?.roomIds?.length ? draft.roomIds : activeRoomId ? [activeRoomId] : [];
   const hasConflict =
     !intervalInvalid &&
     activeRoomIds.length > 0 &&
@@ -104,7 +84,7 @@ export function GanttQuickActionPanel({
         booking.status !== "anulata" &&
         booking.room_ids.some((id) => activeRoomIds.includes(id)) &&
         booking.check_in < activeCheckOut &&
-        booking.check_out > activeCheckIn
+        booking.check_out > activeCheckIn,
     );
 
   if (!mode) return null;
@@ -129,10 +109,7 @@ export function GanttQuickActionPanel({
       activeCheckIn && activeCheckOut && activeCheckIn < activeCheckOut
         ? nightsBetween(activeCheckIn, activeCheckOut)
         : 1;
-    const nextCheckIn = clampCheckInDate(
-      addDays(activeCheckIn, days),
-      effectiveToday
-    );
+    const nextCheckIn = clampCheckInDate(addDays(activeCheckIn, days), effectiveToday);
     setCheckIn(nextCheckIn);
     setCheckOut(addDays(nextCheckIn, Math.max(1, duration)));
   }
@@ -169,7 +146,7 @@ export function GanttQuickActionPanel({
       <strong className="font-semibold text-zinc-900">
         {hasMultiRoomDraft
           ? tGantt("quick.multiRoomSelected", { count: multiRoomCount })
-          : activeRoom?.name ?? draft.roomName}
+          : (activeRoom?.name ?? draft.roomName)}
       </strong>
       {!hasMultiRoomDraft && activeRoom?.building_name ? (
         <span className="text-zinc-500">
@@ -180,7 +157,9 @@ export function GanttQuickActionPanel({
     </>
   ) : (
     <>
-        <strong className="font-semibold text-zinc-900">{activeRoom?.name ?? tGantt("quick.chooseRoom")}</strong>
+      <strong className="font-semibold text-zinc-900">
+        {activeRoom?.name ?? tGantt("quick.chooseRoom")}
+      </strong>
       {activeRoom?.building_name ? (
         <span className="text-zinc-500">
           {" "}
@@ -197,7 +176,9 @@ export function GanttQuickActionPanel({
       title={isStayMode ? titleMap[stayIntent] : titleMap[mode]}
       variant="modal"
       width={640}
-      className={["gantt-quick-panel", pending && "gantt-quick-panel--busy"].filter(Boolean).join(" ")}
+      className={["gantt-quick-panel", pending && "gantt-quick-panel--busy"]
+        .filter(Boolean)
+        .join(" ")}
     >
       <div
         className="gantt-quick-panel__body gantt-toolbar-occ-form gantt-quick-panel__actions space-y-4 p-1"
@@ -229,11 +210,7 @@ export function GanttQuickActionPanel({
               <StaySummary
                 roomLabel={intervalSubtitle}
                 period={period}
-                nights={
-                  intervalInvalid
-                    ? 0
-                    : nightsBetween(activeCheckIn, activeCheckOut)
-                }
+                nights={intervalInvalid ? 0 : nightsBetween(activeCheckIn, activeCheckOut)}
                 nightLabel={(count) => tGantt("quick.nightsLabel", { count })}
               />
             ) : (
@@ -265,7 +242,7 @@ export function GanttQuickActionPanel({
               />
             ) : null}
 
-            {hasMultiRoomDraft && (mode === "hold") ? (
+            {hasMultiRoomDraft && mode === "hold" ? (
               <SummaryCard
                 title={tGantt("quick.note")}
                 tone="info"

@@ -60,9 +60,7 @@ describe("place helpers", () => {
     );
     expect(publicMapEmbedSrc({ address: "Strada 1", lat: null, lng: null })).toBeNull();
     expect(shouldShowPlace({ address: "X", lat: null, lng: null })).toBe(true);
-    expect(shouldShowPlace({ address: " ", lat: null, lng: null })).toBe(
-      false,
-    );
+    expect(shouldShowPlace({ address: " ", lat: null, lng: null })).toBe(false);
   });
 });
 

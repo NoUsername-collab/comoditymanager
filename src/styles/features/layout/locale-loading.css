@@ -22,7 +22,9 @@
   background: var(--site-header-bg, #fff);
   cursor: pointer;
   touch-action: manipulation;
-  transition: background 0.12s, border-color 0.12s;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
 }
 
 .language-switcher__option--inline.language-switcher__option--active {

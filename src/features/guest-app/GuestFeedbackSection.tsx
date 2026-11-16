@@ -5,9 +5,7 @@ import { useTranslations } from "next-intl";
 
 function FeedbackFormFallback() {
   const t = useTranslations("guestApp.shell");
-  return (
-    <div className="guest-app__skeleton-row" aria-busy="true" aria-label={t("loading")} />
-  );
+  return <div className="guest-app__skeleton-row" aria-busy="true" aria-label={t("loading")} />;
 }
 
 const GuestFeedbackForm = dynamic(
@@ -26,7 +24,5 @@ type Props = {
 };
 
 export function GuestFeedbackSection({ accessCode, alreadySubmitted }: Props) {
-  return (
-    <GuestFeedbackForm accessCode={accessCode} alreadySubmitted={alreadySubmitted} />
-  );
+  return <GuestFeedbackForm accessCode={accessCode} alreadySubmitted={alreadySubmitted} />;
 }

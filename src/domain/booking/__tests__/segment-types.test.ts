@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  resolveMovePivot,
-  segmentNightCount,
-} from "@/domain/booking/segment-types";
+import { resolveMovePivot, segmentNightCount } from "@/domain/booking/segment-types";
 
 // ---------------------------------------------------------------------------
 // resolveMovePivot
@@ -39,15 +36,15 @@ describe("resolveMovePivot", () => {
   });
 
   it('throws "segments.no_future_nights_to_move" when pivot >= segmentEnd', () => {
-    expect(() =>
-      resolveMovePivot(segStart, segEnd, "2026-07-15", today)
-    ).toThrow("segments.no_future_nights_to_move");
+    expect(() => resolveMovePivot(segStart, segEnd, "2026-07-15", today)).toThrow(
+      "segments.no_future_nights_to_move",
+    );
   });
 
   it('throws "segments.no_future_nights_to_move" when pivot is after segmentEnd', () => {
-    expect(() =>
-      resolveMovePivot(segStart, segEnd, "2026-07-20", today)
-    ).toThrow("segments.no_future_nights_to_move");
+    expect(() => resolveMovePivot(segStart, segEnd, "2026-07-20", today)).toThrow(
+      "segments.no_future_nights_to_move",
+    );
   });
 
   it("works with a segment of exactly 2 nights", () => {
@@ -70,20 +67,14 @@ describe("resolveMovePivot", () => {
 
 describe("segmentNightCount", () => {
   it("returns 1 for a 1-night segment", () => {
-    expect(
-      segmentNightCount({ segment_start: "2026-07-10", segment_end: "2026-07-11" })
-    ).toBe(1);
+    expect(segmentNightCount({ segment_start: "2026-07-10", segment_end: "2026-07-11" })).toBe(1);
   });
 
   it("returns 3 for a 3-night segment", () => {
-    expect(
-      segmentNightCount({ segment_start: "2026-07-10", segment_end: "2026-07-13" })
-    ).toBe(3);
+    expect(segmentNightCount({ segment_start: "2026-07-10", segment_end: "2026-07-13" })).toBe(3);
   });
 
   it("returns 0 when start equals end", () => {
-    expect(
-      segmentNightCount({ segment_start: "2026-07-10", segment_end: "2026-07-10" })
-    ).toBe(0);
+    expect(segmentNightCount({ segment_start: "2026-07-10", segment_end: "2026-07-10" })).toBe(0);
   });
 });

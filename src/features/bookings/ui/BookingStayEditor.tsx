@@ -2,12 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import {
-  addDays,
-  clampCheckInDate,
-  stayNightCount,
-  todayIso,
-} from "@/lib/stay-dates";
+import { addDays, clampCheckInDate, stayNightCount, todayIso } from "@/lib/stay-dates";
 import {
   partyAgesComplete,
   partyHeadcount,
@@ -99,30 +94,22 @@ export function BookingStayEditor({
     return (
       <span className="bd-stay-inline">
         {editable && (
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="bd-stay__edit-btn"
-          >
+          <button type="button" onClick={() => setEditing(true)} className="bd-stay__edit-btn">
             {checkedIn ? t("editCheckout") : t("editDates")}
           </button>
         )}
-        {saved && (
-          <span className="bd-stay__saved">{t("saved")}</span>
-        )}
+        {saved && <span className="bd-stay__saved">{t("saved")}</span>}
       </span>
     );
   }
 
   return (
     <div className="admin-stay-editor">
-      {checkedIn && (
-        <p className="admin-stay-editor__checked-in-hint">
-          {t("checkedInHint")}
-        </p>
-      )}
+      {checkedIn && <p className="admin-stay-editor__checked-in-hint">{t("checkedInHint")}</p>}
       <div className="admin-stay-editor__grid">
-        <label className={`admin-stay-editor__field ${checkedIn ? "admin-stay-editor__field--locked" : ""}`}>
+        <label
+          className={`admin-stay-editor__field ${checkedIn ? "admin-stay-editor__field--locked" : ""}`}
+        >
           <span className="admin-stay-editor__label">{t("checkIn")}</span>
           <input
             type="date"
@@ -151,13 +138,12 @@ export function BookingStayEditor({
         </label>
       </div>
       {/* Once the guests are in, only the checkout date may change. */}
-      {!checkedIn && (
-        <PartyFields value={party} onChange={setParty} appearance="admin" />
-      )}
+      {!checkedIn && <PartyFields value={party} onChange={setParty} appearance="admin" />}
 
       {nights > 0 && (
         <p className="admin-stay-editor__summary">
-          {nights} {nights === 1 ? t("nightSingular") : t("nightPlural")} · {partyHeadcount(party)} {t("personsTotal")}
+          {nights} {nights === 1 ? t("nightSingular") : t("nightPlural")} · {partyHeadcount(party)}{" "}
+          {t("personsTotal")}
         </p>
       )}
 

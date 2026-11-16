@@ -44,13 +44,10 @@ export function RoomGridTile({
   const className = [
     "room-grid-tile flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-[11px] font-bold leading-none shadow-sm transition",
     href && "hover:scale-105 hover:shadow",
-    statusOnDate === "inactive" &&
-      "border-zinc-200 bg-zinc-100 text-zinc-400 line-through",
-    statusOnDate === "free" &&
-      "border-emerald-200/80 bg-white text-emerald-900",
+    statusOnDate === "inactive" && "border-zinc-200 bg-zinc-100 text-zinc-400 line-through",
+    statusOnDate === "free" && "border-emerald-200/80 bg-white text-emerald-900",
     statusOnDate === "occupied" && "status-occupied-tile",
-    statusOnDate === "pending" &&
-      "border-amber-400/70 bg-amber-300 text-amber-950",
+    statusOnDate === "pending" && "border-amber-400/70 bg-amber-300 text-amber-950",
     href && statusOnDate === "free" && "hover:border-emerald-300",
     href && statusOnDate === "pending" && "hover:bg-amber-400",
   ]

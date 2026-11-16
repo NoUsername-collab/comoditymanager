@@ -12,9 +12,8 @@ export function ganttQuickNightsBetween(checkIn: string, checkOut: string): numb
   return Math.max(
     0,
     Math.round(
-      (parseIso(checkOut).getTime() - parseIso(checkIn).getTime()) /
-        (1000 * 60 * 60 * 24)
-    )
+      (parseIso(checkOut).getTime() - parseIso(checkIn).getTime()) / (1000 * 60 * 60 * 24),
+    ),
   );
 }
 
@@ -42,13 +41,10 @@ export function hasGanttQuickIntervalConflict(input: {
       booking.status !== "anulata" &&
       booking.room_ids.some((id) => input.roomIds.includes(id)) &&
       booking.check_in < input.checkOut &&
-      booking.check_out > input.checkIn
+      booking.check_out > input.checkIn,
   );
 }
 
-export function isGanttQuickIntervalInvalid(
-  checkIn: string,
-  checkOut: string
-): boolean {
+export function isGanttQuickIntervalInvalid(checkIn: string, checkOut: string): boolean {
   return !checkIn || !checkOut || checkIn >= checkOut;
 }

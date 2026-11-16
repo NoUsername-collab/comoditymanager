@@ -63,9 +63,7 @@ describe("buildMonthComparison", () => {
   });
 
   it("returns previousYear as null when no previous year data exists", () => {
-    const bookings = [
-      makeBooking({ check_in: "2025-06-10", check_out: "2025-06-12" }),
-    ];
+    const bookings = [makeBooking({ check_in: "2025-06-10", check_out: "2025-06-12" })];
     const result = buildMonthComparison(bookings, rooms, "2025-06-15");
 
     expect(result.previousYear).toBeNull();

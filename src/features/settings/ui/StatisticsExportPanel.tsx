@@ -55,10 +55,7 @@ export function StatisticsExportPanel({
       >
         <label className="flex min-w-[8rem] flex-col gap-1 text-xs font-medium text-zinc-600">
           {labels.year}
-          <AdminSelect
-            name="year"
-            defaultValue={String(focusYear)}
-          >
+          <AdminSelect name="year" defaultValue={String(focusYear)}>
             {years.map((year) => (
               <option key={year} value={year}>
                 {year}
@@ -69,10 +66,7 @@ export function StatisticsExportPanel({
 
         <label className="flex min-w-[10rem] flex-col gap-1 text-xs font-medium text-zinc-600">
           {labels.month}
-          <AdminSelect
-            name="month"
-            defaultValue="all"
-          >
+          <AdminSelect name="month" defaultValue="all">
             <option value="all">{labels.monthAll}</option>
             {months.map((month) => (
               <option key={month.value} value={month.value}>

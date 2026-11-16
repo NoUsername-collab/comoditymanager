@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  legacyRoomTypeFromCatalogSlug,
-  roomTypeSlugForDb,
-} from "@/domain/room/legacy-room-type";
+import { legacyRoomTypeFromCatalogSlug, roomTypeSlugForDb } from "@/domain/room/legacy-room-type";
 
 describe("legacyRoomTypeFromCatalogSlug", () => {
   it("passes through allowed legacy values", () => {

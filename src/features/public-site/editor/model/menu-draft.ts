@@ -3,7 +3,11 @@ import {
   MAX_MENU_ITEMS,
   menuKindNeedsRef,
 } from "@/features/public-site/domain/site-pages";
-import type { PublicLocale, PublicMenuItem, PublicMenuKind } from "@/features/public-site/domain/types";
+import type {
+  PublicLocale,
+  PublicMenuItem,
+  PublicMenuKind,
+} from "@/features/public-site/domain/types";
 
 /*
  * Editing the header menu: a list of links, each maybe with a submenu of its
@@ -14,7 +18,9 @@ import type { PublicLocale, PublicMenuItem, PublicMenuKind } from "@/features/pu
 export type MenuTargetValue = string;
 
 export function menuTargetValue(item: Pick<PublicMenuItem, "kind" | "ref">): MenuTargetValue {
-  return item.kind === "page" || item.kind === "section" ? `${item.kind}:${item.ref ?? ""}` : item.kind;
+  return item.kind === "page" || item.kind === "section"
+    ? `${item.kind}:${item.ref ?? ""}`
+    : item.kind;
 }
 
 /** A picked target applied to an item; an address typed for a link elsewhere is kept. */
@@ -33,7 +39,10 @@ export function menuItemComplete(item: PublicMenuItem): boolean {
 }
 
 /** Find an item: its parent's id (null at the top) and its index there. */
-function locate(menu: PublicMenuItem[], id: string): { parent: string | null; index: number } | null {
+function locate(
+  menu: PublicMenuItem[],
+  id: string,
+): { parent: string | null; index: number } | null {
   const top = menu.findIndex((item) => item.id === id);
   if (top !== -1) return { parent: null, index: top };
   for (const item of menu) {
@@ -43,7 +52,11 @@ function locate(menu: PublicMenuItem[], id: string): { parent: string | null; in
   return null;
 }
 
-function withChildren(menu: PublicMenuItem[], parentId: string, children: PublicMenuItem[]): PublicMenuItem[] {
+function withChildren(
+  menu: PublicMenuItem[],
+  parentId: string,
+  children: PublicMenuItem[],
+): PublicMenuItem[] {
   return menu.map((item) => {
     if (item.id !== parentId) return item;
     const next: PublicMenuItem = { ...item, children };
@@ -78,7 +91,10 @@ export function patchMenuItem(
   return menu.map((item) => {
     if (item.id === id) return update(item);
     if (!item.children?.some((child) => child.id === id)) return item;
-    return { ...item, children: item.children.map((child) => (child.id === id ? update(child) : child)) };
+    return {
+      ...item,
+      children: item.children.map((child) => (child.id === id ? update(child) : child)),
+    };
   });
 }
 
@@ -105,7 +121,10 @@ export function setMenuLabel(
   locale: PublicLocale,
   label: string,
 ): PublicMenuItem[] {
-  return patchMenuItem(menu, id, (item) => ({ ...item, label: { ...item.label, [locale]: label } }));
+  return patchMenuItem(menu, id, (item) => ({
+    ...item,
+    label: { ...item.label, [locale]: label },
+  }));
 }
 
 /** Take a link away; an item's submenu goes with it. */
@@ -114,11 +133,19 @@ export function removeMenuItem(menu: PublicMenuItem[], id: string): PublicMenuIt
   if (!at) return menu;
   if (!at.parent) return menu.filter((item) => item.id !== id);
   const parent = menu.find((item) => item.id === at.parent)!;
-  return withChildren(menu, at.parent, parent.children!.filter((child) => child.id !== id));
+  return withChildren(
+    menu,
+    at.parent,
+    parent.children!.filter((child) => child.id !== id),
+  );
 }
 
 /** Swap a link with its neighbour in the same list. */
-export function moveMenuItem(menu: PublicMenuItem[], id: string, direction: -1 | 1): PublicMenuItem[] {
+export function moveMenuItem(
+  menu: PublicMenuItem[],
+  id: string,
+  direction: -1 | 1,
+): PublicMenuItem[] {
   const at = locate(menu, id);
   if (!at) return menu;
   const list = at.parent ? [...menu.find((item) => item.id === at.parent)!.children!] : [...menu];
@@ -134,7 +161,11 @@ export function canIndentMenuItem(menu: PublicMenuItem[], id: string): boolean {
   if (index <= 0) return false;
   const item = menu[index]!;
   const above = menu[index - 1]!;
-  return item.kind !== "group" && !item.children?.length && (above.children?.length ?? 0) < MAX_MENU_CHILDREN;
+  return (
+    item.kind !== "group" &&
+    !item.children?.length &&
+    (above.children?.length ?? 0) < MAX_MENU_CHILDREN
+  );
 }
 
 /** Put a top-level link at the end of the submenu of the link above it. */
@@ -154,7 +185,11 @@ export function outdentMenuItem(menu: PublicMenuItem[], id: string): PublicMenuI
   const parentIndex = menu.findIndex((item) => item.id === at.parent);
   const parent = menu[parentIndex]!;
   const item = parent.children![at.index]!;
-  const next = withChildren(menu, parent.id, parent.children!.filter((child) => child.id !== id));
+  const next = withChildren(
+    menu,
+    parent.id,
+    parent.children!.filter((child) => child.id !== id),
+  );
   return [...next.slice(0, parentIndex + 1), item, ...next.slice(parentIndex + 1)];
 }
 
@@ -165,9 +200,14 @@ export function outdentMenuItem(menu: PublicMenuItem[], id: string): PublicMenuI
 export function menuToSave(menu: PublicMenuItem[]): PublicMenuItem[] {
   const clean = (item: PublicMenuItem): PublicMenuItem | null => {
     if (!menuItemComplete(item)) return null;
-    const next: PublicMenuItem = { ...item, ...(item.ref !== undefined ? { ref: item.ref.trim() } : {}) };
+    const next: PublicMenuItem = {
+      ...item,
+      ...(item.ref !== undefined ? { ref: item.ref.trim() } : {}),
+    };
     if (item.children) {
-      const children = item.children.map(clean).filter((child): child is PublicMenuItem => child !== null);
+      const children = item.children
+        .map(clean)
+        .filter((child): child is PublicMenuItem => child !== null);
       if (children.length > 0) next.children = children;
       else delete next.children;
     }

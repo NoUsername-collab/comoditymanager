@@ -25,9 +25,7 @@ const loadMfaFactors = cache(async (email: string) => {
   return supabase.auth.mfa.listFactors();
 });
 
-async function resolveSetupIssuesUncached(
-  opts: ResolveSetupIssuesOpts
-): Promise<SetupIssue[]> {
+async function resolveSetupIssuesUncached(opts: ResolveSetupIssuesOpts): Promise<SetupIssue[]> {
   if (!shouldResolveSetupIssues(opts)) {
     return [];
   }
@@ -68,11 +66,7 @@ async function resolveSetupIssuesUncached(
   return issues;
 }
 
-const getCachedSetupIssues = (
-  tenantId: string,
-  email: string,
-  memberRole: string,
-) =>
+const getCachedSetupIssues = (tenantId: string, email: string, memberRole: string) =>
   unstable_cache(
     () =>
       resolveSetupIssuesUncached({
@@ -100,8 +94,6 @@ const loadSetupIssues = cache(async (email: string, memberRole: string) => {
 });
 
 /** Single source of truth for unresolved admin setup / security issues. */
-export async function resolveSetupIssues(
-  opts: ResolveSetupIssuesOpts
-): Promise<SetupIssue[]> {
+export async function resolveSetupIssues(opts: ResolveSetupIssuesOpts): Promise<SetupIssue[]> {
   return loadSetupIssues(opts.email ?? "", opts.memberRole ?? "");
 }

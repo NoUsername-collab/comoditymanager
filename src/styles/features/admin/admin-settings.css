@@ -235,7 +235,8 @@
   padding: 1.15rem;
   margin-bottom: 1.25rem;
   border-radius: var(--admin-surface-radius, 1rem);
-  border: 1px solid color-mix(in srgb, var(--admin-accent, #059669) 22%, var(--admin-panel-border, #e4e4e7));
+  border: 1px solid
+    color-mix(in srgb, var(--admin-accent, #059669) 22%, var(--admin-panel-border, #e4e4e7));
   background: color-mix(in srgb, var(--admin-accent, #059669) 6%, var(--admin-panel-bg, #fff));
 }
 
@@ -326,11 +327,18 @@
   border: 1px solid var(--admin-panel-border, #e4e4e7);
   background: var(--admin-panel-bg, #fff);
   text-decoration: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
 }
 
 .settings-overview-card:hover {
-  border-color: color-mix(in srgb, var(--admin-accent, #059669) 35%, var(--admin-panel-border, #e4e4e7));
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 35%,
+    var(--admin-panel-border, #e4e4e7)
+  );
 }
 
 .settings-overview-card__title {
@@ -491,11 +499,17 @@
   border-radius: 0.625rem;
   border: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 80%, transparent);
   background: var(--admin-panel-bg, #fff);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .admin-settings-list__row:hover {
-  border-color: color-mix(in srgb, var(--admin-accent, #059669) 25%, var(--admin-panel-border, #e4e4e7));
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 25%,
+    var(--admin-panel-border, #e4e4e7)
+  );
 }
 
 .admin-settings-list__label {
@@ -595,7 +609,11 @@ html[data-layout-chrome="compact"] .settings-shell__group {
 }
 
 .admin-settings-panel--open {
-  border-color: color-mix(in srgb, var(--admin-accent, #059669) 35%, var(--admin-panel-border, #e4e4e7));
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 35%,
+    var(--admin-panel-border, #e4e4e7)
+  );
 }
 
 .admin-settings-panel__trigger {
@@ -795,7 +813,11 @@ html[data-layout-chrome="compact"] .settings-shell__group {
 }
 
 .pub-settings-card:hover {
-  border-color: color-mix(in srgb, var(--admin-accent, #059669) 35%, var(--admin-panel-border, #e4e4e7));
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 35%,
+    var(--admin-panel-border, #e4e4e7)
+  );
 }
 
 .pub-settings-card--active {
@@ -976,7 +998,11 @@ html[data-layout-chrome="compact"] .settings-shell__group {
 }
 
 .pub-notice-editor__choice[data-on] {
-  border-color: color-mix(in srgb, var(--admin-accent, #166534) 45%, var(--admin-panel-border, #e4e4e7));
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent, #166534) 45%,
+    var(--admin-panel-border, #e4e4e7)
+  );
 }
 
 .pub-notice-editor__choice-row {
@@ -1080,7 +1106,9 @@ html[data-layout-chrome="compact"] .settings-shell__group {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--admin-panel-bg, #fff);
-  transition: opacity 0.2s ease, transform 0.15s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.15s ease;
 }
 
 .admin-settings-submit__btn:hover {
@@ -1117,7 +1145,9 @@ html[data-layout-chrome="compact"] .settings-shell__group {
   font-weight: 600;
   color: #18181b;
   text-decoration: none;
-  transition: background 0.12s, border-color 0.12s;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
 }
 
 .statistics-settings__link:hover {
@@ -1311,7 +1341,7 @@ html[data-layout-chrome="compact"] .settings-shell__group {
 
 @media (prefers-reduced-motion: reduce) {
   .admin-settings-panel__body,
-.admin-settings-panel__chevron {
+  .admin-settings-panel__chevron {
     transition: none;
   }
 }
@@ -1476,7 +1506,11 @@ html[data-layout-chrome="compact"] .settings-shell__group {
 }
 
 .settings-primary-link--ghost:hover {
-  border-color: color-mix(in srgb, var(--admin-accent, #059669) 35%, var(--admin-panel-border, #e4e4e7));
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 35%,
+    var(--admin-panel-border, #e4e4e7)
+  );
   background: color-mix(in srgb, var(--admin-accent, #059669) 6%, var(--admin-panel-bg, #fff));
 }
 
@@ -1562,7 +1596,11 @@ html[data-layout-chrome="compact"] .settings-shell__group {
 }
 
 .admin-staff-row:hover {
-  border-color: color-mix(in srgb, var(--admin-accent, #059669) 25%, var(--admin-panel-border, #e4e4e7));
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 25%,
+    var(--admin-panel-border, #e4e4e7)
+  );
 }
 
 .admin-staff-row:active {
@@ -1910,7 +1948,11 @@ html[data-layout-chrome="compact"] .settings-shell__group {
   height: 0.45rem;
   width: 55%;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--admin-accent, #059669) 35%, var(--admin-panel-border, #e4e4e7));
+  background: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 35%,
+    var(--admin-panel-border, #e4e4e7)
+  );
 }
 
 .settings-appearance-aside__admin-cards {
@@ -2119,7 +2161,8 @@ html[data-layout-chrome="compact"] .settings-shell__group {
   gap: 0.25rem;
   padding: 0.35rem 0.55rem;
   border-radius: 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--admin-accent, #059669) 28%, var(--admin-panel-border, #e4e4e7));
+  border: 1px solid
+    color-mix(in srgb, var(--admin-accent, #059669) 28%, var(--admin-panel-border, #e4e4e7));
   background: color-mix(in srgb, var(--admin-accent, #059669) 6%, var(--admin-panel-bg, #fff));
   font-size: 0.6875rem;
   font-weight: 700;
@@ -2177,11 +2220,17 @@ html[data-layout-chrome="compact"] .settings-save-bar__inner {
   display: none;
 }
 
-html[data-layout-chrome="compact"] .settings-section--collapsible .settings-section__details > summary {
+html[data-layout-chrome="compact"]
+  .settings-section--collapsible
+  .settings-section__details
+  > summary {
   cursor: pointer;
 }
 
-html[data-layout-chrome="compact"] .settings-section--collapsible .settings-section__details > summary::after {
+html[data-layout-chrome="compact"]
+  .settings-section--collapsible
+  .settings-section__details
+  > summary::after {
   content: "▾";
   margin-left: auto;
   font-size: 0.75rem;
@@ -2189,11 +2238,17 @@ html[data-layout-chrome="compact"] .settings-section--collapsible .settings-sect
   transition: transform 0.2s ease;
 }
 
-html[data-layout-chrome="compact"] .settings-section--collapsible .settings-section__details[open] > summary::after {
+html[data-layout-chrome="compact"]
+  .settings-section--collapsible
+  .settings-section__details[open]
+  > summary::after {
   transform: rotate(180deg);
 }
 
-html:not([data-layout-chrome="compact"]) .settings-section--collapsible .settings-section__details > summary::after {
+html:not([data-layout-chrome="compact"])
+  .settings-section--collapsible
+  .settings-section__details
+  > summary::after {
   display: none;
 }
 
@@ -2201,7 +2256,10 @@ html:not([data-layout-chrome="compact"]) .settings-section--collapsible .setting
   cursor: pointer;
 }
 
-html:not([data-layout-chrome="compact"]) .settings-section--folded .settings-section__details > summary::after {
+html:not([data-layout-chrome="compact"])
+  .settings-section--folded
+  .settings-section__details
+  > summary::after {
   display: block;
   content: "▾";
   margin-left: auto;
@@ -2210,7 +2268,10 @@ html:not([data-layout-chrome="compact"]) .settings-section--folded .settings-sec
   transition: transform 0.2s ease;
 }
 
-html:not([data-layout-chrome="compact"]) .settings-section--folded .settings-section__details[open] > summary::after {
+html:not([data-layout-chrome="compact"])
+  .settings-section--folded
+  .settings-section__details[open]
+  > summary::after {
   transform: rotate(180deg);
 }
 
@@ -2221,7 +2282,11 @@ html:not([data-layout-chrome="compact"]) .settings-section--folded .settings-sec
 }
 
 .settings-overview-card--complete {
-  border-color: color-mix(in srgb, var(--admin-accent, #059669) 30%, var(--admin-panel-border, #e4e4e7));
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 30%,
+    var(--admin-panel-border, #e4e4e7)
+  );
 }
 
 .settings-overview-card__status {
@@ -2308,7 +2373,11 @@ html[data-layout-chrome="compact"] .settings-shell__main {
 }
 
 .settings-quick-jump__chip--active {
-  border-color: color-mix(in srgb, var(--admin-accent, #059669) 40%, var(--admin-panel-border, #e4e4e7));
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 40%,
+    var(--admin-panel-border, #e4e4e7)
+  );
   background: color-mix(in srgb, var(--admin-accent, #059669) 10%, var(--admin-panel-bg, #fff));
   color: var(--admin-accent, #059669);
 }
@@ -2460,7 +2529,11 @@ html[data-layout-chrome="compact"] .settings-shell__main {
 }
 
 .settings-setup-progress__item:hover {
-  border-color: color-mix(in srgb, var(--admin-accent, #059669) 25%, var(--admin-panel-border, #e4e4e7));
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 25%,
+    var(--admin-panel-border, #e4e4e7)
+  );
   background: color-mix(in srgb, var(--admin-accent, #059669) 5%, var(--admin-panel-bg, #fff));
 }
 

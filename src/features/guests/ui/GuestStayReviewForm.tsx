@@ -49,10 +49,7 @@ export function GuestStayReviewForm({
         <input type="hidden" name="guest_id" value={guestId} />
         <input type="hidden" name="booking_id" value={bookingId} />
 
-        <GuestStayRatingFields
-          formKey={bookingId}
-          initialReview={review}
-        />
+        <GuestStayRatingFields formKey={bookingId} initialReview={review} />
 
         {formError ? (
           <p className="guest-stay-review-form__error text-sm text-red-700" role="alert">

@@ -9,7 +9,10 @@ import {
   updateMediaAction,
   uploadMediaAction,
 } from "@/features/settings/actions";
-import { isOptimizablePublicImageUrl, PUBLIC_SITE_MEDIA_MAX_BYTES } from "@/domain/public-site/media";
+import {
+  isOptimizablePublicImageUrl,
+  PUBLIC_SITE_MEDIA_MAX_BYTES,
+} from "@/domain/public-site/media";
 import {
   MEDIA_ALBUMS,
   mediaFocus,
@@ -46,7 +49,9 @@ export function MediaLibrary({
 }) {
   const t = useTranslations("admin.pages.settings.photos");
   const [assets, setAssets] = useState(initial);
-  const [album, setAlbum] = useState<MediaAlbum | "all">(roomType ? "rooms" : (initialAlbum ?? "all"));
+  const [album, setAlbum] = useState<MediaAlbum | "all">(
+    roomType ? "rooms" : (initialAlbum ?? "all"),
+  );
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [uploading, setUploading] = useState<{ done: number; total: number } | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
@@ -62,7 +67,11 @@ export function MediaLibrary({
 
   const visible = assets
     .filter((a) => (roomType ? a.roomTypeId === roomType.id : album === "all" || a.album === album))
-    .sort((a, b) => (a.album === b.album ? a.sortOrder - b.sortOrder : MEDIA_ALBUMS.indexOf(a.album) - MEDIA_ALBUMS.indexOf(b.album)));
+    .sort((a, b) =>
+      a.album === b.album
+        ? a.sortOrder - b.sortOrder
+        : MEDIA_ALBUMS.indexOf(a.album) - MEDIA_ALBUMS.indexOf(b.album),
+    );
   const selected = assets.find((a) => a.id === selectedId) ?? null;
   const canReorder = roomType != null || album !== "all";
 
@@ -126,7 +135,9 @@ export function MediaLibrary({
     if (from < 0 || to < 0) return;
     ids.splice(to, 0, ids.splice(from, 1)[0]!);
     const before = assets;
-    setAssets((list) => list.map((a) => (ids.includes(a.id) ? { ...a, sortOrder: ids.indexOf(a.id) } : a)));
+    setAssets((list) =>
+      list.map((a) => (ids.includes(a.id) ? { ...a, sortOrder: ids.indexOf(a.id) } : a)),
+    );
     const res = await reorderMediaAction(ids);
     if (!res.ok) {
       setAssets(before);
@@ -147,7 +158,8 @@ export function MediaLibrary({
       {roomType ? null : (
         <div className="media-lib__tabs" role="tablist" aria-label={t("albums")}>
           {(["all", ...MEDIA_ALBUMS] as const).map((key) => {
-            const count = key === "all" ? assets.length : assets.filter((a) => a.album === key).length;
+            const count =
+              key === "all" ? assets.length : assets.filter((a) => a.album === key).length;
             return (
               <button
                 key={key}
@@ -190,8 +202,15 @@ export function MediaLibrary({
             e.target.value = "";
           }}
         />
-        <button type="button" className="media-lib__upload" onClick={() => fileInput.current?.click()} disabled={uploading != null}>
-          {uploading ? t("uploading", { done: uploading.done, total: uploading.total }) : t("upload")}
+        <button
+          type="button"
+          className="media-lib__upload"
+          onClick={() => fileInput.current?.click()}
+          disabled={uploading != null}
+        >
+          {uploading
+            ? t("uploading", { done: uploading.done, total: uploading.total })
+            : t("upload")}
         </button>
         <span>
           {roomType
@@ -214,7 +233,9 @@ export function MediaLibrary({
         <p className="media-lib__empty">{roomType ? t("emptyRoom") : t("empty")}</p>
       ) : (
         <>
-          {canReorder && visible.length > 1 ? <p className="media-lib__hint">{t("reorderHint")}</p> : null}
+          {canReorder && visible.length > 1 ? (
+            <p className="media-lib__hint">{t("reorderHint")}</p>
+          ) : null}
           <ul className="media-lib__grid">
             {visible.map((asset, index) => (
               <li
@@ -254,7 +275,9 @@ export function MediaLibrary({
                     style={{ objectFit: "cover", objectPosition: mediaFocus(asset) }}
                     unoptimized={!isOptimizablePublicImageUrl(asset.url)}
                   />
-                  {index === 0 && canReorder ? <span className="media-lib__cover">{t("cover")}</span> : null}
+                  {index === 0 && canReorder ? (
+                    <span className="media-lib__cover">{t("cover")}</span>
+                  ) : null}
                   {!roomType && roomTypeName(asset.roomTypeId) ? (
                     <span className="media-lib__tag">{roomTypeName(asset.roomTypeId)}</span>
                   ) : null}
@@ -347,7 +370,10 @@ function MediaDetails({
         <div className="admin-settings-fields">
           <label>
             <span>{t("albumLabel")}</span>
-            <select value={asset.album} onChange={(e) => onPatch({ album: e.target.value as MediaAlbum })}>
+            <select
+              value={asset.album}
+              onChange={(e) => onPatch({ album: e.target.value as MediaAlbum })}
+            >
               {MEDIA_ALBUMS.map((a) => (
                 <option key={a} value={a}>
                   {t(`album.${a}`)}
@@ -383,7 +409,12 @@ function MediaDetails({
             </label>
           ))}
           <div className="media-lib__details-actions">
-            <button type="button" className="media-lib__save" disabled={!altChanged} onClick={() => onPatch({ alt })}>
+            <button
+              type="button"
+              className="media-lib__save"
+              disabled={!altChanged}
+              onClick={() => onPatch({ alt })}
+            >
               {t("saveAlt")}
             </button>
             <button type="button" className="media-lib__delete" onClick={onDelete}>

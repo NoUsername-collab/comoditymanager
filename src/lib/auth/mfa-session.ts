@@ -1,15 +1,9 @@
 import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import {
-  hasVerifiedTotpFactor,
-  isMfaMandatoryForUser,
-} from "@/lib/auth/mfa-policy";
+import { hasVerifiedTotpFactor, isMfaMandatoryForUser } from "@/lib/auth/mfa-policy";
 import type { TenantMemberRole } from "@/services/tenant-members";
 
-type MfaAccessState =
-  | { kind: "ok" }
-  | { kind: "needs_enrollment" }
-  | { kind: "needs_challenge" };
+type MfaAccessState = { kind: "ok" } | { kind: "needs_enrollment" } | { kind: "needs_challenge" };
 
 async function getMfaAccessStateImpl(
   supabase: SupabaseClient,
@@ -17,8 +11,7 @@ async function getMfaAccessStateImpl(
   memberRole: TenantMemberRole | null,
 ): Promise<MfaAccessState> {
   const opts = { email: email || null, memberRole };
-  const { data: aal, error: aalError } =
-    await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  const { data: aal, error: aalError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
 
   if (aalError || !aal) {
     return { kind: "ok" };
@@ -28,8 +21,7 @@ async function getMfaAccessStateImpl(
     return { kind: "ok" };
   }
 
-  const { data: factors, error: factorsError } =
-    await supabase.auth.mfa.listFactors();
+  const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
 
   if (factorsError) {
     return { kind: "ok" };
@@ -57,11 +49,7 @@ export async function getMfaAccessState(
   opts: {
     email?: string | null;
     memberRole?: TenantMemberRole | null;
-  }
+  },
 ): Promise<MfaAccessState> {
-  return loadMfaAccessState(
-    supabase,
-    opts.email ?? "",
-    opts.memberRole ?? null,
-  );
+  return loadMfaAccessState(supabase, opts.email ?? "", opts.memberRole ?? null);
 }

@@ -63,10 +63,7 @@ export function PublicMobileMenu({
         <div className={themeClassName} style={{ ...themeStyle, display: "contents" }}>
           <button
             type="button"
-            className={[
-              "ml-drawer__backdrop",
-              open && "ml-drawer__backdrop--visible",
-            ]
+            className={["ml-drawer__backdrop", open && "ml-drawer__backdrop--visible"]
               .filter(Boolean)
               .join(" ")}
             aria-label={t("menuClose")}
@@ -85,56 +82,56 @@ export function PublicMobileMenu({
             aria-hidden={!open}
             hidden={!open}
           >
-              <div className="ml-drawer__head">
-                <button
-                  type="button"
-                  className="ml-drawer__close"
-                  aria-label={t("menuClose")}
-                  onClick={() => setOpen(false)}
-                >
-                  ✕
-                </button>
-              </div>
-              <nav className="ml-drawer__nav" aria-label={t("menuAria")}>
-                {items.map((item) => (
-                  <div key={item.key} className="ml-drawer__item">
-                    {item.href ? (
+            <div className="ml-drawer__head">
+              <button
+                type="button"
+                className="ml-drawer__close"
+                aria-label={t("menuClose")}
+                onClick={() => setOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <nav className="ml-drawer__nav" aria-label={t("menuAria")}>
+              {items.map((item) => (
+                <div key={item.key} className="ml-drawer__item">
+                  {item.href ? (
+                    <PublicNavLink
+                      item={{ ...item, href: item.href }}
+                      className={[
+                        "ml-drawer__link",
+                        item.cta && "ml-drawer__link--cta site-cta",
+                        isNavItemActive(pathname, item.href) && "ml-drawer__link--active",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      onClick={() => setOpen(false)}
+                    />
+                  ) : (
+                    <span className="ml-drawer__link ml-drawer__group">{item.label}</span>
+                  )}
+                  {/* A submenu is shown open, set in under its item: a drawer has room. */}
+                  {item.children?.map((child) =>
+                    child.href ? (
                       <PublicNavLink
-                        item={{ ...item, href: item.href }}
+                        key={child.key}
+                        item={{ ...child, href: child.href }}
                         className={[
-                          "ml-drawer__link",
-                          item.cta && "ml-drawer__link--cta site-cta",
-                          isNavItemActive(pathname, item.href) && "ml-drawer__link--active",
+                          "ml-drawer__link ml-drawer__sublink",
+                          isNavItemActive(pathname, child.href) && "ml-drawer__link--active",
                         ]
                           .filter(Boolean)
                           .join(" ")}
                         onClick={() => setOpen(false)}
                       />
-                    ) : (
-                      <span className="ml-drawer__link ml-drawer__group">{item.label}</span>
-                    )}
-                    {/* A submenu is shown open, set in under its item: a drawer has room. */}
-                    {item.children?.map((child) =>
-                      child.href ? (
-                        <PublicNavLink
-                          key={child.key}
-                          item={{ ...child, href: child.href }}
-                          className={[
-                            "ml-drawer__link ml-drawer__sublink",
-                            isNavItemActive(pathname, child.href) && "ml-drawer__link--active",
-                          ]
-                            .filter(Boolean)
-                            .join(" ")}
-                          onClick={() => setOpen(false)}
-                        />
-                      ) : null,
-                    )}
-                  </div>
-                ))}
-                <div className="ml-drawer__locale">
-                  <HeaderLocaleSwitch slot="drawer" />
+                    ) : null,
+                  )}
                 </div>
-              </nav>
+              ))}
+              <div className="ml-drawer__locale">
+                <HeaderLocaleSwitch slot="drawer" />
+              </div>
+            </nav>
           </div>
         </div>
       </MobileDrawerPortal>

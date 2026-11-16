@@ -1,8 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import {
-  PricingComparisonTable,
-  PricingGrid,
-} from "@/features/signup/ui/PricingGrid";
+import { PricingComparisonTable, PricingGrid } from "@/features/signup/ui/PricingGrid";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import { publicPageAlternates } from "@/features/public-site/domain/seo";
@@ -23,11 +20,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function PricingPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+export default async function PricingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("pricing");

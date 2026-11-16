@@ -4,10 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminSelect } from "@/components/admin/ui/AdminInput";
-import {
-  BookingIdentityPanel,
-  useBookingIdentity,
-} from "@/features/bookings/ui/identity";
+import { BookingIdentityPanel, useBookingIdentity } from "@/features/bookings/ui/identity";
 import { occupantRoomOptionLabel } from "@/features/calendar/ui/gantt-quick-panel/occupant-room-option";
 
 export type OccupantIdentityValue = {
@@ -77,9 +74,7 @@ export function GanttRoomOccupantIdentities({
 }) {
   const t = useTranslations("admin.gantt.quick");
   const [activeRoomId, setActiveRoomId] = useState(rooms[0]?.id ?? "");
-  const [byRoom, setByRoom] = useState<Record<string, OccupantIdentityValue>>(
-    {},
-  );
+  const [byRoom, setByRoom] = useState<Record<string, OccupantIdentityValue>>({});
 
   const handleChange = useCallback((value: OccupantIdentityValue) => {
     setByRoom((prev) => ({ ...prev, [value.roomId]: value }));
@@ -96,8 +91,7 @@ export function GanttRoomOccupantIdentities({
     const values = rooms
       .map((room) => byRoom[room.id])
       .filter((value): value is OccupantIdentityValue => Boolean(value));
-    const allReady =
-      rooms.length > 0 && rooms.every((room) => byRoom[room.id]?.canSubmit);
+    const allReady = rooms.length > 0 && rooms.every((room) => byRoom[room.id]?.canSubmit);
     onValuesChange(values, allReady);
   }, [byRoom, rooms, onValuesChange]);
 
@@ -112,9 +106,7 @@ export function GanttRoomOccupantIdentities({
   return (
     <div className="gantt-quick-panel__occupants">
       <div className="gantt-quick-panel__occupant-picker-head">
-        <p className="gantt-quick-panel__occupant-picker-label">
-          {t("occupantRoom")}
-        </p>
+        <p className="gantt-quick-panel__occupant-picker-label">{t("occupantRoom")}</p>
         <p className="gantt-quick-panel__occupant-progress">
           {t("occupantProgress", { ready: readyCount, total: rooms.length })}
         </p>

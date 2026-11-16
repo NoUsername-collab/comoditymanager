@@ -43,16 +43,12 @@ describe("requireBuildingInTenant", () => {
 
   it("throws 'building.not_found' when data is null", async () => {
     const sb = mockSupabase({ data: null, error: null });
-    await expect(requireBuildingInTenant(sb, TENANT, "b1")).rejects.toThrow(
-      "building.not_found"
-    );
+    await expect(requireBuildingInTenant(sb, TENANT, "b1")).rejects.toThrow("building.not_found");
   });
 
   it("throws the error message when the DB query errors", async () => {
     const sb = mockSupabase({ data: null, error: { message: "connection lost" } });
-    await expect(requireBuildingInTenant(sb, TENANT, "b1")).rejects.toThrow(
-      "connection lost"
-    );
+    await expect(requireBuildingInTenant(sb, TENANT, "b1")).rejects.toThrow("connection lost");
   });
 
   it("queries the correct table with correct filters", async () => {
@@ -79,9 +75,7 @@ describe("requireRoomInTenant", () => {
 
   it("throws 'rooms.not_found' when data is null", async () => {
     const sb = mockSupabase({ data: null, error: null });
-    await expect(requireRoomInTenant(sb, TENANT, "r1")).rejects.toThrow(
-      "rooms.not_found"
-    );
+    await expect(requireRoomInTenant(sb, TENANT, "r1")).rejects.toThrow("rooms.not_found");
   });
 
   it("throws the error message on DB error", async () => {
@@ -100,9 +94,7 @@ describe("requireRoomsInTenant", () => {
       data: [{ id: "r1" }, { id: "r2" }],
       error: null,
     });
-    await expect(
-      requireRoomsInTenant(sb, TENANT, ["r1", "r2"])
-    ).resolves.toBeUndefined();
+    await expect(requireRoomsInTenant(sb, TENANT, ["r1", "r2"])).resolves.toBeUndefined();
   });
 
   it("throws 'rooms.not_found' when some rooms are missing", async () => {
@@ -110,9 +102,7 @@ describe("requireRoomsInTenant", () => {
       data: [{ id: "r1" }],
       error: null,
     });
-    await expect(
-      requireRoomsInTenant(sb, TENANT, ["r1", "r2"])
-    ).rejects.toThrow("rooms.not_found");
+    await expect(requireRoomsInTenant(sb, TENANT, ["r1", "r2"])).rejects.toThrow("rooms.not_found");
   });
 
   it("resolves immediately for an empty array without querying", async () => {
@@ -137,9 +127,7 @@ describe("requireRoomsInTenant", () => {
       data: null,
       error: { message: "permission denied" },
     });
-    await expect(
-      requireRoomsInTenant(sb, TENANT, ["r1"])
-    ).rejects.toThrow("permission denied");
+    await expect(requireRoomsInTenant(sb, TENANT, ["r1"])).rejects.toThrow("permission denied");
   });
 });
 
@@ -150,16 +138,14 @@ describe("requireRoomsInTenant", () => {
 describe("requireRoomTypeInTenant", () => {
   it("resolves when the room type exists", async () => {
     const sb = mockSupabase({ data: { id: "t1" }, error: null });
-    await expect(
-      requireRoomTypeInTenant(sb, TENANT, "t1")
-    ).resolves.toBeUndefined();
+    await expect(requireRoomTypeInTenant(sb, TENANT, "t1")).resolves.toBeUndefined();
   });
 
   it("throws 'room_catalog.type_not_found' when data is null", async () => {
     const sb = mockSupabase({ data: null, error: null });
-    await expect(
-      requireRoomTypeInTenant(sb, TENANT, "t1")
-    ).rejects.toThrow("room_catalog.type_not_found");
+    await expect(requireRoomTypeInTenant(sb, TENANT, "t1")).rejects.toThrow(
+      "room_catalog.type_not_found",
+    );
   });
 
   it("queries the correct table", async () => {

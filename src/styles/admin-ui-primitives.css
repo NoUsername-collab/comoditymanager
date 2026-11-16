@@ -112,12 +112,20 @@
 }
 
 .admin-btn--danger:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--cancelled-bg, #fef2f2) 70%, var(--cancelled-border, #ef4444));
+  background: color-mix(
+    in srgb,
+    var(--cancelled-bg, #fef2f2) 70%,
+    var(--cancelled-border, #ef4444)
+  );
   border-color: color-mix(in srgb, var(--cancelled-border, #ef4444) 80%, black);
 }
 
 .admin-btn--danger:active:not(:disabled) {
-  background: color-mix(in srgb, var(--cancelled-bg, #fef2f2) 55%, var(--cancelled-border, #ef4444));
+  background: color-mix(
+    in srgb,
+    var(--cancelled-bg, #fef2f2) 55%,
+    var(--cancelled-border, #ef4444)
+  );
   transform: translateY(1px);
 }
 

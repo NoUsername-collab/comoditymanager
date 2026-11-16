@@ -1,9 +1,6 @@
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope } from "@/lib/tenant/scope";
-import {
-  GUEST_RETENTION_DEFAULT_MONTHS,
-  isGuestRetentionMonths,
-} from "@/domain/guest/privacy";
+import { GUEST_RETENTION_DEFAULT_MONTHS, isGuestRetentionMonths } from "@/domain/guest/privacy";
 
 /*
  * A guest's personal data under GDPR: what the property holds about one guest
@@ -23,13 +20,16 @@ export async function eraseGuestPersonalData(
     p_guest_id: guestId,
   });
   if (!error) return { ok: true };
-  if (error.message.includes("guest.has_open_stay")) return { ok: false, error: "guest.has_open_stay" };
+  if (error.message.includes("guest.has_open_stay"))
+    return { ok: false, error: "guest.has_open_stay" };
   if (error.message.includes("guest.not_found")) return { ok: false, error: "guest.not_found" };
   throw new Error(error.message);
 }
 
 /** Everything the property holds about one guest, as one JSON document. */
-export async function exportGuestPersonalData(guestId: string): Promise<Record<string, unknown> | null> {
+export async function exportGuestPersonalData(
+  guestId: string,
+): Promise<Record<string, unknown> | null> {
   const { tenantId, supabase } = await getTenantScope();
   const { data: guest, error } = await supabase
     .from("guests")
@@ -50,7 +50,7 @@ export async function exportGuestPersonalData(guestId: string): Promise<Record<s
     .order("check_in", { ascending: true });
   if (bookingsError) throw new Error(bookingsError.message);
   const bookingIds = (bookings ?? []).map((b) => b.id as string);
-  const byBookings = <T,>(rows: T[] | null) => rows ?? [];
+  const byBookings = <T>(rows: T[] | null) => rows ?? [];
   const none = Promise.resolve({ data: [] as Record<string, unknown>[], error: null });
 
   const [
@@ -67,7 +67,9 @@ export async function exportGuestPersonalData(guestId: string): Promise<Record<s
   ] = await Promise.all([
     supabase
       .from("guest_profiles")
-      .select("flag_level, blacklist_reason, manual_note, completed_stays, total_nights, last_stay_check_out, created_at")
+      .select(
+        "flag_level, blacklist_reason, manual_note, completed_stays, total_nights, last_stay_check_out, created_at",
+      )
       .eq("tenant_id", tenantId)
       .eq("guest_id", guestId)
       .maybeSingle(),
@@ -78,38 +80,75 @@ export async function exportGuestPersonalData(guestId: string): Promise<Record<s
       .eq("guest_id", guestId),
     supabase
       .from("checkin_guests")
-      .select("full_name, last_name, first_name, phone, document_type, document_series, document_number, national_id, nationality, birth_date, room_label, checked_in_at")
+      .select(
+        "full_name, last_name, first_name, phone, document_type, document_series, document_number, national_id, nationality, birth_date, room_label, checked_in_at",
+      )
       .eq("tenant_id", tenantId)
       .eq("guest_id", guestId),
     bookingIds.length
       ? supabase
           .from("guest_precheckin_submissions")
-          .select("booking_id, guest_last_name, guest_first_name, guest_phone, guest_email, document_type, document_number, national_id, birth_date, nationality, notes, submitted_at")
+          .select(
+            "booking_id, guest_last_name, guest_first_name, guest_phone, guest_email, document_type, document_number, national_id, birth_date, nationality, notes, submitted_at",
+          )
           .eq("tenant_id", tenantId)
           .in("booking_id", bookingIds)
       : none,
     bookingIds.length
-      ? supabase.from("guest_feedback").select("booking_id, stars, comment, submitted_at").eq("tenant_id", tenantId).in("booking_id", bookingIds)
+      ? supabase
+          .from("guest_feedback")
+          .select("booking_id, stars, comment, submitted_at")
+          .eq("tenant_id", tenantId)
+          .in("booking_id", bookingIds)
       : none,
     bookingIds.length
-      ? supabase.from("guest_reception_requests").select("booking_id, message, status, created_at").eq("tenant_id", tenantId).in("booking_id", bookingIds)
+      ? supabase
+          .from("guest_reception_requests")
+          .select("booking_id, message, status, created_at")
+          .eq("tenant_id", tenantId)
+          .in("booking_id", bookingIds)
       : none,
     bookingIds.length
-      ? supabase.from("guest_green_stay_requests").select("booking_id, skip_date, note, status, created_at").eq("tenant_id", tenantId).in("booking_id", bookingIds)
+      ? supabase
+          .from("guest_green_stay_requests")
+          .select("booking_id, skip_date, note, status, created_at")
+          .eq("tenant_id", tenantId)
+          .in("booking_id", bookingIds)
       : none,
-    supabase.from("guest_loyalty_refs").select("reference_code, issued_at, revoked_at").eq("tenant_id", tenantId).eq("guest_id", guestId),
+    supabase
+      .from("guest_loyalty_refs")
+      .select("reference_code, issued_at, revoked_at")
+      .eq("tenant_id", tenantId)
+      .eq("guest_id", guestId),
     bookingIds.length
       ? supabase
           .from("booking_invoices")
-          .select("booking_id, display_number, invoice_kind, issued_at, buyer_name, buyer_email, buyer_phone, check_in, check_out, total, currency, status")
+          .select(
+            "booking_id, display_number, invoice_kind, issued_at, buyer_name, buyer_email, buyer_phone, check_in, check_out, total, currency, status",
+          )
           .eq("tenant_id", tenantId)
           .in("booking_id", bookingIds)
       : none,
     bookingIds.length
-      ? supabase.from("booking_payments").select("booking_id, amount, kind, method, payer_name, payer_tax_id, paid_at").eq("tenant_id", tenantId).in("booking_id", bookingIds)
+      ? supabase
+          .from("booking_payments")
+          .select("booking_id, amount, kind, method, payer_name, payer_tax_id, paid_at")
+          .eq("tenant_id", tenantId)
+          .in("booking_id", bookingIds)
       : none,
   ]);
-  for (const result of [profile, reviews, checkinGuests, precheckins, feedback, requests, greenStay, loyalty, invoices, payments]) {
+  for (const result of [
+    profile,
+    reviews,
+    checkinGuests,
+    precheckins,
+    feedback,
+    requests,
+    greenStay,
+    loyalty,
+    invoices,
+    payments,
+  ]) {
     if (result.error) throw new Error(result.error.message);
   }
 

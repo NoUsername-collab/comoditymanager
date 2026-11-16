@@ -33,7 +33,7 @@ export async function confirmBookingAction(formData: FormData) {
   const roomIds = formData.getAll("room_ids").map(String).filter(Boolean);
   const returnTo = safeAdminReturnPath(
     String(formData.get("return_to") ?? ""),
-    "/admin/calendar?confirmed=1"
+    "/admin/calendar?confirmed=1",
   );
 
   const [, total_price, before] = await Promise.all([
@@ -90,9 +90,7 @@ async function notifyGuestConfirmedForBooking(
     if (!booking || !booking.guest_email) return;
 
     const baseUrl = await resolveTenantPublicSiteUrl(host);
-    const { resolveGuestAccessLinkForBooking } = await import(
-      "@/services/guest-app/access"
-    );
+    const { resolveGuestAccessLinkForBooking } = await import("@/services/guest-app/access");
     const link = await resolveGuestAccessLinkForBooking(id, baseUrl);
 
     const { notifyGuestConfirmed } = await import("@/lib/email/notify");
@@ -109,7 +107,9 @@ async function notifyGuestConfirmedForBooking(
       guestAppUrl: link?.url,
       emailSettings: emailSettings ?? undefined,
     });
-  } catch { /* email failure must never crash */ }
+  } catch {
+    /* email failure must never crash */
+  }
 }
 
 function appendQueryParam(path: string, key: string, value: string): string {
@@ -154,7 +154,9 @@ export async function cancelBookingAction(formData: FormData) {
         checkOut: bookingBefore.check_out,
         emailSettings: emailSettings ?? undefined,
       });
-    } catch { /* email failure must never crash */ }
+    } catch {
+      /* email failure must never crash */
+    }
   });
   const base = safeAdminReturnPath(returnTo, "/admin/bookings");
   await redirect(appendQueryParam(base, "toast", "cancelled"));
@@ -199,7 +201,9 @@ export async function cancelBookingOperativeAction(
           checkOut: bookingBefore.check_out,
           emailSettings: emailSettings ?? undefined,
         });
-      } catch { /* email failure must never crash */ }
+      } catch {
+        /* email failure must never crash */
+      }
     });
 
     timer.finish({ bookingId: id });
@@ -226,7 +230,7 @@ function readAt(formData: FormData): string | undefined {
 
 function mapBookingOpsError(
   e: unknown,
-  t: Awaited<ReturnType<typeof getTranslations<"admin.serverActions">>>
+  t: Awaited<ReturnType<typeof getTranslations<"admin.serverActions">>>,
 ): string {
   if (e instanceof Error) {
     if (e.message === "booking.phone_required_for_checkin") {
@@ -254,9 +258,7 @@ function mapBookingOpsError(
   return e instanceof Error ? e.message : t("checkInError");
 }
 
-export async function updateBookingGuestPhoneAction(
-  formData: FormData
-): Promise<OpsActionResult> {
+export async function updateBookingGuestPhoneAction(formData: FormData): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
   await requireAnyStaff();
   const id = readBookingId(formData);
@@ -274,9 +276,7 @@ export async function updateBookingGuestPhoneAction(
   }
 }
 
-export async function setBookingCheckInAction(
-  formData: FormData
-): Promise<OpsActionResult> {
+export async function setBookingCheckInAction(formData: FormData): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
   await requireAnyStaff();
   const id = readBookingId(formData);
@@ -293,9 +293,7 @@ export async function setBookingCheckInAction(
   }
 }
 
-export async function setBookingCheckOutAction(
-  formData: FormData
-): Promise<OpsActionResult> {
+export async function setBookingCheckOutAction(formData: FormData): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
   await requireAnyStaff();
   const id = readBookingId(formData);
@@ -313,7 +311,7 @@ export async function setBookingCheckOutAction(
 }
 
 export async function loadBookingCheckoutPanelAction(
-  bookingId: string
+  bookingId: string,
 ): Promise<
   | { ok: true; data: import("@/domain/booking/checkout-panel").BookingCheckoutPanelData }
   | { ok: false; error: string }
@@ -327,9 +325,7 @@ export async function loadBookingCheckoutPanelAction(
     const { getBookingById } = await import("@/services/bookings");
     const { getCheckinByBookingId } = await import("@/services/checkin/queries");
     const { getCheckinSettings } = await import("@/services/checkin/settings");
-    const { listGuestStayReviewsByBookingIds } = await import(
-      "@/services/guest-profiles"
-    );
+    const { listGuestStayReviewsByBookingIds } = await import("@/services/guest-profiles");
 
     const [booking, checkin, settings, reviews] = await Promise.all([
       getBookingById(id),
@@ -378,9 +374,7 @@ export async function loadBookingCheckoutPanelAction(
   }
 }
 
-export async function completeBookingCheckoutAction(
-  formData: FormData
-): Promise<OpsActionResult> {
+export async function completeBookingCheckoutAction(formData: FormData): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
   await requireAnyStaff();
   const id = readBookingId(formData);
@@ -395,10 +389,7 @@ export async function completeBookingCheckoutAction(
       const polarityRaw = String(formData.get("review_polarity") ?? "").trim();
       const note = String(formData.get("review_note") ?? "").trim();
       const intensityRaw = String(formData.get("review_intensity") ?? "").trim();
-      if (
-        note &&
-        (polarityRaw === "positive" || polarityRaw === "negative")
-      ) {
+      if (note && (polarityRaw === "positive" || polarityRaw === "negative")) {
         await saveGuestStayReview({
           guestId,
           bookingId: id,
@@ -419,9 +410,7 @@ export async function completeBookingCheckoutAction(
   }
 }
 
-export async function undoBookingCheckInAction(
-  formData: FormData
-): Promise<OpsActionResult> {
+export async function undoBookingCheckInAction(formData: FormData): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
   await requireAnyStaff();
   const id = readBookingId(formData);
@@ -444,9 +433,7 @@ export async function undoBookingCheckInAction(
   }
 }
 
-export async function undoBookingCheckOutAction(
-  formData: FormData
-): Promise<OpsActionResult> {
+export async function undoBookingCheckOutAction(formData: FormData): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
   await requireAnyStaff();
   const id = readBookingId(formData);
@@ -463,9 +450,7 @@ export async function undoBookingCheckOutAction(
   }
 }
 
-export async function editBookingCheckInAction(
-  formData: FormData
-): Promise<OpsActionResult> {
+export async function editBookingCheckInAction(formData: FormData): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
   await requireAnyStaff();
   const id = readBookingId(formData);
@@ -482,9 +467,7 @@ export async function editBookingCheckInAction(
   }
 }
 
-export async function editBookingCheckOutAction(
-  formData: FormData
-): Promise<OpsActionResult> {
+export async function editBookingCheckOutAction(formData: FormData): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
   await requireAnyStaff();
   const id = readBookingId(formData);
@@ -501,17 +484,13 @@ export async function editBookingCheckOutAction(
   }
 }
 
-export async function editBookingDatesAction(
-  formData: FormData
-): Promise<OpsActionResult> {
+export async function editBookingDatesAction(formData: FormData): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
   await requireStaffPermission("booking_management");
   const id = readBookingId(formData);
   const check_in = String(formData.get("check_in") ?? "").trim();
   const check_out = String(formData.get("check_out") ?? "").trim();
-  const { partyFromFormData, storableChildAges } = await import(
-    "@/domain/availability/party"
-  );
+  const { partyFromFormData, storableChildAges } = await import("@/domain/availability/party");
   const party = partyFromFormData(formData);
 
   if (!id) return { ok: false, error: t("bookingIdMissing") };

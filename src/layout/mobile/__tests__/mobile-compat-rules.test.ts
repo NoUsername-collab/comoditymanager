@@ -6,6 +6,15 @@ const LAYOUT_ROOT = join(process.cwd(), "src/styles/features/layout");
 const ADMIN_FEATURES_ROOT = join(process.cwd(), "src/styles/features/admin");
 const PROJECT_ROOT = process.cwd();
 
+/**
+ * Reads a source file for text assertions. Stylesheets come back with every run of
+ * whitespace collapsed to one space, so a rule matches however Prettier wraps a long selector.
+ */
+function readSource(path: string, encoding: "utf8"): string {
+  const text = readFileSync(path, encoding);
+  return path.endsWith(".css") ? text.replace(/\s+/g, " ") : text;
+}
+
 const MOBILE_ADMIN_ROUTE_BUNDLES = [
   "mobile-admin.css",
   "mobile-admin-hud.css",
@@ -38,9 +47,9 @@ function readCss(name: string): string {
   return files
     .map((file) => {
       if (file.startsWith("admin/")) {
-        return readFileSync(join(ADMIN_FEATURES_ROOT, file.slice("admin/".length)), "utf8");
+        return readSource(join(ADMIN_FEATURES_ROOT, file.slice("admin/".length)), "utf8");
       }
-      return readFileSync(join(LAYOUT_ROOT, file), "utf8");
+      return readSource(join(LAYOUT_ROOT, file), "utf8");
     })
     .join("\n");
 }
@@ -61,7 +70,7 @@ describe("mobile compatibility CSS rules", () => {
   it("guards compact chrome overflow and safe-area scroll padding", () => {
     const compactFixes = readCss("mobile-layout-compact-fixes.css");
     const mobileAdmin = MOBILE_ADMIN_ROUTE_BUNDLES.map((file) =>
-      readFileSync(join(LAYOUT_ROOT, file), "utf8"),
+      readSource(join(LAYOUT_ROOT, file), "utf8"),
     ).join("\n");
     expect(guards).toContain('html[data-layout-chrome="compact"] .ml-content');
     expect(mobileAdmin).toContain("scroll-padding-top");
@@ -69,19 +78,19 @@ describe("mobile compatibility CSS rules", () => {
     expect(mobileAdmin).toContain("var(--ml-page-scroll-bottom");
     expect(compactFixes).toContain("--ml-content-pad-bottom");
     expect(compactFixes).not.toContain(
-      "calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom) + 0.5rem)"
+      "calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom) + 0.5rem)",
     );
     expect(compactFixes).toMatch(
-      /html\[data-layout-chrome="compact"\] \.ml-content[\s\S]*overflow-x:\s*clip/
+      /html\[data-layout-chrome="compact"\] \.ml-content[\s\S]*overflow-x:\s*clip/,
     );
     expect(compactFixes).toMatch(
-      /html\[data-layout-chrome="compact"\] \.admin-shell \.admin-page-main[\s\S]*padding-bottom:\s*var\(--ml-content-pad-bottom\)/
+      /html\[data-layout-chrome="compact"\] \.admin-shell \.admin-page-main[\s\S]*padding-bottom:\s*var\(--ml-content-pad-bottom\)/,
     );
     expect(compactFixes).toContain(
-      '[data-layout-orientation="portrait"] .gantt-calendar-page .gantt-scroll'
+      '[data-layout-orientation="portrait"] .gantt-calendar-page .gantt-scroll',
     );
     expect(compactFixes).toMatch(
-      /\[data-layout-orientation="portrait"\] \.gantt-calendar-page \.gantt-scroll[\s\S]*max-height:\s*calc/
+      /\[data-layout-orientation="portrait"\] \.gantt-calendar-page \.gantt-scroll[\s\S]*max-height:\s*calc/,
     );
     // compact-fixes live in mobile-core; route bundles load mobile-admin / mobile-public.
     expect(shell).toContain('@import "./mobile-core.css"');
@@ -98,26 +107,21 @@ describe("mobile compatibility CSS rules", () => {
   });
 
   it("gear portal stacks above page chrome", () => {
-    const adminShell = readFileSync(
-      join(process.cwd(), "src/styles/admin/shell.css"),
-      "utf8"
-    );
+    const adminShell = readSource(join(process.cwd(), "src/styles/admin/shell.css"), "utf8");
     expect(adminShell).toContain(".admin-gear__dropdown--portal");
-    expect(adminShell).toMatch(
-      /\.admin-gear__dropdown--portal[\s\S]*z-index:\s*var\(--z-overlay/
-    );
+    expect(adminShell).toMatch(/\.admin-gear__dropdown--portal[\s\S]*z-index:\s*var\(--z-overlay/);
     expect(flawless).toMatch(
-      /html\[data-layout-chrome="compact"\] \.admin-gear__dropdown--portal[\s\S]*z-index:\s*var\(--z-overlay/
+      /html\[data-layout-chrome="compact"\] \.admin-gear__dropdown--portal[\s\S]*z-index:\s*var\(--z-overlay/,
     );
   });
 
   it("Gantt check-time dialog clears bottom nav on compact", () => {
     expect(flawless).toContain(".gantt-check-time-dialog");
     expect(flawless).toMatch(
-      /html\[data-layout-chrome="compact"\] \.gantt-check-time-dialog[\s\S]*z-index:\s*calc\(var\(--z-overlay/
+      /html\[data-layout-chrome="compact"\] \.gantt-check-time-dialog[\s\S]*z-index:\s*calc\(var\(--z-overlay/,
     );
     expect(flawless).toMatch(
-      /html\[data-layout-chrome="compact"\] \.gantt-check-time-dialog__backdrop[\s\S]*z-index:\s*var\(--z-overlay/
+      /html\[data-layout-chrome="compact"\] \.gantt-check-time-dialog__backdrop[\s\S]*z-index:\s*var\(--z-overlay/,
     );
     expect(flawless).toContain(".gantt-check-time-dialog--sheet");
     expect(flawless).toContain(".gantt-ctx-menu--sheet");
@@ -157,13 +161,11 @@ describe("mobile compatibility CSS rules", () => {
   it("gantt portrait has bounded scroll viewport on compact", () => {
     const ganttMobile = readCss("admin/gantt-mobile.css");
     const compactFixes = readCss("mobile-layout-compact-fixes.css");
-    expect(ganttMobile).toContain("[data-layout-orientation=\"portrait\"] .gantt-scroll");
+    expect(ganttMobile).toContain('[data-layout-orientation="portrait"] .gantt-scroll');
     expect(compactFixes).toContain(
-      '[data-layout-orientation="portrait"] .gantt-calendar-page .gantt-scroll'
+      '[data-layout-orientation="portrait"] .gantt-calendar-page .gantt-scroll',
     );
-    expect(flawless).toContain(
-      '[data-layout-orientation="portrait"] .gantt-compact-toolbar'
-    );
+    expect(flawless).toContain('[data-layout-orientation="portrait"] .gantt-compact-toolbar');
   });
 
   it("pass 12 drawer safe-area, reception padding, public touch targets", () => {
@@ -181,7 +183,6 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".statistics-page .statistics-year-nav");
   });
 
-
   it("pass 16 pricing comparison cards and tenant detail compact", () => {
     expect(flawless).toContain(".pricing-comparison-cards");
     expect(flawless).toContain(".pricing-table-desktop");
@@ -197,12 +198,12 @@ describe("mobile compatibility CSS rules", () => {
 
   it("PWA manifest and viewport theme for mobile app install", () => {
     expect(existsSync(join(PROJECT_ROOT, "src/app/manifest.ts"))).toBe(true);
-    const manifest = readFileSync(join(PROJECT_ROOT, "src/app/manifest.ts"), "utf8");
+    const manifest = readSource(join(PROJECT_ROOT, "src/app/manifest.ts"), "utf8");
     expect(manifest).toContain('display: "standalone"');
     expect(manifest).toContain("display_override");
     expect(manifest).toContain("prefer_related_applications");
-    const layout = readFileSync(join(PROJECT_ROOT, "src/app/_document/root-document.tsx"), "utf8");
-    expect(layout).toContain("viewportFit: \"cover\"");
+    const layout = readSource(join(PROJECT_ROOT, "src/app/_document/root-document.tsx"), "utf8");
+    expect(layout).toContain('viewportFit: "cover"');
     expect(layout).toContain("appleWebApp");
     expect(layout).toContain("themeColor");
     expect(layout).toContain("/brand/logo.svg");
@@ -225,18 +226,16 @@ describe("mobile compatibility CSS rules", () => {
   });
 
   it("pass 17 drawer scroll, popover bounds, filters dock, XP body, health rows", () => {
-    expect(flawless).toContain("html[data-layout-chrome=\"compact\"] .ml-drawer");
+    expect(flawless).toContain('html[data-layout-chrome="compact"] .ml-drawer');
     expect(flawless).toContain("overflow-y: auto");
     expect(flawless).toContain("contain: layout style paint");
-    expect(flawless).toContain(
-      ".admin-floating-panel:not(.admin-floating-panel--modal)"
-    );
+    expect(flawless).toContain(".admin-floating-panel:not(.admin-floating-panel--modal)");
     expect(flawless).toContain(".gantt-filters-panel.admin-floating-panel");
     expect(flawless).toContain(".platform-health-row");
 
-    const checkTime = readFileSync(
+    const checkTime = readSource(
       join(process.cwd(), "src/features/calendar/ui/GanttCheckTimeDialog.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(checkTime).toContain("admin-modal-open");
   });
@@ -304,9 +303,9 @@ describe("mobile compatibility CSS rules", () => {
   });
 
   it("gantt context menu uses viewport-safe pointer positioning", () => {
-    const ctxMenu = readFileSync(
+    const ctxMenu = readSource(
       join(process.cwd(), "src/features/calendar/ui/GanttContextMenuPanel.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(ctxMenu).toContain("computeFixedPointerMenuPosition");
   });
@@ -342,15 +341,15 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".public-confirm-page__admin-link");
     expect(flawless).toContain("@media (prefers-reduced-motion: reduce)");
 
-    const publicMenu = readFileSync(
+    const publicMenu = readSource(
       join(process.cwd(), "src/layout/components/PublicMobileMenu.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(publicMenu).toContain("ml-drawer__close");
 
-    const confirmPage = readFileSync(
+    const confirmPage = readSource(
       join(process.cwd(), "src/app/[locale]/(public)/calendar/confirm/[id]/page.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(confirmPage).toContain("public-confirm-page__admin-link");
   });
@@ -364,22 +363,22 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".admin-quick-panel__row");
     expect(flawless).toContain(".language-switcher__trigger");
 
-    const ganttQuick = readFileSync(
+    const ganttQuick = readSource(
       join(process.cwd(), "src/features/calendar/ui/gantt-quick-panel/GanttQuickActionPanel.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(ganttQuick).toContain("gantt-quick-panel__actions");
     expect(ganttQuick).toContain("aria-busy={pending}");
 
-    const stayReview = readFileSync(
+    const stayReview = readSource(
       join(process.cwd(), "src/features/guests/ui/GuestStayReviewForm.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(stayReview).toContain("guest-stay-review-form__summary");
 
-    const heatCells = readFileSync(
+    const heatCells = readSource(
       join(process.cwd(), "src/features/availability/ui/AvailabilityHeatCells.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(heatCells).toContain("onPointerDown");
   });
@@ -389,9 +388,9 @@ describe("mobile compatibility CSS rules", () => {
     expect(adminPages).toContain(".ml-drawer__backdrop--admin");
     expect(adminPages).toMatch(/\.ml-drawer--admin[\s\S]*z-index:\s*90/);
 
-    const moreDrawer = readFileSync(
+    const moreDrawer = readSource(
       join(process.cwd(), "src/layout/components/AdminMobileMoreDrawer.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(moreDrawer).toContain("ml-drawer__backdrop--admin");
     expect(moreDrawer).toContain("MobileDrawerPortal");
@@ -416,17 +415,17 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain("content-visibility: auto");
     expect(flawless).toContain(".ml-drawer--admin .ml-drawer__nav");
 
-    const availDashboard = readFileSync(
+    const availDashboard = readSource(
       join(process.cwd(), "src/features/availability/ui/AvailabilityDashboard.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(availDashboard).toContain("avail-dashboard-toolbar");
     expect(availDashboard).toContain("availability-week-nav__prev");
     expect(availDashboard).toContain("avail-interval-bar__copy");
 
-    const moreDrawer = readFileSync(
+    const moreDrawer = readSource(
       join(process.cwd(), "src/layout/components/AdminMobileMoreDrawer.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(moreDrawer).toContain("ml-drawer__close");
     expect(moreDrawer).toContain("onPointerDown");
@@ -435,7 +434,7 @@ describe("mobile compatibility CSS rules", () => {
   it("pass 31 bottom nav portrait touch, gutter zero, MRZ, list perf", () => {
     expect(shell).toContain("--ml-bottom-nav-height: 3.25rem");
     expect(shell).toMatch(
-      /html\[data-layout-chrome="compact"\] \.ml-bottom-nav__link[\s\S]*min-height:\s*var\(--ml-touch-min/
+      /html\[data-layout-chrome="compact"\] \.ml-bottom-nav__link[\s\S]*min-height:\s*var\(--ml-touch-min/,
     );
 
     const alignment = readCss("mobile-layout-alignment.css");
@@ -452,7 +451,7 @@ describe("mobile compatibility CSS rules", () => {
     const ganttMobile = readCss("admin/gantt-mobile.css");
     expect(ganttMobile).not.toContain("--ml-bottom-nav-height: 0.683rem");
     expect(ganttMobile).toMatch(
-      /\.gantt-action-strip__btn[\s\S]*min-height:\s*var\(--ml-touch-min/
+      /\.gantt-action-strip__btn[\s\S]*min-height:\s*var\(--ml-touch-min/,
     );
 
     expect(flawless).toContain(".mrz-scan-modal");
@@ -463,40 +462,39 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain("display-mode: standalone");
     expect(flawless).toContain(".gantt-stay__cap-strip");
 
-    const mrzDialog = readFileSync(
+    const mrzDialog = readSource(
       join(process.cwd(), "src/features/checkin/ui/MrzScanDialog.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(mrzDialog).toContain("mrz-scan-modal");
 
-    const stayList = readFileSync(
-      join(process.cwd(), "src/features/stays/ui/StayList.tsx"),
-      "utf8"
-    );
+    const stayList = readSource(join(process.cwd(), "src/features/stays/ui/StayList.tsx"), "utf8");
     expect(stayList).toContain("stay-list");
   });
 
   it("pass 32 mobile nav, media migration, gantt scroll sync", () => {
-    const staysToolbar = readFileSync(
+    const staysToolbar = readSource(
       join(process.cwd(), "src/styles/features/admin/admin-stays-toolbar.css"),
-      "utf8"
+      "utf8",
     );
     expect(staysToolbar).not.toMatch(/@media\s*\(\s*max-width:\s*520px\s*\)/);
     expect(staysToolbar).toContain('html[data-layout-chrome="compact"] .stays-view-filters');
 
-    const settingsCss = readFileSync(
+    const settingsCss = readSource(
       join(process.cwd(), "src/styles/features/admin/admin-settings.css"),
-      "utf8"
+      "utf8",
     );
     expect(settingsCss).not.toMatch(/@media\s*\(\s*max-width:\s*899px\s*\)/);
     expect(settingsCss).toContain('html[data-layout-chrome="compact"] .settings-shell__nav-groups');
 
-    const checkinCss = readFileSync(
+    const checkinCss = readSource(
       join(process.cwd(), "src/styles/features/admin/admin-checkin.css"),
-      "utf8"
+      "utf8",
     );
     expect(checkinCss).not.toMatch(/@media\s*\(\s*max-width:\s*640px\s*\)/);
-    expect(checkinCss).toContain('html[data-layout-chrome="compact"] .checkin-identity-scope__options');
+    expect(checkinCss).toContain(
+      'html[data-layout-chrome="compact"] .checkin-identity-scope__options',
+    );
 
     const ganttMobile = readCss("admin/gantt-mobile.css");
     expect(ganttMobile).toContain("position: sticky");
@@ -509,9 +507,9 @@ describe("mobile compatibility CSS rules", () => {
     expect(alignment).toContain(".platform-tenant-toolbar");
     expect(alignment).toContain("overflow-x: clip");
 
-    const bottomNav = readFileSync(
+    const bottomNav = readSource(
       join(process.cwd(), "src/layout/components/AdminMobileBottomNav.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(bottomNav).toContain("ml-bottom-nav__link--alert");
     expect(bottomNav).not.toContain("setupIssuesCount");
@@ -529,19 +527,19 @@ describe("mobile compatibility CSS rules", () => {
     expect(alignment).toContain(".mrz-scan-modal .mrz-scan__camera-wrap");
     expect(alignment).toContain(".stay-quick-ops__btn");
     expect(adminPages).toMatch(
-      /html\[data-layout-chrome="compact"\] \.admin-settings-page[\s\S]*padding:\s*0\s*!important/
+      /html\[data-layout-chrome="compact"\] \.admin-settings-page[\s\S]*padding:\s*0\s*!important/,
     );
 
-    const stayQuickOps = readFileSync(
+    const stayQuickOps = readSource(
       join(process.cwd(), "src/features/stays/ui/StayQuickOps.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(stayQuickOps).toContain("stay-quick-ops__btn");
     expect(stayQuickOps).not.toContain("!text-[11px]");
 
-    const panelLoading = readFileSync(
+    const panelLoading = readSource(
       join(process.cwd(), "src/app/[locale]/admin/(panel)/loading.tsx"),
-      "utf8"
+      "utf8",
     );
     expect(panelLoading).toContain("admin-route-skeleton--panel-home");
     expect(panelLoading).not.toContain("AdminThemeLoading");
@@ -550,32 +548,25 @@ describe("mobile compatibility CSS rules", () => {
   it("pass 33 scroll pad-bottom, gantt touch, settings save bar, overflow clip", () => {
     const compactFixes = readCss("mobile-layout-compact-fixes.css");
     const shell = readCss("mobile-layout.css");
-    const settingsCss = readFileSync(
+    const settingsCss = readSource(
       join(process.cwd(), "src/styles/features/admin/admin-settings.css"),
-      "utf8"
+      "utf8",
     );
     const ganttMobile = readCss("admin/gantt-mobile.css");
-    const adminTabs = readFileSync(
-      join(process.cwd(), "src/layout/mobile/admin-tabs.ts"),
-      "utf8"
-    );
+    const adminTabs = readSource(join(process.cwd(), "src/layout/mobile/admin-tabs.ts"), "utf8");
 
     expect(shell).toContain("--ml-admin-bottom-clearance");
     expect(shell).toContain("--ml-page-main-pad-bottom");
     expect(shell).toContain("--ml-page-scroll-bottom");
     expect(shell).toContain("--ml-sticky-save-offset");
-    expect(shell).not.toMatch(
-      /--ml-page-main-pad-bottom:\s*calc\(var\(--ml-bottom-nav-height\)/
-    );
-    expect(shell).toMatch(
-      /\.ml-bottom-nav--admin[\s\S]*position:\s*relative/
-    );
+    expect(shell).not.toMatch(/--ml-page-main-pad-bottom:\s*calc\(var\(--ml-bottom-nav-height\)/);
+    expect(shell).toMatch(/\.ml-bottom-nav--admin[\s\S]*position:\s*relative/);
     expect(compactFixes).toMatch(
-      /\[data-layout-orientation="portrait"\] \.gantt-calendar-page \.gantt-scroll[\s\S]*max-height:/
+      /\[data-layout-orientation="portrait"\] \.gantt-calendar-page \.gantt-scroll[\s\S]*max-height:/,
     );
     expect(compactFixes).toContain("scroll-padding-bottom");
     expect(compactFixes).toMatch(
-      /\.admin-shell \.admin-page-main[\s\S]*padding-bottom:\s*var\(--ml-content-pad-bottom\)/
+      /\.admin-shell \.admin-page-main[\s\S]*padding-bottom:\s*var\(--ml-content-pad-bottom\)/,
     );
     expect(compactFixes).toContain(".gantt-stay--chip .gantt-stay__cap-strip");
     expect(compactFixes).toContain("--gantt-touch-min, 2.75rem");
@@ -594,4 +585,3 @@ describe("mobile compatibility CSS rules", () => {
     expect(adminTabs).toContain("path.startsWith(`${href}/`)");
   });
 });
-

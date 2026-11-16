@@ -1,14 +1,7 @@
 import { cache } from "react";
 import { formatGuestFullName } from "@/domain/guest-name";
-import {
-  shiftStayDatesByYears,
-  shiftStayToNextFutureYear,
-} from "@/domain/guest/rebook-dates";
-import {
-  assertValidGuestPhone,
-  normalizeEmail,
-  normalizePhone,
-} from "@/domain/guest/normalize";
+import { shiftStayDatesByYears, shiftStayToNextFutureYear } from "@/domain/guest/rebook-dates";
+import { assertValidGuestPhone, normalizeEmail, normalizePhone } from "@/domain/guest/normalize";
 import { parseGuestTags } from "@/domain/guest/tags";
 import type {
   GuestDocType,
@@ -116,10 +109,7 @@ async function loadGuestAutofillPayload(guestId: string): Promise<{
     email: (guestRes.data.email as string | null) ?? null,
     phone: (guestRes.data.phone as string | null) ?? null,
     displayName: String(guestRes.data.display_name ?? ""),
-    flagLevel:
-      flag === "watchlist" || flag === "blacklist" || flag === "normal"
-        ? flag
-        : null,
+    flagLevel: flag === "watchlist" || flag === "blacklist" || flag === "normal" ? flag : null,
   };
 }
 
@@ -154,14 +144,14 @@ const loadGuestAutofillMatch = cache(
     lastName: string,
     firstName: string,
     email: string,
-    phone: string
+    phone: string,
   ): Promise<GuestAutofillMatch | null> =>
     findGuestAutofillMatchImpl({
       guest_last_name: lastName,
       guest_first_name: firstName,
       guest_email: email,
       guest_phone: phone,
-    })
+    }),
 );
 
 export async function findGuestAutofillMatch(input: {
@@ -174,7 +164,7 @@ export async function findGuestAutofillMatch(input: {
     String(input.guest_last_name ?? "").trim(),
     String(input.guest_first_name ?? "").trim(),
     String(input.guest_email ?? "").trim(),
-    String(input.guest_phone ?? "").trim()
+    String(input.guest_phone ?? "").trim(),
   );
 }
 
@@ -189,7 +179,7 @@ const loadGuestById = cache(async (id: string): Promise<GuestRow | null> => {
 
 export async function getGuestById(
   id: string,
-  options?: { recomputeProfile?: boolean }
+  options?: { recomputeProfile?: boolean },
 ): Promise<GuestRow | null> {
   if (options?.recomputeProfile === true) {
     const guest = await getGuestBaseById(id);
@@ -200,45 +190,43 @@ export async function getGuestById(
   return loadGuestById(id);
 }
 
-const loadGuestByNationalId = cache(async (
-  cleaned: string,
-  excludeGuestId: string | null
-): Promise<GuestRow | null> => {
-  const { tenantId, supabase } = await getTenantScope();
+const loadGuestByNationalId = cache(
+  async (cleaned: string, excludeGuestId: string | null): Promise<GuestRow | null> => {
+    const { tenantId, supabase } = await getTenantScope();
 
-  const sanitized = cleaned.replace(/[^a-zA-Z0-9]/g, "");
-  if (!sanitized) return null;
+    const sanitized = cleaned.replace(/[^a-zA-Z0-9]/g, "");
+    if (!sanitized) return null;
 
-  let query = supabase
-    .from("guests")
-    .select(GUEST_ROW_SELECT)
-    .eq("tenant_id", tenantId)
-    .or(`national_id.eq.${sanitized},cnp.eq.${sanitized}`)
-    .limit(1)
-    .maybeSingle();
-
-  if (excludeGuestId) {
-    query = supabase
+    let query = supabase
       .from("guests")
       .select(GUEST_ROW_SELECT)
       .eq("tenant_id", tenantId)
       .or(`national_id.eq.${sanitized},cnp.eq.${sanitized}`)
-      .neq("id", excludeGuestId)
       .limit(1)
       .maybeSingle();
-  }
 
-  const { data, error } = await query;
-  if (error) throw new Error(error.message);
-  return data ? mapGuestRow(data) : null;
-});
+    if (excludeGuestId) {
+      query = supabase
+        .from("guests")
+        .select(GUEST_ROW_SELECT)
+        .eq("tenant_id", tenantId)
+        .or(`national_id.eq.${sanitized},cnp.eq.${sanitized}`)
+        .neq("id", excludeGuestId)
+        .limit(1)
+        .maybeSingle();
+    }
+
+    const { data, error } = await query;
+    if (error) throw new Error(error.message);
+    return data ? mapGuestRow(data) : null;
+  },
+);
 
 export async function findGuestByNationalId(
   nationalId: string,
-  excludeGuestId?: string
+  excludeGuestId?: string,
 ): Promise<GuestRow | null> {
   const cleaned = nationalId.replace(/[\s\-]/g, "");
   if (!cleaned) return null;
   return loadGuestByNationalId(cleaned, excludeGuestId ?? null);
 }
-

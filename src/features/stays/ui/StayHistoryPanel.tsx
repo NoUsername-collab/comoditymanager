@@ -6,11 +6,7 @@ import { formatStayLabel } from "@/lib/stay-label-format";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { CancelledStayUndoButton } from "@/features/stays/ui/CancelledStayUndoButton";
-import type {
-  CancelledStay,
-  StayListLabels,
-  HistoryStay,
-} from "@/features/stays/ui/types";
+import type { CancelledStay, StayListLabels, HistoryStay } from "@/features/stays/ui/types";
 
 export function StayHistoryPanel({
   completedItems,
@@ -31,8 +27,7 @@ export function StayHistoryPanel({
   cancelledError: string | null;
   labels: StayListLabels;
 }) {
-  const totalCount =
-    completedItems.length + confirmedRecentItems.length + cancelledItems.length;
+  const totalCount = completedItems.length + confirmedRecentItems.length + cancelledItems.length;
 
   return (
     <AdminPanel
@@ -79,9 +74,8 @@ export function StayHistoryPanel({
                     </span>
                   </div>
                   <p className="truncate text-[10px] leading-tight text-zinc-500">
-                    {[stay.guest_phone, stay.guest_email]
-                      .filter(Boolean)
-                      .join(" · ") || labels.noContact}
+                    {[stay.guest_phone, stay.guest_email].filter(Boolean).join(" · ") ||
+                      labels.noContact}
                   </p>
                   <div className="mt-0.5 flex flex-wrap items-center gap-x-1 gap-y-0 text-[10px] text-zinc-600">
                     <span className="font-medium">
@@ -137,9 +131,8 @@ export function StayHistoryPanel({
                     </span>
                   </div>
                   <p className="truncate text-[10px] leading-tight text-red-900/70">
-                    {[stay.guest_phone, stay.guest_email]
-                      .filter(Boolean)
-                      .join(" · ") || labels.noContact}
+                    {[stay.guest_phone, stay.guest_email].filter(Boolean).join(" · ") ||
+                      labels.noContact}
                   </p>
                   <div className="mt-0.5 flex flex-wrap items-center gap-x-1 gap-y-0 text-[10px] text-red-900/80">
                     <span className="font-medium">
@@ -201,9 +194,8 @@ export function StayHistoryPanel({
                     </span>
                   </div>
                   <p className="truncate text-[10px] leading-tight text-zinc-500">
-                    {[stay.guest_phone, stay.guest_email]
-                      .filter(Boolean)
-                      .join(" · ") || labels.noContact}
+                    {[stay.guest_phone, stay.guest_email].filter(Boolean).join(" · ") ||
+                      labels.noContact}
                   </p>
                   <div className="mt-0.5 flex flex-wrap items-center gap-x-1 gap-y-0 text-[10px] text-zinc-600">
                     <span className="font-medium">
@@ -219,9 +211,7 @@ export function StayHistoryPanel({
                     {stay.total_price != null ? (
                       <>
                         <span aria-hidden>·</span>
-                        <span className="text-emerald-700">
-                          {stay.total_price} RON
-                        </span>
+                        <span className="text-emerald-700">{stay.total_price} RON</span>
                       </>
                     ) : null}
                     <span className="font-mono text-[9px] text-zinc-400">
@@ -240,16 +230,11 @@ export function StayHistoryPanel({
           </section>
         ) : null}
 
-        {totalCount === 0 &&
-        !completedError &&
-        !confirmedRecentError &&
-        !cancelledError ? (
+        {totalCount === 0 && !completedError && !confirmedRecentError && !cancelledError ? (
           <AdminEmptyState
             emoji="🕘"
             title={query ? labels.historyEmptyFilter : labels.historyEmpty}
-            description={
-              query ? labels.tryOtherCriteria : labels.historyWillAppear
-            }
+            description={query ? labels.tryOtherCriteria : labels.historyWillAppear}
           />
         ) : null}
       </div>

@@ -7,12 +7,7 @@ import { changeTenantStatusAction } from "@/features/platform-admin/tenant-actio
 
 type TenantStatus = "active" | "trial" | "suspended" | "cancelled";
 
-const STATUS_IDS: TenantStatus[] = [
-  "active",
-  "trial",
-  "suspended",
-  "cancelled",
-];
+const STATUS_IDS: TenantStatus[] = ["active", "trial", "suspended", "cancelled"];
 
 const STATUS_COLOR: Record<TenantStatus, string> = {
   active: "text-emerald-400",
@@ -30,9 +25,7 @@ export function TenantStatusForm({
 }) {
   const t = useTranslations("platformAdmin.tenantDetail.statusForm");
   const router = useRouter();
-  const [selected, setSelected] = useState<TenantStatus>(
-    currentStatus as TenantStatus
-  );
+  const [selected, setSelected] = useState<TenantStatus>(currentStatus as TenantStatus);
   const [isPending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -70,9 +63,7 @@ export function TenantStatusForm({
               onChange={() => setSelected(id)}
               className="sr-only"
             />
-            <span className={`flex-1 font-medium ${STATUS_COLOR[id]}`}>
-              {t(id)}
-            </span>
+            <span className={`flex-1 font-medium ${STATUS_COLOR[id]}`}>{t(id)}</span>
           </label>
         ))}
       </div>
@@ -86,9 +77,7 @@ export function TenantStatusForm({
       </button>
 
       {feedback && (
-        <p
-          className={`text-xs ${feedback === t("success") ? "text-emerald-400" : "text-red-400"}`}
-        >
+        <p className={`text-xs ${feedback === t("success") ? "text-emerald-400" : "text-red-400"}`}>
           {feedback}
         </p>
       )}

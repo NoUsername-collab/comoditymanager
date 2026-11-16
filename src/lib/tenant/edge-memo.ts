@@ -9,7 +9,11 @@
  * share a single request. The cache is per server instance: a change (a
  * suspension, a new domain) reaches every instance within the found TTL.
  */
-export function createEdgeMemo<T>(options: { foundTtlMs: number; missingTtlMs: number; maxEntries?: number }) {
+export function createEdgeMemo<T>(options: {
+  foundTtlMs: number;
+  missingTtlMs: number;
+  maxEntries?: number;
+}) {
   const maxEntries = options.maxEntries ?? 2000;
   const entries = new Map<string, { value: T | null; expires: number }>();
   const pending = new Map<string, Promise<T | null | undefined>>();
@@ -36,7 +40,10 @@ export function createEdgeMemo<T>(options: { foundTtlMs: number; missingTtlMs: n
       if (oldest !== undefined) entries.delete(oldest);
     }
     entries.delete(key);
-    entries.set(key, { value, expires: now() + (value === null ? options.missingTtlMs : options.foundTtlMs) });
+    entries.set(key, {
+      value,
+      expires: now() + (value === null ? options.missingTtlMs : options.foundTtlMs),
+    });
     return value;
   };
 }

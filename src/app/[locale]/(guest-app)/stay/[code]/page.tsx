@@ -3,11 +3,7 @@ import { loadGuestStayHome } from "@/features/guest-app/loaders";
 import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-export default async function GuestStayHomePage({
-  params,
-}: {
-  params: Promise<{ code: string }>;
-}) {
+export default async function GuestStayHomePage({ params }: { params: Promise<{ code: string }> }) {
   const [{ code }, locale, tMeta] = await Promise.all([
     params,
     getLocale(),

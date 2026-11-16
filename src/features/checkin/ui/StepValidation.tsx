@@ -12,9 +12,7 @@ export function StepValidation({
 }) {
   if (!validation) {
     return (
-      <p className="checkin-validation checkin-validation__pending">
-        {t("validation.pending")}
-      </p>
+      <p className="checkin-validation checkin-validation__pending">{t("validation.pending")}</p>
     );
   }
 
@@ -51,9 +49,7 @@ export function StepValidation({
       )}
 
       {validation.status === "warning" && (
-        <p className="checkin-validation__note">
-          {t("validation.warningNote")}
-        </p>
+        <p className="checkin-validation__note">{t("validation.warningNote")}</p>
       )}
     </div>
   );

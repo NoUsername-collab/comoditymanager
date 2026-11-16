@@ -17,7 +17,13 @@ export function PublicNavLink({
 }) {
   if (item.external) {
     return (
-      <a href={item.href} className={className} target="_blank" rel="noopener noreferrer" onClick={onClick}>
+      <a
+        href={item.href}
+        className={className}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onClick}
+      >
         {item.label}
       </a>
     );
@@ -69,7 +75,11 @@ export function PublicNav({ items }: { items: PublicNavItem[] }) {
       {items.map((item) => {
         if (!item.children?.length) {
           return item.href ? (
-            <PublicNavLink key={item.key} item={{ ...item, href: item.href }} className={linkClass(item)} />
+            <PublicNavLink
+              key={item.key}
+              item={{ ...item, href: item.href }}
+              className={linkClass(item)}
+            />
           ) : null;
         }
         const expanded = open === item.key;

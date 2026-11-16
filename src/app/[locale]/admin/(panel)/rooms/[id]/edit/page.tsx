@@ -30,23 +30,15 @@ export default async function EditRoomPage({
   const policiesByBuilding: Record<string, (typeof policyResults)[number]> = {};
   for (let i = 0; i < buildings.length; i += 1) {
     const building = buildings[i];
-    floorsByBuilding[building.id] = allFloors.filter(
-      (floor) => floor.building_id === building.id
-    );
+    floorsByBuilding[building.id] = allFloors.filter((floor) => floor.building_id === building.id);
     policiesByBuilding[building.id] = policyResults[i];
   }
 
   return (
     <AdminPageFrame
       title={room ? tPage("titleWithName", { name: room.name }) : tPage("title")}
-      backHref={
-        backToStructure
-          ? "/admin/settings/location/structure"
-          : "/admin/rooms"
-      }
-      backLabel={
-        backToStructure ? tStruct("pageTitle") : tCommon("rooms")
-      }
+      backHref={backToStructure ? "/admin/settings/location/structure" : "/admin/rooms"}
+      backLabel={backToStructure ? tStruct("pageTitle") : tCommon("rooms")}
       className="max-w-lg"
     >
       {room && types.length > 0 && (

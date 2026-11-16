@@ -71,12 +71,10 @@ type ProformaRecord = {
 
 function mapProformaRow(row: Record<string, unknown>): ProformaRecord {
   const lines = Array.isArray(row.lines) ? row.lines : [];
-  const currency =
-    row.currency === "BGN" || row.currency === "MDL" ? row.currency : "RON";
+  const currency = row.currency === "BGN" || row.currency === "MDL" ? row.currency : "RON";
   const vatRate = row.vat_rate != null ? Number(row.vat_rate) : 0;
   const vatAmount = row.vat_amount != null ? Number(row.vat_amount) : 0;
-  const subtotalNet =
-    row.subtotal_net != null ? Number(row.subtotal_net) : Number(row.subtotal);
+  const subtotalNet = row.subtotal_net != null ? Number(row.subtotal_net) : Number(row.subtotal);
   const document: IssuedInvoiceDocument = {
     series: String(row.series),
     invoice_number: Number(row.invoice_number),
@@ -84,10 +82,8 @@ function mapProformaRow(row: Record<string, unknown>): ProformaRecord {
     issued_at: String(row.issued_at),
     seller_name: String(row.seller_name),
     seller_cui: row.seller_cui != null ? String(row.seller_cui) : null,
-    seller_reg_com:
-      row.seller_reg_com != null ? String(row.seller_reg_com) : null,
-    seller_address:
-      row.seller_address != null ? String(row.seller_address) : null,
+    seller_reg_com: row.seller_reg_com != null ? String(row.seller_reg_com) : null,
+    seller_address: row.seller_address != null ? String(row.seller_address) : null,
     buyer_name: String(row.buyer_name),
     buyer_email: String(row.buyer_email),
     buyer_phone: row.buyer_phone != null ? String(row.buyer_phone) : null,
@@ -108,13 +104,10 @@ function mapProformaRow(row: Record<string, unknown>): ProformaRecord {
   return {
     id: String(row.id),
     booking_id: String(row.booking_id),
-    invoice_sequence:
-      row.invoice_sequence != null ? Number(row.invoice_sequence) : 1,
+    invoice_sequence: row.invoice_sequence != null ? Number(row.invoice_sequence) : 1,
     status: row.status === "void" ? "void" : "issued",
     converted_to_invoice_id:
-      row.converted_to_invoice_id != null
-        ? String(row.converted_to_invoice_id)
-        : null,
+      row.converted_to_invoice_id != null ? String(row.converted_to_invoice_id) : null,
     document,
   };
 }
@@ -123,9 +116,7 @@ function isBookingInvoicesTableMissing(message: string): boolean {
   return message.includes("booking_invoices");
 }
 
-export const listBookingProformas = cache(async (
-  bookingId: string
-): Promise<ProformaRecord[]> => {
+export const listBookingProformas = cache(async (bookingId: string): Promise<ProformaRecord[]> => {
   const tenantId = await resolveTenantIdForData();
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
@@ -142,9 +133,7 @@ export const listBookingProformas = cache(async (
     throw new Error(error.message);
   }
 
-  return (data ?? []).map((row) =>
-    mapProformaRow(row as unknown as Record<string, unknown>)
-  );
+  return (data ?? []).map((row) => mapProformaRow(row as unknown as Record<string, unknown>));
 });
 
 type IssueBookingProformaOptions = {
@@ -153,7 +142,7 @@ type IssueBookingProformaOptions = {
 
 export async function issueBookingProforma(
   bookingId: string,
-  options?: IssueBookingProformaOptions
+  options?: IssueBookingProformaOptions,
 ): Promise<{ ok: true; proforma: ProformaRecord } | { ok: false; error: string }> {
   const [
     booking,
@@ -186,11 +175,7 @@ export async function issueBookingProforma(
 
   const totalDue = Math.max(0, Number(booking.total_price ?? 0));
   const totalInvoiced = sumIssuedInvoiceTotals(fiscalInvoices);
-  const financials = computeInvoiceFinancials(
-    totalDue,
-    sumLedgerPayments(payments),
-    totalInvoiced
-  );
+  const financials = computeInvoiceFinancials(totalDue, sumLedgerPayments(payments), totalInvoiced);
 
   if (financials.remainingToInvoice <= 0) {
     return { ok: false, error: "proforma.fully_invoiced" };
@@ -198,10 +183,7 @@ export async function issueBookingProforma(
 
   const defaultAmount = resolveDefaultProformaAmount(financials);
   const requestedAmount = options?.amount ?? defaultAmount;
-  const amountCheck = validateProformaAmount(
-    requestedAmount,
-    financials.remainingToInvoice
-  );
+  const amountCheck = validateProformaAmount(requestedAmount, financials.remainingToInvoice);
   if (!amountCheck.ok) return amountCheck;
 
   const sellerAddress = checkinSettings.fisa_property_address?.trim();
@@ -218,7 +200,7 @@ export async function issueBookingProforma(
   const supabase = createPublicAdminClient();
   const { data: numberPayload, error: numberError } = await supabase.rpc(
     "issue_next_proforma_number",
-    { p_tenant_id: tenantId }
+    { p_tenant_id: tenantId },
   );
 
   if (numberError) return { ok: false, error: numberError.message };
@@ -229,8 +211,7 @@ export async function issueBookingProforma(
     display: string;
   };
 
-  const localeTag: "ro" | "en" | "bg" =
-    locale === "bg" ? "bg" : locale === "en" ? "en" : "ro";
+  const localeTag: "ro" | "en" | "bg" = locale === "bg" ? "bg" : locale === "en" ? "en" : "ro";
   const document = buildProformaDocument({
     series: numberData.series,
     invoice_number: numberData.number,
@@ -305,7 +286,7 @@ export async function issueBookingProforma(
 
 export async function previewBookingProforma(
   bookingId: string,
-  options?: IssueBookingProformaOptions
+  options?: IssueBookingProformaOptions,
 ): Promise<IssuedInvoiceDocument | null> {
   const [
     booking,
@@ -333,20 +314,13 @@ export async function previewBookingProforma(
 
   const totalDue = Math.max(0, Number(booking.total_price ?? 0));
   const totalInvoiced = sumIssuedInvoiceTotals(fiscalInvoices);
-  const financials = computeInvoiceFinancials(
-    totalDue,
-    sumLedgerPayments(payments),
-    totalInvoiced
-  );
+  const financials = computeInvoiceFinancials(totalDue, sumLedgerPayments(payments), totalInvoiced);
 
   if (financials.remainingToInvoice <= 0) return null;
 
   const defaultAmount = resolveDefaultProformaAmount(financials);
   const requestedAmount = options?.amount ?? defaultAmount;
-  const amountCheck = validateProformaAmount(
-    requestedAmount,
-    financials.remainingToInvoice
-  );
+  const amountCheck = validateProformaAmount(requestedAmount, financials.remainingToInvoice);
   if (!amountCheck.ok) return null;
 
   const pensionName =
@@ -354,8 +328,7 @@ export async function previewBookingProforma(
     checkinSettings.pension_display_name ||
     (await getTenantDisplayName(tenantId));
 
-  const localeTag: "ro" | "en" | "bg" =
-    locale === "bg" ? "bg" : locale === "en" ? "en" : "ro";
+  const localeTag: "ro" | "en" | "bg" = locale === "bg" ? "bg" : locale === "en" ? "en" : "ro";
 
   return buildProformaDocument({
     series: bookingRules.proformaSeries,
@@ -380,11 +353,8 @@ export async function previewBookingProforma(
 }
 
 export async function convertProformaToInvoice(
-  proformaId: string
-): Promise<
-  | { ok: true; invoiceId: string; displayNumber: string }
-  | { ok: false; error: string }
-> {
+  proformaId: string,
+): Promise<{ ok: true; invoiceId: string; displayNumber: string } | { ok: false; error: string }> {
   const tenantId = await resolveTenantIdForData();
   const supabase = createPublicAdminClient();
 
@@ -417,11 +387,7 @@ export async function convertProformaToInvoice(
   const totalDue = Math.max(0, Number(booking.total_price ?? 0));
   const totalPaid = sumLedgerPayments(payments);
   const totalInvoiced = sumIssuedInvoiceTotals(fiscalInvoices);
-  const financials = computeInvoiceFinancials(
-    totalDue,
-    totalPaid,
-    totalInvoiced
-  );
+  const financials = computeInvoiceFinancials(totalDue, totalPaid, totalInvoiced);
 
   const convertCheck = canConvertProforma({
     proformaTotal: proforma.document.total,
@@ -433,10 +399,7 @@ export async function convertProformaToInvoice(
   if (!convertCheck.ok) return { ok: false, error: convertCheck.reason };
 
   const invoiceAmount = proforma.document.total;
-  const amountCheck = validateInvoiceAmount(
-    invoiceAmount,
-    financials.remainingToInvoice
-  );
+  const amountCheck = validateInvoiceAmount(invoiceAmount, financials.remainingToInvoice);
   if (!amountCheck.ok) return amountCheck;
 
   const issuedCount = fiscalInvoices.length;
@@ -450,7 +413,7 @@ export async function convertProformaToInvoice(
 
   const { data: numberPayload, error: numberError } = await supabase.rpc(
     "issue_next_invoice_number",
-    { p_tenant_id: tenantId }
+    { p_tenant_id: tenantId },
   );
 
   if (numberError) return { ok: false, error: numberError.message };
@@ -461,8 +424,7 @@ export async function convertProformaToInvoice(
     display: string;
   };
 
-  const localeTag: "ro" | "en" | "bg" =
-    locale === "bg" ? "bg" : locale === "en" ? "en" : "ro";
+  const localeTag: "ro" | "en" | "bg" = locale === "bg" ? "bg" : locale === "en" ? "en" : "ro";
   const document = buildAllocatedInvoiceDocument({
     series: numberData.series,
     invoice_number: numberData.number,
@@ -560,15 +522,13 @@ export async function convertProformaToInvoice(
 export function proformaCanConvert(
   proforma: ProformaRecord,
   totalPaid: number,
-  remainingToInvoice: number
+  remainingToInvoice: number,
 ): boolean {
-  return (
-    canConvertProforma({
-      proformaTotal: proforma.document.total,
-      totalPaid,
-      remainingToInvoice,
-      convertedToInvoiceId: proforma.converted_to_invoice_id,
-      status: proforma.status,
-    }).ok
-  );
+  return canConvertProforma({
+    proformaTotal: proforma.document.total,
+    totalPaid,
+    remainingToInvoice,
+    convertedToInvoiceId: proforma.converted_to_invoice_id,
+    status: proforma.status,
+  }).ok;
 }

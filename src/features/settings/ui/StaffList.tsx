@@ -17,9 +17,7 @@ export function StaffList({ members }: { members: TenantMember[] }) {
     admin: 1,
     operator: 2,
   };
-  const sorted = [...members].sort(
-    (a, b) => (roleOrder[a.role] ?? 9) - (roleOrder[b.role] ?? 9)
-  );
+  const sorted = [...members].sort((a, b) => (roleOrder[a.role] ?? 9) - (roleOrder[b.role] ?? 9));
 
   return (
     <div className="admin-staff-list">

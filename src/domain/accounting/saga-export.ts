@@ -1,10 +1,6 @@
 export type AccountingExportFormat = "saga" | "contaplus";
 
-export type AccountingExportSlice =
-  | "fiscal"
-  | "proforma"
-  | "payments"
-  | "uninvoiced";
+export type AccountingExportSlice = "fiscal" | "proforma" | "payments" | "uninvoiced";
 
 export type AccountingExportRow = {
   source: "invoice" | "booking" | "proforma" | "payment";
@@ -100,8 +96,7 @@ function rowToCells(row: AccountingExportRow, format: AccountingExportFormat): s
   const date = formatRomanianDate(row.issued_at);
   const amount = formatAmount(row.subtotal);
   const total = formatAmount(row.total);
-  const number =
-    row.invoice_number != null ? String(row.invoice_number) : row.display_number;
+  const number = row.invoice_number != null ? String(row.invoice_number) : row.display_number;
 
   const sourceLabel =
     row.source === "invoice"
@@ -163,14 +158,12 @@ function rowToCells(row: AccountingExportRow, format: AccountingExportFormat): s
 
 export function buildAccountingCsv(
   rows: AccountingExportRow[],
-  format: AccountingExportFormat
+  format: AccountingExportFormat,
 ): string {
   const headers = format === "contaplus" ? contaplusHeaders() : sagaHeaders();
   const lines = [
     headers.map(escapeCsvField).join(CSV_SEP),
-    ...rows.map((row) =>
-      rowToCells(row, format).map(escapeCsvField).join(CSV_SEP)
-    ),
+    ...rows.map((row) => rowToCells(row, format).map(escapeCsvField).join(CSV_SEP)),
   ];
   return `\uFEFF${lines.join("\r\n")}`;
 }
@@ -179,7 +172,7 @@ export function accountingExportFilename(
   format: AccountingExportFormat,
   year: number,
   month?: number,
-  slice: AccountingExportSlice = "fiscal"
+  slice: AccountingExportSlice = "fiscal",
 ): string {
   const base = format === "contaplus" ? "contaplus" : "saga";
   const sliceTag =

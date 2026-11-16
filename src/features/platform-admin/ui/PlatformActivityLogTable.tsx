@@ -37,9 +37,7 @@ export function PlatformActivityLogTable({
         <h2 className="text-base font-semibold">
           {t("title")}
           {activeTenantName && (
-            <span className="ml-2 text-sm font-normal text-sky-400">
-              — {activeTenantName}
-            </span>
+            <span className="ml-2 text-sm font-normal text-sky-400">— {activeTenantName}</span>
           )}
           <span className="ml-2 text-sm font-normal text-neutral-500">
             {t("entryCount", { count: logs.length })}
@@ -57,9 +55,7 @@ export function PlatformActivityLogTable({
             className="platform-log-card rounded-md border border-neutral-800 bg-neutral-800/40 px-3 py-2.5"
           >
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-neutral-500">
-              <time dateTime={log.created_at}>
-                {formatWhen(log.created_at, locale)}
-              </time>
+              <time dateTime={log.created_at}>{formatWhen(log.created_at, locale)}</time>
               <span className="font-mono text-neutral-400">{log.tenant_slug}</span>
             </div>
             <p
@@ -93,29 +89,18 @@ export function PlatformActivityLogTable({
           </thead>
           <tbody className="divide-y divide-neutral-800">
             {logs.map((log) => (
-              <tr
-                key={log.id}
-                className="transition-colors hover:bg-neutral-800/50"
-              >
+              <tr key={log.id} className="transition-colors hover:bg-neutral-800/50">
                 <td className="whitespace-nowrap px-3 py-2 text-neutral-500">
                   {formatWhen(log.created_at, locale)}
                 </td>
-                <td className="px-3 py-2 font-mono text-neutral-400">
-                  {log.tenant_slug}
-                </td>
+                <td className="px-3 py-2 font-mono text-neutral-400">{log.tenant_slug}</td>
                 <td className="px-3 py-2">
-                  <span
-                    className={`font-medium ${ACTION_COLOR[log.action] ?? "text-neutral-300"}`}
-                  >
+                  <span className={`font-medium ${ACTION_COLOR[log.action] ?? "text-neutral-300"}`}>
                     {log.action}
                   </span>
                 </td>
-                <td className="max-w-xs truncate px-3 py-2 text-neutral-400">
-                  {log.summary}
-                </td>
-                <td className="px-3 py-2 text-neutral-500">
-                  {log.actor_email ?? "—"}
-                </td>
+                <td className="max-w-xs truncate px-3 py-2 text-neutral-400">{log.summary}</td>
+                <td className="px-3 py-2 text-neutral-500">{log.actor_email ?? "—"}</td>
               </tr>
             ))}
             {logs.length === 0 && (

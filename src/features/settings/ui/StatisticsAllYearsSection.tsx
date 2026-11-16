@@ -90,9 +90,7 @@ export function StatisticsAllYearsSection({
                   {labels.revenue}
                 </dt>
                 <dd className="mt-0.5 font-semibold tabular-nums text-zinc-800">
-                  {yearRow.revenueComplete
-                    ? formatRevenue(yearRow.revenueRon)
-                    : labels.emDash}
+                  {yearRow.revenueComplete ? formatRevenue(yearRow.revenueRon) : labels.emDash}
                 </dd>
               </div>
               <div>
@@ -152,9 +150,7 @@ export function StatisticsAllYearsSection({
                 <td className="px-4 py-2.5 tabular-nums">{yearRow.occupancyPct}%</td>
                 <td className="px-4 py-2.5 tabular-nums">{yearRow.guestNights}</td>
                 <td className="px-4 py-2.5 tabular-nums">
-                  {yearRow.revenueComplete
-                    ? formatRevenue(yearRow.revenueRon)
-                    : labels.emDash}
+                  {yearRow.revenueComplete ? formatRevenue(yearRow.revenueRon) : labels.emDash}
                 </td>
                 <td className="px-4 py-2.5 tabular-nums">
                   {formatKpi(yearRow.adrRon, yearRow.revenueComplete)}

@@ -67,12 +67,8 @@ export function useGuestIdentityAutofill(
   const [guestEmail, setGuestEmail] = useState(initial?.email ?? "");
   const [guestPhone, setGuestPhone] = useState(initial?.phone ?? "");
   const [identityHint, setIdentityHint] = useState<string | null>(null);
-  const [identityHintTone, setIdentityHintTone] = useState<"neutral" | "warn">(
-    "neutral",
-  );
-  const [settledFingerprint, setSettledFingerprint] = useState<string | null>(
-    initialFingerprint,
-  );
+  const [identityHintTone, setIdentityHintTone] = useState<"neutral" | "warn">("neutral");
+  const [settledFingerprint, setSettledFingerprint] = useState<string | null>(initialFingerprint);
   const [identityPending, startIdentityTransition] = useTransition();
   const userOwnedRef = useRef<Record<GuestField, boolean>>(
     initial

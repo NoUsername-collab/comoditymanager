@@ -37,9 +37,6 @@
   }
 }
 
-
-
-
 /* ═══════════════════════════════════════════════════════════
    MOBILE GPU & ANIMATION BUDGET
    ═══════════════════════════════════════════════════════════ */
@@ -67,14 +64,10 @@
   /* Dezactivăm hover transforms pe mobile — nu există hover real */
 }
 
-
-
-
 /* prefers-reduced-motion: oprește absolut totul continuu */
 @media (prefers-reduced-motion: reduce) {
-
   .admin-requests-glow-pulse,
-.setup-issue-badge {
+  .setup-issue-badge {
     animation: none !important;
   }
 }

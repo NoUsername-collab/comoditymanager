@@ -5,11 +5,7 @@ import type { SettingsNavItem } from "@/domain/settings/settings-nav";
 type SettingsSectionStatus = "complete" | "attention";
 
 /** Nav sections that participate in onboarding completion badges. */
-export const SETTINGS_COMPLETION_NAV_IDS = new Set<string>([
-  "identity",
-  "location",
-  "security",
-]);
+export const SETTINGS_COMPLETION_NAV_IDS = new Set<string>(["identity", "location", "security"]);
 
 export function resolveSettingsSectionStatus(
   item: Pick<SettingsNavItem, "id" | "href" | "matchPath">,

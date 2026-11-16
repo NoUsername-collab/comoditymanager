@@ -189,7 +189,7 @@ describe("hasGuestIdentity", () => {
       hasGuestIdentity({
         guest_email: PLACEHOLDER_GUEST_EMAIL,
         guest_phone: "0740123456",
-      })
+      }),
     ).toBe(true);
   });
 
@@ -198,7 +198,7 @@ describe("hasGuestIdentity", () => {
       hasGuestIdentity({
         guest_email: "real@email.com",
         guest_phone: "",
-      })
+      }),
     ).toBe(true);
   });
 
@@ -207,7 +207,7 @@ describe("hasGuestIdentity", () => {
       hasGuestIdentity({
         guest_email: PLACEHOLDER_GUEST_EMAIL,
         guest_phone: "+40740123456",
-      })
+      }),
     ).toBe(true);
   });
 
@@ -216,7 +216,7 @@ describe("hasGuestIdentity", () => {
       hasGuestIdentity({
         guest_email: PLACEHOLDER_GUEST_EMAIL,
         guest_phone: "",
-      })
+      }),
     ).toBe(false);
   });
 
@@ -225,7 +225,7 @@ describe("hasGuestIdentity", () => {
       hasGuestIdentity({
         guest_email: "",
         guest_phone: "",
-      })
+      }),
     ).toBe(false);
   });
 });

@@ -3,10 +3,7 @@ import {
   getDisplayLayoutPreference,
   type DisplayLayoutPreference,
 } from "@/lib/ui/display-layout-preference";
-import {
-  isCompactDisplayProfile,
-  resolveViewportHeightTier,
-} from "@/lib/ui/display-profile";
+import { isCompactDisplayProfile, resolveViewportHeightTier } from "@/lib/ui/display-profile";
 import {
   isDesktopLayoutMode,
   isMobileLayoutMode,
@@ -26,9 +23,7 @@ function setRootClass(root: HTMLElement, className: string, on: boolean): void {
   root.classList.toggle(className, on);
 }
 
-function applyResolvedLayoutToDom(
-  layout: ReturnType<typeof resolveDocumentLayout>
-): void {
+function applyResolvedLayoutToDom(layout: ReturnType<typeof resolveDocumentLayout>): void {
   const root = document.documentElement;
   const heightTier = resolveViewportHeightTier(layout.height);
   const breakpoint = resolveLayoutBreakpoint(layout.width);
@@ -37,11 +32,7 @@ function applyResolvedLayoutToDom(
 
   setRootAttr(root, "data-display-profile", layout.displayProfile);
   setRootAttr(root, "data-viewport-height", heightTier);
-  setRootAttr(
-    root,
-    "data-display-layout-mode",
-    layout.isManualLayout ? "manual" : "auto"
-  );
+  setRootAttr(root, "data-display-layout-mode", layout.isManualLayout ? "manual" : "auto");
   setRootAttr(root, "data-layout-preference", layout.layoutPreference);
   setRootAttr(root, "data-layout-mode", layout.mode);
   setRootAttr(root, "data-layout-orientation", layout.orientation);
@@ -66,7 +57,7 @@ function applyResolvedLayoutToDom(
   setRootClass(
     root,
     "layout-pref-desktop",
-    layout.layoutPreference !== "auto" && layout.layoutPreference !== "narrow"
+    layout.layoutPreference !== "auto" && layout.layoutPreference !== "narrow",
   );
 
   document.body.classList.toggle("ml-overflow-guard", layout.chrome === "compact");
@@ -84,9 +75,7 @@ export function isDocumentLayoutBootstrapped(): boolean {
 }
 
 /** Single entry: display profile + mobile layout chrome (respects Settings → Layout). */
-export function applyDocumentLayout(
-  preference?: DisplayLayoutPreference
-): void {
+export function applyDocumentLayout(preference?: DisplayLayoutPreference): void {
   if (typeof document === "undefined") return;
   const pref = preference ?? getDisplayLayoutPreference();
   const { width, height } = getLayoutViewportSize();
@@ -94,18 +83,15 @@ export function applyDocumentLayout(
 }
 
 let debouncedApplyDocumentLayout:
-  | ReturnType<typeof debounce<(preference?: DisplayLayoutPreference) => void>>
-  | undefined;
+  ReturnType<typeof debounce<(preference?: DisplayLayoutPreference) => void>> | undefined;
 
 /** Debounced apply — visualViewport/resize (matches boot-script 80ms). */
-export function scheduleApplyDocumentLayout(
-  preference?: DisplayLayoutPreference
-): void {
+export function scheduleApplyDocumentLayout(preference?: DisplayLayoutPreference): void {
   if (typeof document === "undefined") return;
   if (!debouncedApplyDocumentLayout) {
     debouncedApplyDocumentLayout = debounce(
       (pref?: DisplayLayoutPreference) => applyDocumentLayout(pref),
-      LAYOUT_RESIZE_DEBOUNCE_MS
+      LAYOUT_RESIZE_DEBOUNCE_MS,
     );
   }
   debouncedApplyDocumentLayout(preference);

@@ -14,11 +14,5 @@ export async function PublicSitePage({
     checkIn: config.checkInTime,
     checkOut: config.checkOutTime,
   });
-  return (
-    <PublicSiteBody
-      config={config}
-      locale={locale}
-      checkTimesLabel={checkTimesLabel}
-    />
-  );
+  return <PublicSiteBody config={config} locale={locale} checkTimesLabel={checkTimesLabel} />;
 }

@@ -35,7 +35,7 @@ function normalizeRpcRow(row: RpcResourceRow): [string, TenantResourceCounts] {
 }
 
 export function aggregateRowsByTenant(
-  rows: Array<{ tenant_id: string | null }>
+  rows: Array<{ tenant_id: string | null }>,
 ): Map<string, number> {
   const counts = new Map<string, number>();
   for (const row of rows) {
@@ -48,7 +48,7 @@ export function aggregateRowsByTenant(
 async function scanTenantIdCounts(
   supabase: SupabaseClient,
   table: "tenant_members" | "rooms" | "bookings" | "buildings",
-  options?: { activeMembersOnly?: boolean }
+  options?: { activeMembersOnly?: boolean },
 ): Promise<Map<string, number>> {
   const counts = new Map<string, number>();
   const pageSize = PLATFORM_SCALE.resourceScanPageSize;
@@ -79,7 +79,7 @@ async function scanTenantIdCounts(
 }
 
 async function loadResourceCountsFallback(
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
 ): Promise<Map<string, TenantResourceCounts>> {
   const [members, rooms, bookings, buildings, settingsRes] = await Promise.all([
     scanTenantIdCounts(supabase, "tenant_members", { activeMembersOnly: true }),
@@ -92,9 +92,7 @@ async function loadResourceCountsFallback(
   throwIfDbError("pension_settings (resource scan)", settingsRes.error);
 
   const settingsTenants = new Set(
-    (settingsRes.data ?? [])
-      .map((row) => row.tenant_id)
-      .filter((id): id is string => Boolean(id))
+    (settingsRes.data ?? []).map((row) => row.tenant_id).filter((id): id is string => Boolean(id)),
   );
 
   const tenantIds = new Set<string>([
@@ -120,7 +118,7 @@ async function loadResourceCountsFallback(
 }
 
 async function loadResourceCountsRpc(
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
 ): Promise<Map<string, TenantResourceCounts> | null> {
   const { data, error } = await supabase.rpc("platform_tenant_resource_counts");
 
@@ -132,8 +130,7 @@ async function loadResourceCountsRpc(
       code === "PGRST202" ||
       (message.includes("Could not find the function") &&
         message.includes("platform_tenant_resource_counts")) ||
-      (message.includes("does not exist") &&
-        message.includes("platform_tenant_resource_counts"));
+      (message.includes("does not exist") && message.includes("platform_tenant_resource_counts"));
     if (missingRpc) return null;
     throwIfDbError("platform_tenant_resource_counts (rpc)", error);
   }
@@ -148,7 +145,7 @@ async function loadResourceCountsRpc(
 
 /** One round-trip (RPC) or bounded fallback scan — safe for 100+ tenants. */
 export async function loadTenantResourceCounts(
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
 ): Promise<Map<string, TenantResourceCounts>> {
   const rpcCounts = await loadResourceCountsRpc(supabase);
   if (rpcCounts) return rpcCounts;
@@ -157,7 +154,7 @@ export async function loadTenantResourceCounts(
 
 export function getTenantResourceCounts(
   map: Map<string, TenantResourceCounts>,
-  tenantId: string
+  tenantId: string,
 ): TenantResourceCounts {
   return map.get(tenantId) ?? { ...EMPTY_TENANT_RESOURCE_COUNTS };
 }

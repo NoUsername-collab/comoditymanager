@@ -43,7 +43,8 @@ function mapRow(row: Record<string, unknown>): EmailSettings {
     email_from_name: typeof row.email_from_name === "string" ? row.email_from_name : null,
     email_from_address: typeof row.email_from_address === "string" ? row.email_from_address : null,
     email_reply_to: typeof row.email_reply_to === "string" ? row.email_reply_to : null,
-    email_custom_footer: typeof row.email_custom_footer === "string" ? row.email_custom_footer : null,
+    email_custom_footer:
+      typeof row.email_custom_footer === "string" ? row.email_custom_footer : null,
   };
 }
 
@@ -67,22 +68,16 @@ async function getEmailSettingsUncached(tenantId: string): Promise<EmailSettings
 }
 
 const getCachedEmailSettings = (tenantId: string) =>
-  unstable_cache(
-    () => getEmailSettingsUncached(tenantId),
-    ["email-settings", tenantId],
-    {
-      tags: [
-        CACHE_TAGS.pensionSettings,
-        tenantTag(tenantId, CACHE_TAGS.pensionSettings),
-        `tenant-${tenantId}-settings`,
-      ],
-      revalidate: 300,
-    },
-  );
+  unstable_cache(() => getEmailSettingsUncached(tenantId), ["email-settings", tenantId], {
+    tags: [
+      CACHE_TAGS.pensionSettings,
+      tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+      `tenant-${tenantId}-settings`,
+    ],
+    revalidate: 300,
+  });
 
-const loadEmailSettings = cache((tenantId: string) =>
-  getCachedEmailSettings(tenantId)(),
-);
+const loadEmailSettings = cache((tenantId: string) => getCachedEmailSettings(tenantId)());
 
 export async function getEmailSettings(): Promise<EmailSettings> {
   const tenantId = await resolveTenantIdForData();
@@ -90,27 +85,29 @@ export async function getEmailSettings(): Promise<EmailSettings> {
 }
 
 /** Cron / platform jobs — explicit tenant, no request context. */
-export async function getEmailSettingsForTenant(
-  tenantId: string,
-): Promise<EmailSettings> {
+export async function getEmailSettingsForTenant(tenantId: string): Promise<EmailSettings> {
   return getEmailSettingsUncached(tenantId);
 }
 
-export async function updateEmailSettings(
-  input: Partial<EmailSettings>,
-): Promise<void> {
+export async function updateEmailSettings(input: Partial<EmailSettings>): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
 
   const update: Record<string, unknown> = {};
   if (input.email_enabled !== undefined) update.email_enabled = input.email_enabled;
-  if (input.email_notify_new_request !== undefined) update.email_notify_new_request = input.email_notify_new_request;
-  if (input.email_notify_confirmation !== undefined) update.email_notify_confirmation = input.email_notify_confirmation;
-  if (input.email_notify_cancellation !== undefined) update.email_notify_cancellation = input.email_notify_cancellation;
-  if (input.email_notify_daily_summary !== undefined) update.email_notify_daily_summary = input.email_notify_daily_summary;
+  if (input.email_notify_new_request !== undefined)
+    update.email_notify_new_request = input.email_notify_new_request;
+  if (input.email_notify_confirmation !== undefined)
+    update.email_notify_confirmation = input.email_notify_confirmation;
+  if (input.email_notify_cancellation !== undefined)
+    update.email_notify_cancellation = input.email_notify_cancellation;
+  if (input.email_notify_daily_summary !== undefined)
+    update.email_notify_daily_summary = input.email_notify_daily_summary;
   if (input.email_from_name !== undefined) update.email_from_name = input.email_from_name || null;
-  if (input.email_from_address !== undefined) update.email_from_address = input.email_from_address || null;
+  if (input.email_from_address !== undefined)
+    update.email_from_address = input.email_from_address || null;
   if (input.email_reply_to !== undefined) update.email_reply_to = input.email_reply_to || null;
-  if (input.email_custom_footer !== undefined) update.email_custom_footer = input.email_custom_footer || null;
+  if (input.email_custom_footer !== undefined)
+    update.email_custom_footer = input.email_custom_footer || null;
 
   const { error } = await supabase
     .from("pension_settings")

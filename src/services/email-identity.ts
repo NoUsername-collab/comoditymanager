@@ -23,16 +23,11 @@ function platformMailDomain(requestHost?: string | null): string {
   return platformDomainFromRequestHost(requestHost);
 }
 
-async function resolveMailDomain(
-  tenantId: string,
-  requestHost?: string | null,
-): Promise<string> {
+async function resolveMailDomain(tenantId: string, requestHost?: string | null): Promise<string> {
   const domains = await listTenantDomains(tenantId).catch(() => []);
   const customVerified = domains.find(
     (row) =>
-      row.verified &&
-      row.routing_kind !== "platform_subdomain" &&
-      row.domain.trim().length > 0,
+      row.verified && row.routing_kind !== "platform_subdomain" && row.domain.trim().length > 0,
   );
   if (customVerified) {
     return customVerified.domain.replace(/^@/, "").toLowerCase();
@@ -42,18 +37,16 @@ async function resolveMailDomain(
 
 async function resolveTransactionalEmailIdentityUncached(): Promise<TransactionalEmailIdentity> {
   const headerStore = await headers();
-  const requestHost =
-    headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  const requestHost = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
 
   const tenantId = await resolveTenantIdForData();
-  const [pension, emailSettings, publicSite, tenant, mailDomain] =
-    await Promise.all([
-      getPensionSettings().catch(() => null),
-      getEmailSettings().catch(() => null),
-      getPublicSiteConfig().catch(() => null),
-      getTenantById(tenantId).catch(() => null),
-      resolveMailDomain(tenantId, requestHost),
-    ]);
+  const [pension, emailSettings, publicSite, tenant, mailDomain] = await Promise.all([
+    getPensionSettings().catch(() => null),
+    getEmailSettings().catch(() => null),
+    getPublicSiteConfig().catch(() => null),
+    getTenantById(tenantId).catch(() => null),
+    resolveMailDomain(tenantId, requestHost),
+  ]);
 
   const displayName =
     emailSettings?.email_from_name?.trim() ||
@@ -81,9 +74,7 @@ async function resolveTransactionalEmailIdentityUncached(): Promise<Transactiona
   };
 }
 
-export const resolveTransactionalEmailIdentity = cache(
-  resolveTransactionalEmailIdentityUncached,
-);
+export const resolveTransactionalEmailIdentity = cache(resolveTransactionalEmailIdentityUncached);
 
 /** Cron / jobs — explicit tenant, no request headers. */
 export async function resolveTransactionalEmailIdentityForTenant(
@@ -106,9 +97,7 @@ export async function resolveTransactionalEmailIdentityForTenant(
     : formatTransactionalFromAddress(displayName, mailDomain);
 
   const defaultReplyTo =
-    emailSettings?.email_reply_to?.trim() ||
-    tenant?.owner_email?.trim() ||
-    null;
+    emailSettings?.email_reply_to?.trim() || tenant?.owner_email?.trim() || null;
 
   return {
     displayName,

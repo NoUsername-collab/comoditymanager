@@ -16,7 +16,7 @@ describe("bookingBarInRange", () => {
       "2025-01-11",
       10,
       ciTime,
-      coTime
+      coTime,
     );
     expect(result).not.toBeNull();
     expect(result!.continuesBefore).toBe(false);
@@ -36,7 +36,7 @@ describe("bookingBarInRange", () => {
       "2025-01-15",
       10,
       ciTime,
-      coTime
+      coTime,
     );
     expect(result).not.toBeNull();
     expect(result!.continuesBefore).toBe(true);
@@ -54,7 +54,7 @@ describe("bookingBarInRange", () => {
       "2025-01-10",
       9,
       ciTime,
-      coTime
+      coTime,
     );
     expect(result).not.toBeNull();
     expect(result!.continuesBefore).toBe(false);
@@ -69,7 +69,7 @@ describe("bookingBarInRange", () => {
       "2025-01-20",
       10,
       ciTime,
-      coTime
+      coTime,
     );
     expect(result).toBeNull();
   });
@@ -82,7 +82,7 @@ describe("bookingBarInRange", () => {
       "2025-01-10",
       9,
       ciTime,
-      coTime
+      coTime,
     );
     expect(result).toBeNull();
   });
@@ -96,7 +96,7 @@ describe("bookingBarInRange", () => {
       "2025-01-11",
       10,
       ciTime,
-      coTime
+      coTime,
     );
     expect(result).not.toBeNull();
     expect(result!.widthPct).toBeGreaterThan(0);
@@ -110,7 +110,7 @@ describe("bookingBarInRange", () => {
       "2025-01-10",
       0,
       ciTime,
-      coTime
+      coTime,
     );
     expect(result).toBeNull();
   });
@@ -123,7 +123,7 @@ describe("bookingBarInRange", () => {
       "2025-02-01",
       31,
       ciTime,
-      coTime
+      coTime,
     );
     expect(result).not.toBeNull();
     expect(result!.continuesBefore).toBe(false);

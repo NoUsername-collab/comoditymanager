@@ -25,7 +25,7 @@ import { revalidatePath } from "next/cache";
 type TenantMutationResult = { success: boolean; error?: string };
 
 function toMutationResult(
-  result: Awaited<ReturnType<typeof updateTenantPlan>>
+  result: Awaited<ReturnType<typeof updateTenantPlan>>,
 ): TenantMutationResult {
   return result.success
     ? { success: true }
@@ -34,7 +34,7 @@ function toMutationResult(
 
 export async function changeTenantPlanAction(
   tenantId: string,
-  planId: PlanId
+  planId: PlanId,
 ): Promise<TenantMutationResult> {
   if (!tenantId?.trim()) {
     return { success: false, error: "Tenant invalid." };
@@ -69,7 +69,7 @@ export async function changeTenantPlanAction(
 
 export async function changeTenantStatusAction(
   tenantId: string,
-  status: "active" | "trial" | "suspended" | "cancelled"
+  status: "active" | "trial" | "suspended" | "cancelled",
 ): Promise<TenantMutationResult> {
   if (!tenantId?.trim()) {
     return { success: false, error: "Tenant invalid." };
@@ -104,7 +104,7 @@ export async function changeTenantStatusAction(
 
 export async function changeTenantBillingAction(
   tenantId: string,
-  isPaying: boolean
+  isPaying: boolean,
 ): Promise<TenantMutationResult> {
   if (!tenantId?.trim()) {
     return { success: false, error: "Tenant invalid." };
@@ -139,7 +139,7 @@ export async function changeTenantBillingAction(
 
 export async function changeTenantModulesAction(
   tenantId: string,
-  modules: string[]
+  modules: string[],
 ): Promise<TenantMutationResult> {
   if (!tenantId?.trim()) {
     return { success: false, error: "Tenant invalid." };

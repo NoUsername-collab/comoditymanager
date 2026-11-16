@@ -1,9 +1,4 @@
-import type {
-  DerivedPaymentStatus,
-  PaymentEntry,
-  PaymentLedgerKind,
-  PaymentTotals,
-} from "./types";
+import type { DerivedPaymentStatus, PaymentEntry, PaymentLedgerKind, PaymentTotals } from "./types";
 
 const MONEY_EPS = 0.005;
 
@@ -21,10 +16,7 @@ export function sumLedgerPayments(entries: PaymentEntry[]): number {
   return roundMoney(Math.max(0, total));
 }
 
-function derivePaymentStatus(
-  totalDue: number,
-  totalPaid: number
-): DerivedPaymentStatus {
+function derivePaymentStatus(totalDue: number, totalPaid: number): DerivedPaymentStatus {
   const due = roundMoney(Math.max(0, totalDue));
   const paid = roundMoney(Math.max(0, totalPaid));
   if (due <= MONEY_EPS) return "paid";
@@ -33,10 +25,7 @@ function derivePaymentStatus(
   return "partial";
 }
 
-export function computePaymentTotals(
-  totalDue: number,
-  entries: PaymentEntry[]
-): PaymentTotals {
+export function computePaymentTotals(totalDue: number, entries: PaymentEntry[]): PaymentTotals {
   const totalPaid = sumLedgerPayments(entries);
   const due = roundMoney(Math.max(0, totalDue));
   const balanceDue = roundMoney(Math.max(0, due - totalPaid));
@@ -50,7 +39,7 @@ export function computePaymentTotals(
 
 export function paymentDeltaToTarget(
   entries: PaymentEntry[],
-  targetPaid: number
+  targetPaid: number,
 ): { kind: PaymentLedgerKind; amount: number } | null {
   const current = sumLedgerPayments(entries);
   const target = roundMoney(Math.max(0, targetPaid));

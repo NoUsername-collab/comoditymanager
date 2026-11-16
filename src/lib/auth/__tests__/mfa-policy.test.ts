@@ -14,9 +14,7 @@ describe("isMfaMandatoryForUser", () => {
   it("never blocks app access (2FA optional by default)", () => {
     expect(isMfaMandatoryForUser({ memberRole: "owner" })).toBe(false);
     process.env.ZALMOX_ADMIN_EMAILS = "ops@zalmox.app";
-    expect(
-      isMfaMandatoryForUser({ email: "ops@zalmox.app", memberRole: "admin" })
-    ).toBe(false);
+    expect(isMfaMandatoryForUser({ email: "ops@zalmox.app", memberRole: "admin" })).toBe(false);
   });
 });
 
@@ -27,15 +25,11 @@ describe("isMfaRecommendedForUser", () => {
 
   it("recommends MFA for platform admin emails", () => {
     process.env.ZALMOX_ADMIN_EMAILS = "ops@zalmox.app";
-    expect(
-      isMfaRecommendedForUser({ email: "ops@zalmox.app", memberRole: "admin" })
-    ).toBe(true);
+    expect(isMfaRecommendedForUser({ email: "ops@zalmox.app", memberRole: "admin" })).toBe(true);
   });
 
   it("does not recommend MFA for regular staff", () => {
-    expect(
-      isMfaRecommendedForUser({ email: "staff@pension.ro", memberRole: "admin" })
-    ).toBe(false);
+    expect(isMfaRecommendedForUser({ email: "staff@pension.ro", memberRole: "admin" })).toBe(false);
   });
 });
 
@@ -44,11 +38,9 @@ describe("hasVerifiedTotpFactor", () => {
     expect(
       hasVerifiedTotpFactor({
         totp: [{ status: "verified" }, { status: "unverified" }],
-      })
+      }),
     ).toBe(true);
-    expect(hasVerifiedTotpFactor({ totp: [{ status: "unverified" }] })).toBe(
-      false
-    );
+    expect(hasVerifiedTotpFactor({ totp: [{ status: "unverified" }] })).toBe(false);
     expect(hasVerifiedTotpFactor(null)).toBe(false);
   });
 });

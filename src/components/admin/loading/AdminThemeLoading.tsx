@@ -15,10 +15,7 @@ export function AdminThemeLoading({ label, overlay = false }: Props) {
 
   return (
     <div
-      className={[
-        "admin-theme-loading",
-        overlay && "admin-theme-loading--overlay",
-      ]
+      className={["admin-theme-loading", overlay && "admin-theme-loading--overlay"]
         .filter(Boolean)
         .join(" ")}
       aria-busy="true"

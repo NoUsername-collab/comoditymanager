@@ -2,10 +2,7 @@ import { resolveGanttRange } from "@/domain/gantt/view-range";
 import { parseIso, todayIso } from "@/lib/stay-dates";
 import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
 import { loadCalendarCoreData } from "@/services/calendar-page-data";
-import {
-  DEFAULT_CHECKIN_SETTINGS,
-  getCheckinDeparturePolicy,
-} from "@/services/checkin/settings";
+import { DEFAULT_CHECKIN_SETTINGS, getCheckinDeparturePolicy } from "@/services/checkin/settings";
 
 export type CalendarSearchParams = {
   y?: string;

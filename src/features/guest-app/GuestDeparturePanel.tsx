@@ -39,14 +39,20 @@ export async function GuestDeparturePanel({
   );
 
   return (
-    <section id="departure" className="guest-app__departure" aria-labelledby="guest-departure-title">
+    <section
+      id="departure"
+      className="guest-app__departure"
+      aria-labelledby="guest-departure-title"
+    >
       <h2 id="guest-departure-title" className="guest-app__section-title">
         {t("home.departureTitle")}
       </h2>
       <p className="guest-app__departure__lead">
         {time ? t("home.departureUntil", { time }) : t("home.departureAskReception")}
       </p>
-      {balance === 0 ? <p className="guest-app__subtle text-sm">{t("home.departurePaid")}</p> : null}
+      {balance === 0 ? (
+        <p className="guest-app__subtle text-sm">{t("home.departurePaid")}</p>
+      ) : null}
       {balance != null && balance > 0 ? (
         <p className="guest-app__subtle text-sm">
           {t("home.departureBalance", { amount: formatRon(balance, locale) })}

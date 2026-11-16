@@ -26,9 +26,7 @@ export function BuildingStructureCard({
   const { building } = data;
   const theme = getBuildingTheme(building.ac_mode, building.name);
   const nextFloorSort =
-    data.floors.length > 0
-      ? Math.max(...data.floors.map((f) => f.sort_order)) + 1
-      : 1;
+    data.floors.length > 0 ? Math.max(...data.floors.map((f) => f.sort_order)) + 1 : 1;
   const duplicateFloorCount = data.floors.filter((f) => f.duplicateName).length;
 
   return (
@@ -51,9 +49,8 @@ export function BuildingStructureCard({
             <h2 className="text-lg font-bold text-zinc-900">{building.name}</h2>
           </div>
           <p className="mt-1 text-sm text-zinc-600">
-            {data.floors.length} {tCommon("floors").toLowerCase()} ·{" "}
-            {data.activeRoomCount}/{data.roomCount} {tCommon("rooms").toLowerCase()}{" "}
-            {tCommon("active")}
+            {data.floors.length} {tCommon("floors").toLowerCase()} · {data.activeRoomCount}/
+            {data.roomCount} {tCommon("rooms").toLowerCase()} {tCommon("active")}
           </p>
           {duplicateFloorCount > 0 && (
             <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-2 py-1 text-xs font-medium text-amber-950">
@@ -101,9 +98,7 @@ export function BuildingStructureCard({
 
         {data.roomsWithoutFloor.length > 0 && (
           <section className="rounded-xl border border-amber-200/80 bg-amber-50/50 p-3">
-            <h3 className="mb-2 text-sm font-bold text-amber-950">
-              {t("withoutFloorSection")}
-            </h3>
+            <h3 className="mb-2 text-sm font-bold text-amber-950">{t("withoutFloorSection")}</h3>
             <ul className="space-y-1.5">
               {data.roomsWithoutFloor.map((room) => (
                 <RoomStructureRow key={room.id} room={room} floors={data.floors} />

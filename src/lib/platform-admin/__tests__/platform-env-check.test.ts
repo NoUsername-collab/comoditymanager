@@ -1,8 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import {
-  getPlatformCronStatus,
-  getPlatformEnvChecklist,
-} from "../platform-env-check";
+import { getPlatformCronStatus, getPlatformEnvChecklist } from "../platform-env-check";
 
 describe("getPlatformEnvChecklist", () => {
   const original = { ...process.env };
@@ -18,26 +15,19 @@ describe("getPlatformEnvChecklist", () => {
     process.env.ZALMOX_ADMIN_EMAILS = "admin@zalmox.ro";
 
     const checklist = getPlatformEnvChecklist();
-    const supabaseUrl = checklist.find(
-      (item) => item.key === "NEXT_PUBLIC_SUPABASE_URL"
-    );
-    const adminEmails = checklist.find(
-      (item) => item.key === "ZALMOX_ADMIN_EMAILS"
-    );
+    const supabaseUrl = checklist.find((item) => item.key === "NEXT_PUBLIC_SUPABASE_URL");
+    const adminEmails = checklist.find((item) => item.key === "ZALMOX_ADMIN_EMAILS");
 
     expect(supabaseUrl?.configured).toBe(true);
     expect(supabaseUrl?.required).toBe(true);
     expect(adminEmails?.configured).toBe(true);
   });
-
 });
 
 describe("getPlatformCronStatus", () => {
   it("lists known cron endpoints", () => {
     const status = getPlatformCronStatus();
     expect(status.endpoints.length).toBeGreaterThanOrEqual(2);
-    expect(status.endpoints.some((e) => e.path.includes("daily-summary"))).toBe(
-      true
-    );
+    expect(status.endpoints.some((e) => e.path.includes("daily-summary"))).toBe(true);
   });
 });

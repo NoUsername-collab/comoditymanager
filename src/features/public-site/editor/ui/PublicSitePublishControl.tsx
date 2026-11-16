@@ -87,7 +87,9 @@ export function PublicSitePublishControl({
         <div className="pub-publish__panel" role="dialog" aria-label={te("checklistTitle")}>
           <p className="pub-publish__heading">
             {te("checklistTitle")}
-            <small>{te("checklistDone", { done: required.length - missing, total: required.length })}</small>
+            <small>
+              {te("checklistDone", { done: required.length - missing, total: required.length })}
+            </small>
           </p>
           <ul className="pub-editor-checklist">
             {readiness.map((item) => (
@@ -132,7 +134,9 @@ export function PublicSitePublishControl({
                   {pending ? te("publishing") : te(published ? "unpublishButton" : "publishButton")}
                 </AdminButton>
                 {!published && missing > 0 ? (
-                  <p className="pub-editor-publish__note">{te("publishAnyway", { count: missing })}</p>
+                  <p className="pub-editor-publish__note">
+                    {te("publishAnyway", { count: missing })}
+                  </p>
                 ) : null}
                 {dirty ? <p className="pub-editor-publish__note">{te("publishSavesAll")}</p> : null}
               </>

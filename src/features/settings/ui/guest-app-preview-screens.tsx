@@ -58,9 +58,7 @@ export function GuestAppPreviewFeatureBody({
         hotel.address ? (
           <div className="guest-app__subtle space-y-4 text-sm">
             {hotel.longDescription || hotel.shortDescription ? (
-              <p className="leading-relaxed">
-                {hotel.longDescription || hotel.shortDescription}
-              </p>
+              <p className="leading-relaxed">{hotel.longDescription || hotel.shortDescription}</p>
             ) : null}
             <div className="guest-app__contact-grid">
               {hotel.phone ? (

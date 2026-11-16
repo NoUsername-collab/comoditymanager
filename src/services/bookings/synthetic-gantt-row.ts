@@ -22,11 +22,8 @@ type GanttCreateSyntheticInput = {
 };
 
 /** Build a Gantt BookingRow from known mutation inputs - no DB round-trip. */
-export function buildSyntheticGanttBookingRow(
-  input: GanttCreateSyntheticInput,
-): BookingRow {
-  const roomIds =
-    input.roomIds && input.roomIds.length > 0 ? input.roomIds : [input.roomId];
+export function buildSyntheticGanttBookingRow(input: GanttCreateSyntheticInput): BookingRow {
+  const roomIds = input.roomIds && input.roomIds.length > 0 ? input.roomIds : [input.roomId];
   const roomNames =
     input.roomNames && input.roomNames.length > 0
       ? input.roomNames
@@ -48,8 +45,7 @@ export function buildSyntheticGanttBookingRow(
     guest_alert_note: null,
     guest_profile: null,
     num_adults: input.numAdults && input.numAdults > 0 ? input.numAdults : 1,
-    num_children:
-      input.numChildren && input.numChildren > 0 ? input.numChildren : 0,
+    num_children: input.numChildren && input.numChildren > 0 ? input.numChildren : 0,
     room_ids: roomIds,
     room_names: roomNames,
     total_price: input.totalPrice ?? null,
@@ -104,8 +100,7 @@ export function patchBookingRowForCheckin(
     has_checkin_record: true,
     checked_in_rooms,
     keys_handed_rooms: patch.keysHandedRooms ?? [],
-    checkin_payment_status:
-      (patch.paymentStatus as StoredPaymentStatus | undefined) ?? null,
+    checkin_payment_status: (patch.paymentStatus as StoredPaymentStatus | undefined) ?? null,
     room_id_verified: [],
     guest_identity_status: null,
   };

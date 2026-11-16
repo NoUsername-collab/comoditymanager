@@ -14,12 +14,7 @@ export type GuestNavTab = {
   featureId?: GuestAppFeatureId;
 };
 
-const NAV_PRIORITY: GuestAppFeatureId[] = [
-  "wifi",
-  "online_checkin",
-  "hotel_info",
-  "travel_tips",
-];
+const NAV_PRIORITY: GuestAppFeatureId[] = ["wifi", "online_checkin", "hotel_info", "travel_tips"];
 
 /** Home + două scurtături. „Mai mult” rămâne mereu, ca restul secțiunilor să aibă o intrare. */
 const NAV_FEATURE_SLOTS = 2;
@@ -28,9 +23,7 @@ export function buildGuestBottomNav(
   accessCode: string,
   features: GuestAppFeatureDef[],
 ): GuestNavTab[] {
-  const visibleIds = new Set(
-    visibleGuestAppFeatures(features).map((feature) => feature.id),
-  );
+  const visibleIds = new Set(visibleGuestAppFeatures(features).map((feature) => feature.id));
   const tabs: GuestNavTab[] = [{ id: "home", href: guestAppHomeHref(accessCode) }];
 
   for (const id of NAV_PRIORITY) {
@@ -53,10 +46,7 @@ export function buildGuestBottomNav(
   return tabs.slice(0, 4);
 }
 
-export function resolveActiveGuestNavTab(
-  pathname: string,
-  accessCode: string,
-): GuestNavTabId {
+export function resolveActiveGuestNavTab(pathname: string, accessCode: string): GuestNavTabId {
   const home = guestAppHomeHref(accessCode);
   const normalized = pathname.split("?")[0] ?? pathname;
   if (normalized === home || normalized.endsWith(home)) return "home";

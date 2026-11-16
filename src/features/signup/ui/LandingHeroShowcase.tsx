@@ -22,7 +22,10 @@ export function LandingHeroShowcase({ labels }: { labels: LandingHeroLabels }) {
     id: string;
     bars: { tone: StayTone; style: { left: string; width: string }; label: string }[];
   }[] = [
-    { id: "101", bars: [{ tone: "ok", style: { left: "5%", width: "35%" }, label: labels.stays.ionescu }] },
+    {
+      id: "101",
+      bars: [{ tone: "ok", style: { left: "5%", width: "35%" }, label: labels.stays.ionescu }],
+    },
     {
       id: "102",
       bars: [
@@ -30,7 +33,10 @@ export function LandingHeroShowcase({ labels }: { labels: LandingHeroLabels }) {
         { tone: "ok", style: { left: "42%", width: "32%" }, label: labels.stays.popa },
       ],
     },
-    { id: "201", bars: [{ tone: "hold", style: { left: "28%", width: "45%" }, label: labels.stays.hold }] },
+    {
+      id: "201",
+      bars: [{ tone: "hold", style: { left: "28%", width: "45%" }, label: labels.stays.hold }],
+    },
     {
       id: "202",
       bars: [
@@ -38,8 +44,14 @@ export function LandingHeroShowcase({ labels }: { labels: LandingHeroLabels }) {
         { tone: "ok", style: { left: "68%", width: "28%" }, label: labels.stays.marin },
       ],
     },
-    { id: "301", bars: [{ tone: "ok", style: { left: "15%", width: "55%" }, label: labels.stays.dumitru }] },
-    { id: "401", bars: [{ tone: "pending", style: { left: "2%", width: "40%" }, label: labels.stays.request }] },
+    {
+      id: "301",
+      bars: [{ tone: "ok", style: { left: "15%", width: "55%" }, label: labels.stays.dumitru }],
+    },
+    {
+      id: "401",
+      bars: [{ tone: "pending", style: { left: "2%", width: "40%" }, label: labels.stays.request }],
+    },
   ];
   const days = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
 
@@ -78,9 +90,18 @@ export function LandingHeroShowcase({ labels }: { labels: LandingHeroLabels }) {
         </div>
       </div>
       <ul className="hero-browser__legend">
-        <li><span className="hero-browser__swatch hero-browser__swatch--ok" />{labels.confirmed}</li>
-        <li><span className="hero-browser__swatch hero-browser__swatch--pending" />{labels.request}</li>
-        <li><span className="hero-browser__swatch hero-browser__swatch--hold" />{labels.hold}</li>
+        <li>
+          <span className="hero-browser__swatch hero-browser__swatch--ok" />
+          {labels.confirmed}
+        </li>
+        <li>
+          <span className="hero-browser__swatch hero-browser__swatch--pending" />
+          {labels.request}
+        </li>
+        <li>
+          <span className="hero-browser__swatch hero-browser__swatch--hold" />
+          {labels.hold}
+        </li>
       </ul>
     </div>
   );

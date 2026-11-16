@@ -44,7 +44,11 @@ const PLATFORM_PATHS = ["/", "/preturi", "/signup"];
 /** robots.txt for the platform host: staff areas stay out, the sitemap is named. */
 export function platformRobots(baseUrl: string): PublicRobots {
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/admin", "/api", "/platform-admin", "/alpha-gate"] },
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: ["/admin", "/api", "/platform-admin", "/alpha-gate"],
+    },
     sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

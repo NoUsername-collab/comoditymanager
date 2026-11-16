@@ -44,7 +44,7 @@ export function dayInitialFromIso(iso: string, locale = "ro"): string {
 
 function resolveLocaleAndShowYear(
   localeOrShowYear?: string | boolean,
-  showYearArg?: boolean
+  showYearArg?: boolean,
 ): { locale: string; showYear: boolean } {
   if (typeof localeOrShowYear === "string") {
     return { locale: localeOrShowYear, showYear: showYearArg ?? false };
@@ -59,12 +59,9 @@ function resolveLocaleAndShowYear(
 export function formatDateWithDay(
   iso: string,
   localeOrShowYear?: string | boolean,
-  showYearArg?: boolean
+  showYearArg?: boolean,
 ): string {
-  const { locale, showYear } = resolveLocaleAndShowYear(
-    localeOrShowYear,
-    showYearArg
-  );
+  const { locale, showYear } = resolveLocaleAndShowYear(localeOrShowYear, showYearArg);
   const d = parseDateIsoLocal(iso);
   const loc = toIntlLocale(locale);
   const datePart = new Intl.DateTimeFormat(loc, {
@@ -80,20 +77,13 @@ export function formatStayPeriod(
   checkIn: string,
   checkOut: string,
   localeOrShowYear?: string | boolean,
-  showYearArg?: boolean
+  showYearArg?: boolean,
 ): string {
-  const { locale, showYear } = resolveLocaleAndShowYear(
-    localeOrShowYear,
-    showYearArg
-  );
+  const { locale, showYear } = resolveLocaleAndShowYear(localeOrShowYear, showYearArg);
   return `${formatDateWithDay(checkIn, locale, showYear)} → ${formatDateWithDay(checkOut, locale, showYear)}`;
 }
 
-export function monthYearLabel(
-  year: number,
-  month: number,
-  locale: string
-): string {
+export function monthYearLabel(year: number, month: number, locale: string): string {
   return new Date(year, month, 1).toLocaleDateString(toIntlLocale(locale), {
     month: "long",
     year: "numeric",

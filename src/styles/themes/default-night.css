@@ -134,11 +134,7 @@ html[data-theme="default"][data-mode="night"] {
   --admin-tint-sky-text: var(--hold-text);
 
   /* ── Gantt semantic fills — contrast AA pe fundal închis ── */
-  --gantt-bar-fill-active: color-mix(
-    in srgb,
-    var(--active-bg) 42%,
-    var(--active-border) 58%
-  );
+  --gantt-bar-fill-active: color-mix(in srgb, var(--active-bg) 42%, var(--active-border) 58%);
   --gantt-bar-fill-pending: var(--pending-bg);
   --gantt-bar-fill-past: var(--past-bg);
   --gantt-cap-ok: #34d399;

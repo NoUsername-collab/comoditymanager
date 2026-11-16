@@ -34,21 +34,18 @@ export function GanttRequestsQueue({
   const locale = useLocale();
   const sorted = useMemo(
     () =>
-      [...requests].sort((a, b) =>
-        a.check_in.localeCompare(b.check_in) || a.check_out.localeCompare(b.check_out)
+      [...requests].sort(
+        (a, b) => a.check_in.localeCompare(b.check_in) || a.check_out.localeCompare(b.check_out),
       ),
-    [requests]
+    [requests],
   );
 
   if (sorted.length === 0) return null;
 
-  const resolvedTitle = title ?? (inline || top ? tCommon("noRoom") : tGantt("queue.requestsNoRoom"));
+  const resolvedTitle =
+    title ?? (inline || top ? tCommon("noRoom") : tGantt("queue.requestsNoRoom"));
   const resolvedSubtitle =
-    subtitle === undefined
-      ? inline || top
-        ? null
-        : tGantt("queue.visibleHint")
-      : subtitle;
+    subtitle === undefined ? (inline || top ? null : tGantt("queue.visibleHint")) : subtitle;
   const resolvedAriaLabel = ariaLabel ?? resolvedTitle;
 
   return (
@@ -70,11 +67,7 @@ export function GanttRequestsQueue({
             {resolvedTitle}
             <span className="gantt-requests-queue__count">{sorted.length}</span>
           </h2>
-          {resolvedSubtitle && (
-            <p className="gantt-requests-queue__sub">
-              {resolvedSubtitle}
-            </p>
-          )}
+          {resolvedSubtitle && <p className="gantt-requests-queue__sub">{resolvedSubtitle}</p>}
         </div>
         <Link href="/admin/bookings" className="gantt-requests-queue__all-link">
           {inline ? tGantt("queue.allArrow") : tGantt("queue.allRequestsArrow")}
@@ -83,11 +76,7 @@ export function GanttRequestsQueue({
 
       <div className="gantt-requests-queue__scroller">
         {sorted.map((b) => {
-          const label = formatGuestGanttLabel(
-            b.guest_last_name,
-            b.guest_first_name,
-            b.guest_name
-          );
+          const label = formatGuestGanttLabel(b.guest_last_name, b.guest_first_name, b.guest_name);
           return (
             <GanttRequestsCard
               key={b.id}

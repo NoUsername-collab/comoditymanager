@@ -1,16 +1,7 @@
 import { describe, expect, it } from "vitest";
-import {
-  ADMIN_MORE_LINKS,
-  filterAdminMoreLinks,
-} from "@/layout/mobile/admin-more-links";
-import {
-  filterSettingsNav,
-  SETTINGS_NAV_GROUPS,
-} from "@/domain/settings/settings-nav";
-import {
-  pathPermissionGroup,
-  pathRequiresOwner,
-} from "@/domain/settings/team-permission-paths";
+import { ADMIN_MORE_LINKS, filterAdminMoreLinks } from "@/layout/mobile/admin-more-links";
+import { filterSettingsNav, SETTINGS_NAV_GROUPS } from "@/domain/settings/settings-nav";
+import { pathPermissionGroup, pathRequiresOwner } from "@/domain/settings/team-permission-paths";
 import { DEFAULT_TEAM_PERMISSIONS } from "@/domain/settings/team-permissions";
 
 const ctx = (memberRole: "owner" | "admin" | "operator") => ({

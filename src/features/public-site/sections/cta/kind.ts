@@ -9,7 +9,8 @@ export const ctaKind: SectionKind = {
   summaryField: "title",
   settings: {
     read: (payload) => ({
-      ctaHref: typeof payload.ctaHref === "string" && payload.ctaHref ? payload.ctaHref : "/calendar",
+      ctaHref:
+        typeof payload.ctaHref === "string" && payload.ctaHref ? payload.ctaHref : "/calendar",
     }),
     write: (settings) => ({ ctaHref: settings.ctaHref?.trim() || "/calendar" }),
   },

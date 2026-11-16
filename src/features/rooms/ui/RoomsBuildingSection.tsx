@@ -39,27 +39,22 @@ export function RoomsBuildingSection({
       ].join(" ")}
     >
       <div
-        className={["flex flex-wrap items-center justify-between gap-3 px-5 py-4", theme.headerBg].join(
-          " "
-        )}
+        className={[
+          "flex flex-wrap items-center justify-between gap-3 px-5 py-4",
+          theme.headerBg,
+        ].join(" ")}
         style={{ borderBottom: `2px solid ${theme.accent}` }}
       >
         <div>
           <div className="flex items-center gap-2">
-            <span
-              className="h-3 w-3 rounded-full"
-              style={{ backgroundColor: theme.accent }}
-            />
+            <span className="h-3 w-3 rounded-full" style={{ backgroundColor: theme.accent }} />
             <h2 className="text-lg font-semibold text-zinc-900">{buildingName}</h2>
           </div>
           <p className="mt-1 text-sm text-zinc-600">
             {AC_LABELS[acMode]} · {active.length} {tCommon("activeRooms")}
           </p>
         </div>
-        <AdminLinkButton
-          href={`/admin/rooms/new?building=${buildingId}`}
-          size="sm"
-        >
+        <AdminLinkButton href={`/admin/rooms/new?building=${buildingId}`} size="sm">
           + {tCommon("room")}
         </AdminLinkButton>
       </div>

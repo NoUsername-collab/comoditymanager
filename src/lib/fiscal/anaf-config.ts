@@ -37,7 +37,7 @@ export function getAnafRuntimeConfig() {
 
 export function shouldEnqueueAnafSubmission(
   settings: Pick<TenantFiscalSettingsRecord, "provider" | "anafEnabled">,
-  tenantCountry: string | null | undefined
+  tenantCountry: string | null | undefined,
 ): boolean {
   return (
     isAnafSubmissionAvailable() &&

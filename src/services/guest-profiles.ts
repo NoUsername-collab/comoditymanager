@@ -40,9 +40,7 @@ type GuestAlertSnapshot = {
   note: string | null;
 };
 
-async function fetchGuestProfileRow(
-  guestId: string
-): Promise<GuestProfileRow | null> {
+async function fetchGuestProfileRow(guestId: string): Promise<GuestProfileRow | null> {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guest_profiles")
@@ -60,19 +58,17 @@ export async function ensureGuestProfiles(guestIds: string[]): Promise<void> {
   if (uniqueIds.length === 0) return;
 
   const { tenantId, supabase } = await getTenantScope();
-  const { error } = await supabase
-    .from("guest_profiles")
-    .upsert(
-      uniqueIds.map((guest_id) => withTenantId(tenantId, { guest_id })),
-      { onConflict: "guest_id" }
-    );
+  const { error } = await supabase.from("guest_profiles").upsert(
+    uniqueIds.map((guest_id) => withTenantId(tenantId, { guest_id })),
+    { onConflict: "guest_id" },
+  );
 
   if (error) throw new Error(error.message);
 }
 
 export async function getGuestProfile(
   guestId: string,
-  options?: { recompute?: boolean }
+  options?: { recompute?: boolean },
 ): Promise<GuestProfileRow | null> {
   if (!guestId) return null;
   await ensureGuestProfiles([guestId]);
@@ -85,7 +81,7 @@ export async function getGuestProfile(
 }
 
 async function listGuestProfileSummariesImpl(
-  guestIds: string[]
+  guestIds: string[],
 ): Promise<Map<string, GuestBookingFlagSummary>> {
   const uniqueIds = [...new Set(guestIds.filter(Boolean))];
   if (uniqueIds.length === 0) return new Map();
@@ -103,19 +99,17 @@ async function listGuestProfileSummariesImpl(
     (data ?? []).map((row) => {
       const profile = mapGuestProfileRow(row as Record<string, unknown>);
       return [profile.guest_id, toGuestBookingFlagSummary(profile)];
-    })
+    }),
   );
 }
 
 const loadGuestProfileSummaries = cache((guestIdsKey: string) =>
-  listGuestProfileSummariesImpl(
-    guestIdsKey.length > 0 ? guestIdsKey.split(",") : []
-  )
+  listGuestProfileSummariesImpl(guestIdsKey.length > 0 ? guestIdsKey.split(",") : []),
 );
 
 /** Dedupes overlapping guest id batches within one request (e.g. cazări lists). */
 export async function listGuestProfileSummaries(
-  guestIds: string[]
+  guestIds: string[],
 ): Promise<Map<string, GuestBookingFlagSummary>> {
   const key = [...new Set(guestIds.filter(Boolean))].sort().join(",");
   if (!key) return new Map();
@@ -123,7 +117,7 @@ export async function listGuestProfileSummaries(
 }
 
 export async function listGuestStayReviewsByBookingIds(
-  bookingIds: string[]
+  bookingIds: string[],
 ): Promise<Map<string, GuestStayReviewRow>> {
   const uniqueIds = [...new Set(bookingIds.filter(Boolean))];
   if (uniqueIds.length === 0) return new Map();
@@ -141,13 +135,11 @@ export async function listGuestStayReviewsByBookingIds(
     (data ?? []).map((row) => {
       const review = mapGuestStayReviewRow(row as Record<string, unknown>);
       return [review.booking_id, review];
-    })
+    }),
   );
 }
 
-async function listGuestStayReviewsForGuest(
-  guestId: string
-): Promise<GuestStayReviewRow[]> {
+async function listGuestStayReviewsForGuest(guestId: string): Promise<GuestStayReviewRow[]> {
   if (!guestId) return [];
 
   const { tenantId, supabase } = await getTenantScope();
@@ -160,18 +152,13 @@ async function listGuestStayReviewsForGuest(
 
   if (error) throw new Error(error.message);
 
-  return (data ?? []).map((row) =>
-    mapGuestStayReviewRow(row as Record<string, unknown>)
-  );
+  return (data ?? []).map((row) => mapGuestStayReviewRow(row as Record<string, unknown>));
 }
 
 async function listCompletedStayBookings(
-  guestId: string
+  guestId: string,
 ): Promise<{ check_in: string; check_out: string }[]> {
-  const [today, { tenantId, supabase }] = await Promise.all([
-    todayIso(),
-    getTenantScope(),
-  ]);
+  const [today, { tenantId, supabase }] = await Promise.all([todayIso(), getTenantScope()]);
   const { data, error } = await supabase
     .from("bookings")
     .select("check_in, check_out")
@@ -185,9 +172,7 @@ async function listCompletedStayBookings(
   return (data ?? []) as { check_in: string; check_out: string }[];
 }
 
-async function recomputeGuestProfile(
-  guestId: string
-): Promise<GuestProfileRow> {
+async function recomputeGuestProfile(guestId: string): Promise<GuestProfileRow> {
   await ensureGuestProfiles([guestId]);
   const current = (await fetchGuestProfileRow(guestId)) ?? createDefaultGuestProfile(guestId);
   const [today, completedStayBookings, reviews] = await Promise.all([
@@ -222,9 +207,7 @@ async function recomputeGuestProfile(
   return mapGuestProfileRow(data as Record<string, unknown>);
 }
 
-async function getBookingReviewCheck(
-  bookingId: string
-): Promise<BookingReviewCheckRow | null> {
+async function getBookingReviewCheck(bookingId: string): Promise<BookingReviewCheckRow | null> {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
@@ -253,10 +236,7 @@ export async function saveGuestStayReview(input: {
   }
 
   const effectiveStars = computeStayReviewEffectiveStars({ polarity, intensity });
-  const [booking, today] = await Promise.all([
-    getBookingReviewCheck(input.bookingId),
-    todayIso(),
-  ]);
+  const [booking, today] = await Promise.all([getBookingReviewCheck(input.bookingId), todayIso()]);
   if (!booking) throw new Error("guest.stay_not_found");
   if (booking.guest_id !== input.guestId) {
     throw new Error("guest.review_not_belong_to_guest");
@@ -265,10 +245,7 @@ export async function saveGuestStayReview(input: {
     throw new Error("guest.only_past_confirmed_stays_can_be_reviewed");
   }
 
-  const [actor, { tenantId, supabase }] = await Promise.all([
-    getStaffUser(),
-    getTenantScope(),
-  ]);
+  const [actor, { tenantId, supabase }] = await Promise.all([getStaffUser(), getTenantScope()]);
   const now = new Date().toISOString();
   const { error } = await supabase.from("guest_stay_reviews").upsert(
     withTenantId(tenantId, {
@@ -281,7 +258,7 @@ export async function saveGuestStayReview(input: {
       reviewed_at: now,
       reviewed_by: actor?.id ?? null,
       reviewed_by_email: actor?.email ?? null,
-    })
+    }),
   );
 
   if (error) throw new Error(error.message);
@@ -322,7 +299,7 @@ export async function updateGuestProfileControls(input: {
   const patch: Record<string, unknown> = {
     flag_level: input.flagLevel,
     blacklist_reason:
-      input.flagLevel === "blacklist" ? nextReason ?? current.blacklist_reason : null,
+      input.flagLevel === "blacklist" ? (nextReason ?? current.blacklist_reason) : null,
     manual_note: input.manualNote.trim() || null,
   };
 
@@ -457,10 +434,7 @@ export async function resolveGuestAlertSnapshot(input: {
   };
 }
 
-export async function mergeGuestProfiles(
-  sourceId: string,
-  targetId: string
-): Promise<void> {
+export async function mergeGuestProfiles(sourceId: string, targetId: string): Promise<void> {
   await ensureGuestProfiles([sourceId, targetId]);
   const [sourceProfile, targetProfile] = await Promise.all([
     getGuestProfile(sourceId),
@@ -472,11 +446,7 @@ export async function mergeGuestProfiles(
   const mergedFlag = maxGuestFlagLevel(source.flag_level, target.flag_level);
 
   const preservedBlacklist =
-    mergedFlag === "blacklist"
-      ? target.flag_level === "blacklist"
-        ? target
-        : source
-      : null;
+    mergedFlag === "blacklist" ? (target.flag_level === "blacklist" ? target : source) : null;
 
   const { tenantId, supabase } = await getTenantScope();
   const { error: reviewsError } = await supabase
@@ -495,16 +465,12 @@ export async function mergeGuestProfiles(
       blacklisted_at: preservedBlacklist?.blacklisted_at ?? null,
       blacklisted_by: preservedBlacklist?.blacklisted_by ?? null,
       blacklisted_by_email: preservedBlacklist?.blacklisted_by_email ?? null,
-      unblacklisted_at:
-        target.unblacklisted_at ?? source.unblacklisted_at ?? null,
-      unblacklisted_by:
-        target.unblacklisted_by ?? source.unblacklisted_by ?? null,
+      unblacklisted_at: target.unblacklisted_at ?? source.unblacklisted_at ?? null,
+      unblacklisted_by: target.unblacklisted_by ?? source.unblacklisted_by ?? null,
       unblacklisted_by_email:
         target.unblacklisted_by_email ?? source.unblacklisted_by_email ?? null,
-      manual_note: [target.manual_note, source.manual_note]
-        .filter(Boolean)
-        .join("\n---\n") || null,
-    })
+      manual_note: [target.manual_note, source.manual_note].filter(Boolean).join("\n---\n") || null,
+    }),
   );
 
   if (upsertError) throw new Error(upsertError.message);

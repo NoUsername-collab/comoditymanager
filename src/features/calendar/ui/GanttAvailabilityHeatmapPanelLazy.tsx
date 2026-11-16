@@ -8,11 +8,11 @@ const GanttAvailabilityHeatmapPanel = dynamic(
     import("./GanttAvailabilityHeatmapPanel").then((m) => ({
       default: m.GanttAvailabilityHeatmapPanel,
     })),
-  { ssr: false }
+  { ssr: false },
 );
 
 export function GanttAvailabilityHeatmapPanelLazy(
-  props: ComponentProps<typeof GanttAvailabilityHeatmapPanel>
+  props: ComponentProps<typeof GanttAvailabilityHeatmapPanel>,
 ) {
   if (!props.open) return null;
   return <GanttAvailabilityHeatmapPanel {...props} />;

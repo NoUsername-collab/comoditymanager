@@ -39,7 +39,7 @@ describe("buildInformalInvoice", () => {
           { room_id: "r1", room_name: "Camera 1", building_name: "Vila A", price_per_night: 200 },
           { room_id: "r2", room_name: "Camera 2", building_name: "Vila B", price_per_night: 150 },
         ],
-      })
+      }),
     );
     // 2 nights: (200 + 150) * 2 = 700
     expect(result.lines).toHaveLength(2);

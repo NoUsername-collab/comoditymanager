@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  guestPartyTotal,
-  formatGuestPartyShort,
-  formatGuestPartyDetail,
-} from "@/lib/guest-party";
+import { guestPartyTotal, formatGuestPartyShort, formatGuestPartyDetail } from "@/lib/guest-party";
 
 // ---------------------------------------------------------------------------
 // guestPartyTotal

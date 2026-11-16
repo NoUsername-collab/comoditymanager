@@ -80,12 +80,7 @@ function makeData(overrides?: Partial<CheckinFormData>): CheckinFormData {
 
 describe("validateCheckin", () => {
   test("returns ok when all data is complete", () => {
-    const result = validateCheckin(
-      makeData(),
-      defaultSettings,
-      defaultBooking,
-      "15:00",
-    );
+    const result = validateCheckin(makeData(), defaultSettings, defaultBooking, "15:00");
     expect(result.status).toBe("ok");
     expect(result.flags).toEqual([]);
     expect(result.blockers).toEqual([]);
@@ -288,26 +283,14 @@ describe("validateCheckin", () => {
 
   test("blocks when before check-in hour on the check-in day", () => {
     const data = makeData();
-    const result = validateCheckin(
-      data,
-      defaultSettings,
-      defaultBooking,
-      "10:00",
-      "2026-06-10",
-    );
+    const result = validateCheckin(data, defaultSettings, defaultBooking, "10:00", "2026-06-10");
     expect(result.status).toBe("blocked");
     expect(result.blockers[0]).toContain("14:00");
   });
 
   test("allows when at or after check-in hour on the check-in day", () => {
     const data = makeData();
-    const result = validateCheckin(
-      data,
-      defaultSettings,
-      defaultBooking,
-      "14:00",
-      "2026-06-10",
-    );
+    const result = validateCheckin(data, defaultSettings, defaultBooking, "14:00", "2026-06-10");
     expect(result.status).toBe("ok");
   });
 });

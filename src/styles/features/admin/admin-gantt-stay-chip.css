@@ -16,11 +16,10 @@
 }
 
 .gantt-stay--chip.gantt-booking-card--active {
-  background: var(--gantt-bar-fill-active, color-mix(
-    in srgb,
-    var(--booking-active-bg) 55%,
-    var(--booking-active-border) 45%
-  )) !important;
+  background: var(
+    --gantt-bar-fill-active,
+    color-mix(in srgb, var(--booking-active-bg) 55%, var(--booking-active-border) 45%)
+  ) !important;
   border-color: var(--booking-active-border) !important;
   color: var(--booking-active-text) !important;
 }
@@ -154,16 +153,13 @@
 }
 
 .gantt-stay--chip .gantt-stay__timeline--hybrid .gantt-stay__timeline-fill {
-  background: color-mix(
-    in srgb,
-    var(--stay-spine, var(--stay-border)) 88%,
-    white
-  );
+  background: color-mix(in srgb, var(--stay-spine, var(--stay-border)) 88%, white);
   background-image: linear-gradient(
     90deg,
     color-mix(in srgb, #10b981 90%, white) 0%,
     color-mix(in srgb, #10b981 90%, white) var(--stay-checkin-seg, 30%),
-    color-mix(in srgb, var(--stay-spine, var(--stay-border)) 88%, white) var(--stay-checkin-seg, 30%),
+    color-mix(in srgb, var(--stay-spine, var(--stay-border)) 88%, white)
+      var(--stay-checkin-seg, 30%),
     color-mix(in srgb, var(--stay-spine, var(--stay-border)) 88%, white) 100%
   );
 }
@@ -382,10 +378,7 @@
   width: 0.5rem;
   height: 0.62rem;
   flex-shrink: 0;
-  filter:
-    drop-shadow(0 0 0.5px #052e16)
-    drop-shadow(0 0 2px #86efac)
-    drop-shadow(0 0 4px #4ade80);
+  filter: drop-shadow(0 0 0.5px #052e16) drop-shadow(0 0 2px #86efac) drop-shadow(0 0 4px #4ade80);
   /* Static glow by default — pulse only on hover/focus to save GPU on dense Gantt */
   animation: none;
 }
@@ -405,25 +398,16 @@
   0%,
   100% {
     opacity: 1;
-    filter:
-      drop-shadow(0 0 0.5px #052e16)
-      drop-shadow(0 0 2px #86efac)
-      drop-shadow(0 0 4px #4ade80);
+    filter: drop-shadow(0 0 0.5px #052e16) drop-shadow(0 0 2px #86efac) drop-shadow(0 0 4px #4ade80);
   }
   50% {
     opacity: 0.94;
-    filter:
-      drop-shadow(0 0 0.5px #052e16)
-      drop-shadow(0 0 3px #bbf7d0)
-      drop-shadow(0 0 6px #22c55e);
+    filter: drop-shadow(0 0 0.5px #052e16) drop-shadow(0 0 3px #bbf7d0) drop-shadow(0 0 6px #22c55e);
   }
 }
 
 html[data-theme="default-night"] .gantt-stay--chip .gantt-stay__end-tab-bulb {
-  filter:
-    drop-shadow(0 0 0.5px #052e16)
-    drop-shadow(0 0 2px #bbf7d0)
-    drop-shadow(0 0 5px #4ade80)
+  filter: drop-shadow(0 0 0.5px #052e16) drop-shadow(0 0 2px #bbf7d0) drop-shadow(0 0 5px #4ade80)
     drop-shadow(0 0 8px color-mix(in srgb, #22c55e 55%, transparent));
 }
 
@@ -478,7 +462,11 @@ html[data-theme="default-night"] .gantt-stay--chip .gantt-stay__end-tab-bulb {
 .gantt-stay--chip.gantt-stay--phase-past .gantt-stay__badge,
 .gantt-stay--chip.gantt-stay--phase-past .gantt-stay__phase-badge {
   background: color-mix(in srgb, var(--booking-past-text) 10%, var(--booking-past-bg)) !important;
-  border-color: color-mix(in srgb, var(--booking-past-text) 18%, var(--booking-past-border)) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--booking-past-text) 18%,
+    var(--booking-past-border)
+  ) !important;
 }
 
 .gantt-stay--chip.gantt-stay--phase-past .gantt-stay__spine {
@@ -501,13 +489,7 @@ html[data-theme="default-night"] .gantt-stay--chip .gantt-stay__end-tab-bulb {
 
 .gantt-stay--chip.gantt-stay--today-turnover .gantt-stay__spine {
   background: #f59e0b;
-  background-image: linear-gradient(
-    180deg,
-    #f59e0b 0%,
-    #f59e0b 50%,
-    #10b981 50%,
-    #10b981 100%
-  );
+  background-image: linear-gradient(180deg, #f59e0b 0%, #f59e0b 50%, #10b981 50%, #10b981 100%);
 }
 
 @media (hover: hover) {

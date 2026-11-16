@@ -25,14 +25,11 @@ export const ROOM_STATUS = {
     label: "Inactive",
     pill: "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200",
   },
-} as const satisfies Record<
-  RoomTonightStatus,
-  { label: string; pill: string }
->;
+} as const satisfies Record<RoomTonightStatus, { label: string; pill: string }>;
 
 export function occupancyCaption(
   pct: number,
-  opts?: { freeTonight?: number; tonight?: boolean }
+  opts?: { freeTonight?: number; tonight?: boolean },
 ): string {
   if (opts?.tonight && opts.freeTonight != null) {
     if (pct === 0) return `${opts.freeTonight} free`;
@@ -44,10 +41,7 @@ export function occupancyCaption(
   return `${pct}% reserved`;
 }
 
-export function occupancyCaptionFromWindow(
-  w: OccupancyWindow,
-  tonight?: boolean
-): string {
+export function occupancyCaptionFromWindow(w: OccupancyWindow, tonight?: boolean): string {
   return occupancyCaption(w.occupancy_pct, {
     tonight,
     freeTonight: w.free_rooms_tonight,

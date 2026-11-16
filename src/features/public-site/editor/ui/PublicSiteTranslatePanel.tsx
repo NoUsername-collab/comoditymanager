@@ -20,7 +20,9 @@ import { usePublicSiteEditor } from "@/features/public-site/editor/ui/PublicSite
 /** Lines a box needs for the longer of the two texts, a few at most. */
 function rowsFor(...texts: string[]): number {
   const lines = Math.max(
-    ...texts.map((text) => text.split("\n").reduce((sum, line) => sum + Math.max(1, Math.ceil(line.length / 56)), 0)),
+    ...texts.map((text) =>
+      text.split("\n").reduce((sum, line) => sum + Math.max(1, Math.ceil(line.length / 56)), 0),
+    ),
   );
   return Math.min(10, Math.max(1, lines));
 }
@@ -84,14 +86,20 @@ export function PublicSiteTranslatePanel({
           <span>{te("translate.into", { language: language(to) })}</span>
         </label>
         <label className="pub-translate__filter">
-          <input type="checkbox" checked={onlyMissing} onChange={(e) => setOnlyMissing(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={onlyMissing}
+            onChange={(e) => setOnlyMissing(e.target.checked)}
+          />
           <span>{te("translate.onlyMissing", { count: missing })}</span>
         </label>
       </div>
 
       {shown.length === 0 ? (
         <p className="pub-editor-tabhint" role="status">
-          {missing === 0 ? te("translate.allDone", { language: language(to) }) : te("translate.nothing")}
+          {missing === 0
+            ? te("translate.allDone", { language: language(to) })
+            : te("translate.nothing")}
         </p>
       ) : null}
 
@@ -105,7 +113,11 @@ export function PublicSiteTranslatePanel({
           {group.rows.map((row) => {
             const id = `pub-translate-${row.path.replace(/[^a-z0-9]/gi, "-")}`;
             return (
-              <div key={row.path} className="pub-translate__row" data-missing={rowMissing(row) ? "1" : undefined}>
+              <div
+                key={row.path}
+                className="pub-translate__row"
+                data-missing={rowMissing(row) ? "1" : undefined}
+              >
                 <label className="pub-translate__label" htmlFor={id}>
                   {rowLabel(row)}
                   {row.copied ? (
@@ -118,7 +130,9 @@ export function PublicSiteTranslatePanel({
                   ) : null}
                 </label>
                 <p className="pub-translate__source" lang={from}>
-                  {row.source || <span className="pub-translate__empty">{te("translate.emptySource")}</span>}
+                  {row.source || (
+                    <span className="pub-translate__empty">{te("translate.emptySource")}</span>
+                  )}
                 </p>
                 <textarea
                   id={id}

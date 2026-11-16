@@ -31,12 +31,7 @@ export function PublicPlace({ config }: { config: PublicSiteConfig }) {
           />
         ) : null}
         {href ? (
-          <a
-            className="pub-place__link"
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a className="pub-place__link" href={href} target="_blank" rel="noopener noreferrer">
             {t("placeMap")}
           </a>
         ) : null}

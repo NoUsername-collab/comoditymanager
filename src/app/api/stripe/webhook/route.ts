@@ -20,7 +20,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (!config) return NextResponse.json({ error: "billing not configured" }, { status: 503 });
 
   const payload = await request.text();
-  if (!verifyStripeSignature(payload, request.headers.get("stripe-signature"), config.webhookSecret)) {
+  if (
+    !verifyStripeSignature(payload, request.headers.get("stripe-signature"), config.webhookSecret)
+  ) {
     return NextResponse.json({ error: "invalid signature" }, { status: 400 });
   }
 

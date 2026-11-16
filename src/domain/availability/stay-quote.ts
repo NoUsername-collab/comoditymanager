@@ -54,12 +54,7 @@ export function quoteStay(args: {
     args.checkOut,
     args.pricingRules,
   );
-  const extrasTotal = computeStayExtrasTotal(
-    usage,
-    args.checkIn,
-    args.checkOut,
-    args.pricingRules,
-  );
+  const extrasTotal = computeStayExtrasTotal(usage, args.checkIn, args.checkOut, args.pricingRules);
   return {
     placement,
     usage,

@@ -48,16 +48,12 @@ export function IssuedInvoiceView({
   const locale = useLocale();
   const dateTag = locale === "ro" ? "ro-RO" : locale === "bg" ? "bg-BG" : "en-GB";
   const fiscalCountry =
-    document.currency === "BGN"
-      ? "BG"
-      : document.currency === "MDL"
-        ? "MD"
-        : "RO";
-  const taxIdLabel = getCountryFiscalProfile(fiscalCountry).taxIdLabel[
-    locale === "bg" ? "bg" : locale === "en" ? "en" : "ro"
-  ];
-  const formatMoney = (amount: number) =>
-    formatInvoiceMoney(amount, document.currency, dateTag);
+    document.currency === "BGN" ? "BG" : document.currency === "MDL" ? "MD" : "RO";
+  const taxIdLabel =
+    getCountryFiscalProfile(fiscalCountry).taxIdLabel[
+      locale === "bg" ? "bg" : locale === "en" ? "en" : "ro"
+    ];
+  const formatMoney = (amount: number) => formatInvoiceMoney(amount, document.currency, dateTag);
   const [localIssuing, setLocalIssuing] = useState(false);
   const [localConverting, setLocalConverting] = useState(false);
   const sheetRef = useRef<HTMLElement>(null);
@@ -105,9 +101,7 @@ export function IssuedInvoiceView({
     <div className="issued-invoice-root">
       <style dangerouslySetInnerHTML={{ __html: INVOICE_SEASON_CSS }} />
       <div className="issued-invoice-actions no-print">
-        {showAnafBadge && anafStatus ? (
-          <FiscalAnafBadge status={anafStatus} />
-        ) : null}
+        {showAnafBadge && anafStatus ? <FiscalAnafBadge status={anafStatus} /> : null}
         {!issued && onIssue ? (
           <button
             type="button"
@@ -115,7 +109,7 @@ export function IssuedInvoiceView({
             disabled={localIssuing || issuing}
             onClick={() => void handleIssue()}
           >
-            {localIssuing || issuing ? t("issuing") : issueLabel ?? t("issueInvoice")}
+            {localIssuing || issuing ? t("issuing") : (issueLabel ?? t("issueInvoice"))}
           </button>
         ) : null}
         {isProforma && issued && canConvert && onConvert ? (
@@ -127,7 +121,7 @@ export function IssuedInvoiceView({
           >
             {localConverting || converting
               ? t("converting")
-              : convertLabel ?? t("convertToAdvance")}
+              : (convertLabel ?? t("convertToAdvance"))}
           </button>
         ) : null}
         <button
@@ -160,15 +154,15 @@ export function IssuedInvoiceView({
             ) : null}
             <p className="issued-invoice-sheet__meta">
               {document.seller_cui ? `${taxIdLabel}: ${document.seller_cui}` : null}
-              {document.seller_reg_com
-                ? ` · ${t("regCom")}: ${document.seller_reg_com}`
-                : null}
+              {document.seller_reg_com ? ` · ${t("regCom")}: ${document.seller_reg_com}` : null}
             </p>
           </div>
           <div className="issued-invoice-sheet__number-box">
             <span>{t("invoiceNumber")}</span>
             <strong>{document.display_number}</strong>
-            <span>{t("issuedAt")}: {issuedLabel}</span>
+            <span>
+              {t("issuedAt")}: {issuedLabel}
+            </span>
           </div>
         </header>
 
@@ -187,8 +181,7 @@ export function IssuedInvoiceView({
               {formatStayPeriod(document.check_in, document.check_out, true)}
             </p>
             <p className="issued-invoice-sheet__meta">
-              {document.nights}{" "}
-              {document.nights === 1 ? t("night") : t("nights")}
+              {document.nights} {document.nights === 1 ? t("night") : t("nights")}
             </p>
           </div>
         </section>
@@ -225,9 +218,7 @@ export function IssuedInvoiceView({
                   <strong>{formatMoney(document.subtotal_net)}</strong>
                 </div>
                 <div>
-                  <span>
-                    {t("vatAmount", { rate: document.vat_rate })}
-                  </span>
+                  <span>{t("vatAmount", { rate: document.vat_rate })}</span>
                   <strong>{formatMoney(document.vat_amount)}</strong>
                 </div>
               </>

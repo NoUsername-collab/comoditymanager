@@ -40,9 +40,7 @@ const now: PendingReadinessNow = {
   currentHour: "15:00",
 };
 
-function makeSnapshot(
-  overrides?: Partial<PendingCheckinSnapshot>,
-): PendingCheckinSnapshot {
+function makeSnapshot(overrides?: Partial<PendingCheckinSnapshot>): PendingCheckinSnapshot {
   return {
     checkInDate: "2026-06-10",
     totalPrice: 500,
@@ -57,11 +55,7 @@ function makeSnapshot(
 
 describe("assessPendingCheckinReadiness", () => {
   test("returns ok when snapshot is fully ready", () => {
-    const result = assessPendingCheckinReadiness(
-      makeSnapshot(),
-      defaultSettings,
-      now,
-    );
+    const result = assessPendingCheckinReadiness(makeSnapshot(), defaultSettings, now);
     expect(result.status).toBe("ok");
     expect(result.flags).toEqual([]);
     expect(result.blockers).toEqual([]);
@@ -100,11 +94,7 @@ describe("assessPendingCheckinReadiness", () => {
       ...defaultSettings,
       checkin_phone_rule: "required" as const,
     };
-    const result = assessPendingCheckinReadiness(
-      makeSnapshot({ guestPhone: null }),
-      settings,
-      now,
-    );
+    const result = assessPendingCheckinReadiness(makeSnapshot({ guestPhone: null }), settings, now);
     expect(result.status).toBe("blocked");
     expect(result.flags).toContain("no_phone");
   });
@@ -133,9 +123,7 @@ describe("assessPendingCheckinReadiness", () => {
       now,
     );
     expect(result.status).toBe("blocked");
-    expect(result.blockers.some((b) => b.includes("Plata integrala"))).toBe(
-      true,
-    );
+    expect(result.blockers.some((b) => b.includes("Plata integrala"))).toBe(true);
   });
 
   test("blocks when partial payment threshold is not met", () => {
@@ -171,11 +159,10 @@ describe("assessPendingCheckinReadiness", () => {
   });
 
   test("blocks early check-in before configured hour on check-in day", () => {
-    const result = assessPendingCheckinReadiness(
-      makeSnapshot(),
-      defaultSettings,
-      { today: "2026-06-10", currentHour: "10:00" },
-    );
+    const result = assessPendingCheckinReadiness(makeSnapshot(), defaultSettings, {
+      today: "2026-06-10",
+      currentHour: "10:00",
+    });
     expect(result.status).toBe("blocked");
     expect(result.flags).toContain("early_checkin");
     expect(result.blockers.some((b) => b.includes("14:00"))).toBe(true);

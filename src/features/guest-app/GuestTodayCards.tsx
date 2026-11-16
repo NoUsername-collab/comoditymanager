@@ -72,10 +72,7 @@ function buildTodayCards(props: Props): TodayCard[] {
         accent: "blue",
       });
     }
-  } else if (
-    phase === "checked_in" &&
-    daysUntilDate(today, checkOut) === 1
-  ) {
+  } else if (phase === "checked_in" && daysUntilDate(today, checkOut) === 1) {
     if (featureVisible(features, "hotel_info")) {
       cards.push({
         featureId: "hotel_info",

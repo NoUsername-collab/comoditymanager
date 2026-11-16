@@ -33,10 +33,14 @@ export default async function AdminRoomsPage({
   const byBuilding = buildings
     .map((b) => ({
       building: b,
-      rooms: rooms.filter((r) => r.building_id === b.id).sort((a, c) => a.name.localeCompare(c.name)),
+      rooms: rooms
+        .filter((r) => r.building_id === b.id)
+        .sort((a, c) => a.name.localeCompare(c.name)),
     }))
     .filter((g) => g.rooms.length > 0)
-    .sort((a, b) => (buildingOrder.get(a.building.id) ?? 0) - (buildingOrder.get(b.building.id) ?? 0));
+    .sort(
+      (a, b) => (buildingOrder.get(a.building.id) ?? 0) - (buildingOrder.get(b.building.id) ?? 0),
+    );
 
   const active = rooms.filter((r) => r.is_active);
   const inactive = rooms.filter((r) => !r.is_active);
@@ -54,7 +58,11 @@ export default async function AdminRoomsPage({
         <ClimateLegend />
       </div>
 
-      {error && <p className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">{error}</p>}
+      {error && (
+        <p className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          {error}
+        </p>
+      )}
 
       <div className="mt-4 space-y-3">
         {byBuilding.map(({ building, rooms: groupRooms }) => (
@@ -97,4 +105,3 @@ export default async function AdminRoomsPage({
     </AdminPageFrame>
   );
 }
-

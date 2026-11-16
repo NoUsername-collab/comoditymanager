@@ -1,7 +1,15 @@
 export const PUBLIC_SITE_MEDIA_BUCKET = "public-site-media";
 export const PUBLIC_SITE_MEDIA_MAX_BYTES = 5 * 1024 * 1024;
 
-const PUBLIC_SITE_MEDIA_KINDS = ["hero", "gallery", "room", "section", "library", "logo", "og"] as const;
+const PUBLIC_SITE_MEDIA_KINDS = [
+  "hero",
+  "gallery",
+  "room",
+  "section",
+  "library",
+  "logo",
+  "og",
+] as const;
 export type PublicSiteMediaKind = (typeof PUBLIC_SITE_MEDIA_KINDS)[number];
 
 const PUBLIC_SITE_MEDIA_MIME = {
@@ -51,8 +59,7 @@ function isPublicSiteMediaKind(value: string): value is PublicSiteMediaKind {
   return (PUBLIC_SITE_MEDIA_KINDS as readonly string[]).includes(value);
 }
 
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export function isPublicSiteTenantId(value: string): boolean {
   return UUID_RE.test(value);
@@ -76,10 +83,7 @@ export function publicSiteObjectPath(
   return `${tenantId}/${kind}/${fileId}.${ext}`;
 }
 
-export function validatePublicSiteUpload(args: {
-  kind: string;
-  bytes: Uint8Array;
-}):
+export function validatePublicSiteUpload(args: { kind: string; bytes: Uint8Array }):
   | {
       ok: true;
       kind: PublicSiteMediaKind;

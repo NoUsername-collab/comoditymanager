@@ -3,12 +3,11 @@ import { isPlatformAdminDbError } from "@/lib/platform-admin/format-db-error";
 import { capturePlatformAdminError } from "@/services/dev-logs";
 
 type PlatformActionResult<T = void> =
-  | { success: true; data?: T }
-  | { success: false; error: string };
+  { success: true; data?: T } | { success: false; error: string };
 
 function platformActionFailure(
   error: unknown,
-  fallback = "Operațiunea a eșuat."
+  fallback = "Operațiunea a eșuat.",
 ): PlatformActionResult<never> {
   if (error instanceof Error) {
     return { success: false, error: error.message || fallback };
@@ -19,7 +18,7 @@ function platformActionFailure(
 /** Guard + handler — never throws to the client. */
 export async function runPlatformAdminAction<T>(
   handler: (session: { userId: string; email: string }) => Promise<T>,
-  fallbackError = "Operațiunea a eșuat."
+  fallbackError = "Operațiunea a eșuat.",
 ): Promise<PlatformActionResult<T>> {
   let session: { userId: string; email: string } | null = null;
   try {

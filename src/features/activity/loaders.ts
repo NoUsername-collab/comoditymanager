@@ -4,11 +4,7 @@ export type { DevLogLevel } from "@/services/dev-logs";
 
 const DEVLOG_PAGE_SIZE = 50;
 
-export async function loadDevLogsPage(sp: {
-  level?: string;
-  source?: string;
-  page?: string;
-}) {
+export async function loadDevLogsPage(sp: { level?: string; source?: string; page?: string }) {
   const level = (sp.level as DevLogLevel) || undefined;
   const source = sp.source || undefined;
   const page = Math.max(1, Number(sp.page) || 1);

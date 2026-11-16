@@ -4,10 +4,7 @@ import { notFound } from "next/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { stayNightCount } from "@/lib/stay-dates";
 import { formatDateWithDay } from "@/lib/ro-calendar";
-import {
-  bookingCalendarHref,
-  formatBookingRef,
-} from "@/lib/booking-admin-links";
+import { bookingCalendarHref, formatBookingRef } from "@/lib/booking-admin-links";
 import { BookingCancelButton } from "@/features/bookings/ui/BookingCancelButton";
 import { BookingGuestPhoneForm } from "@/features/bookings/ui/BookingGuestPhoneForm";
 import { BookingOperationalPanel } from "@/features/bookings/ui/BookingOperationalPanel";
@@ -24,11 +21,7 @@ import { GuestProfileBadges } from "@/features/guests/ui/GuestProfileBadges";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { isBookingEditableAfterCheckout } from "@/domain/booking/post-checkout-edit";
 import { loadBookingDetailPage } from "@/features/bookings/loaders";
-import {
-  cancelBookingAction,
-  confirmBookingAction,
-  editBookingDatesAction,
-} from "../actions";
+import { cancelBookingAction, confirmBookingAction, editBookingDatesAction } from "../actions";
 import { getTranslations } from "next-intl/server";
 
 function safeReturnTo(raw: string | undefined): string {
@@ -109,9 +102,10 @@ export default async function BookingDetailPage({
   const fmtCheckIn = formatDateWithDay(booking.check_in, "ro", true);
   const fmtCheckOut = formatDateWithDay(booking.check_out, "ro", true);
   const adultsLabel = `${booking.num_adults} ${booking.num_adults === 1 ? tStay("adultSingular") : tStay("adultPlural")}`;
-  const childrenLabel = booking.num_children > 0
-    ? `, ${booking.num_children} ${booking.num_children === 1 ? tStay("childSingular") : tStay("childPlural")}`
-    : "";
+  const childrenLabel =
+    booking.num_children > 0
+      ? `, ${booking.num_children} ${booking.num_children === 1 ? tStay("childSingular") : tStay("childPlural")}`
+      : "";
 
   return (
     <AdminPageFrame
@@ -128,9 +122,7 @@ export default async function BookingDetailPage({
             <span className="bd-banner__name">{booking.guest_name}</span>
             <span className="bd-banner__ref">{formatBookingRef(booking.id)}</span>
           </div>
-          <span className={`bd-status bd-status--${booking.status}`}>
-            {tFlow(booking.status)}
-          </span>
+          <span className={`bd-status bd-status--${booking.status}`}>{tFlow(booking.status)}</span>
         </div>
 
         {/* Row 2: stay dates + meta */}
@@ -151,12 +143,10 @@ export default async function BookingDetailPage({
               {nights} {nights === 1 ? tPage("night") : tPage("nights")}
             </span>
             <span className="bd-banner__guests">
-              {adultsLabel}{childrenLabel}
+              {adultsLabel}
+              {childrenLabel}
             </span>
-            <Link
-              href={bookingCalendarHref(booking.check_in)}
-              className="bd-banner__cal-link"
-            >
+            <Link href={bookingCalendarHref(booking.check_in)} className="bd-banner__cal-link">
               {tPage("viewInCalendar")} →
             </Link>
             <span className="bd-banner__edit-hint">
@@ -179,9 +169,7 @@ export default async function BookingDetailPage({
         <div
           className={[
             "bd-alert",
-            booking.guest_alert_level === "blacklist"
-              ? "bd-alert--danger"
-              : "bd-alert--warning",
+            booking.guest_alert_level === "blacklist" ? "bd-alert--danger" : "bd-alert--warning",
           ].join(" ")}
         >
           <GuestProfileBadges
@@ -227,22 +215,15 @@ export default async function BookingDetailPage({
                   <span className="bd-info-label">{tParty("childrenAgesLabel")}</span>
                   <span className="bd-info-value">
                     {booking.children_ages
-                      ? booking.children_ages
-                          .map((age) => tParty("ageOption", { age }))
-                          .join(", ")
+                      ? booking.children_ages.map((age) => tParty("ageOption", { age })).join(", ")
                       : booking.minor_age || tParty("agesUnknown")}
-                    {booking.children_separate_room
-                      ? ` · ${tParty("separateRoomRequested")}`
-                      : ""}
+                    {booking.children_separate_room ? ` · ${tParty("separateRoomRequested")}` : ""}
                   </span>
                 </div>
               )}
             </div>
             {booking.guest_id && (
-              <Link
-                href={`/admin/guests/${booking.guest_id}`}
-                className="bd-link"
-              >
+              <Link href={`/admin/guests/${booking.guest_id}`} className="bd-link">
                 {tPage("guestProfile")} →
               </Link>
             )}
@@ -256,10 +237,7 @@ export default async function BookingDetailPage({
 
           {/* Dedup */}
           {dedupCandidates.length > 0 && (
-            <GuestDedupWarning
-              candidates={dedupCandidates}
-              currentGuestId={booking.guest_id}
-            />
+            <GuestDedupWarning candidates={dedupCandidates} currentGuestId={booking.guest_id} />
           )}
 
           {/* Room & Price (confirmed) */}
@@ -267,20 +245,13 @@ export default async function BookingDetailPage({
             <div className="bd-card bd-card--tight">
               <p className="bd-card__title">{tPage("roomsAndPrice")}</p>
               <div className="bd-room-price">
-                <span className="bd-room-price__rooms">
-                  {booking.room_names.join(", ")}
-                </span>
+                <span className="bd-room-price__rooms">{booking.room_names.join(", ")}</span>
                 {booking.total_price != null && (
-                  <span className="bd-room-price__total">
-                    {booking.total_price} RON
-                  </span>
+                  <span className="bd-room-price__total">{booking.total_price} RON</span>
                 )}
               </div>
               {booking.status === "confirmata" && (
-                <Link
-                  href={`/admin/bookings/${booking.id}/factura`}
-                  className="bd-link"
-                >
+                <Link href={`/admin/bookings/${booking.id}/factura`} className="bd-link">
                   {tPage("invoiceDocument")} →
                 </Link>
               )}
@@ -330,9 +301,7 @@ export default async function BookingDetailPage({
               <p className="bd-card__title">
                 {isCancelled ? tPage("reacceptTitle") : tPage("confirmAllocate")}
               </p>
-              {isCancelled && (
-                <p className="bd-confirm__hint">{tPage("reacceptHint")}</p>
-              )}
+              {isCancelled && <p className="bd-confirm__hint">{tPage("reacceptHint")}</p>}
               <ConfirmRoomsForm
                 bookingId={booking.id}
                 checkIn={booking.check_in}
@@ -357,19 +326,14 @@ export default async function BookingDetailPage({
 
           {booking.status === "confirmata" && (
             <div className="bd-card bd-card--action">
-              <BookingGuestPhoneForm
-                bookingId={booking.id}
-                defaultPhone={booking.guest_phone}
-              />
+              <BookingGuestPhoneForm bookingId={booking.id} defaultPhone={booking.guest_phone} />
               <BookingOperationalPanel
                 bookingId={booking.id}
                 guestName={booking.guest_name}
                 guestPhone={booking.guest_phone}
                 plannedCheckIn={booking.check_in}
                 plannedCheckOut={booking.check_out}
-                actualCheckInAt={
-                  operativeBooking.actual_check_in_at ?? booking.actual_check_in_at
-                }
+                actualCheckInAt={operativeBooking.actual_check_in_at ?? booking.actual_check_in_at}
                 actualCheckOutAt={booking.actual_check_out_at}
                 roomNames={booking.room_names}
                 checkedInRooms={checkedInRooms}
@@ -386,8 +350,7 @@ export default async function BookingDetailPage({
                   null
                 }
                 checkinPaymentAmountPaid={
-                  financialSnapshot?.totalPaid ??
-                  Number(existingCheckin?.payment_amount_paid ?? 0)
+                  financialSnapshot?.totalPaid ?? Number(existingCheckin?.payment_amount_paid ?? 0)
                 }
                 canEditAfterCheckout={canEditAfterCheckout}
               />
@@ -395,20 +358,14 @@ export default async function BookingDetailPage({
           )}
 
           {booking.status === "confirmata" && financialSnapshot && (
-            <StayFinancialPanel
-              bookingId={booking.id}
-              snapshot={financialSnapshot}
-            />
+            <StayFinancialPanel bookingId={booking.id} snapshot={financialSnapshot} />
           )}
         </div>
 
         {/* ─── COL 3: activity / history ────────────────────────── */}
         <div className="bd-col">
           <div className="bd-card bd-card--history">
-            <BookingActivitySection
-              bookingId={booking.id}
-              checkIn={booking.check_in}
-            />
+            <BookingActivitySection bookingId={booking.id} checkIn={booking.check_in} />
           </div>
         </div>
       </div>

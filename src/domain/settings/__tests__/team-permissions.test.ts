@@ -32,12 +32,8 @@ describe("canStaffPermission", () => {
   });
 
   it("respects operator toggles", () => {
-    expect(canStaffPermission("operator", "booking_management", custom)).toBe(
-      true,
-    );
-    expect(canStaffPermission("operator", "pension_settings", custom)).toBe(
-      false,
-    );
+    expect(canStaffPermission("operator", "booking_management", custom)).toBe(true);
+    expect(canStaffPermission("operator", "pension_settings", custom)).toBe(false);
   });
 
   it("uses admin defaults when permissions null", () => {

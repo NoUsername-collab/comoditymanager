@@ -14,16 +14,12 @@ export default async function AdminLoginPage({
     email?: string;
   }>;
 }) {
-  const [t, params] = await Promise.all([
-    getTranslations("admin.login"),
-    searchParams,
-  ]);
+  const [t, params] = await Promise.all([getTranslations("admin.login"), searchParams]);
   const requestedNext =
     params.next?.startsWith("/admin") || params.next?.startsWith("/platform-admin")
       ? params.next
       : null;
-  const next =
-    requestedNext ?? (params.signup === "1" ? ONBOARDING_PATH : "/admin");
+  const next = requestedNext ?? (params.signup === "1" ? ONBOARDING_PATH : "/admin");
   const authError =
     params.error === "unauthorized"
       ? t("notMemberOfPension")
@@ -53,7 +49,9 @@ export default async function AdminLoginPage({
           <ul className="admin-login-panel__features">
             {features.map((f) => (
               <li key={f} className="admin-login-panel__feature">
-                <span className="admin-login-panel__feature-check" aria-hidden>✓</span>
+                <span className="admin-login-panel__feature-check" aria-hidden>
+                  ✓
+                </span>
                 {f}
               </li>
             ))}
@@ -63,19 +61,15 @@ export default async function AdminLoginPage({
         {/* Right panel — form */}
         <div className="admin-login-panel admin-login-panel--right">
           <div className="admin-login-brand admin-login-brand--mobile">
-            <span className="admin-login-brand__icon" aria-hidden>⚡</span>
+            <span className="admin-login-brand__icon" aria-hidden>
+              ⚡
+            </span>
             <span className="admin-login-brand__name">Zalmox</span>
           </div>
           <p className="admin-login-eyebrow">{t("eyebrow")}</p>
           <h1 className="admin-login-title">{t("title")}</h1>
-          {signupSuccess && (
-            <p className="admin-login-success-banner">{signupSuccess}</p>
-          )}
-          <AdminLoginForm
-            next={next}
-            initialError={authError}
-            initialUsername={initialUsername}
-          />
+          {signupSuccess && <p className="admin-login-success-banner">{signupSuccess}</p>}
+          <AdminLoginForm next={next} initialError={authError} initialUsername={initialUsername} />
           <p className="admin-login-signup-cta">
             {t("signupCta")}{" "}
             <Link href="/signup" className="admin-login-signup-link">

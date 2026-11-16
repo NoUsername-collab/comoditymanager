@@ -2,10 +2,7 @@ import { mapBookingToForCheckin } from "@/domain/checkin/map-booking";
 import { ensureTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
 import { resolveShowBrandingForRequest } from "@/lib/tenant/resolve-fiscal-tenant";
 import { loadFinancialSnapshot } from "@/services/booking-financial";
-import {
-  listBookingProformas,
-  previewBookingProforma,
-} from "@/services/booking-proforma";
+import { listBookingProformas, previewBookingProforma } from "@/services/booking-proforma";
 import { getStayPricingRules } from "@/services/booking-rules-settings";
 import { loadBookingConfirmContext } from "@/services/booking-confirm";
 import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
@@ -20,16 +17,10 @@ import { getFiscalStatusMapForInvoices } from "@/services/fiscal-submission";
 import { getGuestFeedbackByBookingId } from "@/services/guest-feedback";
 import { listGuestReceptionRequests } from "@/services/guest-reception-requests";
 import { dedupInputFromBooking, findDedupCandidates } from "@/services/guest-dedup";
-import {
-  listBookingInvoices,
-  previewBookingInvoice,
-} from "@/services/issued-invoice";
+import { listBookingInvoices, previewBookingInvoice } from "@/services/issued-invoice";
 import { getTenantFiscalSettings } from "@/services/tenant-fiscal-settings";
 
-export {
-  REQUEST_LIST_MAX_SHOWN,
-  REQUEST_LIST_PAGE_SIZE,
-} from "@/services/bookings/queries";
+export { REQUEST_LIST_MAX_SHOWN, REQUEST_LIST_PAGE_SIZE } from "@/services/bookings/queries";
 export { proformaCanConvert } from "@/services/booking-proforma";
 
 export async function loadRequestsListPage(shown: number) {
@@ -58,16 +49,10 @@ export async function loadBookingDetailPage(bookingId: string) {
     if (!ctx) {
       return {
         dedupCandidates: [] as Awaited<ReturnType<typeof findDedupCandidates>>,
-        existingCheckin: null as Awaited<
-          ReturnType<typeof getCheckinByBookingId>
-        >,
-        guestFeedback: null as Awaited<
-          ReturnType<typeof getGuestFeedbackByBookingId>
-        >,
+        existingCheckin: null as Awaited<ReturnType<typeof getCheckinByBookingId>>,
+        guestFeedback: null as Awaited<ReturnType<typeof getGuestFeedbackByBookingId>>,
         receptionRequests: [] as Awaited<ReturnType<typeof listGuestReceptionRequests>>,
-        financialSnapshot: null as Awaited<
-          ReturnType<typeof loadFinancialSnapshot>
-        >,
+        financialSnapshot: null as Awaited<ReturnType<typeof loadFinancialSnapshot>>,
       };
     }
     const { booking } = ctx;
@@ -88,7 +73,13 @@ export async function loadBookingDetailPage(bookingId: string) {
         ? loadFinancialSnapshot(booking.id).catch(() => null)
         : Promise.resolve(null),
     ]).then(
-      ([dedupCandidates, existingCheckin, guestFeedback, receptionRequests, financialSnapshot]) => ({
+      ([
+        dedupCandidates,
+        existingCheckin,
+        guestFeedback,
+        receptionRequests,
+        financialSnapshot,
+      ]) => ({
         dedupCandidates,
         existingCheckin,
         guestFeedback,
@@ -98,14 +89,15 @@ export async function loadBookingDetailPage(bookingId: string) {
     );
   });
 
-  const [ctx, bookingExtras, checkinSettings, postCheckoutPolicy, pricingRules] =
-    await Promise.all([
+  const [ctx, bookingExtras, checkinSettings, postCheckoutPolicy, pricingRules] = await Promise.all(
+    [
       ctxPromise,
       bookingExtrasPromise,
       checkinSettingsPromise,
       postCheckoutPolicyPromise,
       getStayPricingRules().catch(() => null),
-    ]);
+    ],
+  );
 
   if (!ctx) return null;
 
@@ -120,8 +112,7 @@ export async function loadBookingDetailPage(bookingId: string) {
   const operativeBooking = bookingWithCheckin ?? booking;
   const checkedInRooms = operativeBooking.checked_in_rooms ?? [];
   const keysHandedRooms = operativeBooking.keys_handed_rooms ?? [];
-  const hasCheckinRecord =
-    !!operativeBooking.has_checkin_record || !!existingCheckin;
+  const hasCheckinRecord = !!operativeBooking.has_checkin_record || !!existingCheckin;
 
   return {
     ctx,

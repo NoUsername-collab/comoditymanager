@@ -9,11 +9,7 @@ import {
   type RankableRoom,
   type RoomCapacity,
 } from "@/domain/availability/stay-capacity";
-import {
-  DEFAULT_CHILD_POLICY,
-  type ChildPolicy,
-  type Party,
-} from "@/domain/availability/party";
+import { DEFAULT_CHILD_POLICY, type ChildPolicy, type Party } from "@/domain/availability/party";
 
 function room(base: number, extras = 0): RoomCapacity {
   return {
@@ -145,12 +141,7 @@ describe("several rooms", () => {
 });
 
 describe("rankRoomSetsForParty", () => {
-  function r(
-    id: string,
-    capacity: RoomCapacity,
-    price: number,
-    building = "A",
-  ): RankableRoom {
+  function r(id: string, capacity: RoomCapacity, price: number, building = "A"): RankableRoom {
     return { id, name: id, price_per_night: price, building_name: building, ...capacity };
   }
 
@@ -167,11 +158,7 @@ describe("rankRoomSetsForParty", () => {
   });
 
   it("prefers two rooms in the same building when the family needs two", () => {
-    const rooms = [
-      r("a1", DOUBLE, 120, "A"),
-      r("b1", DOUBLE, 90, "B"),
-      r("a2", DOUBLE, 120, "A"),
-    ];
+    const rooms = [r("a1", DOUBLE, 120, "A"), r("b1", DOUBLE, 90, "B"), r("a2", DOUBLE, 120, "A")];
     const sets = rankRoomSetsForParty(party(4, [6, 9]), rooms, P);
     expect(sets[0]?.map((x) => x.id).sort()).toEqual(["a1", "a2"]);
   });
@@ -207,13 +194,27 @@ describe("cots, extra beds and the people limit", () => {
   });
 
   it("uses an extra bed only while the property has one free", () => {
-    expect(canRoomsHostParty(party(2, [5, 8]), [DOUBLE_EXTRA], P, { extraBeds: 1, cots: 0 })).toBe(true);
-    expect(canRoomsHostParty(party(2, [5, 8]), [DOUBLE_EXTRA], P, { extraBeds: 0, cots: 0 })).toBe(false);
+    expect(canRoomsHostParty(party(2, [5, 8]), [DOUBLE_EXTRA], P, { extraBeds: 1, cots: 0 })).toBe(
+      true,
+    );
+    expect(canRoomsHostParty(party(2, [5, 8]), [DOUBLE_EXTRA], P, { extraBeds: 0, cots: 0 })).toBe(
+      false,
+    );
   });
 
   it("uses a cot only while the property has one free", () => {
-    expect(canRoomsHostParty(party(1, [0]), [{ ...room(1), max_cots: 1 }], noBabiesInBed, { extraBeds: 0, cots: 1 })).toBe(true);
-    expect(canRoomsHostParty(party(1, [0]), [{ ...room(1), max_cots: 1 }], noBabiesInBed, { extraBeds: 0, cots: 0 })).toBe(false);
+    expect(
+      canRoomsHostParty(party(1, [0]), [{ ...room(1), max_cots: 1 }], noBabiesInBed, {
+        extraBeds: 0,
+        cots: 1,
+      }),
+    ).toBe(true);
+    expect(
+      canRoomsHostParty(party(1, [0]), [{ ...room(1), max_cots: 1 }], noBabiesInBed, {
+        extraBeds: 0,
+        cots: 0,
+      }),
+    ).toBe(false);
   });
 
   it("caps the people in a room, babies included", () => {

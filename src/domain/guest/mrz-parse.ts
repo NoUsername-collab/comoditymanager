@@ -115,12 +115,8 @@ export function tryParseMrzBlock(lines: string[]): MrzParseAttempt | null {
     );
   } else if (lines.length === 2) {
     const isTd3 =
-      /^P[A-Z<]/.test(lines[0] ?? "") ||
-      lines.every((line) => line.length >= TD3_LEN - 4);
-    variants.push(
-      isTd3 ? correctTd3Block(lines) : correctTd2Block(lines),
-      [...lines].reverse(),
-    );
+      /^P[A-Z<]/.test(lines[0] ?? "") || lines.every((line) => line.length >= TD3_LEN - 4);
+    variants.push(isTd3 ? correctTd3Block(lines) : correctTd2Block(lines), [...lines].reverse());
   }
 
   for (const candidate of uniqueLineVariants(variants)) {
@@ -135,7 +131,9 @@ export function tryParseMrzBlock(lines: string[]): MrzParseAttempt | null {
 function correctTd1Line2(line: string): string {
   const chars = line.padEnd(TD1_LEN, "<").slice(0, TD1_LEN).split("");
 
-  const digitPositions = new Set([0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]);
+  const digitPositions = new Set([
+    0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+  ]);
   const letterPositions = new Set([15, 16, 17]);
 
   for (let i = 0; i < chars.length; i++) {
@@ -419,10 +417,7 @@ export function refineTd1Candidates(candidates: string[][]): string[] | null {
 
   for (const raw of candidates) {
     if (raw.length < 3) continue;
-    const variants = [
-      raw.slice(0, 3),
-      correctTd1Block(raw.slice(0, 3)),
-    ];
+    const variants = [raw.slice(0, 3), correctTd1Block(raw.slice(0, 3))];
 
     for (const lines of variants) {
       const score = scoreMrzLines(lines);
@@ -448,8 +443,8 @@ function correctTd3Line1(line: string): string {
 function correctTd3Line2(line: string): string {
   const chars = line.padEnd(TD3_LEN, "<").slice(0, TD3_LEN).split("");
   const digitPositions = new Set([
-    0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-    29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+    0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+    30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
   ]);
 
   for (let i = 0; i < chars.length; i++) {

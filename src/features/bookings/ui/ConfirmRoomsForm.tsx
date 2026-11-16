@@ -60,14 +60,10 @@ export function ConfirmRoomsForm({
   const tCommon = useTranslations("admin.common");
   const tConfirm = useTranslations("admin.confirmRooms");
   const tParty = useTranslations("party");
-  const validDefaults = defaultSelectedIds.filter((id) =>
-    availableRooms.some((r) => r.id === id)
-  );
+  const validDefaults = defaultSelectedIds.filter((id) => availableRooms.some((r) => r.id === id));
   const resolvedSubmitLabel = submitLabel ?? tConfirm("confirmBooking");
 
-  const [selected, setSelected] = useState<Set<string>>(
-    () => new Set(validDefaults)
-  );
+  const [selected, setSelected] = useState<Set<string>>(() => new Set(validDefaults));
   const [modifyPrice, setModifyPrice] = useState(false);
   const [adjustment, setAdjustment] = useState("");
 
@@ -75,7 +71,7 @@ export function ConfirmRoomsForm({
 
   const selectedRooms = useMemo(
     () => availableRooms.filter((r) => selected.has(r.id)),
-    [availableRooms, selected]
+    [availableRooms, selected],
   );
 
   // Same quote as the server: rooms, extra beds and cots, child rules and free stock.
@@ -90,13 +86,12 @@ export function ConfirmRoomsForm({
         checkOut,
         pricingRules,
       }),
-    [selectedRooms, party, childPolicy, inventory, checkIn, checkOut, pricingRules]
+    [selectedRooms, party, childPolicy, inventory, checkIn, checkOut, pricingRules],
   );
   const standardTotal = quote?.total ?? 0;
 
   const adjustmentNum = adjustment === "" ? 0 : Number(adjustment);
-  const adjustmentValid =
-    adjustment === "" || Number.isFinite(adjustmentNum);
+  const adjustmentValid = adjustment === "" || Number.isFinite(adjustmentNum);
   const finalTotal =
     modifyPrice && adjustmentValid
       ? Math.round((standardTotal + adjustmentNum) * 100) / 100
@@ -106,10 +101,7 @@ export function ConfirmRoomsForm({
 
   const noRoomsAvailable = availableRooms.length === 0;
   const showGlobalUnavailable = !canFulfill || noRoomsAvailable;
-  const showSelectionError =
-    canFulfill &&
-    selected.size > 0 &&
-    !selectionHostsGuests;
+  const showSelectionError = canFulfill && selected.size > 0 && !selectionHostsGuests;
 
   const canSubmit =
     canFulfill &&
@@ -141,7 +133,8 @@ export function ConfirmRoomsForm({
         </span>
         {canFulfill && minRoomsNeeded > 0 && (
           <span className="bd-confirm__min-rooms">
-            min. {minRoomsNeeded} {minRoomsNeeded === 1 ? tCommon("room") : tCommon("rooms").toLowerCase()}
+            min. {minRoomsNeeded}{" "}
+            {minRoomsNeeded === 1 ? tCommon("room") : tCommon("rooms").toLowerCase()}
           </span>
         )}
         <span className="bd-confirm__times">
@@ -158,7 +151,8 @@ export function ConfirmRoomsForm({
               ? tConfirm("noRoomInRequestedRange")
               : tConfirm("capacityDoesNotCoverGuests", {
                   count: availableRooms.length,
-                  rooms: availableRooms.length === 1 ? tCommon("room") : tCommon("rooms").toLowerCase(),
+                  rooms:
+                    availableRooms.length === 1 ? tCommon("room") : tCommon("rooms").toLowerCase(),
                   guests: guestCount,
                 })}
           </p>
@@ -182,7 +176,9 @@ export function ConfirmRoomsForm({
               />
             ))}
           </div>
-          <span className={`bd-room-progress__label ${selectionHostsGuests ? "bd-room-progress__label--done" : ""}`}>
+          <span
+            className={`bd-room-progress__label ${selectionHostsGuests ? "bd-room-progress__label--done" : ""}`}
+          >
             {selectionHostsGuests
               ? tConfirm("roomGoalReached")
               : tConfirm("roomProgress", { current: selected.size, needed: minRoomsNeeded })}
@@ -311,9 +307,11 @@ export function ConfirmRoomsForm({
                 <p className="bd-confirm__adjust-error">{tConfirm("enterValidAmount")}</p>
               )}
               <p className="bd-confirm__adjust-result">
-                {tConfirm("recordedTotal")}: <strong>{formatCurrency(finalTotal, "ro-RO")} RON</strong>
+                {tConfirm("recordedTotal")}:{" "}
+                <strong>{formatCurrency(finalTotal, "ro-RO")} RON</strong>
                 <span className="bd-confirm__adjust-breakdown">
-                  ({formatCurrency(standardTotal, "ro-RO")} + {formatCurrency(adjustmentNum, "ro-RO")})
+                  ({formatCurrency(standardTotal, "ro-RO")} +{" "}
+                  {formatCurrency(adjustmentNum, "ro-RO")})
                 </span>
               </p>
             </div>
@@ -321,11 +319,7 @@ export function ConfirmRoomsForm({
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={!canSubmit}
-        className="bd-confirm__submit"
-      >
+      <button type="submit" disabled={!canSubmit} className="bd-confirm__submit">
         {resolvedSubmitLabel}
       </button>
     </AdminPendingForm>

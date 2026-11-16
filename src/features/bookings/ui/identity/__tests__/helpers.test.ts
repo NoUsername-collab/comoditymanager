@@ -166,18 +166,14 @@ describe("booking identity submit gate", () => {
 
   it("requires name, phone, and finished checks", () => {
     expect(isBookingIdentitySubmitReady(ready)).toBe(true);
-    expect(
-      isBookingIdentitySubmitReady({ ...ready, identityChecksReady: false }),
-    ).toBe(false);
+    expect(isBookingIdentitySubmitReady({ ...ready, identityChecksReady: false })).toBe(false);
     expect(isBookingIdentitySubmitReady({ ...ready, lastName: "" })).toBe(false);
     expect(isBookingIdentitySubmitReady({ ...ready, phone: "" })).toBe(false);
     expect(isBookingIdentitySubmitReady({ ...ready, phone: "07" })).toBe(false);
   });
 
   it("requires email only when asked", () => {
-    expect(isBookingIdentitySubmitReady({ ...ready, emailRequired: true })).toBe(
-      false,
-    );
+    expect(isBookingIdentitySubmitReady({ ...ready, emailRequired: true })).toBe(false);
     expect(
       isBookingIdentitySubmitReady({
         ...ready,

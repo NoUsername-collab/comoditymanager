@@ -82,9 +82,7 @@ export function SettingsPreviewLayout({
         className="settings-preview-layout__aside"
         aria-label={previewLabel ?? t("livePreviewAria")}
       >
-        <p className="settings-preview-layout__aside-title">
-          {previewLabel ?? t("asOnSite")}
-        </p>
+        <p className="settings-preview-layout__aside-title">{previewLabel ?? t("asOnSite")}</p>
         {preview}
       </aside>
     </div>

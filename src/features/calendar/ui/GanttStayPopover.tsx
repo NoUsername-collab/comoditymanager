@@ -33,7 +33,7 @@ function resolveRoomList(data: GanttStayPopoverData): string[] {
 
 function timelineSummary(
   timeline: GanttStayTimeline,
-  tGantt: ReturnType<typeof useTranslations<"admin.gantt">>
+  tGantt: ReturnType<typeof useTranslations<"admin.gantt">>,
 ): string {
   if (timeline.variant === "hybrid") {
     if (!timeline.milestoneReached) {
@@ -135,14 +135,12 @@ export function GanttStayPopover({
   const tFlow = useTranslations("booking.flowStatus");
   const locale = useLocale();
   const isRequest = data.status === "cerere_noua";
-  const accent = data.buildingColor ?? (isRequest ? "var(--pending-border)" : "var(--active-border)");
+  const accent =
+    data.buildingColor ?? (isRequest ? "var(--pending-border)" : "var(--active-border)");
   const nights = stayNightCount(data.checkIn, data.checkOut);
   const rooms = resolveRoomList(data);
   const keysHandedRooms = data.keysHandedRooms ?? [];
-  const keysProgress =
-    rooms.length > 0
-      ? computeRoomCheckinProgress(rooms, keysHandedRooms)
-      : null;
+  const keysProgress = rooms.length > 0 ? computeRoomCheckinProgress(rooms, keysHandedRooms) : null;
   const checkInLabel = formatDateWithDay(data.checkIn, locale, true);
   const checkOutLabel = formatDateWithDay(data.checkOut, locale, true);
   const timeline = data.timeline ?? null;
@@ -150,13 +148,10 @@ export function GanttStayPopover({
     keysProgress != null &&
     keysProgress.isMultiRoom &&
     (keysProgress.checked > 0 ||
-      (timeline != null &&
-        shouldShowGanttPopoverRoomKeys(timeline, !!data.actualCheckInAt)));
+      (timeline != null && shouldShowGanttPopoverRoomKeys(timeline, !!data.actualCheckInAt)));
   const showNights = timeline != null && shouldShowGanttPopoverNights(timeline);
-  const showCombinedTimeline =
-    timeline != null && !showRoomKeys && !showNights;
-  const hasStatusPills =
-    isRequest || data.showUnpaid || data.showMissingIdentity;
+  const showCombinedTimeline = timeline != null && !showRoomKeys && !showNights;
+  const hasStatusPills = isRequest || data.showUnpaid || data.showMissingIdentity;
 
   return (
     <AdminFloatingPanel
@@ -172,10 +167,7 @@ export function GanttStayPopover({
       onPanelMouseLeave={onMouseLeave}
     >
       <article
-        className={[
-          "gantt-stay-note__card",
-          isRequest && "gantt-stay-note__card--request",
-        ]
+        className={["gantt-stay-note__card", isRequest && "gantt-stay-note__card--request"]
           .filter(Boolean)
           .join(" ")}
         style={{ "--stay-note-accent": accent } as CSSProperties}
@@ -208,10 +200,7 @@ export function GanttStayPopover({
           </h3>
         </header>
 
-        <section
-          className="gantt-stay-note__section"
-          aria-label={tCommon("period")}
-        >
+        <section className="gantt-stay-note__section" aria-label={tCommon("period")}>
           <div className="gantt-stay-note__period">
             <PeriodCalendarIcon />
             <div className="gantt-stay-note__period-dates">

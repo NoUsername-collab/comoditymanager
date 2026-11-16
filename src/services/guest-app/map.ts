@@ -22,10 +22,7 @@ function mergeFeatures(raw: unknown): GuestAppFeatureDef[] {
     const base = byId.get(id)!;
     byId.set(id, {
       ...base,
-      state:
-        state === "live" || state === "mock" || state === "hidden"
-          ? state
-          : base.state,
+      state: state === "live" || state === "mock" || state === "hidden" ? state : base.state,
     });
   }
   return [...byId.values()].sort((a, b) => a.sortOrder - b.sortOrder);
@@ -40,8 +37,7 @@ export function mapGuestAppSettingsRow(row: {
   loyalty?: unknown;
 }): GuestAppSettings {
   const rawAppearance = (row.appearance ?? {}) as GuestAppAppearance;
-  const hasCustomColors =
-    Boolean(rawAppearance.primaryColor) || Boolean(rawAppearance.accentColor);
+  const hasCustomColors = Boolean(rawAppearance.primaryColor) || Boolean(rawAppearance.accentColor);
   const themeId =
     parseGuestAppThemeSource(rawAppearance.themeId) ??
     (hasCustomColors ? "custom" : DEFAULT_GUEST_APP_SETTINGS.appearance.themeId);
@@ -64,4 +60,3 @@ export function mapGuestAppSettingsRow(row: {
     loyalty: mapGuestLoyaltyProgram(row.loyalty),
   };
 }
-

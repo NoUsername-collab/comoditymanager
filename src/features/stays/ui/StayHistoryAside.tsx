@@ -35,12 +35,7 @@ export function StayHistoryAsideFallback() {
   );
 }
 
-export async function StayHistoryAside({
-  query,
-  cancelledItems,
-  cancelledError,
-  labels,
-}: Props) {
+export async function StayHistoryAside({ query, cancelledItems, cancelledError, labels }: Props) {
   const [tCommon, historyResult] = await Promise.all([
     getTranslations("admin.common"),
     loadStaysSidebarHistoryData(),

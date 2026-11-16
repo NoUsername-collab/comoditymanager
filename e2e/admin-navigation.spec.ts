@@ -25,12 +25,8 @@ test.describe("Admin panel navigation", () => {
       await expect(page.locator("body")).toBeVisible();
 
       // No unhandled errors
-      await expect(
-        page.locator("text=Application error")
-      ).not.toBeVisible({ timeout: 10_000 });
-      await expect(
-        page.locator("text=Internal Server Error")
-      ).not.toBeVisible();
+      await expect(page.locator("text=Application error")).not.toBeVisible({ timeout: 10_000 });
+      await expect(page.locator("text=Internal Server Error")).not.toBeVisible();
     });
   }
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
@@ -39,17 +39,11 @@ export function AvailabilityDatePicker({
         <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
           {tPicker("availabilityOnDate")}
         </p>
-        <p className="text-sm font-semibold text-zinc-800">
-          {viewDateLabel(selectedDate)}
-        </p>
+        <p className="text-sm font-semibold text-zinc-800">{viewDateLabel(selectedDate)}</p>
       </div>
       <label className="flex items-center gap-2 text-sm text-zinc-600">
         <span className="sr-only">{tPicker("chooseDate")}</span>
-        <AdminInput
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setDate(e.target.value)}
-        />
+        <AdminInput type="date" value={selectedDate} onChange={(e) => setDate(e.target.value)} />
       </label>
       {selectedDate !== effectiveToday && (
         <AdminButton variant="secondary" size="sm" onClick={() => setDate(effectiveToday)}>

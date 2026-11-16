@@ -33,7 +33,12 @@ export function GuestMrzScanDialog({ open, onClose, onApply }: Props) {
   if (!open) return null;
 
   return (
-    <div className="guest-app__mrz-overlay" role="dialog" aria-modal="true" aria-labelledby="guest-mrz-title">
+    <div
+      className="guest-app__mrz-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="guest-mrz-title"
+    >
       <button
         type="button"
         className="guest-app__mrz-backdrop"
@@ -45,7 +50,12 @@ export function GuestMrzScanDialog({ open, onClose, onApply }: Props) {
           <h2 id="guest-mrz-title" className="guest-app__mrz-title">
             {t("title")}
           </h2>
-          <button type="button" className="guest-app__mrz-close" onClick={onClose} aria-label={t("close")}>
+          <button
+            type="button"
+            className="guest-app__mrz-close"
+            onClick={onClose}
+            aria-label={t("close")}
+          >
             ×
           </button>
         </header>

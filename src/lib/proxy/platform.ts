@@ -34,7 +34,7 @@ async function platformAdminProxy(request: NextRequest, path: string): Promise<N
 async function redirectPlatformUserToTenantAdmin(
   request: NextRequest,
   requestHost: string | null,
-  path: string
+  path: string,
 ): Promise<NextResponse | null> {
   const supabase = createProxySupabase(request, NextResponse.next());
   if (!supabase) return null;
@@ -54,7 +54,7 @@ async function redirectPlatformUserToTenantAdmin(
 /** Platform login: a signed-in user goes through MFA, then to platform admin or their tenant. */
 async function platformLoginProxy(
   request: NextRequest,
-  requestHost: string | null
+  requestHost: string | null,
 ): Promise<NextResponse> {
   const response = intlMiddleware(request);
   const supabase = createProxySupabase(request, response);
@@ -106,16 +106,14 @@ export async function platformProxy(request: NextRequest, path: string): Promise
 
   // Admin lives on tenant subdomains — send guests to login, owners to subdomain
   if (
-    (path.startsWith("/admin") &&
-      path !== "/admin/login" &&
-      !isMfaExemptAdminPath(path)) ||
+    (path.startsWith("/admin") && path !== "/admin/login" && !isMfaExemptAdminPath(path)) ||
     path.startsWith("/calendar") ||
     path.startsWith("/receptie")
   ) {
     const tenantRedirect = await redirectPlatformUserToTenantAdmin(
       request,
       requestHost,
-      path.startsWith("/admin") ? path : "/admin"
+      path.startsWith("/admin") ? path : "/admin",
     );
     if (tenantRedirect) return tenantRedirect;
 

@@ -50,8 +50,7 @@ export function StaffLogoEntry({
     e.stopPropagation();
 
     const now = Date.now();
-    const withinDouble =
-      lastClickRef.current > 0 && now - lastClickRef.current < DOUBLE_CLICK_MS;
+    const withinDouble = lastClickRef.current > 0 && now - lastClickRef.current < DOUBLE_CLICK_MS;
 
     if (withinDouble || e.detail >= 2) {
       goLogin(e);

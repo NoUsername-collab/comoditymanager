@@ -3,20 +3,10 @@
 import { ActivityUndoButton } from "@/features/activity/ui/ActivityUndoButton";
 import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { useLocale, useTranslations } from "next-intl";
-import {
-  activityCalendarHref,
-  formatBookingRef,
-} from "@/lib/booking-admin-links";
+import { activityCalendarHref, formatBookingRef } from "@/lib/booking-admin-links";
 import { activityMessageKey } from "@/lib/i18n-activity";
-import {
-  activityIcon,
-  activityTone,
-  ACTIVITY_TONE_CLASS,
-} from "@/domain/activity/presentation";
-import {
-  canUndoActivityEntry,
-  isUndoneEntry,
-} from "@/domain/activity/undo/registry";
+import { activityIcon, activityTone, ACTIVITY_TONE_CLASS } from "@/domain/activity/presentation";
+import { canUndoActivityEntry, isUndoneEntry } from "@/domain/activity/undo/registry";
 import type { ActivityLogEntry } from "@/domain/activity/types";
 
 function formatWhen(iso: string, locale: string): string {
@@ -62,10 +52,7 @@ export function ActivityTimeline({
 
   return (
     <ul
-      className={[
-        "activity-timeline",
-        compact && "activity-timeline--compact",
-      ]
+      className={["activity-timeline", compact && "activity-timeline--compact"]
         .filter(Boolean)
         .join(" ")}
     >
@@ -84,31 +71,17 @@ export function ActivityTimeline({
         return (
           <li
             key={entry.id}
-            className={[
-              "activity-timeline__item",
-              isLast && "activity-timeline__item--last",
-            ]
+            className={["activity-timeline__item", isLast && "activity-timeline__item--last"]
               .filter(Boolean)
               .join(" ")}
           >
             <div className="activity-timeline__rail" aria-hidden>
-              <span
-                className={[
-                  "activity-timeline__dot ring-4",
-                  styles.dot,
-                ].join(" ")}
-              />
+              <span className={["activity-timeline__dot ring-4", styles.dot].join(" ")} />
             </div>
 
             <article className="activity-timeline__card">
               <div className="flex flex-wrap items-center gap-2">
-                <span
-                  className={[
-                    "activity-timeline__icon",
-                    styles.icon,
-                  ].join(" ")}
-                  aria-hidden
-                >
+                <span className={["activity-timeline__icon", styles.icon].join(" ")} aria-hidden>
                   {activityIcon(entry.action)}
                 </span>
                 <span
@@ -125,9 +98,7 @@ export function ActivityTimeline({
                 >
                   {formatWhen(entry.created_at, locale)}
                 </time>
-                {showUndo && (
-                  <ActivityUndoButton logId={entry.id} compact />
-                )}
+                {showUndo && <ActivityUndoButton logId={entry.id} compact />}
                 {wasUndone && (
                   <span className="rounded-full border border-zinc-200 bg-zinc-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-zinc-500">
                     {t("undoneBadge")}

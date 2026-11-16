@@ -30,19 +30,13 @@ export async function StatisticsReportSection({ year }: { year?: string }) {
   if (reportResult.status === "rejected") {
     const e = reportResult.reason;
     const msg = e instanceof Error ? e.message : tCommon("loadDataError");
-    return (
-      <p className="mb-4 border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-        {msg}
-      </p>
-    );
+    return <p className="mb-4 border border-red-200 bg-red-50 p-4 text-sm text-red-800">{msg}</p>;
   }
 
   const report = reportResult.value;
 
   if (!report) {
-    return (
-      <p className="mt-5 text-center text-zinc-500">{tPages("noBookingsYet")}</p>
-    );
+    return <p className="mt-5 text-center text-zinc-500">{tPages("noBookingsYet")}</p>;
   }
 
   const focusYear = Number(year) || report.lastYear;
@@ -97,9 +91,7 @@ export async function StatisticsReportSection({ year }: { year?: string }) {
       </div>
 
       <div className="mt-5">
-        <p className="text-sm font-semibold text-zinc-700">
-          {tPages("annualReport")}
-        </p>
+        <p className="text-sm font-semibold text-zinc-700">{tPages("annualReport")}</p>
         <div className="mt-3">
           <StatisticsYearNav years={report.yearsWithData} focusYear={focusYear} />
         </div>
@@ -113,17 +105,41 @@ export async function StatisticsReportSection({ year }: { year?: string }) {
             <StatCard label={tPages("roomOccupancy")} value={`${yearData.occupancyPct}%`} />
             <StatCard
               label={tCommon("revenue")}
-              value={yearData.revenueComplete ? formatRon(yearData.revenueRon, locale) : tCommon("emDash")}
+              value={
+                yearData.revenueComplete
+                  ? formatRon(yearData.revenueRon, locale)
+                  : tCommon("emDash")
+              }
               hint={!yearData.revenueComplete ? tCommon("fillPriceOnConfirm") : undefined}
             />
-            <StatCard label={tPages("adr")} value={formatKpi(yearData.adrRon, yearData.revenueComplete)} hint={tPages("adrHint")} />
-            <StatCard label={tPages("revpar")} value={formatKpi(yearData.revparRon, yearData.revenueComplete)} hint={tPages("revparHint")} />
+            <StatCard
+              label={tPages("adr")}
+              value={formatKpi(yearData.adrRon, yearData.revenueComplete)}
+              hint={tPages("adrHint")}
+            />
+            <StatCard
+              label={tPages("revpar")}
+              value={formatKpi(yearData.revparRon, yearData.revenueComplete)}
+              hint={tPages("revparHint")}
+            />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3 text-sm">
-            <StatCard label={tPages("requestsYear")} value={String(yearData.requestsCreated)} small />
-            <StatCard label={tPages("cancelledYear")} value={String(yearData.cancelledStays)} small />
-            <StatCard label={tPages("guestsTotal")} value={`${yearData.adults} + ${yearData.children}`} small />
+            <StatCard
+              label={tPages("requestsYear")}
+              value={String(yearData.requestsCreated)}
+              small
+            />
+            <StatCard
+              label={tPages("cancelledYear")}
+              value={String(yearData.cancelledStays)}
+              small
+            />
+            <StatCard
+              label={tPages("guestsTotal")}
+              value={`${yearData.adults} + ${yearData.children}`}
+              small
+            />
           </div>
 
           <StatisticsBarChartLazy
@@ -230,9 +246,7 @@ export async function StatisticsReportSection({ year }: { year?: string }) {
           />
         </div>
       ) : (
-        <p className="mt-4 text-sm text-zinc-500">
-          {tPages("noDataForYear", { year: focusYear })}
-        </p>
+        <p className="mt-4 text-sm text-zinc-500">{tPages("noDataForYear", { year: focusYear })}</p>
       )}
     </AdminPanel>
   );

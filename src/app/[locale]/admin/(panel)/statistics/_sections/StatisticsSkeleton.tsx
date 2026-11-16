@@ -6,7 +6,11 @@ export function StatisticsSkeleton({ rows = 4 }: { rows?: number }) {
       </div>
       <div className="flex flex-col gap-3 p-5">
         {Array.from({ length: rows }, (_, i) => (
-          <div key={i} className="h-8 rounded bg-zinc-100" style={{ width: `${70 + (i % 3) * 10}%` }} />
+          <div
+            key={i}
+            className="h-8 rounded bg-zinc-100"
+            style={{ width: `${70 + (i % 3) * 10}%` }}
+          />
         ))}
       </div>
     </div>

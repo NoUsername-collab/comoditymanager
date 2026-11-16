@@ -54,11 +54,7 @@ export function NationalIdTypePicker({
         </span>
       </button>
       {open && (
-        <ul
-          className="guest-id-type-picker__menu"
-          role="listbox"
-          aria-label={labelForType(value)}
-        >
+        <ul className="guest-id-type-picker__menu" role="listbox" aria-label={labelForType(value)}>
           {NATIONAL_ID_TYPES.map((type) => (
             <li key={type} role="none">
               <button

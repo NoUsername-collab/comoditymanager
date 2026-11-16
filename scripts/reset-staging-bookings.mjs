@@ -13,8 +13,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 const confirm = process.argv.includes("--yes");
 const envFile =
-  process.argv.find((a) => a.endsWith(".env") || a.includes(".env.")) ??
-  ".env.staging.local";
+  process.argv.find((a) => a.endsWith(".env") || a.includes(".env.")) ?? ".env.staging.local";
 
 const { path, loaded } = loadEnvFile(root, envFile);
 if (!loaded) {
@@ -50,7 +49,7 @@ if (!count) {
 
 if (!confirm) {
   console.log(
-    `STAGING: ${count} rezervări. Rulează cu --yes pentru ștergere: npm run reset-staging-bookings -- --yes`
+    `STAGING: ${count} rezervări. Rulează cu --yes pentru ștergere: npm run reset-staging-bookings -- --yes`,
   );
   process.exit(0);
 }

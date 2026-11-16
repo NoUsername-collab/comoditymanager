@@ -52,7 +52,11 @@ describe("seeded site copy", () => {
 
 describe("contact links", () => {
   it("carry the address and number a visitor would copy", () => {
-    const links = buildPublicContactLinks({ email: "a@b.ro", whatsapp: "0730 127 427", telegram: "@casa" });
+    const links = buildPublicContactLinks({
+      email: "a@b.ro",
+      whatsapp: "0730 127 427",
+      telegram: "@casa",
+    });
     expect(links.map((link) => [link.id, link.detail])).toEqual([
       ["email", "a@b.ro"],
       ["whatsapp", "0730 127 427"],

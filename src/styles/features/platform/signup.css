@@ -145,7 +145,8 @@
   color: var(--site-fg, #1a1d2e);
 }
 
-.signup-form input.signup-form__input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.signup-form
+  input.signup-form__input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
 .signup-form select.signup-form__input {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -156,7 +157,9 @@
   font-size: 0.9375rem;
   color-scheme: light;
   caret-color: var(--site-fg, #1a1d2e);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .signup-form select.signup-form__input {
@@ -286,7 +289,8 @@
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: 0.625rem;
-  border: 1px dashed color-mix(in srgb, var(--site-accent, #3d5aab) 40%, var(--site-border, #d5dbe8));
+  border: 1px dashed
+    color-mix(in srgb, var(--site-accent, #3d5aab) 40%, var(--site-border, #d5dbe8));
   background: color-mix(in srgb, var(--site-accent, #3d5aab) 6%, #ffffff);
 }
 
@@ -311,7 +315,9 @@
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s ease, transform 0.15s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.15s ease;
 }
 
 .signup-form__submit:hover:not(:disabled) {

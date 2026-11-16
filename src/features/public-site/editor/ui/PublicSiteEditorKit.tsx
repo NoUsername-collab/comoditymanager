@@ -210,11 +210,7 @@ export function EditorLinkPicker({
       {selected === "custom" ? (
         <label>
           <span>{t("links.customLabel")}</span>
-          <input
-            value={value}
-            placeholder="https://"
-            onChange={(e) => onChange(e.target.value)}
-          />
+          <input value={value} placeholder="https://" onChange={(e) => onChange(e.target.value)} />
         </label>
       ) : null}
     </div>

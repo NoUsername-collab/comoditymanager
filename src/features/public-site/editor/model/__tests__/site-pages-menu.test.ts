@@ -15,7 +15,10 @@ import {
   withMenuTarget,
 } from "@/features/public-site/editor/model/menu-draft";
 import { setSectionField } from "@/features/public-site/editor/model/section-draft";
-import { createSitePageDraft, setPageText } from "@/features/public-site/editor/model/site-page-draft";
+import {
+  createSitePageDraft,
+  setPageText,
+} from "@/features/public-site/editor/model/site-page-draft";
 import {
   buildPublicSiteStudioDraft,
   mergeStudioToInput,
@@ -36,7 +39,9 @@ const item = (id: string, extra: Partial<PublicMenuItem> = {}): PublicMenuItem =
   ...extra,
 });
 const ids = (menu: PublicMenuItem[]) =>
-  menu.map((row) => (row.children ? `${row.id}[${row.children.map((c) => c.id).join(",")}]` : row.id)).join(" ");
+  menu
+    .map((row) => (row.children ? `${row.id}[${row.children.map((c) => c.id).join(",")}]` : row.id))
+    .join(" ");
 
 describe("editing the menu", () => {
   const menu = [item("a"), item("b"), item("c")];
@@ -67,7 +72,10 @@ describe("editing the menu", () => {
     const url = withMenuTarget(item("u"), "url");
     expect(url).toMatchObject({ kind: "url", ref: "" });
     expect(withMenuTarget({ ...url, ref: "https://a.ro" }, "url").ref).toBe("https://a.ro");
-    expect(withMenuTarget({ ...url, ref: "https://a.ro" }, "page:p1")).toMatchObject({ kind: "page", ref: "p1" });
+    expect(withMenuTarget({ ...url, ref: "https://a.ro" }, "page:p1")).toMatchObject({
+      kind: "page",
+      ref: "p1",
+    });
     expect(withMenuTarget({ ...url, ref: "https://a.ro" }, "privacy")).not.toHaveProperty("ref");
   });
 
@@ -75,7 +83,10 @@ describe("editing the menu", () => {
     const saved = menuToSave([
       item("a"),
       item("p", { kind: "page", ref: "" }),
-      item("g", { kind: "group", children: [item("u", { kind: "url", ref: "  https://a.ro " }), item("q", { kind: "page" })] }),
+      item("g", {
+        kind: "group",
+        children: [item("u", { kind: "url", ref: "  https://a.ro " }), item("q", { kind: "page" })],
+      }),
     ]);
     expect(saved).toEqual([
       item("a"),
@@ -122,7 +133,13 @@ let seq = 0;
 const newKey = () => `00000000-0000-4000-8000-${String(++seq).padStart(12, "0")}`;
 
 function withRestaurant(draft: PublicSiteStudioDraft): PublicSiteStudioDraft {
-  const page = createSitePageDraft({ name: "Restaurant", model: "restaurant", locale: "ro", takenSlugs: [], newKey });
+  const page = createSitePageDraft({
+    name: "Restaurant",
+    model: "restaurant",
+    locale: "ro",
+    takenSlugs: [],
+    newKey,
+  });
   return {
     ...draft,
     pages: [...draft.pages, page],
@@ -152,21 +169,33 @@ describe("own pages", () => {
   it("are saved with their sections, pass the schema and come back after a reload", () => {
     let draft = withRestaurant(buildPublicSiteStudioDraft(config, "ro"));
     const page = draft.pages[0]!;
-    draft = patchStudioPage(draft, page.key, (row) => setPageText(row, "ro", "lead", "Bucătărie de casă"));
+    draft = patchStudioPage(draft, page.key, (row) =>
+      setPageText(row, "ro", "lead", "Bucătărie de casă"),
+    );
     draft = patchStudioSection(draft, page.sections[0]!.key, (section) =>
       setSectionField(section, "ro", "title", "Meniul zilei"),
     );
     const { input, saved, reloaded } = saveAndReload(draft);
 
     expect(input.sitePages).toHaveLength(1);
-    expect(input.sitePages[0]).toMatchObject({ slug: "restaurant", title: { ro: "Restaurant" }, visible: true });
+    expect(input.sitePages[0]).toMatchObject({
+      slug: "restaurant",
+      title: { ro: "Restaurant" },
+      visible: true,
+    });
     expect(input.chrome.menu).toEqual([
       { id: "home", kind: "home", label: {} },
       { id: "m-rest", kind: "page", ref: page.key, label: {} },
     ]);
-    expect(saved.sitePages[0]!.sections.map((section) => section.sectionType)).toEqual(["text", "gallery", "faq"]);
+    expect(saved.sitePages[0]!.sections.map((section) => section.sectionType)).toEqual([
+      "text",
+      "gallery",
+      "faq",
+    ]);
     // The first page keeps its own sections only.
-    expect(saved.sections.map((section) => section.sectionType)).toEqual(draft.sections.map((section) => section.type));
+    expect(saved.sections.map((section) => section.sectionType)).toEqual(
+      draft.sections.map((section) => section.type),
+    );
     expect(saved.sections.map((section) => section.sectionType)).not.toContain("faq");
 
     const back = reloaded.pages[0]!;
@@ -182,9 +211,18 @@ describe("own pages", () => {
     expect(parsed.ok).toBe(false);
     if (!parsed.ok) expect(parsed.fieldErrors?.["sitePages.1.slug"]).toBeDefined();
 
-    const reserved = patchStudioPage(withRestaurant(buildPublicSiteStudioDraft(config, "ro")), draft.pages[0]!.key, (p) => p);
-    const calendar = { ...reserved, pages: reserved.pages.map((p) => ({ ...p, slug: "calendar" })) };
-    expect(parsePublicSiteSettingsInput(mergeStudioToInput({ config, draft: calendar })).ok).toBe(false);
+    const reserved = patchStudioPage(
+      withRestaurant(buildPublicSiteStudioDraft(config, "ro")),
+      draft.pages[0]!.key,
+      (p) => p,
+    );
+    const calendar = {
+      ...reserved,
+      pages: reserved.pages.map((p) => ({ ...p, slug: "calendar" })),
+    };
+    expect(parsePublicSiteSettingsInput(mergeStudioToInput({ config, draft: calendar })).ok).toBe(
+      false,
+    );
   });
 
   it("take their sections and menu links with them when removed", () => {
@@ -193,10 +231,18 @@ describe("own pages", () => {
     const faq = page.sections[2]!;
     draft = {
       ...draft,
-      menu: addMenuItem(draft.menu, { id: "m-faq", kind: "section", ref: faq.key, label: { ro: "Întrebări" } }),
+      menu: addMenuItem(draft.menu, {
+        id: "m-faq",
+        kind: "section",
+        ref: faq.key,
+        label: { ro: "Întrebări" },
+      }),
     };
     const withoutFaq = removeStudioSection(draft, faq.key);
-    expect(sectionsOf(withoutFaq, page.key).map((section) => section.type)).toEqual(["text", "gallery"]);
+    expect(sectionsOf(withoutFaq, page.key).map((section) => section.type)).toEqual([
+      "text",
+      "gallery",
+    ]);
     expect(withoutFaq.menu.map((row) => row.id)).toEqual(["home", "m-rest"]);
 
     const removed = removeStudioPage(draft, page.key);

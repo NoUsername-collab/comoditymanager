@@ -13,10 +13,7 @@ export function isOverdueUnclosedStay(args: {
 }
 
 /** Whole calendar days since planned check-out (0 when not overdue). */
-export function daysSincePlannedCheckout(
-  plannedCheckOut: string,
-  today: string
-): number {
+export function daysSincePlannedCheckout(plannedCheckOut: string, today: string): number {
   if (!plannedCheckOut || !today || today <= plannedCheckOut) return 0;
   const planned = parseIso(plannedCheckOut);
   const current = parseIso(today);
@@ -27,7 +24,7 @@ export function daysSincePlannedCheckout(
 /** Default datetime-local for closing an overdue stay at planned departure hour. */
 export function defaultOperativeCheckoutDatetime(
   plannedCheckOut: string,
-  checkoutTimeUntil: string | null | undefined
+  checkoutTimeUntil: string | null | undefined,
 ): string {
   const time = checkoutTimeUntil?.trim().slice(0, 5) || DEFAULT_CHECK_OUT_TIME;
   return `${plannedCheckOut}T${time}`;
@@ -37,7 +34,7 @@ export function defaultOperativeCheckoutDatetime(
 export function shouldApplyEarlyDeparturePolicy(
   plannedCheckOut: string,
   today: string,
-  actualCheckOutAt?: string | null
+  actualCheckOutAt?: string | null,
 ): boolean {
   if (isOverdueUnclosedStay({ plannedCheckOut, today, actualCheckOutAt })) {
     return false;

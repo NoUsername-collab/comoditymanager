@@ -1,8 +1,5 @@
 import { occupantCheckinSlots } from "@/domain/booking/occupants";
-import type {
-  BookingOccupantDraft,
-  BookingOccupantRow,
-} from "@/domain/booking/occupants";
+import type { BookingOccupantDraft, BookingOccupantRow } from "@/domain/booking/occupants";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { resolveGuestForBooking } from "@/services/guest-booking-resolve";
 import { getRoomsByIds } from "@/services/rooms-admin";
@@ -12,7 +9,7 @@ export type { BookingOccupantDraft, BookingOccupantRow };
 export async function saveBookingOccupants(
   bookingId: string,
   titularGuestId: string | null,
-  occupants: BookingOccupantDraft[]
+  occupants: BookingOccupantDraft[],
 ): Promise<void> {
   if (occupants.length === 0) return;
 
@@ -26,8 +23,7 @@ export async function saveBookingOccupants(
 
   for (const [index, occupant] of occupants.entries()) {
     const isRepresentative = index === 0 || occupant.isRepresentative;
-    let guestId =
-      isRepresentative && titularGuestId ? titularGuestId : null;
+    let guestId = isRepresentative && titularGuestId ? titularGuestId : null;
     if (!guestId) {
       const resolved = await resolveGuestForBooking({
         guest_name: `${occupant.guestLastName} ${occupant.guestFirstName}`.trim(),
@@ -49,15 +45,13 @@ export async function saveBookingOccupants(
 
   if (rows.length === 0) return;
 
-  const { error } = await supabase.from("booking_occupants").insert(
-    rows.map((row) => withTenantId(tenantId, row))
-  );
+  const { error } = await supabase
+    .from("booking_occupants")
+    .insert(rows.map((row) => withTenantId(tenantId, row)));
   if (error) throw new Error(error.message);
 }
 
-async function listBookingOccupants(
-  bookingId: string
-): Promise<BookingOccupantRow[]> {
+async function listBookingOccupants(bookingId: string): Promise<BookingOccupantRow[]> {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("booking_occupants")

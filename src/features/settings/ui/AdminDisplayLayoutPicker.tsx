@@ -20,17 +20,11 @@ import {
   type LayoutChrome,
 } from "@/layout/mobile";
 
-const OPTIONS: DisplayLayoutPreference[] = [
-  "auto",
-  "wide",
-  "laptop",
-  "compact-laptop",
-  "narrow",
-];
+const OPTIONS: DisplayLayoutPreference[] = ["auto", "wide", "laptop", "compact-laptop", "narrow"];
 
 function optionLabel(
   value: DisplayLayoutPreference,
-  t: ReturnType<typeof useTranslations<"admin.pages.settings">>
+  t: ReturnType<typeof useTranslations<"admin.pages.settings">>,
 ): string {
   if (value === "auto") return t("displayLayoutAuto");
   if (value === "wide") return t("displayLayoutWide");
@@ -41,11 +35,9 @@ function optionLabel(
 
 function chromeLabel(
   chrome: LayoutChrome,
-  t: ReturnType<typeof useTranslations<"admin.pages.settings">>
+  t: ReturnType<typeof useTranslations<"admin.pages.settings">>,
 ): string {
-  return chrome === "compact"
-    ? t("displayLayoutChromeCompact")
-    : t("displayLayoutChromeWide");
+  return chrome === "compact" ? t("displayLayoutChromeCompact") : t("displayLayoutChromeWide");
 }
 
 export function AdminDisplayLayoutPicker() {
@@ -90,11 +82,7 @@ export function AdminDisplayLayoutPicker() {
   }
 
   const activeProfile: DisplayProfile =
-    preference === "auto"
-      ? detected
-      : isDisplayProfile(preference)
-        ? preference
-        : detected;
+    preference === "auto" ? detected : isDisplayProfile(preference) ? preference : detected;
 
   return (
     <div className="admin-palette-block admin-display-layout">

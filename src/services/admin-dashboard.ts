@@ -1,18 +1,8 @@
 import { cache } from "react";
-import {
-  countNewRequests,
-  listNewRequestsPreview,
-  type BookingRow,
-} from "@/services/bookings";
-import {
-  listBuildingDashboards,
-  type BuildingDashboard,
-} from "@/services/building-dashboard";
+import { countNewRequests, listNewRequestsPreview, type BookingRow } from "@/services/bookings";
+import { listBuildingDashboards, type BuildingDashboard } from "@/services/building-dashboard";
 import { getPensionSettings } from "@/services/pension-settings";
-import {
-  DEFAULT_CHECK_IN_TIME,
-  DEFAULT_CHECK_OUT_TIME,
-} from "@/lib/constants";
+import { DEFAULT_CHECK_IN_TIME, DEFAULT_CHECK_OUT_TIME } from "@/lib/constants";
 import { loadMonthComparison } from "@/services/month-comparison";
 import { loadTodayBoard, type TodayBoard } from "@/services/today-board";
 import {
@@ -21,10 +11,7 @@ import {
   countUnpaidInHouseCheckins,
 } from "@/services/checkin";
 import type { CheckinSettings } from "@/domain/checkin/types";
-import {
-  computePensionMood,
-  type PensionMood,
-} from "@/domain/pension/mood";
+import { computePensionMood, type PensionMood } from "@/domain/pension/mood";
 import { countConfirmedStays } from "@/services/milestones";
 import {
   buildHomeBriefing,
@@ -79,7 +66,7 @@ function todayLabelForLocale(locale: string): string {
 }
 
 async function resolveDashboardPensionName(
-  settings: Awaited<ReturnType<typeof getPensionSettings>>
+  settings: Awaited<ReturnType<typeof getPensionSettings>>,
 ): Promise<string> {
   if (settings?.display_name?.trim()) {
     return settings.display_name.trim();
@@ -89,11 +76,11 @@ async function resolveDashboardPensionName(
 }
 
 async function loadTodayBoardForSettings(
-  settings: Awaited<ReturnType<typeof getPensionSettings>>
+  settings: Awaited<ReturnType<typeof getPensionSettings>>,
 ): Promise<TodayBoard | null> {
   return loadTodayBoard(
     settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME,
-    settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME
+    settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME,
   ).catch(() => null);
 }
 
@@ -101,22 +88,35 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
   const timer = createServerTimer("admin-dashboard");
   const pensionPromise = getPensionSettings().catch(() => null);
 
-  const [locale, tDash, tCommon, settings, requestCount, requestPreview, buildings, todayBoard, monthCompare, totalConfirmed, pensionName, checkinSettings, unpaidInHouseCount] =
-    await Promise.all([
-      getLocale(),
-      getTranslations("admin.dashboard"),
-      getTranslations("admin.common"),
-      pensionPromise,
-      countNewRequests(),
-      listNewRequestsPreview(5),
-      listBuildingDashboards(),
-      pensionPromise.then(loadTodayBoardForSettings),
-      loadMonthComparison().catch(() => null),
-      countConfirmedStays().catch(() => 0),
-      pensionPromise.then(resolveDashboardPensionName),
-      getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
-      countUnpaidInHouseCheckins(),
-    ]);
+  const [
+    locale,
+    tDash,
+    tCommon,
+    settings,
+    requestCount,
+    requestPreview,
+    buildings,
+    todayBoard,
+    monthCompare,
+    totalConfirmed,
+    pensionName,
+    checkinSettings,
+    unpaidInHouseCount,
+  ] = await Promise.all([
+    getLocale(),
+    getTranslations("admin.dashboard"),
+    getTranslations("admin.common"),
+    pensionPromise,
+    countNewRequests(),
+    listNewRequestsPreview(5),
+    listBuildingDashboards(),
+    pensionPromise.then(loadTodayBoardForSettings),
+    loadMonthComparison().catch(() => null),
+    countConfirmedStays().catch(() => 0),
+    pensionPromise.then(resolveDashboardPensionName),
+    getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
+    countUnpaidInHouseCheckins(),
+  ]);
 
   const pensionFallback = platformPensionNameFallback();
 
@@ -154,10 +154,8 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
   });
 
   try {
-    const checkInTime =
-      settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
-    const checkOutTime =
-      settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
+    const checkInTime = settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
+    const checkOutTime = settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
 
     let activeRooms = 0;
     let freeTonight = 0;
@@ -168,18 +166,14 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
     for (const b of buildings) {
       activeRooms += b.active_room_count;
       freeTonight += b.on_date.free_rooms_tonight ?? 0;
-      occupiedTonight +=
-        b.active_room_count - (b.on_date.free_rooms_tonight ?? 0);
+      occupiedTonight += b.active_room_count - (b.on_date.free_rooms_tonight ?? 0);
       weekOccupied += b.week.occupied_room_nights;
       weekTotal += b.week.total_room_nights;
     }
 
     const occupancyTonightPct =
-      activeRooms > 0
-        ? Math.round((occupiedTonight / activeRooms) * 100)
-        : 0;
-    const weekOccupancyPct =
-      weekTotal > 0 ? Math.round((weekOccupied / weekTotal) * 100) : 0;
+      activeRooms > 0 ? Math.round((occupiedTonight / activeRooms) * 100) : 0;
+    const weekOccupancyPct = weekTotal > 0 ? Math.round((weekOccupied / weekTotal) * 100) : 0;
 
     const stats = {
       buildingsCount: buildings.length,
@@ -237,19 +231,29 @@ export const loadAdminDashboard = cache(loadAdminDashboardImpl);
 async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
   const pensionPromise = getPensionSettings().catch(() => null);
 
-  const [locale, tCommon, settings, requestCount, requestPreview, buildings, todayBoard, pensionName, checkinSettings, unpaidInHouseCount] =
-    await Promise.all([
-      getLocale(),
-      getTranslations("admin.common"),
-      pensionPromise,
-      countNewRequests(),
-      listNewRequestsPreview(5),
-      listBuildingDashboards(),
-      pensionPromise.then(loadTodayBoardForSettings),
-      pensionPromise.then(resolveDashboardPensionName),
-      getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
-      countUnpaidInHouseCheckins(),
-    ]);
+  const [
+    locale,
+    tCommon,
+    settings,
+    requestCount,
+    requestPreview,
+    buildings,
+    todayBoard,
+    pensionName,
+    checkinSettings,
+    unpaidInHouseCount,
+  ] = await Promise.all([
+    getLocale(),
+    getTranslations("admin.common"),
+    pensionPromise,
+    countNewRequests(),
+    listNewRequestsPreview(5),
+    listBuildingDashboards(),
+    pensionPromise.then(loadTodayBoardForSettings),
+    pensionPromise.then(resolveDashboardPensionName),
+    getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
+    countUnpaidInHouseCheckins(),
+  ]);
   const pensionFallback = platformPensionNameFallback();
 
   const fallback: AdminDashboardData = {
@@ -286,10 +290,8 @@ async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
   });
 
   try {
-    const checkInTime =
-      settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
-    const checkOutTime =
-      settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
+    const checkInTime = settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
+    const checkOutTime = settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
 
     let activeRooms = 0;
     let freeTonight = 0;
@@ -300,18 +302,14 @@ async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
     for (const b of buildings) {
       activeRooms += b.active_room_count;
       freeTonight += b.on_date.free_rooms_tonight ?? 0;
-      occupiedTonight +=
-        b.active_room_count - (b.on_date.free_rooms_tonight ?? 0);
+      occupiedTonight += b.active_room_count - (b.on_date.free_rooms_tonight ?? 0);
       weekOccupied += b.week.occupied_room_nights;
       weekTotal += b.week.total_room_nights;
     }
 
     const occupancyTonightPct =
-      activeRooms > 0
-        ? Math.round((occupiedTonight / activeRooms) * 100)
-        : 0;
-    const weekOccupancyPct =
-      weekTotal > 0 ? Math.round((weekOccupied / weekTotal) * 100) : 0;
+      activeRooms > 0 ? Math.round((occupiedTonight / activeRooms) * 100) : 0;
+    const weekOccupancyPct = weekTotal > 0 ? Math.round((weekOccupied / weekTotal) * 100) : 0;
 
     return {
       pensionName,

@@ -1,10 +1,7 @@
 import { debounce } from "@/lib/debounce";
 import { DISPLAY_LAYOUT_CHANGED_EVENT } from "@/lib/ui/display-layout-preference";
 import type { DisplayLayoutPreference } from "@/lib/ui/display-layout-preference";
-import {
-  applyDocumentLayout,
-  isDocumentLayoutBootstrapped,
-} from "./apply-document-layout";
+import { applyDocumentLayout, isDocumentLayoutBootstrapped } from "./apply-document-layout";
 import { LAYOUT_RESIZE_DEBOUNCE_MS } from "./viewport";
 
 export { LAYOUT_RESIZE_DEBOUNCE_MS };
@@ -28,16 +25,11 @@ function syncLayout(preference?: DisplayLayoutPreference) {
   notifyListeners();
 }
 
-function ensureWindowListeners(
-  ms: number,
-  immediateOnPreferenceChange: boolean
-) {
+function ensureWindowListeners(ms: number, immediateOnPreferenceChange: boolean) {
   if (teardownWindowListeners) return;
 
   const debouncedSync = debounce(() => syncLayout(), ms);
-  const onPreferenceChange = immediateOnPreferenceChange
-    ? () => syncLayout()
-    : debouncedSync;
+  const onPreferenceChange = immediateOnPreferenceChange ? () => syncLayout() : debouncedSync;
 
   window.addEventListener("resize", debouncedSync);
   window.addEventListener("orientationchange", debouncedSync);
@@ -58,7 +50,7 @@ function ensureWindowListeners(
  */
 export function subscribeLayoutViewportChanges(
   onChange?: () => void,
-  options: LayoutViewportSubscriptionOptions = {}
+  options: LayoutViewportSubscriptionOptions = {},
 ): () => void {
   const ms = options.debounceMs ?? LAYOUT_RESIZE_DEBOUNCE_MS;
   const immediateOnPreferenceChange = options.immediateOnPreferenceChange ?? true;

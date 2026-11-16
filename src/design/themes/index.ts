@@ -6,12 +6,7 @@ export type {
   AdminPrimitiveTokens,
   GuestAppThemeSource,
 } from "./types";
-export {
-  DESIGN_THEMES,
-  DESIGN_THEME_IDS,
-  getDesignTheme,
-  migrateDesignThemeId,
-} from "./catalog";
+export { DESIGN_THEMES, DESIGN_THEME_IDS, getDesignTheme, migrateDesignThemeId } from "./catalog";
 export { resolvePublicThemeStyle, publicThemeClassName } from "./public";
 export {
   resolveGuestAppThemeStyle,

@@ -48,7 +48,7 @@ async function requestHostForLog(): Promise<string | null> {
 
 async function logCreateRoomFailure(
   error: unknown,
-  context: Record<string, unknown>
+  context: Record<string, unknown>,
 ): Promise<void> {
   const err = error instanceof Error ? error : new Error(String(error));
   await captureTenantError(err, {
@@ -67,7 +67,7 @@ async function redirectRoomFormError(
   formData: FormData,
   code: string,
   extra?: URLSearchParams,
-  logContext?: Record<string, unknown>
+  logContext?: Record<string, unknown>,
 ) {
   if (logContext) {
     await logCreateRoomFailure(new Error(`rooms.${code}`), {
@@ -96,15 +96,11 @@ export async function createRoomAction(formData: FormData) {
     const create_mode = String(formData.get("create_mode") ?? "single");
     const building_id = String(formData.get("building_id") ?? "");
     const floor_id = String(formData.get("floor_id") ?? "");
-    const room_type_definition_id = String(
-      formData.get("room_type_definition_id") ?? ""
-    );
+    const room_type_definition_id = String(formData.get("room_type_definition_id") ?? "");
     const price_per_night = Number(formData.get("price_per_night") ?? 0);
     const sort_order = Number(formData.get("sort_order") ?? 0);
     const allows_extra_beds = formData.get("allows_extra_beds") === "on";
-    const max_extra_beds_per_room = Number(
-      formData.get("max_extra_beds_per_room") ?? 0
-    );
+    const max_extra_beds_per_room = Number(formData.get("max_extra_beds_per_room") ?? 0);
     const enabled_option_ids = parseSelectedOptionIds(formData).filter(Boolean);
     const { max_cots, max_occupancy } = parseRoomSleepingLimits(formData);
 
@@ -115,9 +111,7 @@ export async function createRoomAction(formData: FormData) {
       return;
     }
 
-    const building_default_price = await getBuildingDefaultPrice(building_id).catch(
-      () => 0
-    );
+    const building_default_price = await getBuildingDefaultPrice(building_id).catch(() => 0);
 
     if (create_mode === "bulk") {
       const naming_mode =
@@ -125,9 +119,7 @@ export async function createRoomAction(formData: FormData) {
           ? "number_only"
           : "prefix";
       const name_prefix =
-        naming_mode === "number_only"
-          ? ""
-          : String(formData.get("name_prefix") ?? "").trim();
+        naming_mode === "number_only" ? "" : String(formData.get("name_prefix") ?? "").trim();
       const start_number = Number(formData.get("start_number") ?? 1);
       const bulk_count = Number(formData.get("bulk_count") ?? 1);
 
@@ -157,13 +149,10 @@ export async function createRoomAction(formData: FormData) {
             formData,
             "bulk_duplicate",
             new URLSearchParams({ names: list }),
-            { reason: "bulk_duplicate_names", names: list }
+            { reason: "bulk_duplicate_names", names: list },
           );
         }
-        if (
-          e instanceof Error &&
-          e.message === "rooms.bulk_count_must_be_between_1_and_50"
-        ) {
+        if (e instanceof Error && e.message === "rooms.bulk_count_must_be_between_1_and_50") {
           await redirectRoomFormError(formData, "bulk_count", undefined, {
             reason: "bulk_count_invalid",
           });
@@ -173,10 +162,7 @@ export async function createRoomAction(formData: FormData) {
             reason: "floor_building_mismatch",
           });
         }
-        if (
-          e instanceof Error &&
-          e.message.includes("rooms_room_type_check")
-        ) {
+        if (e instanceof Error && e.message.includes("rooms_room_type_check")) {
           await redirectRoomFormError(formData, "room_type_constraint", undefined, {
             reason: "rooms_room_type_check",
             message: e.message,
@@ -239,7 +225,7 @@ export async function createRoomAction(formData: FormData) {
           formData,
           "duplicate_name",
           new URLSearchParams({ names: dup }),
-          { reason: "duplicate_name", names: dup }
+          { reason: "duplicate_name", names: dup },
         );
       }
       if (e instanceof Error && e.message === "floors.building_mismatch") {
@@ -247,10 +233,7 @@ export async function createRoomAction(formData: FormData) {
           reason: "floor_building_mismatch",
         });
       }
-      if (
-        e instanceof Error &&
-        e.message.includes("rooms_room_type_check")
-      ) {
+      if (e instanceof Error && e.message.includes("rooms_room_type_check")) {
         await redirectRoomFormError(formData, "room_type_constraint", undefined, {
           reason: "rooms_room_type_check",
           message: e.message,

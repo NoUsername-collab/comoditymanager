@@ -3,10 +3,6 @@ import "@/styles/features/admin/admin-stays-cards.css";
 import "@/styles/features/admin/admin-payments.css";
 import "@/styles/features/admin/admin-history.css";
 
-export default function AdminBookingDetailLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminBookingDetailLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

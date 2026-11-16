@@ -17,10 +17,7 @@ export default async function AdminCalendarPage({
   return (
     <Suspense
       fallback={
-        <AdminPageFrame
-          title={t("ganttTitle")}
-          className="gantt-calendar-page w-full max-w-none"
-        >
+        <AdminPageFrame title={t("ganttTitle")} className="gantt-calendar-page w-full max-w-none">
           <AdminGanttSkeleton />
         </AdminPageFrame>
       }

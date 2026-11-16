@@ -14,59 +14,44 @@ import { MobileShell } from "@/layout/components/MobileShell";
 import { PwaInstallBanner } from "@/components/pwa/PwaInstallBanner";
 import { AreaMessages } from "@/i18n/AreaMessages";
 
-export default async function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [shell, t] = await Promise.all([
-    loadAdminShellContext(),
-    getTranslations("admin.layout"),
-  ]);
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const [shell, t] = await Promise.all([loadAdminShellContext(), getTranslations("admin.layout")]);
 
-  const {
-    requestCount,
-    locationUnlocked,
-    statisticsAccess,
-    appearanceSettings,
-  } = shell;
+  const { requestCount, locationUnlocked, statisticsAccess, appearanceSettings } = shell;
 
   return (
     // The panel: every admin text (the sign-in pages around it send only their own).
     <AreaMessages>
-    <AdminAppearanceProvider initialSettings={appearanceSettings}>
-      <MobileShell surface="admin" className="admin-shell flex min-h-full flex-1 flex-col">
-        <div className="admin-hud">
-          <div className="admin-hud__surface">
-            <AdminTopBar
-              requestCount={requestCount}
-              locationUnlocked={locationUnlocked}
-            />
+      <AdminAppearanceProvider initialSettings={appearanceSettings}>
+        <MobileShell surface="admin" className="admin-shell flex min-h-full flex-1 flex-col">
+          <div className="admin-hud">
+            <div className="admin-hud__surface">
+              <AdminTopBar requestCount={requestCount} locationUnlocked={locationUnlocked} />
+            </div>
           </div>
-        </div>
 
-        {requestCount > 0 && (
-          <div className="admin-hud-alert px-4 py-1.5 text-center text-xs">
-            <Link href="/admin/cazari?view=cereri" className="admin-hud-alert__link">
-              {t("pendingCount", { count: requestCount })}
-            </Link>{" "}
-            {t("pendingSuffix")}
-          </div>
-        )}
+          {requestCount > 0 && (
+            <div className="admin-hud-alert px-4 py-1.5 text-center text-xs">
+              <Link href="/admin/cazari?view=cereri" className="admin-hud-alert__link">
+                {t("pendingCount", { count: requestCount })}
+              </Link>{" "}
+              {t("pendingSuffix")}
+            </div>
+          )}
 
-        <AdminShellClient>
-          <div className="admin-page-main ml-main flex-1">{children}</div>
-        </AdminShellClient>
+          <AdminShellClient>
+            <div className="admin-page-main ml-main flex-1">{children}</div>
+          </AdminShellClient>
 
-        <AdminMobileBottomNav
-          requestCount={requestCount}
-          locationUnlocked={locationUnlocked}
-          statisticsAccess={statisticsAccess}
-        />
+          <AdminMobileBottomNav
+            requestCount={requestCount}
+            locationUnlocked={locationUnlocked}
+            statisticsAccess={statisticsAccess}
+          />
 
-        <PwaInstallBanner />
-      </MobileShell>
-    </AdminAppearanceProvider>
+          <PwaInstallBanner />
+        </MobileShell>
+      </AdminAppearanceProvider>
     </AreaMessages>
   );
 }

@@ -5,7 +5,10 @@
  * registered on the widget, and a check that cannot load must never stop a
  * guest's booking. Those domains keep the per-IP limits.
  */
-export function turnstileCoversHost(host: string | null | undefined, platformDomain: string): boolean {
+export function turnstileCoversHost(
+  host: string | null | undefined,
+  platformDomain: string,
+): boolean {
   const name = (host ?? "").toLowerCase().replace(/:\d+$/, "").trim();
   const platform = platformDomain.toLowerCase().trim();
   if (!name || !platform) return false;

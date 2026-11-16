@@ -51,9 +51,7 @@ export function StatisticsMonthlyKpiTable({
                 <td className="px-4 py-2.5 font-medium text-zinc-900">{row.label}</td>
                 <td className="px-4 py-2.5 tabular-nums">{row.occupancyPct}%</td>
                 <td className="px-4 py-2.5 tabular-nums">
-                  {row.revenueComplete
-                    ? formatRevenue(row.revenueRon)
-                    : labels.emDash}
+                  {row.revenueComplete ? formatRevenue(row.revenueRon) : labels.emDash}
                 </td>
                 <td className="px-4 py-2.5 tabular-nums">
                   {formatKpi(row.adrRon, row.revenueComplete)}

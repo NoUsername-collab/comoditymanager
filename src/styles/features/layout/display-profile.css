@@ -117,7 +117,9 @@ html.compact-viewport .gantt-shell--premium {
   --gantt-day-min: 2rem;
 }
 
-html[data-display-profile="compact-laptop"] .gantt-day-header-cell--compact .gantt-day-header-cell__body,
+html[data-display-profile="compact-laptop"]
+  .gantt-day-header-cell--compact
+  .gantt-day-header-cell__body,
 html.compact-viewport .gantt-day-header-cell--compact .gantt-day-header-cell__body {
   font-size: 0.62rem;
 }

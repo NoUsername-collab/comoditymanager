@@ -93,9 +93,7 @@ export function buildGuestPrecheckinPrefill(input: {
 
   const nationalIdType = (guest?.nationalIdType ?? "cnp") as NationalIdType;
   const nationalId = guest?.nationalId?.trim() ?? "";
-  const extracted = nationalId
-    ? extractIdentityFromNationalId(nationalIdType, nationalId)
-    : null;
+  const extracted = nationalId ? extractIdentityFromNationalId(nationalIdType, nationalId) : null;
 
   return {
     lastName,

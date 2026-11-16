@@ -7,7 +7,10 @@ import { loadPublicSiteConfig } from "@/features/public-site/loaders";
  * menu and colours, with the way back to the first page and to booking.
  */
 export async function PublicNotFound() {
-  const [t, config] = await Promise.all([getTranslations("public.notFound"), loadPublicSiteConfig()]);
+  const [t, config] = await Promise.all([
+    getTranslations("public.notFound"),
+    loadPublicSiteConfig(),
+  ]);
 
   return (
     <main className="public-page ml-content">

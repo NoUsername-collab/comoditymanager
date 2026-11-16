@@ -60,13 +60,9 @@ export function BookingFormMockup({ labels }: { labels: BookingFormMockupLabels 
             <div className="feat-mockup__room-right">
               <span className="feat-mockup__room-price">{row.price}</span>
               {row.avail ? (
-                <span className="feat-mockup__tag feat-mockup__tag--green">
-                  {labels.free}
-                </span>
+                <span className="feat-mockup__tag feat-mockup__tag--green">{labels.free}</span>
               ) : (
-                <span className="feat-mockup__tag feat-mockup__tag--gray">
-                  {labels.occupied}
-                </span>
+                <span className="feat-mockup__tag feat-mockup__tag--gray">{labels.occupied}</span>
               )}
             </div>
           </div>
@@ -111,12 +107,7 @@ export function GuestAppMockup({ labels }: { labels: GuestAppMockupLabels }) {
               <p className="phone-app__stay">{labels.stay}</p>
             </div>
             <div className="phone-app__tiles">
-              {[
-                labels.wifi,
-                labels.facilities,
-                labels.breakfast,
-                labels.localGuide,
-              ].map((tile) => (
+              {[labels.wifi, labels.facilities, labels.breakfast, labels.localGuide].map((tile) => (
                 <div key={tile} className="phone-tile">
                   <span className="phone-tile__icon" aria-hidden />
                   <span className="phone-tile__label">{tile}</span>

@@ -1,10 +1,7 @@
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 
 /** Check-in operativ permis doar în ziua planificată de sosire (YYYY-MM-DD). */
-export function isOperativeCheckInDay(
-  plannedCheckIn: string,
-  today: string
-): boolean {
+export function isOperativeCheckInDay(plannedCheckIn: string, today: string): boolean {
   return plannedCheckIn === today;
 }
 
@@ -54,10 +51,7 @@ export function canOfferOperativeCheckIn(args: {
   if (args.status !== "confirmata") return false;
   if (args.actualCheckOutAt) return false;
 
-  const progress = computeRoomCheckinProgress(
-    args.roomNames,
-    args.checkedInRooms,
-  );
+  const progress = computeRoomCheckinProgress(args.roomNames, args.checkedInRooms);
 
   const onArrivalDay = isOperativeCheckInDay(args.plannedCheckIn, args.today);
   if (!onArrivalDay && !(progress.isPartial && args.actualCheckInAt)) {
@@ -75,7 +69,7 @@ export function canOfferOperativeCheckIn(args: {
 
 export function canOfferOperativeCheckInFromBooking(
   booking: OperativeCheckInBooking,
-  today: string
+  today: string,
 ): boolean {
   return canOfferOperativeCheckIn({
     status: booking.status,
@@ -91,7 +85,7 @@ export function canOfferOperativeCheckInFromBooking(
 
 export function filterBookingsForOperativeCheckIn<T extends OperativeCheckInBooking>(
   bookings: T[],
-  today: string
+  today: string,
 ): T[] {
   return bookings
     .filter((b) => canOfferOperativeCheckInFromBooking(b, today))
@@ -101,7 +95,7 @@ export function filterBookingsForOperativeCheckIn<T extends OperativeCheckInBook
 /** Timestamp-ul ales trebuie să cadă în ziua planificată de sosire. */
 export function isOperativeCheckInTimestampValid(
   plannedCheckIn: string,
-  at?: string | null
+  at?: string | null,
 ): boolean {
   return operativeCheckInDateFromAt(at) === plannedCheckIn;
 }

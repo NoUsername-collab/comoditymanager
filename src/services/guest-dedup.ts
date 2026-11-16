@@ -4,11 +4,7 @@
  */
 
 import { cache } from "react";
-import {
-  normalizeEmail,
-  normalizePhone,
-  isPlaceholderEmail,
-} from "@/domain/guest/normalize";
+import { normalizeEmail, normalizePhone, isPlaceholderEmail } from "@/domain/guest/normalize";
 import {
   scoreDedupCandidates,
   type DedupCandidate,
@@ -33,10 +29,7 @@ const DEDUP_SELECT = `
  * Search the guests table for rows that could match the input on any axis.
  * Returns raw rows — scoring happens in the domain layer.
  */
-async function searchCandidateRows(
-  input: DedupInput,
-  limit = 20
-): Promise<DedupGuestRow[]> {
+async function searchCandidateRows(input: DedupInput, limit = 20): Promise<DedupGuestRow[]> {
   const { tenantId, supabase } = await getTenantScope();
   const orParts: string[] = [];
 
@@ -88,7 +81,7 @@ async function searchCandidateRows(
 async function searchByNameBirthDate(
   input: DedupInput,
   excludeIds: Set<string>,
-  limit = 10
+  limit = 10,
 ): Promise<DedupGuestRow[]> {
   if (!input.lastName || !input.birthDate) return [];
 
@@ -109,65 +102,63 @@ async function searchByNameBirthDate(
   if (error) throw new Error(error.message);
 
   // Filter out already-found rows
-  return ((data ?? []) as DedupGuestRow[]).filter(
-    (row) => !excludeIds.has(row.id)
-  );
+  return ((data ?? []) as DedupGuestRow[]).filter((row) => !excludeIds.has(row.id));
 }
 
 // ─── Public API ──────────────────────────────────────────────────────────────
 
-const findDedupCandidatesCached = cache(async (
-  excludeGuestId: string | undefined,
-  lastName: string,
-  firstName: string,
-  phone: string | null,
-  phoneNormalized: string | null,
-  email: string | null,
-  emailNormalized: string | null,
-  nationalId: string | null,
-  nationalIdType: string | null,
-  docNumber: string | null,
-  docType: string | null,
-  birthDate: string | null,
-  city: string | null
-): Promise<DedupCandidate[]> => {
-  const input: DedupInput = {
-    excludeGuestId,
-    lastName,
-    firstName,
-    phone,
-    phoneNormalized,
-    email,
-    emailNormalized,
-    nationalId,
-    nationalIdType,
-    docNumber,
-    docType,
-    birthDate,
-    city,
-  };
+const findDedupCandidatesCached = cache(
+  async (
+    excludeGuestId: string | undefined,
+    lastName: string,
+    firstName: string,
+    phone: string | null,
+    phoneNormalized: string | null,
+    email: string | null,
+    emailNormalized: string | null,
+    nationalId: string | null,
+    nationalIdType: string | null,
+    docNumber: string | null,
+    docType: string | null,
+    birthDate: string | null,
+    city: string | null,
+  ): Promise<DedupCandidate[]> => {
+    const input: DedupInput = {
+      excludeGuestId,
+      lastName,
+      firstName,
+      phone,
+      phoneNormalized,
+      email,
+      emailNormalized,
+      nationalId,
+      nationalIdType,
+      docNumber,
+      docType,
+      birthDate,
+      city,
+    };
 
-  // Phase 1: Search by exact field matches (national_id, phone, email, doc)
-  const primaryRows = await searchCandidateRows(input);
-  const seenIds = new Set(primaryRows.map((r) => r.id));
+    // Phase 1: Search by exact field matches (national_id, phone, email, doc)
+    const primaryRows = await searchCandidateRows(input);
+    const seenIds = new Set(primaryRows.map((r) => r.id));
 
-  // Phase 2: Search by name + birth date (Tier 3)
-  const nameRows = await searchByNameBirthDate(input, seenIds);
-  const allRows = [...primaryRows, ...nameRows];
+    // Phase 2: Search by name + birth date (Tier 3)
+    const nameRows = await searchByNameBirthDate(input, seenIds);
+    const allRows = [...primaryRows, ...nameRows];
 
-  if (allRows.length === 0) return [];
+    if (allRows.length === 0) return [];
 
-  // Phase 3: Score all candidates
-  return scoreDedupCandidates(input, allRows);
-});
+    // Phase 3: Score all candidates
+    return scoreDedupCandidates(input, allRows);
+  },
+);
 
 /**
  * Find and score potential duplicate guests for a given input.
  * This is the main entry point for the dedup system.
  */
-export async function findDedupCandidates(
-  input: DedupInput
-): Promise<DedupCandidate[]> {
+export async function findDedupCandidates(input: DedupInput): Promise<DedupCandidate[]> {
   return findDedupCandidatesCached(
     input.excludeGuestId,
     input.lastName,
@@ -181,7 +172,7 @@ export async function findDedupCandidates(
     input.docNumber,
     input.docType,
     input.birthDate,
-    input.city
+    input.city,
   );
 }
 
@@ -205,8 +196,7 @@ export function dedupInputFromBooking(input: {
     phone: input.guestPhone || null,
     phoneNormalized: phoneNorm,
     email: input.guestEmail || null,
-    emailNormalized:
-      emailNorm && !isPlaceholderEmail(emailNorm) ? emailNorm : null,
+    emailNormalized: emailNorm && !isPlaceholderEmail(emailNorm) ? emailNorm : null,
     nationalId: null,
     nationalIdType: null,
     docNumber: null,

@@ -60,6 +60,4 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
 ];
 
 /** Total required (non-optional) steps. */
-export const REQUIRED_STEP_COUNT = ONBOARDING_STEPS.filter(
-  (s) => !s.optional
-).length;
+export const REQUIRED_STEP_COUNT = ONBOARDING_STEPS.filter((s) => !s.optional).length;

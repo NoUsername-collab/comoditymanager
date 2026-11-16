@@ -5,10 +5,7 @@ import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { pressureLabel } from "@/domain/availability/heat";
 import { mondayOfWeekIso } from "@/domain/availability/week-range";
 import { guestInitials } from "@/domain/guest-name";
-import type {
-  DayAvailability,
-  DayAvailabilityDetail,
-} from "@/services/availability-month";
+import type { DayAvailability, DayAvailabilityDetail } from "@/services/availability-month";
 import { RoomFeatureBadges } from "@/features/rooms/ui/RoomFeatureBadges";
 
 const SKELETON_ROOM_ROWS = 5;
@@ -41,11 +38,9 @@ export function DayDetailPanelSkeleton({
               {pressureLabel(knownDay.pressure)}
             </p>
             <p className="mt-0.5 text-sm text-zinc-600">
-              {knownDay.free_rooms} {labels.free.toLowerCase()} ·{" "}
-              {knownDay.occupied_rooms} {labels.occupied.toLowerCase()} ·{" "}
-              {knownDay.total_rooms} {labels.rooms.toLowerCase()}
-              {knownDay.checkins > 0 &&
-                ` · ${knownDay.checkins} ${labels.arrivals.toLowerCase()}`}
+              {knownDay.free_rooms} {labels.free.toLowerCase()} · {knownDay.occupied_rooms}{" "}
+              {labels.occupied.toLowerCase()} · {knownDay.total_rooms} {labels.rooms.toLowerCase()}
+              {knownDay.checkins > 0 && ` · ${knownDay.checkins} ${labels.arrivals.toLowerCase()}`}
               {knownDay.checkouts > 0 &&
                 ` · ${knownDay.checkouts} ${labels.departures.toLowerCase()}`}
             </p>
@@ -144,13 +139,10 @@ export function DayDetailPanel({
   return (
     <div className="availability-detail-panel availability-detail-panel--overlay avail-detail flex flex-col">
       <div className="availability-detail-panel__header border-b border-zinc-100 bg-zinc-50/80 px-5 py-3">
-        <p className="text-sm font-medium text-emerald-800">
-          {pressureLabel(day.pressure)}
-        </p>
+        <p className="text-sm font-medium text-emerald-800">{pressureLabel(day.pressure)}</p>
         <p className="mt-0.5 text-sm text-zinc-600">
           {day.free_rooms} {labels.free.toLowerCase()} · {day.occupied_rooms}{" "}
-          {labels.occupied.toLowerCase()} · {day.total_rooms}{" "}
-          {labels.rooms.toLowerCase()}
+          {labels.occupied.toLowerCase()} · {day.total_rooms} {labels.rooms.toLowerCase()}
           {day.checkins > 0 && ` · ${day.checkins} ${labels.arrivals.toLowerCase()}`}
           {day.checkouts > 0 && ` · ${day.checkouts} ${labels.departures.toLowerCase()}`}
         </p>
@@ -191,9 +183,7 @@ export function DayDetailPanel({
                     />
                     <span className="min-w-0 flex-1 text-left text-sm font-medium">
                       {r.name}
-                      <span className="block text-[10px] text-zinc-500">
-                        {roomSubtitle(r)}
-                      </span>
+                      <span className="block text-[10px] text-zinc-500">{roomSubtitle(r)}</span>
                     </span>
                     <span className="text-[10px] font-bold text-emerald-700">
                       + {labels.addBooking}

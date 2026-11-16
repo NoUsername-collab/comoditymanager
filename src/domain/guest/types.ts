@@ -132,14 +132,7 @@ export type GuestListItem = Pick<
 };
 
 export type GuestSearchFilter =
-  | "all"
-  | "recent"
-  | "flagged"
-  | "blacklist"
-  | "watchlist"
-  | "rated"
-  | "unreviewed"
-  | "returning";
+  "all" | "recent" | "flagged" | "blacklist" | "watchlist" | "rated" | "unreviewed" | "returning";
 
 export type GuestSearchResult = {
   items: GuestListItem[];

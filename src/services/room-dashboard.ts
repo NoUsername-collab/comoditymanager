@@ -1,10 +1,7 @@
 import { cache } from "react";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { parseViewDate, viewDateLabel } from "@/lib/availability-date";
-import {
-  roomNightStatus,
-  type RoomNightStatus,
-} from "@/domain/availability/room-night-status";
+import { roomNightStatus, type RoomNightStatus } from "@/domain/availability/room-night-status";
 import {
   addDays,
   firstDayOfMonth,
@@ -65,7 +62,7 @@ async function loadStaysForRooms(): Promise<StayRow[]> {
         id, guest_name, guest_email, check_in, check_out, status,
         num_adults, num_children
       )
-    `
+    `,
     )
     .eq("tenant_id", tenantId)
     .neq("bookings.status", "anulata");
@@ -117,25 +114,20 @@ function countNightsOccupied(
   roomId: string,
   nights: string[],
   stays: StayRow[],
-  onlyConfirmed: boolean
+  onlyConfirmed: boolean,
 ): number {
   return nights.filter((night) =>
     stays.some(
       (s) =>
         s.room_id === roomId &&
         (!onlyConfirmed || s.status === "confirmata") &&
-        nightOccupied(night, s.check_in, s.check_out)
-    )
+        nightOccupied(night, s.check_in, s.check_out),
+    ),
   ).length;
 }
 
-function pickCurrentStay(
-  roomStays: StayRow[],
-  today: string
-): RoomStayInfo | null {
-  const tonight = roomStays.filter((s) =>
-    nightOccupied(today, s.check_in, s.check_out)
-  );
+function pickCurrentStay(roomStays: StayRow[], today: string): RoomStayInfo | null {
+  const tonight = roomStays.filter((s) => nightOccupied(today, s.check_in, s.check_out));
   if (tonight.length === 0) return null;
   const confirmed = tonight.find((s) => s.status === "confirmata");
   const pick = confirmed ?? tonight[0];
@@ -146,11 +138,9 @@ function pickCurrentStay(
 function pickNextStay(
   roomStays: StayRow[],
   today: string,
-  current: RoomStayInfo | null
+  current: RoomStayInfo | null,
 ): RoomStayInfo | null {
-  const sorted = [...roomStays].sort((a, b) =>
-    a.check_in.localeCompare(b.check_in)
-  );
+  const sorted = [...roomStays].sort((a, b) => a.check_in.localeCompare(b.check_in));
 
   for (const s of sorted) {
     if (current && s.booking_id === current.booking_id) continue;
@@ -163,9 +153,7 @@ function pickNextStay(
   return null;
 }
 
-async function listRoomDashboardsImpl(
-  viewDateParam?: string
-): Promise<RoomDashboard[]> {
+async function listRoomDashboardsImpl(viewDateParam?: string): Promise<RoomDashboard[]> {
   const viewDate = parseViewDate(viewDateParam);
   const dateLabel = viewDateLabel(viewDate);
   const weekEnd = addDays(viewDate, 6);
@@ -189,15 +177,11 @@ async function listRoomDashboardsImpl(
       room.is_active,
       room.id,
       viewDate,
-      roomStays
+      roomStays,
     );
 
-    const current = room.is_active
-      ? pickCurrentStay(roomStays, viewDate)
-      : null;
-    const next = room.is_active
-      ? pickNextStay(roomStays, viewDate, current)
-      : null;
+    const current = room.is_active ? pickCurrentStay(roomStays, viewDate) : null;
+    const next = room.is_active ? pickNextStay(roomStays, viewDate, current) : null;
 
     const status_tonight: RoomDashboard["status_tonight"] = statusOnDate;
 
@@ -225,13 +209,9 @@ async function listRoomDashboardsImpl(
       current_stay: current,
       next_stay: next,
       week_occupancy_pct:
-        nightsWeek.length > 0
-          ? Math.round((weekOcc / nightsWeek.length) * 100)
-          : 0,
+        nightsWeek.length > 0 ? Math.round((weekOcc / nightsWeek.length) * 100) : 0,
       month_occupancy_pct:
-        nightsMonth.length > 0
-          ? Math.round((monthOcc / nightsMonth.length) * 100)
-          : 0,
+        nightsMonth.length > 0 ? Math.round((monthOcc / nightsMonth.length) * 100) : 0,
     };
   });
 }

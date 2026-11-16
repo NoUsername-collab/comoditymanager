@@ -3,9 +3,7 @@ import { unstable_cache } from "next/cache";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
 import type { GuestAppSettings } from "@/domain/guest-app/types";
-import {
-  mapGuestAppSettingsRow,
-} from "./map";
+import { mapGuestAppSettingsRow } from "./map";
 import { getGuestAppPublicDb } from "./public-db";
 
 async function fetchGuestAppSettingsRow(
@@ -31,7 +29,7 @@ const getCachedGuestAppSettings = (tenantId: string) =>
     {
       tags: [`tenant-${tenantId}-guest-app-settings`],
       revalidate: 300,
-    }
+    },
   );
 
 const loadGuestAppSettings = cache(async (): Promise<GuestAppSettings> => {

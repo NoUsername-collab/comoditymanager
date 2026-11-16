@@ -15,9 +15,7 @@ import { isEmailDeliveryConfigured } from "@/lib/email/provider";
 import { notifyOwnerDailySummary } from "@/lib/email/notify";
 import { buildDailySummaryForTenant } from "@/services/daily-summary-cron";
 import { getEmailSettingsForTenant } from "@/services/email-settings";
-import {
-  getTenantNotificationEmails,
-} from "@/services/tenants";
+import { getTenantNotificationEmails } from "@/services/tenants";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -26,10 +24,7 @@ export const maxDuration = 60;
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret) {
-    return NextResponse.json(
-      { error: "CRON_SECRET not configured" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "CRON_SECRET not configured" }, { status: 500 });
   }
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${cronSecret}`) {
@@ -80,10 +75,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           getTenantNotificationEmails(tenant.id),
         ]);
 
-        if (
-          !emailSettings.email_enabled ||
-          !emailSettings.email_notify_daily_summary
-        ) {
+        if (!emailSettings.email_enabled || !emailSettings.email_notify_daily_summary) {
           results.push({
             slug: tenant.slug,
             ok: true,

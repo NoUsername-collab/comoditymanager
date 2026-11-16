@@ -26,10 +26,7 @@ export type RoomStayPricingLine = {
   line_total: number;
 };
 
-export function isWeekendNight(
-  dateIso: string,
-  mode: WeekendPricingMode
-): boolean {
+export function isWeekendNight(dateIso: string, mode: WeekendPricingMode): boolean {
   const day = parseIso(dateIso).getDay();
   if (mode === "sat_only") return day === 6;
   return day === 5 || day === 6;
@@ -39,11 +36,7 @@ function monthDayKey(month: number, day: number): number {
   return month * 100 + day;
 }
 
-function dateInSeasonRange(
-  month: number,
-  day: number,
-  season: PricingSeason
-): boolean {
+function dateInSeasonRange(month: number, day: number, season: PricingSeason): boolean {
   const cur = monthDayKey(month, day);
   const start = monthDayKey(season.startMonth, season.startDay);
   const end = monthDayKey(season.endMonth, season.endDay);
@@ -51,10 +44,7 @@ function dateInSeasonRange(
   return cur >= start || cur <= end;
 }
 
-function matchingSeasonForNight(
-  dateIso: string,
-  seasons: PricingSeason[]
-): PricingSeason | null {
+function matchingSeasonForNight(dateIso: string, seasons: PricingSeason[]): PricingSeason | null {
   const d = parseIso(dateIso);
   const month = d.getMonth() + 1;
   const day = d.getDate();
@@ -68,10 +58,7 @@ function matchingSeasonForNight(
   return best;
 }
 
-export function seasonMultiplierForNight(
-  dateIso: string,
-  seasons: PricingSeason[]
-): number {
+export function seasonMultiplierForNight(dateIso: string, seasons: PricingSeason[]): number {
   const match = matchingSeasonForNight(dateIso, seasons);
   return match?.multiplier ?? 1;
 }
@@ -79,7 +66,7 @@ export function seasonMultiplierForNight(
 export function resolveNightlyRate(
   basePrice: number,
   dateIso: string,
-  rules: StayPricingRules | null | undefined
+  rules: StayPricingRules | null | undefined,
 ): NightlyRateLine {
   const base = Math.max(0, basePrice);
   if (!rules) {
@@ -122,13 +109,12 @@ export function computeRoomStayPricing(
   },
   checkIn: string,
   checkOut: string,
-  rules?: StayPricingRules | null
+  rules?: StayPricingRules | null,
 ): RoomStayPricingLine {
   const nights = stayNightDates(checkIn, checkOut).map((date) =>
-    resolveNightlyRate(room.price_per_night, date, rules)
+    resolveNightlyRate(room.price_per_night, date, rules),
   );
-  const line_total =
-    Math.round(nights.reduce((sum, n) => sum + n.applied_rate, 0) * 100) / 100;
+  const line_total = Math.round(nights.reduce((sum, n) => sum + n.applied_rate, 0) * 100) / 100;
   return {
     room_id: room.room_id,
     room_name: room.room_name,
@@ -144,11 +130,10 @@ export function computeStayExtrasTotal(
   usage: { extraBeds: number; cots: number },
   checkIn: string,
   checkOut: string,
-  rules?: StayPricingRules | null
+  rules?: StayPricingRules | null,
 ): number {
   const nights = stayNightDates(checkIn, checkOut).length;
-  const perNight =
-    usage.extraBeds * (rules?.extraBedFee ?? 0) + usage.cots * (rules?.cotFee ?? 0);
+  const perNight = usage.extraBeds * (rules?.extraBedFee ?? 0) + usage.cots * (rules?.cotFee ?? 0);
   return Math.round(perNight * nights * 100) / 100;
 }
 
@@ -158,13 +143,13 @@ export function computeStayTotal(
   usage: { extraBeds: number; cots: number },
   checkIn: string,
   checkOut: string,
-  rules?: StayPricingRules | null
+  rules?: StayPricingRules | null,
 ): number {
   return (
     Math.round(
       (computeStandardStayTotal(rooms, checkIn, checkOut, rules) +
         computeStayExtrasTotal(usage, checkIn, checkOut, rules)) *
-        100
+        100,
     ) / 100
   );
 }
@@ -173,12 +158,11 @@ export function computeStandardStayTotal(
   rooms: RoomNightPrice[],
   checkIn: string,
   checkOut: string,
-  rules?: StayPricingRules | null
+  rules?: StayPricingRules | null,
 ): number {
   const total = rooms.reduce(
-    (sum, room) =>
-      sum + computeRoomStayPricing(room, checkIn, checkOut, rules).line_total,
-    0
+    (sum, room) => sum + computeRoomStayPricing(room, checkIn, checkOut, rules).line_total,
+    0,
   );
   return Math.round(total * 100) / 100;
 }

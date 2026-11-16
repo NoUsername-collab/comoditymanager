@@ -4,12 +4,7 @@ export type FiscalProviderType = "internal_pdf" | "anaf";
 
 export type AnafEnvironment = "test" | "prod";
 
-export type FiscalSubmissionStatus =
-  | "pending"
-  | "submitted"
-  | "accepted"
-  | "rejected"
-  | "failed";
+export type FiscalSubmissionStatus = "pending" | "submitted" | "accepted" | "rejected" | "failed";
 
 export type FiscalSubmitResult = {
   status: Exclude<FiscalSubmissionStatus, "pending">;

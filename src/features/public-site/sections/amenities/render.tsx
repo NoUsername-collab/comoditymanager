@@ -4,7 +4,10 @@ import { copy, SectionHead, SectionShell } from "@/features/public-site/sections
 import { PublicBenefitIcon } from "@/features/public-site/ui/PublicBenefitIcon";
 
 /** Null without a labelled facility, so the page leaves no empty wrapper. */
-export function renderAmenities(section: PublicSiteSectionOf<"amenities">, locale: string): ReactNode {
+export function renderAmenities(
+  section: PublicSiteSectionOf<"amenities">,
+  locale: string,
+): ReactNode {
   const title = copy(section.payload.title, locale);
   const lead = copy(section.payload.lead, locale);
   const items = (section.payload.items ?? [])

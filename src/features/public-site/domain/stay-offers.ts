@@ -58,7 +58,12 @@ export function formatStayFromPrice(amount: number, locale: string): string {
 }
 
 export function publicMapHref(place: PublicPlace): string | null {
-  if (place.lat != null && place.lng != null && Number.isFinite(place.lat) && Number.isFinite(place.lng)) {
+  if (
+    place.lat != null &&
+    place.lng != null &&
+    Number.isFinite(place.lat) &&
+    Number.isFinite(place.lng)
+  ) {
     return `https://www.openstreetmap.org/?mlat=${place.lat}&mlon=${place.lng}#map=16/${place.lat}/${place.lng}`;
   }
   const address = place.address?.trim();

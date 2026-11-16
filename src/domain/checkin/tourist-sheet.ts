@@ -31,9 +31,7 @@ export function buildTouristSheetFromPersisted(
   issuedAt?: string,
 ): TouristSheetData {
   const roomLabel =
-    booking.room_names?.join(", ") ||
-    guests.find((g) => g.room_label)?.room_label ||
-    "—";
+    booking.room_names?.join(", ") || guests.find((g) => g.room_label)?.room_label || "—";
 
   const now = new Date();
   const defaultIssued = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -50,8 +48,7 @@ export function buildTouristSheetFromPersisted(
     guests: guests.map((g) => ({
       fullName: guestFullName(g),
       cnp: g.national_id?.trim() || "",
-      documentId:
-        [g.document_series, g.document_number].filter(Boolean).join(" ") || "",
+      documentId: [g.document_series, g.document_number].filter(Boolean).join(" ") || "",
       checkIn: booking.check_in,
       checkOut: booking.check_out,
     })),
@@ -64,9 +61,7 @@ export function buildTouristSheetData(
   settings: CheckinSettings,
 ): TouristSheetData {
   const roomLabel =
-    booking.room_names?.join(", ") ||
-    guests.find((g) => g.room_label)?.room_label ||
-    "—";
+    booking.room_names?.join(", ") || guests.find((g) => g.room_label)?.room_label || "—";
 
   const now = new Date();
   const issuedAt = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;

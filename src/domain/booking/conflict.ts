@@ -12,7 +12,7 @@ export function rangesOverlap(
   a: { checkIn: string; checkOut: string },
   b: { checkIn: string; checkOut: string },
   checkInTime = DEFAULT_CHECK_IN_TIME,
-  checkOutTime = DEFAULT_CHECK_OUT_TIME
+  checkOutTime = DEFAULT_CHECK_OUT_TIME,
 ): boolean {
   const aStart = toDateTime(a.checkIn, checkInTime);
   const aEnd = toDateTime(a.checkOut, checkOutTime);

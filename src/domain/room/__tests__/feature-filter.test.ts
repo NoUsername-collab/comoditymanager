@@ -12,8 +12,6 @@ describe("roomMatchesFeatureFilter", () => {
   });
 
   it("matches option slugs", () => {
-    expect(
-      roomMatchesFeatureFilter({ option_slugs: ["fridge"] }, "fridge")
-    ).toBe(true);
+    expect(roomMatchesFeatureFilter({ option_slugs: ["fridge"] }, "fridge")).toBe(true);
   });
 });

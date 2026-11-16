@@ -220,7 +220,7 @@
   }
 
   .pub-site-studio[data-pane="preview"] .pub-site-studio__live-link,
-.pub-site-studio[data-pane="preview"] .pub-site-studio__devices {
+  .pub-site-studio[data-pane="preview"] .pub-site-studio__devices {
     display: none;
   }
 
@@ -646,7 +646,8 @@ html:has(.pub-site-studio--immersive) .ml-bottom-nav--admin {
   margin: 0 0 1.25rem;
   padding: 0.85rem;
   border-radius: 1.15rem;
-  border: 1px solid color-mix(in srgb, var(--admin-accent, #059669) 28%, var(--admin-panel-border, #e4e4e7));
+  border: 1px solid
+    color-mix(in srgb, var(--admin-accent, #059669) 28%, var(--admin-panel-border, #e4e4e7));
   background: var(--admin-panel-bg, #fff);
   box-shadow: 0 14px 36px color-mix(in srgb, var(--admin-accent, #059669) 8%, transparent);
 }

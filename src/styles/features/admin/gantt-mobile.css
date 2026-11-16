@@ -16,7 +16,11 @@ html[data-layout-chrome="compact"] .gantt-calendar-page.admin-page {
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page > .admin-panel > .admin-panel-body,
-html[data-layout-chrome="compact"] .gantt-calendar-page .admin-panel .admin-panel > .admin-panel-body {
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .admin-panel
+  .admin-panel
+  > .admin-panel-body {
   padding: 0 !important;
   margin: 0 !important;
 }
@@ -101,7 +105,9 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar {
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll {
-  scroll-padding-top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 2.85rem) + var(--ml-safe-top, 0px))));
+  scroll-padding-top: calc(
+    var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 2.85rem) + var(--ml-safe-top, 0px)))
+  );
 }
 
 html[data-layout-chrome="compact"] .gantt-shell {
@@ -120,73 +126,114 @@ html[data-layout-chrome="compact"] .gantt-thead-sticky .gantt-head-main-row > th
   vertical-align: middle;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-shell table {
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-scroll
+  .gantt-shell
+  table {
   min-width: 0 !important;
 }
 
 /* Portrait 15/30d: fixed day columns — scroll instead of squeeze */
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-day-grid--fixed,
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-day-header-grid.gantt-day-grid--fixed,
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-summary-row__grid.gantt-day-grid--fixed {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-day-grid--fixed,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-day-header-grid.gantt-day-grid--fixed,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-summary-row__grid.gantt-day-grid--fixed {
   width: max-content;
   min-width: max-content;
 }
 
 /* Portrait ≤7d: stretch columns to fill viewport */
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-day-grid:not(.gantt-day-grid--fixed),
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-day-header-grid:not(.gantt-day-grid--fixed),
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-summary-row__grid:not(.gantt-day-grid--fixed) {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-day-grid:not(.gantt-day-grid--fixed),
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-day-header-grid:not(.gantt-day-grid--fixed),
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-summary-row__grid:not(.gantt-day-grid--fixed) {
   width: 100%;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-head-main-row__days,
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-summary-row__days {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-head-main-row__days,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-summary-row__days {
   width: 1px;
 }
 
 /* ── Room column: narrower on phone ── */
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-room-column-header,
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-room-cell {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-room-column-header,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-room-cell {
   padding-inline: 0.3rem !important;
   padding-block: 0 !important;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-room-cell__name {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-room-cell__name {
   font-size: clamp(0.5rem, calc(var(--gantt-row-h, 14px) * 0.034), 0.58rem);
   line-height: 1;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-room-column-header,
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-room-cell {
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-scroll
+  .gantt-room-column-header,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-scroll
+  .gantt-room-cell {
   padding-inline: 0.3rem !important;
   padding-block: 0 !important;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-room-cell__name {
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-scroll
+  .gantt-room-cell__name {
   font-size: clamp(0.5rem, calc(var(--gantt-row-h, 14px) * 0.034), 0.58rem);
   line-height: 1;
 }
 
 /* ── Day cells: portrait vs landscape density ── */
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-day-cell--touch {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-day-cell--touch {
   min-width: 2.25rem;
   max-width: none;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-day-cell--compact {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-day-cell--compact {
   min-width: 2.25rem;
   max-width: none;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-day-header-col {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-day-header-col {
   min-width: 2.25rem;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-summary-cell {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-scroll
+  .gantt-summary-cell {
   min-width: 2.25rem;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-day-cell--touch {
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-scroll
+  .gantt-day-cell--touch {
   min-width: 16px;
   max-width: 20px;
 }
@@ -201,7 +248,9 @@ html[data-layout-chrome="compact"] .gantt-day-header-cell__date {
   line-height: 1;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-day-header-cell__date {
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-scroll
+  .gantt-day-header-cell__date {
   font-size: 0.48rem;
 }
 
@@ -215,7 +264,8 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-da
   display: none;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-day-header-cell__body {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-day-header-cell__body {
   min-height: 1.19rem;
   padding-block: 0.07rem;
 }
@@ -225,7 +275,9 @@ html[data-layout-chrome="compact"] .gantt-day-header-grid .gantt-day-header-cell
   box-shadow: inset 2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9) !important;
 }
 
-html[data-layout-chrome="compact"] .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell--today {
+html[data-layout-chrome="compact"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--today {
   box-shadow: inset 2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9) !important;
 }
 
@@ -258,7 +310,8 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-co
   align-items: center;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__left {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-compact-toolbar__left {
   grid-area: actions;
   min-width: 0;
   display: flex;
@@ -269,11 +322,13 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-co
   scrollbar-width: none;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__left::-webkit-scrollbar {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-compact-toolbar__left::-webkit-scrollbar {
   display: none;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__right {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-compact-toolbar__right {
   grid-area: filters;
   margin-left: 0;
   flex-shrink: 0;
@@ -283,7 +338,8 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-co
   gap: 0.2rem;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__center {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-compact-toolbar__center {
   grid-area: nav;
   display: flex;
   flex-wrap: nowrap;
@@ -297,44 +353,54 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-co
   scrollbar-width: none;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__center::-webkit-scrollbar {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-compact-toolbar__center::-webkit-scrollbar {
   display: none;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__period-group {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-compact-toolbar__period-group {
   flex: 1 1 auto;
   min-width: 0;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__period-jump {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-compact-toolbar__period-jump {
   flex: 1 1 auto;
   min-width: 0;
   max-width: none;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__dropdown-wrap,
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__today-btn,
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__nav-btn--edge {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-compact-toolbar__dropdown-wrap,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-compact-toolbar__today-btn,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-compact-toolbar__nav-btn--edge {
   flex-shrink: 0;
 }
 
 /* Fallback wrap layout for compact tablet landscape-ish widths */
-html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar {
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"])
+  .gantt-compact-toolbar {
   flex-wrap: wrap;
 }
 
-html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar__left {
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"])
+  .gantt-compact-toolbar__left {
   order: 1;
   flex: 0 0 auto;
 }
 
-html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar__right {
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"])
+  .gantt-compact-toolbar__right {
   order: 2;
   margin-left: auto;
   flex: 0 0 auto;
 }
 
-html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar__center {
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"])
+  .gantt-compact-toolbar__center {
   order: 3;
   flex: 1 0 100%;
   justify-content: center;
@@ -350,13 +416,15 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-c
   align-items: center;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__center {
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-compact-toolbar__center {
   order: 2;
   flex: 1 1 auto;
   min-width: 0;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__right {
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-compact-toolbar__right {
   order: 3;
   margin-left: 0;
 }
@@ -368,7 +436,8 @@ html[data-layout-chrome="compact"] .gantt-compact-toolbar__select {
   padding-inline: 0.3rem 0.95rem;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__select {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-compact-toolbar__select {
   font-size: 0.64rem;
   padding: 0.1rem 0.95rem 0.1rem 0.3rem;
 }
@@ -382,12 +451,14 @@ html[data-layout-chrome="compact"] .gantt-ctx-menu__item {
   align-items: center;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__title {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-compact-toolbar__title {
   max-width: none;
   font-size: 0.56rem;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__select {
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-compact-toolbar__select {
   min-height: var(--gantt-touch-min, 2.75rem);
   font-size: 0.64rem;
   padding-block: 0.1rem;
@@ -401,9 +472,12 @@ html[data-layout-chrome="compact"] .gantt-compact-toolbar__home-btn {
   min-height: var(--gantt-touch-min, 2.75rem);
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__icon-btn,
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__today-btn,
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__nav-btn {
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-compact-toolbar__today-btn,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-compact-toolbar__nav-btn {
   min-width: var(--gantt-touch-min, 2.75rem);
   min-height: var(--gantt-touch-min, 2.75rem);
 }
@@ -437,7 +511,8 @@ html[data-layout-chrome="compact"] .gantt-compact-toolbar__home-btn {
   padding: 0;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__period-jump {
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .gantt-compact-toolbar__period-jump {
   min-height: var(--gantt-touch-min, 2.75rem);
   max-width: 7.5rem;
 }
@@ -566,13 +641,14 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-shell--premium {
   --gantt-row-h: clamp(
     20px,
     (
-      var(--ml-vvh, 100dvh)
-      - var(--ml-admin-chrome-top, var(--ml-safe-top, 0px))
-      - var(--ml-admin-bottom-clearance, calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom)))
-      - var(--gantt-mobile-chrome-h, 4rem)
-      - var(--gantt-thead-stack-h)
-      - 10px
-    ) / var(--gantt-visible-room-rows, 14),
+        var(--ml-vvh, 100dvh) - var(--ml-admin-chrome-top, var(--ml-safe-top, 0px)) -
+          var(
+            --ml-admin-bottom-clearance,
+            calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom))
+          ) -
+          var(--gantt-mobile-chrome-h, 4rem) - var(--gantt-thead-stack-h) - 10px
+      ) /
+      var(--gantt-visible-room-rows, 14),
     34px
   );
   --gantt-building-row-h: clamp(8px, calc(var(--gantt-row-h) * 0.62), 12px);
@@ -623,7 +699,8 @@ html[data-layout-chrome="compact"] .gantt-day-header-cell--compact.gantt-day-hea
   justify-content: center;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-day-header-cell__body {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"]
+  .gantt-day-header-cell__body {
   min-height: 0 !important;
   padding-block: 0.04rem !important;
 }
@@ -728,9 +805,15 @@ html[data-layout-chrome="compact"] .gantt-tbody--virtual .gantt-building-header-
 html[data-layout-chrome="compact"] .gantt-building-header-row > td,
 html[data-layout-chrome="compact"] .gantt-building-header,
 html[data-layout-chrome="compact"] td.gantt-building-header,
-html[data-layout-chrome="compact"] .gantt-tbody--virtual .gantt-building-header-row .gantt-building-header,
+html[data-layout-chrome="compact"]
+  .gantt-tbody--virtual
+  .gantt-building-header-row
+  .gantt-building-header,
 html[data-layout-chrome="compact"] .gantt-building-header-row .gantt-building-header__days,
-html[data-layout-chrome="compact"] .gantt-tbody--virtual .gantt-building-header-row .gantt-building-header__days {
+html[data-layout-chrome="compact"]
+  .gantt-tbody--virtual
+  .gantt-building-header-row
+  .gantt-building-header__days {
   height: var(--gantt-building-row-h, 10px) !important;
   max-height: var(--gantt-building-row-h, 10px) !important;
   min-height: 0 !important;
@@ -741,24 +824,36 @@ html[data-layout-chrome="compact"] .gantt-tbody--virtual .gantt-building-header-
 
 html[data-layout-chrome="compact"] .gantt-building-header-row > td.gantt-building-header,
 html[data-layout-chrome="compact"] td.gantt-building-header,
-html[data-layout-chrome="compact"] .gantt-tbody--virtual .gantt-building-header-row .gantt-building-header {
+html[data-layout-chrome="compact"]
+  .gantt-tbody--virtual
+  .gantt-building-header-row
+  .gantt-building-header {
   padding: 0 0.3rem !important;
   vertical-align: middle !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header-row .gantt-building-header__days,
-html[data-layout-chrome="compact"] .gantt-tbody--virtual .gantt-building-header-row .gantt-building-header__days {
+html[data-layout-chrome="compact"]
+  .gantt-tbody--virtual
+  .gantt-building-header-row
+  .gantt-building-header__days {
   padding: 0 !important;
   vertical-align: top !important;
   background: transparent !important;
 }
 
-html[data-layout-chrome="compact"] .gantt-building-header-row .gantt-building-header__days .gantt-day-grid {
+html[data-layout-chrome="compact"]
+  .gantt-building-header-row
+  .gantt-building-header__days
+  .gantt-day-grid {
   height: 100% !important;
   min-height: 100% !important;
 }
 
-html[data-layout-chrome="compact"] .gantt-building-header-row .gantt-building-header__days .gantt-day-cell {
+html[data-layout-chrome="compact"]
+  .gantt-building-header-row
+  .gantt-building-header__days
+  .gantt-day-cell {
   background: transparent !important;
   pointer-events: none;
 }
@@ -846,7 +941,9 @@ html[data-layout-chrome="compact"] .gantt-filters-panel {
   max-width: min(360px, calc(100vw - 1rem));
 }
 
-html[data-layout-chrome="compact"] .gantt-footer-legend--collapsible:not([open]) .gantt-footer-legend__body {
+html[data-layout-chrome="compact"]
+  .gantt-footer-legend--collapsible:not([open])
+  .gantt-footer-legend__body {
   display: none;
 }
 
@@ -854,11 +951,15 @@ html:not([data-layout-chrome="compact"]) .gantt-footer-legend--collapsible {
   padding: 0.75rem 1rem;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-footer-legend--collapsible .gantt-footer-legend__toggle {
+html:not([data-layout-chrome="compact"])
+  .gantt-footer-legend--collapsible
+  .gantt-footer-legend__toggle {
   display: none;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-footer-legend--collapsible .gantt-footer-legend__body {
+html:not([data-layout-chrome="compact"])
+  .gantt-footer-legend--collapsible
+  .gantt-footer-legend__body {
   display: block;
   padding-top: 0;
 }
@@ -894,7 +995,9 @@ html[data-layout-chrome="compact"] .gantt-footer-legend__toggle::after {
   transition: transform 0.15s ease;
 }
 
-html[data-layout-chrome="compact"] .gantt-footer-legend--collapsible[open] .gantt-footer-legend__toggle::after {
+html[data-layout-chrome="compact"]
+  .gantt-footer-legend--collapsible[open]
+  .gantt-footer-legend__toggle::after {
   transform: rotate(180deg);
 }
 
@@ -1099,7 +1202,10 @@ html[data-layout-chrome="compact"] .gantt-toolbar-occ-form section.gantt-quick-p
   padding: 0.65rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-toolbar-occ-form section.gantt-quick-panel__planner .text-base {
+html[data-layout-chrome="compact"]
+  .gantt-toolbar-occ-form
+  section.gantt-quick-panel__planner
+  .text-base {
   font-size: 0.9375rem;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -1150,8 +1256,14 @@ html[data-layout-chrome="compact"] .gantt-scroll .gantt-summary-row__label {
 /* Narrow stay chips: keep cap-strip badges visible (override container hide) */
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__alert,
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__badge,
-html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__phase-badge,
-html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__today-icon {
+html[data-layout-chrome="compact"]
+  .gantt-stay--chip
+  .gantt-stay__cap-strip
+  .gantt-stay__phase-badge,
+html[data-layout-chrome="compact"]
+  .gantt-stay--chip
+  .gantt-stay__cap-strip
+  .gantt-stay__today-icon {
   display: inline-flex !important;
 }
 
@@ -1169,9 +1281,21 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) {
   --gantt-day-ink-soft: color-mix(in srgb, #134e4a 92%, #334155);
   --gantt-day-ink-muted: color-mix(in srgb, #134e4a 78%, #64748b);
   --gantt-day-highlight: white;
-  --gantt-day-page-bg: color-mix(in srgb, var(--gantt-day-paper) 90%, var(--admin-accent-muted, #ecfdf5));
-  --gantt-day-nav-bg: color-mix(in srgb, var(--gantt-day-paper) 90%, var(--admin-accent-muted, #ecfdf5));
-  --gantt-day-toolbar-bg: color-mix(in srgb, var(--gantt-day-paper) 92%, var(--admin-accent-muted, #ecfdf5));
+  --gantt-day-page-bg: color-mix(
+    in srgb,
+    var(--gantt-day-paper) 90%,
+    var(--admin-accent-muted, #ecfdf5)
+  );
+  --gantt-day-nav-bg: color-mix(
+    in srgb,
+    var(--gantt-day-paper) 90%,
+    var(--admin-accent-muted, #ecfdf5)
+  );
+  --gantt-day-toolbar-bg: color-mix(
+    in srgb,
+    var(--gantt-day-paper) 92%,
+    var(--admin-accent-muted, #ecfdf5)
+  );
   --gantt-day-toolbar-border: color-mix(
     in srgb,
     var(--admin-accent, #059669) 18%,
@@ -1180,23 +1304,36 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) {
   --gantt-day-toolbar-shadow:
     0 4px 14px color-mix(in srgb, var(--admin-accent) 9%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--gantt-day-highlight) 65%, transparent);
-  --gantt-day-scroll-bg: color-mix(in srgb, var(--gantt-day-paper) 94%, var(--admin-accent-muted, #ecfdf5));
+  --gantt-day-scroll-bg: color-mix(
+    in srgb,
+    var(--gantt-day-paper) 94%,
+    var(--admin-accent-muted, #ecfdf5)
+  );
   --gantt-day-scroll-border: color-mix(
     in srgb,
     var(--admin-accent) 14%,
     var(--admin-panel-border, #e4e4e7)
   );
   --gantt-day-scroll-shadow: 0 10px 28px color-mix(in srgb, var(--admin-accent) 7%, transparent);
-  --gantt-day-control-bg: color-mix(in srgb, var(--gantt-day-paper) 96%, var(--admin-accent-muted, #ecfdf5));
+  --gantt-day-control-bg: color-mix(
+    in srgb,
+    var(--gantt-day-paper) 96%,
+    var(--admin-accent-muted, #ecfdf5)
+  );
   --gantt-day-control-border: color-mix(
     in srgb,
     var(--admin-accent) 16%,
     var(--admin-panel-border, #e4e4e7)
   );
-  --gantt-day-control-active-bg: color-mix(in srgb, var(--admin-accent, #059669) 12%, var(--gantt-day-paper));
+  --gantt-day-control-active-bg: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 12%,
+    var(--gantt-day-paper)
+  );
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-shell:has(.gantt-calendar-page) {
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"]
+  .admin-shell:has(.gantt-calendar-page) {
   --ml-bottom-nav-height: var(--ml-bottom-nav-height-landscape);
 }
 
@@ -1210,9 +1347,15 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-bo
   color: var(--gantt-day-ink-soft) !important;
 }
 
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-bottom-nav__link--active {
+html[data-layout-chrome="compact"]
+  .admin-shell:has(.gantt-calendar-page)
+  .ml-bottom-nav__link--active {
   color: var(--admin-accent, #059669) !important;
-  background: color-mix(in srgb, var(--admin-accent, #059669) 14%, var(--gantt-day-paper)) !important;
+  background: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 14%,
+    var(--gantt-day-paper)
+  ) !important;
 }
 
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-page-main {
@@ -1235,33 +1378,54 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-dr
   box-shadow: var(--gantt-day-toolbar-shadow);
 }
 
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-drawer--admin .ml-drawer__link {
+html[data-layout-chrome="compact"]
+  .admin-shell:has(.gantt-calendar-page)
+  .ml-drawer--admin
+  .ml-drawer__link {
   color: var(--gantt-day-ink);
   border-color: var(--gantt-day-control-border);
   background: var(--gantt-day-control-bg);
 }
 
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-drawer--admin .ml-drawer__link--active {
+html[data-layout-chrome="compact"]
+  .admin-shell:has(.gantt-calendar-page)
+  .ml-drawer--admin
+  .ml-drawer__link--active {
   color: var(--admin-accent, #059669);
   border-color: color-mix(in srgb, var(--admin-accent) 42%, var(--gantt-day-control-border));
   background: var(--gantt-day-control-active-bg);
 }
 
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-drawer--admin .ml-drawer__title,
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-drawer--admin .ml-drawer__close {
+html[data-layout-chrome="compact"]
+  .admin-shell:has(.gantt-calendar-page)
+  .ml-drawer--admin
+  .ml-drawer__title,
+html[data-layout-chrome="compact"]
+  .admin-shell:has(.gantt-calendar-page)
+  .ml-drawer--admin
+  .ml-drawer__close {
   color: var(--gantt-day-ink-muted);
 }
 
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-drawer--admin .ml-drawer__head {
+html[data-layout-chrome="compact"]
+  .admin-shell:has(.gantt-calendar-page)
+  .ml-drawer--admin
+  .ml-drawer__head {
   border-bottom-color: var(--gantt-day-toolbar-border);
 }
 
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-drawer--admin .language-switcher__option--inline {
+html[data-layout-chrome="compact"]
+  .admin-shell:has(.gantt-calendar-page)
+  .ml-drawer--admin
+  .language-switcher__option--inline {
   border-color: var(--gantt-day-control-border);
   background: var(--gantt-day-control-bg);
 }
 
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-drawer--admin .language-switcher__option--inline.language-switcher__option--active {
+html[data-layout-chrome="compact"]
+  .admin-shell:has(.gantt-calendar-page)
+  .ml-drawer--admin
+  .language-switcher__option--inline.language-switcher__option--active {
   border-color: color-mix(in srgb, var(--admin-accent) 50%, var(--gantt-day-control-border));
   background: var(--gantt-day-control-active-bg);
 }
@@ -1317,8 +1481,16 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn:hover,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn:hover,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__home-btn:hover {
-  border-color: color-mix(in srgb, var(--admin-accent) 28%, var(--gantt-day-control-border)) !important;
-  background: color-mix(in srgb, var(--admin-accent-muted) 28%, var(--gantt-day-control-bg)) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent) 28%,
+    var(--gantt-day-control-border)
+  ) !important;
+  background: color-mix(
+    in srgb,
+    var(--admin-accent-muted) 28%,
+    var(--gantt-day-control-bg)
+  ) !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__nav-btn:active,
@@ -1338,15 +1510,23 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__
   color: #fff !important;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn--active:hover,
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn--active:active {
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-compact-toolbar__today-btn--active:hover,
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-compact-toolbar__today-btn--active:active {
   background: color-mix(in srgb, var(--admin-accent) 88%, var(--gantt-day-paper)) !important;
   filter: none !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn--active {
   background: var(--gantt-day-control-active-bg) !important;
-  border-color: color-mix(in srgb, var(--admin-accent) 45%, var(--gantt-day-control-border)) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent) 45%,
+    var(--gantt-day-control-border)
+  ) !important;
   color: var(--admin-accent) !important;
 }
 
@@ -1396,7 +1576,11 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__bad
   border: 1px solid var(--admin-tint-violet-border) !important;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__btn:not(.gantt-action-strip__btn--primary):not(.gantt-action-strip__btn--caret) {
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-action-strip__btn:not(.gantt-action-strip__btn--primary):not(
+    .gantt-action-strip__btn--caret
+  ) {
   background: var(--gantt-day-control-bg) !important;
   border-color: var(--gantt-day-control-border) !important;
   color: var(--gantt-day-ink) !important;
@@ -1412,15 +1596,26 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-thead-sticky {
   line-height: 1;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-thead-sticky .gantt-head-main-row__room,
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-thead-sticky .gantt-head-main-row__days,
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-thead-sticky
+  .gantt-head-main-row__room,
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-thead-sticky
+  .gantt-head-main-row__days,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__label,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__days {
-  background: var(--admin-surface-bg, color-mix(in srgb, var(--gantt-day-paper) 92%, var(--admin-accent-muted, #ecfdf5)));
+  background: var(
+    --admin-surface-bg,
+    color-mix(in srgb, var(--gantt-day-paper) 92%, var(--admin-accent-muted, #ecfdf5))
+  );
 }
 
 /* Premium calendar density — override padding that caused dead space */
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-head-main-row__room.gantt-room-column-header {
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-head-main-row__room.gantt-room-column-header {
   padding: 0.05rem 0.3rem !important;
   font-size: 0.5rem !important;
   line-height: 1 !important;
@@ -1429,7 +1624,9 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-head-main-row__ro
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-day-header-cell__body,
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-day-header-cell--compact.gantt-day-header-cell__body {
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-day-header-cell--compact.gantt-day-header-cell__body {
   min-height: 0 !important;
   padding: 0.04rem 0.08rem !important;
   gap: 0.02rem !important;
@@ -1513,7 +1710,10 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-head-main-row__da
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header-row,
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header-row > td.gantt-building-header,
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-building-header-row
+  > td.gantt-building-header,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header,
 html[data-layout-chrome="compact"] .gantt-calendar-page td.gantt-building-header {
   height: var(--gantt-building-row-h, 10px) !important;
@@ -1523,21 +1723,35 @@ html[data-layout-chrome="compact"] .gantt-calendar-page td.gantt-building-header
   line-height: 1 !important;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header-row > td.gantt-building-header,
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-building-header-row
+  > td.gantt-building-header,
 html[data-layout-chrome="compact"] .gantt-calendar-page td.gantt-building-header {
   padding: 0 0.3rem !important;
   background: color-mix(in srgb, var(--gantt-day-paper) 82%, var(--admin-accent-muted, #ecfdf5));
-  border-color: color-mix(in srgb, var(--admin-accent, #059669) 20%, var(--admin-panel-border, #e4e4e7));
+  border-color: color-mix(
+    in srgb,
+    var(--admin-accent, #059669) 20%,
+    var(--admin-panel-border, #e4e4e7)
+  );
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header-row .gantt-building-header__days {
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-building-header-row
+  .gantt-building-header__days {
   padding: 0 !important;
   background: transparent !important;
   border-color: transparent !important;
   vertical-align: top !important;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header-row .gantt-building-header__days .gantt-day-cell {
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-building-header-row
+  .gantt-building-header__days
+  .gantt-day-cell {
   background: transparent !important;
   pointer-events: none;
 }
@@ -1551,7 +1765,10 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header__
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header .gantt-ac-marker--sm,
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header .gantt-ac-marker--building {
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-building-header
+  .gantt-ac-marker--building {
   width: 0.32rem !important;
   height: 0.32rem !important;
 }
@@ -1602,7 +1819,6 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-room-row:first-of
   }
 }
 
-
 /* Night: the phone calendar's frame takes the theme's own surfaces and text. */
 html[data-layout-chrome="compact"][data-mode="night"] .admin-shell:has(.gantt-calendar-page) {
   --gantt-day-paper: var(--surface);
@@ -1619,14 +1835,27 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-scroll thead.gant
   z-index: 6;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-scroll .gantt-thead-sticky .gantt-head-main-row > th {
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-scroll
+  .gantt-thead-sticky
+  .gantt-head-main-row
+  > th {
   position: sticky;
   top: 0;
   z-index: 7;
-  background: var(--admin-surface-bg, color-mix(in srgb, #ffffff 92%, var(--admin-accent-muted, #ecfdf5)));
+  background: var(
+    --admin-surface-bg,
+    color-mix(in srgb, #ffffff 92%, var(--admin-accent-muted, #ecfdf5))
+  );
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-scroll .gantt-thead-sticky .gantt-summary-row > td {
+html[data-layout-chrome="compact"]
+  .gantt-calendar-page
+  .gantt-scroll
+  .gantt-thead-sticky
+  .gantt-summary-row
+  > td {
   position: sticky;
   top: var(--gantt-day-header-row-h, 0.87rem);
   z-index: 6;

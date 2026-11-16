@@ -42,16 +42,12 @@ export function useDisplayProfile(): DisplayProfile {
   return useSyncExternalStore(
     subscribeDisplayLayout,
     readProfileFromDom,
-    () => "laptop" as DisplayProfile
+    () => "laptop" as DisplayProfile,
   );
 }
 
 export function useIsCompactViewport(): boolean {
-  return useSyncExternalStore(
-    subscribeDisplayLayout,
-    readCompactFromDom,
-    () => false
-  );
+  return useSyncExternalStore(subscribeDisplayLayout, readCompactFromDom, () => false);
 }
 
 // Kept for any direct tier resolution outside React.

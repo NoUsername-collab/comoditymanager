@@ -56,11 +56,7 @@ function GanttVirtualSpacer({ height }: { height: number }) {
   if (height <= 0) return null;
   return (
     <tr className="gantt-virtual-spacer" aria-hidden>
-      <td
-        colSpan={2}
-        className="gantt-virtual-spacer__cell"
-        style={{ height }}
-      />
+      <td colSpan={2} className="gantt-virtual-spacer__cell" style={{ height }} />
     </tr>
   );
 }
@@ -106,7 +102,7 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
           {
             "--building-spine": resolveGanttBuildingColor(
               group.buildingColor,
-              group.buildingAcMode
+              group.buildingAcMode,
             ),
             "--marker-color": resolveGanttAcMarkerColor(group.buildingAcMode, {
               buildingHasAnyRoomAc: group.hasAnyRoomAc,
@@ -200,11 +196,7 @@ function useVirtualItems({
   focusBuildingId,
 }: Pick<
   GanttBodyProps,
-  | "groupByBuilding"
-  | "buildingGroups"
-  | "filteredRooms"
-  | "collapsedBuildings"
-  | "focusBuildingId"
+  "groupByBuilding" | "buildingGroups" | "filteredRooms" | "collapsedBuildings" | "focusBuildingId"
 >) {
   return useMemo((): VirtualItem[] => {
     if (groupByBuilding) {
@@ -295,21 +287,15 @@ function GanttTbodyRows({
               viewRange={viewRange}
               occupancyByRoom={occupancyByRoom}
               staySegments={
-                displaySegmentsByRoom.stay.get(item.room.id) ??
-                EMPTY_OCCUPANCY_SEGMENTS
+                displaySegmentsByRoom.stay.get(item.room.id) ?? EMPTY_OCCUPANCY_SEGMENTS
               }
-              overlays={
-                displaySegmentsByRoom.overlay.get(item.room.id) ??
-                EMPTY_OCCUPANCY_SEGMENTS
-              }
+              overlays={displaySegmentsByRoom.overlay.get(item.room.id) ?? EMPTY_OCCUPANCY_SEGMENTS}
               checkInTime={checkInTime}
               checkOutTime={checkOutTime}
               compact={compact}
               touch={touch}
               dimmed={item.dimmed}
-              todayFlags={
-                todayFlagsByRoom.get(item.room.id) ?? EMPTY_ROOM_TODAY_FLAGS
-              }
+              todayFlags={todayFlagsByRoom.get(item.room.id) ?? EMPTY_ROOM_TODAY_FLAGS}
               onOccOpen={onOccOpen}
               bookingById={bookingById}
               onMoveRoom={onMoveRoom}
@@ -320,9 +306,7 @@ function GanttTbodyRows({
               dayGridOptions={dayGridOptions}
               shellZoom={shellZoom}
               departurePolicy={departurePolicy}
-              turnoverIsos={
-                turnoverByRoom.get(item.room.id) ?? EMPTY_TURNOVER
-              }
+              turnoverIsos={turnoverByRoom.get(item.room.id) ?? EMPTY_TURNOVER}
             />
           </Fragment>
         );
@@ -347,18 +331,18 @@ function GanttPlainBody(props: GanttBodyProps & { virtualItems: VirtualItem[] })
   );
 }
 
-function GanttWindowVirtualBody(
-  props: GanttBodyProps & { virtualItems: VirtualItem[] }
-) {
-  const { virtualItems, shellRef, theadRef, rowHeight = GANTT_ROW_H, ...rest } =
-    props;
+function GanttWindowVirtualBody(props: GanttBodyProps & { virtualItems: VirtualItem[] }) {
+  const { virtualItems, shellRef, theadRef, rowHeight = GANTT_ROW_H, ...rest } = props;
   const virtualItemsRef = useRef(virtualItems);
   virtualItemsRef.current = virtualItems;
 
-  const estimateSize = useCallback((index: number) => {
-    const item = virtualItemsRef.current[index];
-    return item?.kind === "building" ? GANTT_BUILDING_HEADER_H : rowHeight;
-  }, [rowHeight]);
+  const estimateSize = useCallback(
+    (index: number) => {
+      const item = virtualItemsRef.current[index];
+      return item?.kind === "building" ? GANTT_BUILDING_HEADER_H : rowHeight;
+    },
+    [rowHeight],
+  );
 
   const { range, paddingTop, paddingBottom } = useWindowVirtualRange({
     count: virtualItems.length,
@@ -383,10 +367,7 @@ function GanttWindowVirtualBody(
 export function GanttVirtualizedBody(props: GanttBodyProps) {
   const virtualItems = useVirtualItems(props);
 
-  if (
-    props.disableVirtualization ||
-    virtualItems.length < VIRTUALIZE_MIN_ITEMS
-  ) {
+  if (props.disableVirtualization || virtualItems.length < VIRTUALIZE_MIN_ITEMS) {
     return <GanttPlainBody {...props} virtualItems={virtualItems} />;
   }
 

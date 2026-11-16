@@ -4,7 +4,8 @@ import {
   hasGanttQuickIntervalConflict,
   isGanttQuickIntervalInvalid,
   resolveGanttQuickActiveRoomIds,
-} from "@/domain/gantt/quick-interval";describe("gantt quick interval", () => {
+} from "@/domain/gantt/quick-interval";
+describe("gantt quick interval", () => {
   it("counts nights between dates", () => {
     expect(ganttQuickNightsBetween("2026-06-01", "2026-06-03")).toBe(2);
     expect(ganttQuickNightsBetween("2026-06-01", "2026-06-01")).toBe(0);
@@ -59,4 +60,3 @@ import {
     ).toBe(false);
   });
 });
-

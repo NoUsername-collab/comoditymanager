@@ -48,12 +48,8 @@ function WeekendCardContent({
   return (
     <>
       <span className="avail-weekend-card__main">
-        {isNext && (
-          <span className="avail-weekend-card__flag">{tCommon("next")}</span>
-        )}
-        <span className="avail-weekend-card__range">
-          {weekendRangeTitle(w, locale)}
-        </span>
+        {isNext && <span className="avail-weekend-card__flag">{tCommon("next")}</span>}
+        <span className="avail-weekend-card__range">{weekendRangeTitle(w, locale)}</span>
         <span className="avail-weekend-card__dow">{weekendSubtitle(w, tPage("satSun"))}</span>
       </span>
       <span className="avail-weekend-card__count" aria-hidden>
@@ -90,17 +86,11 @@ export function AvailabilityWeekendsPanel({
   } as CSSProperties;
 
   return (
-    <section
-      className="avail-weekends-panel"
-      style={panelStyle}
-      aria-label={tPage("freeWeekends")}
-    >
+    <section className="avail-weekends-panel" style={panelStyle} aria-label={tPage("freeWeekends")}>
       <header className="avail-weekends-panel__head">
         <div className="avail-weekends-panel__titles">
           <h3 className="avail-weekends-panel__title">{tPage("freeWeekends")}</h3>
-          <p className="avail-weekends-panel__sub">
-            {tPage("freeWeekendsSubtitle")}
-          </p>
+          <p className="avail-weekends-panel__sub">{tPage("freeWeekendsSubtitle")}</p>
         </div>
         <span
           className="avail-weekends-panel__accent-swatch"
@@ -153,12 +143,7 @@ export function AvailabilityWeekendsPanel({
 
           if (readOnly) {
             return (
-              <div
-                key={w.saturday_iso}
-                className={cardClass}
-                style={cardStyle}
-                title={cardTitle}
-              >
+              <div key={w.saturday_iso} className={cardClass} style={cardStyle} title={cardTitle}>
                 <WeekendCardContent
                   w={w}
                   isNext={isNext}

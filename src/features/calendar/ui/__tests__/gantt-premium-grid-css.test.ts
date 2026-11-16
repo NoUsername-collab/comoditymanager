@@ -2,10 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-const GRID_CSS = path.resolve(
-  process.cwd(),
-  "src/styles/features/admin/gantt-premium-grid.css"
-);
+const GRID_CSS = path.resolve(process.cwd(), "src/styles/features/admin/gantt-premium-grid.css");
 
 describe("gantt premium grid CSS", () => {
   const css = fs.readFileSync(GRID_CSS, "utf8");

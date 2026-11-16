@@ -95,12 +95,7 @@ function clampAdults(raw: unknown): number {
 }
 
 export function isValidChildAge(raw: unknown): raw is number {
-  return (
-    typeof raw === "number" &&
-    Number.isInteger(raw) &&
-    raw >= 0 &&
-    raw <= MAX_MINOR_AGE
-  );
+  return typeof raw === "number" && Number.isInteger(raw) && raw >= 0 && raw <= MAX_MINOR_AGE;
 }
 
 /**
@@ -231,15 +226,9 @@ function clampAge(raw: unknown, fallback: number, max: number): number {
   return Math.min(max, Math.max(0, n));
 }
 
-export function parseChildPolicyRow(
-  row: Record<string, unknown> | null | undefined,
-): ChildPolicy {
+export function parseChildPolicyRow(row: Record<string, unknown> | null | undefined): ChildPolicy {
   if (!row) return DEFAULT_CHILD_POLICY;
-  const childMaxAge = clampAge(
-    row.child_max_age,
-    DEFAULT_CHILD_POLICY.childMaxAge,
-    MAX_MINOR_AGE,
-  );
+  const childMaxAge = clampAge(row.child_max_age, DEFAULT_CHILD_POLICY.childMaxAge, MAX_MINOR_AGE);
   const infantRaw = row.infant_max_age;
   const infantMaxAge =
     infantRaw === null
@@ -248,16 +237,12 @@ export function parseChildPolicyRow(
         ? DEFAULT_CHILD_POLICY.infantMaxAge
         : clampAge(infantRaw, DEFAULT_CHILD_POLICY.infantMaxAge ?? 2, 5);
   return {
-    infantMaxAge:
-      infantMaxAge != null && infantMaxAge >= childMaxAge ? null : infantMaxAge,
+    infantMaxAge: infantMaxAge != null && infantMaxAge >= childMaxAge ? null : infantMaxAge,
     childMaxAge,
     infantsWithParents: bool(row.infants_with_parents, DEFAULT_CHILD_POLICY.infantsWithParents),
     childrenShareBed: bool(row.children_share_bed, DEFAULT_CHILD_POLICY.childrenShareBed),
     childWithParents: bool(row.child_with_parents, DEFAULT_CHILD_POLICY.childWithParents),
-    loneTeenWithParents: bool(
-      row.lone_teen_with_parents,
-      DEFAULT_CHILD_POLICY.loneTeenWithParents,
-    ),
+    loneTeenWithParents: bool(row.lone_teen_with_parents, DEFAULT_CHILD_POLICY.loneTeenWithParents),
   };
 }
 

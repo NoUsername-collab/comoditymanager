@@ -25,17 +25,10 @@ export async function assertCheckinIdentityIntegrity(
     const nationalKey = guestNationalIdKey(guest);
     if (!nationalKey) continue;
 
-    const existing = await findGuestByNationalId(
-      nationalKey,
-      guest.guest_id ?? undefined,
-    );
+    const existing = await findGuestByNationalId(nationalKey, guest.guest_id ?? undefined);
 
     if (existing) {
-      if (
-        guest.is_representative &&
-        booking.guest_id &&
-        existing.id !== booking.guest_id
-      ) {
+      if (guest.is_representative && booking.guest_id && existing.id !== booking.guest_id) {
         transferOffer = {
           existingGuestId: existing.id,
           existingGuestName: existing.display_name,
@@ -54,16 +47,10 @@ export async function assertCheckinIdentityIntegrity(
 
     if (guest.is_representative && booking.guest_id) {
       const holder = await getGuestBaseById(booking.guest_id);
-      const holderHasIdentity = Boolean(
-        holder?.national_id?.trim() || holder?.cnp?.trim(),
-      );
+      const holderHasIdentity = Boolean(holder?.national_id?.trim() || holder?.cnp?.trim());
       if (
         holderHasIdentity &&
-        !holderNationalIdMatches(
-          nationalKey,
-          holder?.national_id,
-          holder?.cnp,
-        )
+        !holderNationalIdMatches(nationalKey, holder?.national_id, holder?.cnp)
       ) {
         blockers.push(
           `CNP/codul introdus nu corespunde titularului rezervării „${booking.guest_name}”. Verificați datele sau adăugați oaspetul ca persoană separată.`,

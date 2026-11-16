@@ -7,10 +7,7 @@ import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
 import { settingsActionErrorMessage } from "@/lib/settings/action-error";
-import {
-  updateCheckinSettings,
-  checkinSettingsCacheTag,
-} from "@/services/checkin/settings";
+import { updateCheckinSettings, checkinSettingsCacheTag } from "@/services/checkin/settings";
 
 export async function updateCheckinSettingsAction(
   formData: FormData,

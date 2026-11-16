@@ -31,7 +31,11 @@ vi.mock("@supabase/ssr", () => ({
   createServerClient: vi.fn(() => ({ auth: { getUser, signOut } })),
 }));
 vi.mock("@/lib/env/edge", () => ({
-  getEdgeSupabaseConfig: () => ({ configured: true, url: "https://example.supabase.co", key: "anon" }),
+  getEdgeSupabaseConfig: () => ({
+    configured: true,
+    url: "https://example.supabase.co",
+    key: "anon",
+  }),
 }));
 vi.mock("@/lib/auth/alpha-gate-edge", () => ({
   isAlphaGateEnabled: () => false,
@@ -165,7 +169,9 @@ describe("tenant host", () => {
 
   it("follows the MFA redirect when one is due", async () => {
     getUser.mockResolvedValue({ data: { user: STAFF } });
-    mfaRedirectIfNeeded.mockResolvedValue(NextResponse.redirect("https://casaemil.zalmox.app/admin/security/mfa"));
+    mfaRedirectIfNeeded.mockResolvedValue(
+      NextResponse.redirect("https://casaemil.zalmox.app/admin/security/mfa"),
+    );
     expect(location(await proxy(tenant("/admin")))).toContain("/admin/security/mfa");
   });
 
@@ -188,7 +194,11 @@ describe("platform host", () => {
   });
 
   it("serves the landing on / in the address's own language, and moves /landing there", async () => {
-    for (const [path, served] of [["/", "/ro/landing"], ["/en", "/en/landing"], ["/bg", "/bg/landing"]]) {
+    for (const [path, served] of [
+      ["/", "/ro/landing"],
+      ["/en", "/en/landing"],
+      ["/bg", "/bg/landing"],
+    ]) {
       const r = await proxy(platform(path));
       expect(location(r), path).toBe("");
       // Served from the landing route, the address unchanged.
@@ -246,7 +256,10 @@ describe("custom domain", () => {
   });
 
   it("sends staff paths on a public-only domain to the tenant subdomain", async () => {
-    resolveDomainRoutingOnEdge.mockResolvedValue({ slug: "casaemil", routingKind: "custom_public" });
+    resolveDomainRoutingOnEdge.mockResolvedValue({
+      slug: "casaemil",
+      routingKind: "custom_public",
+    });
     const r = await proxy(custom("/admin/cazari"));
     expect(location(r)).toContain("casaemil.");
     expect(location(r)).toContain("/admin/cazari");

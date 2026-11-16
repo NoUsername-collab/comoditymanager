@@ -15,7 +15,7 @@ describe("operative-checkin", () => {
         status: "confirmata",
         plannedCheckIn: "2026-06-10",
         today: "2026-06-10",
-      })
+      }),
     ).toBe(true);
 
     expect(
@@ -23,17 +23,13 @@ describe("operative-checkin", () => {
         status: "confirmata",
         plannedCheckIn: "2026-06-11",
         today: "2026-06-10",
-      })
+      }),
     ).toBe(false);
   });
 
   test("isStayCheckedIn with wizard record or timestamp", () => {
-    expect(isStayCheckedIn({ actualCheckInAt: null, hasCheckinRecord: true })).toBe(
-      true,
-    );
-    expect(isStayCheckedIn({ actualCheckInAt: "2026-06-10T14:00:00" })).toBe(
-      true,
-    );
+    expect(isStayCheckedIn({ actualCheckInAt: null, hasCheckinRecord: true })).toBe(true);
+    expect(isStayCheckedIn({ actualCheckInAt: "2026-06-10T14:00:00" })).toBe(true);
     expect(isStayCheckedIn({})).toBe(false);
   });
 
@@ -94,7 +90,7 @@ describe("operative-checkin", () => {
         status: "cerere_noua",
         plannedCheckIn: "2026-06-10",
         today: "2026-06-10",
-      })
+      }),
     ).toBe(false);
 
     expect(
@@ -106,7 +102,7 @@ describe("operative-checkin", () => {
         hasCheckinRecord: true,
         roomNames: ["Camera 1"],
         checkedInRooms: ["Camera 1"],
-      })
+      }),
     ).toBe(false);
   });
 
@@ -137,7 +133,7 @@ describe("operative-checkin", () => {
         check_in: string;
         guest_name: string;
       }>,
-      "2026-06-10"
+      "2026-06-10",
     );
 
     expect(rows).toHaveLength(1);
@@ -145,12 +141,8 @@ describe("operative-checkin", () => {
   });
 
   test("isOperativeCheckInTimestampValid matches planned day", () => {
-    expect(
-      isOperativeCheckInTimestampValid("2026-06-10", "2026-06-10T15:30")
-    ).toBe(true);
-    expect(
-      isOperativeCheckInTimestampValid("2026-06-10", "2026-06-11T08:00")
-    ).toBe(false);
+    expect(isOperativeCheckInTimestampValid("2026-06-10", "2026-06-10T15:30")).toBe(true);
+    expect(isOperativeCheckInTimestampValid("2026-06-10", "2026-06-11T08:00")).toBe(false);
   });
 
   test("operativeCheckInDatetimeBounds", () => {
@@ -167,8 +159,8 @@ describe("operative-checkin", () => {
           status: "confirmata",
           check_in: "2026-06-10",
         },
-        "2026-06-10"
-      )
+        "2026-06-10",
+      ),
     ).toBe(true);
   });
 });

@@ -18,11 +18,7 @@ export type AvailabilityShellSearchParams = {
   feat?: string;
 };
 
-function buildBaseQuery(
-  year: number,
-  month: number,
-  extra: Record<string, string | undefined>
-) {
+function buildBaseQuery(year: number, month: number, extra: Record<string, string | undefined>) {
   const p = new URLSearchParams({ y: String(year), m: String(month) });
   for (const [key, value] of Object.entries(extra)) {
     if (value) p.set(key, value);
@@ -51,8 +47,7 @@ export async function AvailabilityDashboardShell({
   const today = todayIso();
   const refDate = new Date(today + "T00:00:00");
   const year = Number(searchParams.y) || refDate.getFullYear();
-  const month =
-    searchParams.m !== undefined ? Number(searchParams.m) : refDate.getMonth();
+  const month = searchParams.m !== undefined ? Number(searchParams.m) : refDate.getMonth();
 
   const [tCommon, tPage, tNav, dashboardResult] = await Promise.all([
     getTranslations("admin.common"),
@@ -64,19 +59,14 @@ export async function AvailabilityDashboardShell({
   const effectiveToday = today;
 
   let dashboard: NonNullable<
-    Extract<
-      Awaited<ReturnType<typeof loadAvailabilityDashboardPage>>,
-      { ok: true }
-    >["data"]
+    Extract<Awaited<ReturnType<typeof loadAvailabilityDashboardPage>>, { ok: true }>["data"]
   > | null = null;
   let error: string | null = null;
   if (dashboardResult.ok) {
     dashboard = dashboardResult.data;
   } else {
     error =
-      dashboardResult.error instanceof Error
-        ? dashboardResult.error.message
-        : tCommon("error");
+      dashboardResult.error instanceof Error ? dashboardResult.error.message : tCommon("error");
   }
 
   const weekStart =
@@ -102,7 +92,7 @@ export async function AvailabilityDashboardShell({
     building: buildingId ?? undefined,
     feat: featureFilter !== "all" ? featureFilter : undefined,
     view: view === "week" ? "week" : undefined,
-    ws: view === "week" ? weekStart ?? undefined : undefined,
+    ws: view === "week" ? (weekStart ?? undefined) : undefined,
   };
 
   return (
@@ -110,11 +100,7 @@ export async function AvailabilityDashboardShell({
       <div className="availability-dashboard-nav mb-4 flex flex-wrap items-center justify-between gap-4">
         <div className="availability-dashboard-nav__controls flex items-center gap-2">
           <AdminLinkButton
-            href={buildHref(
-              basePath,
-              buildBaseQuery(prevY, prevM, sharedExtra),
-              anchorHash
-            )}
+            href={buildHref(basePath, buildBaseQuery(prevY, prevM, sharedExtra), anchorHash)}
             variant="secondary"
             className="availability-dashboard-nav__btn"
             aria-label={tNav("previous")}
@@ -125,11 +111,7 @@ export async function AvailabilityDashboardShell({
             {dashboard.title}
           </span>
           <AdminLinkButton
-            href={buildHref(
-              basePath,
-              buildBaseQuery(nextY, nextM, sharedExtra),
-              anchorHash
-            )}
+            href={buildHref(basePath, buildBaseQuery(nextY, nextM, sharedExtra), anchorHash)}
             variant="secondary"
             className="availability-dashboard-nav__btn"
             aria-label={tNav("next")}

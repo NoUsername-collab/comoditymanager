@@ -12,15 +12,19 @@ export type GuestAppAppearanceInput = {
   logoUrl?: string | null;
 };
 
-export function parseGuestAppThemeSource(
-  raw: unknown,
-): GuestAppThemeSource | undefined {
+export function parseGuestAppThemeSource(raw: unknown): GuestAppThemeSource | undefined {
   if (raw === "inherit" || raw === "custom") return raw;
   if (typeof raw !== "string" || !raw.trim()) return undefined;
   const migrated = migrateDesignThemeId(raw);
   if (migrated === raw || raw === "default") return migrated;
-  if (raw === "noir" || raw === "alpine" || raw === "mediterranean" ||
-      raw === "pearl" || raw === "slate" || raw === "forest") {
+  if (
+    raw === "noir" ||
+    raw === "alpine" ||
+    raw === "mediterranean" ||
+    raw === "pearl" ||
+    raw === "slate" ||
+    raw === "forest"
+  ) {
     return raw as DesignThemeId;
   }
   return undefined;
@@ -47,13 +51,8 @@ export function resolveGuestAppThemeStyle(
   const source = parseGuestAppThemeSource(appearance.themeId) ?? "inherit";
 
   const primary =
-    source === "custom" && appearance.primaryColor
-      ? appearance.primaryColor
-      : t.accent;
-  const accent =
-    source === "custom" && appearance.accentColor
-      ? appearance.accentColor
-      : t.link;
+    source === "custom" && appearance.primaryColor ? appearance.primaryColor : t.accent;
+  const accent = source === "custom" && appearance.accentColor ? appearance.accentColor : t.link;
 
   const vars: Record<string, string> = {
     "--guest-bg": t.bg,

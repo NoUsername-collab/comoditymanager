@@ -16,14 +16,12 @@ export default async function SettingsDomainsPage() {
     headers(),
   ]);
 
-  const requestHost =
-    requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+  const requestHost = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
   const platformDomain = platformDomainFromRequestHost(requestHost);
 
   const planId = tenant?.plan_id ?? "free";
   const plan = PLAN_CONFIGS[planId as PlanId];
-  const canManageCustom =
-    plan?.coreFeatures.includes("custom_domain" as CoreFeature) ?? false;
+  const canManageCustom = plan?.coreFeatures.includes("custom_domain" as CoreFeature) ?? false;
   const allowedKinds = allowedCustomRoutingKindsForPlan(planId);
 
   return (

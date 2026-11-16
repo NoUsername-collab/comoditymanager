@@ -57,8 +57,7 @@ export function collectLayoutMetrics(): LayoutMetrics {
     ? domProfile
     : resolveEffectiveDisplayProfile(innerWidth, innerHeight);
   const layoutModeAttr = doc.getAttribute("data-display-layout-mode");
-  const displayLayoutMode =
-    layoutModeAttr === "manual" ? "manual" : "auto";
+  const displayLayoutMode = layoutModeAttr === "manual" ? "manual" : "auto";
 
   return {
     innerWidth,

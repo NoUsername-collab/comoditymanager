@@ -8,10 +8,7 @@ import { ensureTenantContextFromRequest } from "@/lib/tenant/bind-request-contex
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import type { PaymentMethod } from "@/domain/payments/types";
 import { logAdminActivityFromSession } from "@/services/activity-log";
-import {
-  listBookingPayments,
-  recordBookingPayment,
-} from "@/services/booking-payments";
+import { listBookingPayments, recordBookingPayment } from "@/services/booking-payments";
 import { loadFinancialSnapshot } from "@/services/booking-financial";
 import { getBookingById } from "@/services/bookings";
 import { assertBookingPostCheckoutEditAllowed } from "@/services/bookings/post-checkout-guard";
@@ -36,7 +33,7 @@ export async function loadFinancialSnapshotAction(bookingId: string) {
 
 export async function recordPaymentAction(
   bookingId: string,
-  formData: FormData
+  formData: FormData,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   await ensureTenantContextFromRequest();
   await requireStaff();
@@ -72,7 +69,7 @@ export async function recordPaymentAction(
         ? t("invalidAmount")
         : key === "payment.booking_not_confirmed"
           ? t("bookingNotConfirmed")
-            : key;
+          : key;
     return { ok: false, error: mapped };
   }
 

@@ -7,11 +7,7 @@ import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { StayListItem } from "@/features/stays/ui/StayListItem";
 import { StayListVirtualized } from "@/features/stays/ui/StayListVirtualized";
 import { useLiveStays } from "@/lib/stays/live-stays";
-import type {
-  StayListLabels,
-  StayCardRow,
-  StayListVariant,
-} from "@/features/stays/ui/types";
+import type { StayListLabels, StayCardRow, StayListVariant } from "@/features/stays/ui/types";
 
 function StayListCollapsible({
   title,
@@ -53,9 +49,7 @@ function StayListCollapsible({
       >
         <span className="stays-bucket-panel__toggle-text">
           <span className="stays-bucket-panel__title">{title}</span>
-          {subtitle ? (
-            <span className="stays-bucket-panel__subtitle">{subtitle}</span>
-          ) : null}
+          {subtitle ? <span className="stays-bucket-panel__subtitle">{subtitle}</span> : null}
         </span>
         <span className="stays-bucket-panel__chevron" aria-hidden>
           {expanded ? "\u25BE" : "\u25B8"}
@@ -110,9 +104,7 @@ export function StayList({
         ? {
             emoji: "⛔",
             title: hasQuery ? labels.refusedEmptyFilter : labels.refusedEmpty,
-            description: hasQuery
-              ? labels.refusedEmptyFilterDesc
-              : labels.refusedEmptyDesc,
+            description: hasQuery ? labels.refusedEmptyFilterDesc : labels.refusedEmptyDesc,
             href: "/admin/bookings",
             label: labels.refusedBrowseBookings,
           }
@@ -198,10 +190,7 @@ export function StayList({
   }
 
   return (
-    <AdminPanel
-      title={title}
-      className={["mb-3", className].filter(Boolean).join(" ")}
-    >
+    <AdminPanel title={title} className={["mb-3", className].filter(Boolean).join(" ")}>
       {panelContent}
     </AdminPanel>
   );

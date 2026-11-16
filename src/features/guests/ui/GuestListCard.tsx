@@ -8,9 +8,17 @@ import { GuestStarsCompact } from "@/features/guests/ui/GuestStarsCompact";
 
 function IdentityDot({ status }: { status: string }) {
   if (status === "complete") {
-    return <span className="guest-card__id-dot guest-card__id-dot--ok" title="Profil complet">✓</span>;
+    return (
+      <span className="guest-card__id-dot guest-card__id-dot--ok" title="Profil complet">
+        ✓
+      </span>
+    );
   }
-  return <span className="guest-card__id-dot guest-card__id-dot--no" title="Profil necompletat">−</span>;
+  return (
+    <span className="guest-card__id-dot guest-card__id-dot--no" title="Profil necompletat">
+      −
+    </span>
+  );
 }
 
 export function GuestListCard({
@@ -30,9 +38,7 @@ export function GuestListCard({
   return (
     <li className="guest-card">
       <Link href={profileHref} className="guest-card__link">
-        <div className="guest-card__avatar">
-          {(guest.display_name?.[0] ?? "?").toUpperCase()}
-        </div>
+        <div className="guest-card__avatar">{(guest.display_name?.[0] ?? "?").toUpperCase()}</div>
 
         <div className="guest-card__info">
           <div className="guest-card__top">

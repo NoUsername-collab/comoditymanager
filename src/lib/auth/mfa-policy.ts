@@ -5,16 +5,12 @@ import type { TenantMemberRole } from "@/services/tenant-members";
 export { MFA_SETUP_PATH };
 
 /** Paths reachable before MFA enrollment or AAL2 step-up. */
-const MFA_EXEMPT_ADMIN_PATHS = [
-  "/admin/login",
-  "/admin/security/mfa",
-  MFA_SETUP_PATH,
-] as const;
+const MFA_EXEMPT_ADMIN_PATHS = ["/admin/login", "/admin/security/mfa", MFA_SETUP_PATH] as const;
 
 export function isMfaExemptAdminPath(path: string): boolean {
   const normalized = path.replace(/\/$/, "") || "/";
   return MFA_EXEMPT_ADMIN_PATHS.some(
-    (exempt) => normalized === exempt || normalized.startsWith(`${exempt}/`)
+    (exempt) => normalized === exempt || normalized.startsWith(`${exempt}/`),
   );
 }
 
@@ -36,9 +32,7 @@ export function isMfaRecommendedForUser(opts: {
 }
 
 export function hasVerifiedTotpFactor(
-  factors: { totp?: Array<{ status?: string }> } | null | undefined
+  factors: { totp?: Array<{ status?: string }> } | null | undefined,
 ): boolean {
-  return (
-    factors?.totp?.some((factor) => factor.status === "verified") ?? false
-  );
+  return factors?.totp?.some((factor) => factor.status === "verified") ?? false;
 }

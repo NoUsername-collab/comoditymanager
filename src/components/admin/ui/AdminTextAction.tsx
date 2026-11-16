@@ -3,12 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import type { ComponentPropsWithoutRef } from "react";
 
-type AdminTextActionVariant =
-  | "neutral"
-  | "warning"
-  | "danger"
-  | "primary"
-  | "accent";
+type AdminTextActionVariant = "neutral" | "warning" | "danger" | "primary" | "accent";
 
 const VARIANT_CLASS: Record<AdminTextActionVariant, string> = {
   neutral: "admin-text-action--neutral",
@@ -19,9 +14,7 @@ const VARIANT_CLASS: Record<AdminTextActionVariant, string> = {
 };
 
 function actionClass(variant: AdminTextActionVariant, className?: string) {
-  return ["admin-text-action", VARIANT_CLASS[variant], className]
-    .filter(Boolean)
-    .join(" ");
+  return ["admin-text-action", VARIANT_CLASS[variant], className].filter(Boolean).join(" ");
 }
 
 type ButtonProps = ComponentPropsWithoutRef<"button"> & {
@@ -38,19 +31,9 @@ export function AdminTextActionButton({
   type = "button",
   ...props
 }: ButtonProps) {
-  return (
-    <button
-      type={type}
-      className={actionClass(variant, className)}
-      {...props}
-    />
-  );
+  return <button type={type} className={actionClass(variant, className)} {...props} />;
 }
 
-export function AdminTextActionLink({
-  variant = "neutral",
-  className,
-  ...props
-}: LinkProps) {
+export function AdminTextActionLink({ variant = "neutral", className, ...props }: LinkProps) {
   return <Link className={actionClass(variant, className)} {...props} />;
 }

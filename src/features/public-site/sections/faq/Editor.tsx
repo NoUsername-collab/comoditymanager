@@ -15,8 +15,17 @@ export function FaqEditor({ section }: SectionEditorProps) {
   return (
     <>
       <div className="admin-settings-fields">
-        <EditorField label={te("sectionTitle")} value={ed.field("title")} onChange={ed.setField("title")} />
-        <EditorField rows={2} label={te("sectionLead")} value={ed.field("lead")} onChange={ed.setField("lead")} />
+        <EditorField
+          label={te("sectionTitle")}
+          value={ed.field("title")}
+          onChange={ed.setField("title")}
+        />
+        <EditorField
+          rows={2}
+          label={te("sectionLead")}
+          value={ed.field("lead")}
+          onChange={ed.setField("lead")}
+        />
       </div>
       <SectionItemList
         section={section}

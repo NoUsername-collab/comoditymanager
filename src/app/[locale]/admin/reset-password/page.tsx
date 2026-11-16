@@ -10,7 +10,9 @@ export default async function ResetPasswordPage() {
     <main className="admin-login-page ml-content flex min-h-dvh items-center justify-center p-4">
       <div className="admin-login-wrap">
         <div className="admin-login-brand">
-          <span className="admin-login-brand__icon" aria-hidden>⚡</span>
+          <span className="admin-login-brand__icon" aria-hidden>
+            ⚡
+          </span>
           <span className="admin-login-brand__name">Zalmox</span>
         </div>
         <div className="admin-login-card w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-lg">

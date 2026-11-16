@@ -1,9 +1,5 @@
 import { z } from "zod";
-import {
-  formatZodError,
-  optionalEmailSchema,
-  type ParseResult,
-} from "./shared";
+import { formatZodError, optionalEmailSchema, type ParseResult } from "./shared";
 
 const emailSettingsPartialSchema = z
   .object({
@@ -25,13 +21,9 @@ const emailSettingsPartialSchema = z
   })
   .strict();
 
-type EmailSettingsPartialParsed = z.infer<
-  typeof emailSettingsPartialSchema
->;
+type EmailSettingsPartialParsed = z.infer<typeof emailSettingsPartialSchema>;
 
-export function parseEmailSettingsPartial(
-  input: unknown,
-): ParseResult<EmailSettingsPartialParsed> {
+export function parseEmailSettingsPartial(input: unknown): ParseResult<EmailSettingsPartialParsed> {
   const result = emailSettingsPartialSchema.safeParse(input);
   if (!result.success) {
     return { ok: false, error: formatZodError(result.error) };

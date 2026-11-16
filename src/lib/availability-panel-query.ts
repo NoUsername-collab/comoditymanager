@@ -25,7 +25,7 @@ export function readAvailabilityPanelState(
     year: number;
     month: number;
     featureFilter?: GanttFeatureFilter;
-  }
+  },
 ): {
   open: boolean;
   year: number;
@@ -53,7 +53,8 @@ export function readAvailabilityPanelState(
     buildingId: get(AVAILABILITY_PANEL_QUERY_KEYS.building) ?? null,
     view: rawView === "week" ? "week" : "month",
     weekStart: get(AVAILABILITY_PANEL_QUERY_KEYS.weekStart) ?? null,
-    featureFilter: rawFeat === "ac" || rawFeat === "fridge" ? rawFeat : defaults.featureFilter ?? "all",
+    featureFilter:
+      rawFeat === "ac" || rawFeat === "fridge" ? rawFeat : (defaults.featureFilter ?? "all"),
   };
 }
 
@@ -68,7 +69,7 @@ export function mergeAvailabilityPanelSearch(
     view?: AvailabilityPanelView;
     weekStart?: string | null;
     featureFilter?: GanttFeatureFilter;
-  }
+  },
 ): URLSearchParams {
   const next = new URLSearchParams(base.toString());
 

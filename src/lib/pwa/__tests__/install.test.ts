@@ -7,9 +7,7 @@ import {
 
 describe("isPwaStandaloneInBrowser", () => {
   it("detects standalone display mode", () => {
-    expect(
-      isPwaStandaloneInBrowser((q) => q.includes("standalone"), false)
-    ).toBe(true);
+    expect(isPwaStandaloneInBrowser((q) => q.includes("standalone"), false)).toBe(true);
   });
 
   it("detects iOS standalone flag", () => {
@@ -25,16 +23,16 @@ describe("isIosSafariUserAgent", () => {
   it("matches iPhone Safari", () => {
     expect(
       isIosSafariUserAgent(
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
-      )
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+      ),
     ).toBe(true);
   });
 
   it("rejects Chrome on iOS", () => {
     expect(
       isIosSafariUserAgent(
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) CriOS/120.0.0.0 Mobile/15E148 Safari/604.1"
-      )
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) CriOS/120.0.0.0 Mobile/15E148 Safari/604.1",
+      ),
     ).toBe(false);
   });
 });
@@ -46,9 +44,7 @@ describe("isMobileInstallUserAgent", () => {
 
   it("rejects desktop", () => {
     expect(
-      isMobileInstallUserAgent(
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0"
-      )
+      isMobileInstallUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0"),
     ).toBe(false);
   });
 });

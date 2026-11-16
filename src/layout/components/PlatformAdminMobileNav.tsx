@@ -48,10 +48,7 @@ export function PlatformAdminMobileNav() {
         onClick={() => setOpen((v) => !v)}
       >
         <span className="sr-only">{open ? t("menuClose") : t("menuOpen")}</span>
-        <span
-          className="ml-mobile-menu__bars flex w-[1.1rem] flex-col gap-[0.22rem]"
-          aria-hidden
-        >
+        <span className="ml-mobile-menu__bars flex w-[1.1rem] flex-col gap-[0.22rem]" aria-hidden>
           <span className="block h-0.5 rounded-[1px] bg-current" />
           <span className="block h-0.5 rounded-[1px] bg-current" />
           <span className="block h-0.5 rounded-[1px] bg-current" />
@@ -61,10 +58,7 @@ export function PlatformAdminMobileNav() {
       <MobileDrawerPortal>
         <button
           type="button"
-          className={[
-            "ml-drawer__backdrop",
-            open && "ml-drawer__backdrop--visible",
-          ]
+          className={["ml-drawer__backdrop", open && "ml-drawer__backdrop--visible"]
             .filter(Boolean)
             .join(" ")}
           aria-label={t("menuClose")}
@@ -90,38 +84,36 @@ export function PlatformAdminMobileNav() {
           aria-hidden={!open}
           hidden={!open}
         >
-            <div className="ml-drawer__head mb-1.5 flex shrink-0 items-center justify-end">
-              <button
-                type="button"
-                className="ml-drawer__close"
-                aria-label={t("menuClose")}
-                onClick={() => setOpen(false)}
-              >
-                ✕
-              </button>
-            </div>
-            <nav className="ml-drawer__nav" aria-label={t("menuAria")}>
-              {LINKS.map((link) => {
-                const active = link.exact
-                  ? pathname === link.href
-                  : pathname.startsWith(link.href);
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={[
-                      "ml-drawer__link text-neutral-200",
-                      active && "ml-drawer__link--active bg-white/12",
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
-                    onClick={() => setOpen(false)}
-                  >
-                    {t(link.labelKey)}
-                  </Link>
-                );
-              })}
-            </nav>
+          <div className="ml-drawer__head mb-1.5 flex shrink-0 items-center justify-end">
+            <button
+              type="button"
+              className="ml-drawer__close"
+              aria-label={t("menuClose")}
+              onClick={() => setOpen(false)}
+            >
+              ✕
+            </button>
+          </div>
+          <nav className="ml-drawer__nav" aria-label={t("menuAria")}>
+            {LINKS.map((link) => {
+              const active = link.exact ? pathname === link.href : pathname.startsWith(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={[
+                    "ml-drawer__link text-neutral-200",
+                    active && "ml-drawer__link--active bg-white/12",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  onClick={() => setOpen(false)}
+                >
+                  {t(link.labelKey)}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
       </MobileDrawerPortal>
     </div>

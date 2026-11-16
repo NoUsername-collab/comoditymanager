@@ -176,7 +176,6 @@
   color: var(--admin-text-muted, #52525b);
 }
 
-
 .pub-editor-link {
   display: flex;
   flex-direction: column;
@@ -488,7 +487,9 @@
   border: 1px solid var(--admin-panel-border, #e4e4e7);
   border-radius: 0.7rem;
   background: var(--admin-panel-bg, #fff);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .pub-outline__row[data-hidden="1"] {
@@ -729,7 +730,11 @@
 
 /* Optional and not done yet: neutral, not a warning. */
 .pub-editor-checklist li[data-optional="1"]:not([data-done="1"]) {
-  background: color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 45%, var(--admin-panel-bg, #fff));
+  background: color-mix(
+    in srgb,
+    var(--admin-panel-border, #e4e4e7) 45%,
+    var(--admin-panel-bg, #fff)
+  );
   color: var(--admin-text-muted, #52525b);
 }
 
@@ -872,7 +877,8 @@
   color: var(--admin-text-muted, #a1a1aa);
 }
 
-.pub-site-studio__doc[data-pickable="1"] :is(
+.pub-site-studio__doc[data-pickable="1"]
+  :is(
     [data-pub-section],
     .pub-hero,
     .pub-section--stays,
@@ -887,7 +893,8 @@
   outline-offset: -4px;
 }
 
-.pub-site-studio__doc[data-pickable="1"] :is(
+.pub-site-studio__doc[data-pickable="1"]
+  :is(
     [data-pub-section],
     .pub-hero,
     .pub-section--stays,
@@ -900,7 +907,9 @@
 }
 
 /* Inner sections inside a hovered wrapper should not double-outline. */
-.pub-site-studio__doc[data-pickable="1"] [data-pub-section]:hover :is(.pub-section--stays, .pub-section--place) {
+.pub-site-studio__doc[data-pickable="1"]
+  [data-pub-section]:hover
+  :is(.pub-section--stays, .pub-section--place) {
   outline-color: transparent;
 }
 
@@ -1168,7 +1177,9 @@
   border-radius: 999px;
   background: #18181b;
   color: #fff;
-  font: 600 0.75rem/1.2 system-ui, sans-serif;
+  font:
+    600 0.75rem/1.2 system-ui,
+    sans-serif;
 }
 
 /* Dragging by pointer: the handle grabs, the page does not scroll under a finger. */
@@ -1247,7 +1258,9 @@
   border: 1.5px dashed var(--admin-panel-border, #d4d4d8);
   border-radius: 0.8rem;
   text-align: center;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
 }
 
 .pub-gallery-upload[data-over="1"] {

@@ -16,7 +16,7 @@ function getEdgeLocationUnlockSecret(): string | null {
 
 /** Full token validation for Edge Middleware — expiry + HMAC. */
 export async function isAdminLocationUnlockTokenValidEdge(
-  token: string | undefined | null
+  token: string | undefined | null,
 ): Promise<boolean> {
   if (!isAdminLocationUnlockCookieFresh(token)) return false;
   if (!token) return false;
